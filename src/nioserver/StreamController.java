@@ -1,3 +1,5 @@
+package nioserver;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -6,12 +8,14 @@ import org.json.simple.JSONObject;
 public class StreamController{
 	private InStream _inStream;
 	private OutStream _outStream;
+	private Thread _inThread;
+	private Thread _outThread;
 	private List<Message> _in;
 	private List<Message> _out;
-	private Server _server;
+	private AbstractNIOServer _server;
 
 
-	public StreamController(Server server){
+	public StreamController(AbstractNIOServer server){
 		this._inStream = new InStream(this);
 		this._outStream = new OutStream(this);
 		this._in = new LinkedList<Message>();
@@ -20,8 +24,10 @@ public class StreamController{
 	}
 
 	public void startStreams(){
-		(new Thread(this._inStream)).start();
-		(new Thread(this._outStream)).start();
+		this._inThread = (new Thread(this._inStream));
+		this._outThread = (new Thread(this._outStream));
+		this._inThread.start();
+		this._outThread.start();
 	}
 
 	public void stopStreams(){
@@ -31,9 +37,21 @@ public class StreamController{
 
 	public InStream inStream() { return this._inStream; }
 	public OutStream outStream() { return this._outStream; }
+	public Thread inThread() { return this._inThread; }
+	public Thread outThread() { return this._outThread; }
 
-	public void wakeupIn() { this._in.notifyAll(); }
-	public void wakeupOut() { this._out.notifyAll(); }
+	public void wakeupIn() { 
+		synchronized(this._in){
+			this._in.notifyAll();
+		}
+	}
+	public void wakeupOut() { 
+		synchronized(this._out){
+			this._out.notifyAll();
+		}
+	}
+
+	public void disconnectAll() { this._inStream.disconnectAll(); }
 
 	public void addIncomingMessage(Message msg){
 		synchronized(this._in){

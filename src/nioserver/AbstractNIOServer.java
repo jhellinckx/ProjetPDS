@@ -1,11 +1,16 @@
+package nioserver;
+
 import org.json.simple.JSONObject;
 import java.io.IOException;
+import nioserver.StreamController;
+import nioserver.ServerShutdownHook;
+import nioserver.Message;
 
-public class Server{
+public abstract class AbstractNIOServer{
 	private StreamController _controller;
 	private Boolean _running;
 
-	public Server(){
+	public AbstractNIOServer(){
 		this._controller = new StreamController(this);
 		this._running = new Boolean(false);
 	}
@@ -15,40 +20,26 @@ public class Server{
 	}
 
 	public void listen(){
-		while(this.isRunning() || this._controller.messageAvailable()){
+		while(this.isRunning()){
 			try{
 				Message msg = this._controller.receiveIncomingMessage();
 				this.handleMessage(msg);
 			}
 			catch(InterruptedException e){
-				System.out.println(Constants.errorMessage(e.getMessage(), this));
+				System.out.println(e.getMessage());
 			}
 		}
 	}
 
-	public void handleMessage(Message msg){
-		// Treat the received message.
-		this.send(msg);
-	}
+	public abstract void handleMessage(Message msg);
 
 	public void run(){
 		this.setRunning();
 		_controller.startStreams();
+		Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(this, this._controller)));
 		System.out.println("Server " + Constants.OC_GREEN + Constants.LOCALHOST + Constants.OC_RESET
 			+" launched. Listening on port " + Constants.OC_YELLOW + Constants.PORT + Constants.OC_RESET + ".");
 		this.listen();
-	}
-
-	public static void main(String[] args){
-		try{
-			Server server = new Server();
-			server.run();
-		} 
-		catch(Exception e){
-			System.out.println(Constants.errorMessage("Uncatched exception : "
-				+e.getMessage(), new String("root")));
-			e.printStackTrace();
-		}
 	}
 
 	public void setRunning() { 
@@ -68,5 +59,6 @@ public class Server{
 			this._running = false;
 		}
 		this._controller.wakeupIn();
+		this._controller.stopStreams();
 	}
 }

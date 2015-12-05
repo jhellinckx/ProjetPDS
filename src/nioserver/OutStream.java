@@ -1,3 +1,5 @@
+package nioserver;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class OutStream implements Runnable{
 			}
 			catch(InterruptedException e){
 				// Thread stopped
-				System.out.println(Constants.errorMessage(e.getMessage(), this));
+				System.out.println(e.getMessage());
 			}
 			catch(IOException e){
 				System.out.println(Constants.errorMessage(e.getMessage(), this));

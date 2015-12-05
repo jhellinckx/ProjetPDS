@@ -1,3 +1,5 @@
+package nioserver;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.Selector;
@@ -133,6 +135,24 @@ public class InStream implements Runnable{
 			}
 			catch(IOException e){
 				System.out.println(Constants.errorMessage(e.getMessage(), this));
+			}
+		}
+		System.out.println("instream stopped.");
+	}
+
+	public void disconnectAll(){
+		for(SelectionKey key : this._selector.keys()){
+			if(key.interestOps() == SelectionKey.OP_READ){
+				this._disconnect((SocketChannel)key.channel());
+			}
+			else if(key.interestOps() == SelectionKey.OP_ACCEPT){
+				try{
+					key.channel().close();
+					key.cancel();
+				}
+				catch(IOException e){
+					System.out.println(Constants.errorMessage(e.getMessage(), this));
+				}
 			}
 		}
 	}

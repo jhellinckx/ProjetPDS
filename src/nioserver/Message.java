@@ -1,3 +1,5 @@
+package nioserver;
+
 import java.net.Socket;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

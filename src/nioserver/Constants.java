@@ -1,3 +1,5 @@
+package nioserver;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
 
