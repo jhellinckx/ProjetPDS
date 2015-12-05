@@ -20,7 +20,7 @@ CLASSES = \
 		$(PKG)/ServerShutdownHook.java \
 		$(PKG)/AbstractNIOServer.java \
 		Test.java \
-		CalorieCounterServer.java \
+		AppliServer.java \
 		items/User.java \
 		items/Food.java \
 		dao/DAOException.java \
@@ -49,7 +49,7 @@ runclient:
 		java -cp "$(LIBDIR)/*:." Test
 
 runserver:
-		java -cp "$(LIBDIR)/*:." CalorieCounterServer
+		java -cp "$(LIBDIR)/*:." AppliServer
 
 runtestDAO:
 		java -cp "$(LIBDIR)/*:." testDAO

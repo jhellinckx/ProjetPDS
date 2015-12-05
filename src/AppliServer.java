@@ -3,9 +3,9 @@ import nioserver.Message;
 import nioserver.AbstractNIOServer;
 import nioserver.Constants;
 
-public class CalorieCounterServer extends AbstractNIOServer{
+public class AppliServer extends AbstractNIOServer{
 
-	public CalorieCounterServer(){
+	public AppliServer(){
 		super();
 	}
 
@@ -16,8 +16,8 @@ public class CalorieCounterServer extends AbstractNIOServer{
 
 	public static void main(String[] args){
 		try{
-			CalorieCounterServer ccserver = new CalorieCounterServer();
-			ccserver.run();
+			AppliServer appserver = new AppliServer();
+			appserver.run();
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "
