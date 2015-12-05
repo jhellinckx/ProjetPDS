@@ -1,4 +1,4 @@
-package com.db_appli.dao;
+package dao;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.jolbox.bonecp.BoneCPConfig;
 
 public class DAOFactory {
 
-    private static final String FILE_PROPERTIES          = "com/db_appli/dao/dao.properties";
+    private static final String FILE_PROPERTIES          = "dao/dao.properties";
     private static final String PROPERTY_URL             = "url";
     private static final String PROPERTY_DRIVER          = "driver";
     private static final String PROPERTY_USERNAME        = "username";
@@ -26,8 +26,8 @@ public class DAOFactory {
     }
 
     /*
-     * Mehode charge de reupeer les informations de connexion ela base de
-     * donnes, charger le driver JDBC et retourner une instance de la Factory
+     * Methode chargee de recuperer les informations de connexion a la base de
+     * donnees, charger le driver JDBC et retourner une instance de la Factory
      */
     public static DAOFactory getInstance() throws DAOConfigurationException {
         Properties properties = new Properties();
@@ -61,42 +61,45 @@ public class DAOFactory {
         }
         try {
             /*
-             * Cretion d'une configuration de pool de connexions via l'objet
-             * BoneCPConfig et les diffeents setters associe.
+             * Creation d'une configuration de pool de connexions via l'objet
+             * BoneCPConfig et les differents setters associes.
              */
             BoneCPConfig config = new BoneCPConfig();
             /* Mise en place de l'URL, du nom et du mot de passe */
             config.setJdbcUrl( url );
             config.setUsername( userName );
             config.setPassword( passWord );
-            /* Paramerage de la taille du pool */
+            /* Parametrage de la taille du pool */
             config.setMinConnectionsPerPartition( 5 );
             config.setMaxConnectionsPerPartition( 10 );
             config.setPartitionCount( 2 );
-            /* Cretion du pool epartir de la configuration, via l'objet BoneCP */
+            /* Creation du pool a partir de la configuration, via l'objet BoneCP */
             connectionPool = new BoneCP( config );
         } catch ( SQLException e ) {
             e.printStackTrace();
             throw new DAOConfigurationException( "Erreur de configuration du pool de connexions.", e );
         }
         /*
-         * Enregistrement du pool cre dans une variable d'instance via un appel
+         * Enregistrement du pool cree dans une variable d'instance via un appel
          * au constructeur de DAOFactory
          */
         DAOFactory instance = new DAOFactory( connectionPool );
         return instance;
     }
     
-    /* Mehode charge de fournir une connexion ela base de donnes */
+    /* Methode chargee de fournir une connexion a la base de donnees */
     Connection getConnection() throws SQLException {
     return connectionPool.getConnection();
     }
 
     /*
-     * Mehodes de reupeation de l'impleentation des diffeents DAO (un seul
-     * pour le moment)
+     * Methodes de recuperation de l'implementation des differents DAO
      */
     public UserDAO getUtilisateurDao() {
         return new UserDAOImpl( this );
+    }
+    
+    public FoodDAO getFoodDao() {
+    	return new FoodDAOImpl( this );
     }
 }

@@ -1,4 +1,4 @@
-package com.db_appli.dao;
+package dao;
 
 public class DAOException extends RuntimeException {
     /*

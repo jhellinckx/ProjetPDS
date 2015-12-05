@@ -1,4 +1,4 @@
-package com.db_appli.dao;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,15 +9,15 @@ import java.sql.Statement;
 public final class DAOUtilitaire {
 
     /*
-     * Constructeur cachepar deaut (car c'est une classe finale utilitaire,
-     * contenant uniquement des mehodes appeles de maniee statique)
+     * Constructeur cache par defaut (car c'est une classe finale utilitaire,
+     * contenant uniquement des methodes appelees de maniere statique)
      */
     private DAOUtilitaire() {
     }
     
     /*
-     * Initialise la requee preare base sur la connection passe en argument,
-     * avec la requee SQL et les objets donne.
+     * Initialise la requete preparee basee sur la connection passee en argument,
+     * avec la requete SQL et les objets donnes.
      */
     public static PreparedStatement initializationPreparedRequest( Connection connection, String sql, boolean returnGeneratedKeys, Object... objets ) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement( sql, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS );

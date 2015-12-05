@@ -24,7 +24,7 @@ public class InStream implements Runnable{
 			this._msgSizeBuffer = ByteBuffer.allocate(Constants.INT_SIZE);
 			this._acceptChannel = ServerSocketChannel.open();
 			this._acceptChannel.configureBlocking(false);
-			this._acceptChannel.socket().bind(new InetSocketAddress(Constants.LOCALHOST, Constants.PORT));
+			this._acceptChannel.socket().bind(new InetSocketAddress(Constants.HOST, Constants.PORT));
 			this._selector = Selector.open();
 			this._acceptChannel.register(this._selector, SelectionKey.OP_ACCEPT);
 			this._controller = controller;

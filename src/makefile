@@ -20,7 +20,19 @@ CLASSES = \
 		$(PKG)/ServerShutdownHook.java \
 		$(PKG)/AbstractNIOServer.java \
 		Test.java \
-		CalorieCounterServer.java 
+		CalorieCounterServer.java \
+		items/User.java \
+		items/Food.java \
+		dao/DAOException.java \
+		dao/DAOConfigurationException.java \
+		dao/DAOFactory.java \
+		dao/DAOUtilitaire.java \
+		dao/UserDAO.java \
+		dao/UserDAOImpl.java \
+		dao/FoodDAO.java \
+		dao/FoodDAOImpl.java \
+		doTest.java \
+		testDAO.java 
 
 # JAR dependencies
 LIBDIR = libs
@@ -31,12 +43,15 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 clean:
-		rm *.class && rm -f $(PKG)/*.class
+		rm *.class && rm -f $(PKG)/*.class && rm dao/*.class && rm items/*.class
 
 runclient: 
 		java -cp "$(LIBDIR)/*:." Test
 
 runserver:
 		java -cp "$(LIBDIR)/*:." CalorieCounterServer
+
+runtestDAO:
+		java -cp "$(LIBDIR)/*:." testDAO
 
 	
