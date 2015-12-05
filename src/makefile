@@ -1,3 +1,4 @@
+
 JFLAGS = -g -cp "$(LIBDIR)/*:."
 
 JC = javac
@@ -37,4 +38,5 @@ runclient:
 
 runserver:
 		java -cp "$(LIBDIR)/*:." CalorieCounterServer
+
 	
