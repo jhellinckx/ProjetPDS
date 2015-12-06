@@ -1,0 +1,18 @@
+# Télécharger la db là : http://world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv
+# modifier le fichier "db_init.sql", ligne 180 : mettre le chemin du fichier csv
+
+
+# ouvrir la console dans ce dossier (ProjetPDS/src/database)
+# Se connecter à mysql avec root:
+$ mysql -h localhost -u root -p
+
+# Créez votre profil
+# Changer USERNAME et MOT_DE_PASSE
+$ GRANT ALL PRIVILEGES ON db_appli.* TO 'USERNAME'@'localhost' IDENTIFIED BY 'MOT_DE_PASSE';
+
+
+# Se connecter sur ce nouveau profil (remplacer USERNAME par le votre) :
+$ mysql -h localhost -u USERNAME -p --enable-local-infile;
+
+#Enfin, créer la db + les tables :
+$ SOURCE db_init.sql;
