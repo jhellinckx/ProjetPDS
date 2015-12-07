@@ -6,6 +6,10 @@
 # Se connecter à mysql avec root:
 $ mysql -h localhost -u root -p
 
+
+#Se déco du compte root
+$ exit
+
 # Créez votre profil
 # Changer USERNAME et MOT_DE_PASSE
 $ GRANT ALL PRIVILEGES ON db_appli.* TO 'USERNAME'@'localhost' IDENTIFIED BY 'MOT_DE_PASSE';

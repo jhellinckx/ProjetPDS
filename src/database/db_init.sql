@@ -1,3 +1,4 @@
+DROP DATABASE db_appli;
 CREATE DATABASE db_appli;
 USE db_appli;
 
