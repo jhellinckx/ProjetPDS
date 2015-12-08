@@ -1,5 +1,6 @@
 package items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -14,13 +15,15 @@ public class User {
     	this.id = null;
     	this.username = null;
     	this.gender = null;
-    	this.appreciatedFood = null;
-    	this.depreciatedFood = null;
+    	this.appreciatedFood = new ArrayList<Food>();
+    	this.depreciatedFood = new ArrayList<Food>();
     }
     
     public User( String username, String gender ) {
     	this.username = username;
     	this.gender = gender;
+    	this.appreciatedFood = new ArrayList<Food>();
+    	this.depreciatedFood = new ArrayList<Food>();
     }
     
     public Long getId() {
@@ -58,4 +61,13 @@ public class User {
     public void setDepreciatedFood( List<Food> depreciatedFood ) {
         this.depreciatedFood = depreciatedFood;
     }
+
+public void addToAppreciatedFood(Food food) {
+	this.appreciatedFood.add(food);
+}
+
+public void addToDeppreciatedFood(Food food) {
+	this.depreciatedFood.add(food);
+}
+
 }

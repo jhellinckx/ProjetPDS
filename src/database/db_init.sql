@@ -179,7 +179,7 @@ CREATE TABLE db_appli.Food(
 )ENGINE=INNODB;
 
 
-LOAD DATA LOCAL INFILE '/CHEMIN/en.openfoodfacts.org.products.csv' #CHEMIN à modif
+LOAD DATA LOCAL INFILE '/home/mrmmtb/Downloads/en.openfoodfacts.org.products.csv' #CHEMIN à modif
 INTO TABLE Food
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
@@ -208,7 +208,7 @@ CREATE TABLE db_appli.User_preferences(
 
 
 ALTER TABLE User_preferences
-ADD CONSTRAINT fk_numUser_idUser FOREIGN KEY (numUser) REFERENCES User(id_user);
+ADD CONSTRAINT fk_numUser_idUser FOREIGN KEY (numUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE User_preferences
-ADD CONSTRAINT fk_numFood_idFood FOREIGN KEY (numFood) REFERENCES Food(id_food);
+ADD CONSTRAINT fk_numFood_idFood FOREIGN KEY (numFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE;

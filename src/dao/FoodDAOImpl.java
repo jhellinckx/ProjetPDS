@@ -15,9 +15,10 @@ import items.User;
 
 public class FoodDAOImpl implements FoodDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_NAME = "SELECT id, url, code, productName FROM OpenFoodFact WHERE productName = ?";
-	private static final String SQL_SELECT_BY_CODE = "SELECT id, url, code, productName FROM OpenFoodFact WHERE code = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id, url, code, productName FROM Food";
+	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, code, product_name FROM Food WHERE product_name = ?";
+	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, code, product_name FROM Food WHERE code = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name FROM Food WHERE id_food = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name FROM Food";
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -36,6 +37,11 @@ public class FoodDAOImpl implements FoodDAO {
 	}
 	
 	@Override
+	public Food findById(Long id) throws DAOException {
+        return find( SQL_SELECT_BY_ID, id );
+	}
+	
+	@Override
 	/* Juse utilisee pr les test at the moment */
     public List<String> findAll() throws DAOException {
     	List<String> messages = new ArrayList<String>();
@@ -49,10 +55,10 @@ public class FoodDAOImpl implements FoodDAO {
             resultSet = preparedStatement.executeQuery();
             /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
             while ( resultSet.next() ) {
-                int idFood = resultSet.getInt( "id" );
+                int idFood = resultSet.getInt( "id_food" );
                 String urlFood = resultSet.getString( "url" );
                 String codeFood = resultSet.getString( "code" );
-                String productNameFood = resultSet.getString( "productName" );
+                String productNameFood = resultSet.getString( "product_name" );
                 /* Formatage des donnees pour affichage dans la JSP finale. */
                 messages.add( "Donnees retournees par la requete : id = " + idFood + ", url = " + urlFood
                         + ", code = " + codeFood + ", productName = " + productNameFood + ". \n" );
@@ -90,6 +96,30 @@ public class FoodDAOImpl implements FoodDAO {
         return food;
 	}
 	
+	private Food find( String sqlQuery, Long parameter ){
+		Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Food food = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, sqlQuery, false, parameter );
+            resultSet = preparedStatement.executeQuery();
+            /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
+            if ( resultSet.next() ) {
+                food = map( resultSet );
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return food;
+	}
+	
 	/*
      * Simple methode utilitaire permettant de faire la correspondance (le
      * mapping) entre une ligne issue de la table des food (un
@@ -97,10 +127,10 @@ public class FoodDAOImpl implements FoodDAO {
      */
     private static Food map( ResultSet resultSet ) throws SQLException {
         Food food = new Food();
-        food.setId( resultSet.getLong( "id" ) );
+        food.setId( resultSet.getLong( "id_food" ) );
         food.setUrl( resultSet.getString( "url" ) );
         food.setCode( resultSet.getString( "code" ) );
-        food.setProductName( resultSet.getString( "productName" ) );
+        food.setProductName( resultSet.getString( "product_name" ) );
         return food;
     }
 }
