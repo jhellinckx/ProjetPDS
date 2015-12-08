@@ -1,57 +1,59 @@
+# Extern JAR dependencies
+EXTERNLIBS := libs
 
-JFLAGS = -g -cp "$(LIBDIR)/*:."
+# Find all the java files in dir
+FIND_JAVA_FILES = $(wildcard $(dir)/*.java)
 
-JC = javac
+# Dirs containing server sources files
+SERV_SOURCES_DIRS := nioserver items dao
 
-# Clear any definitions for .java and .class suffixes
-.SUFFIXES: .java .class
+# For each directory in SERV_SOURCES_DIRS, get all its java files
+SERV_SOURCES := $(foreach dir,${SERV_SOURCES_DIRS},${FIND_JAVA_FILES}) 
 
-.java.class:
-	$(JC) $(JFLAGS) $*.java 
+# Replace .java by .class in SERV_SOURCES
+SERV_DEPENDENCIES := $(patsubst %.java,%.class,${SERV_SOURCES})
 
-PKG=nioserver
+CLI_SOURCES_DIRS :=
+CLI_SOURCES := $(foreach dir,${CLI_SOURCES_DIRS},${FIND_JAVA_FILES}) 
+CLI_DEPENDENCIES := $(patsubst %.java,%.class,${CLI_SOURCES})
 
-CLASSES = \
-		$(PKG)/Constants.java \
-		$(PKG)/Message.java \
-		$(PKG)/InStream.java \
-		$(PKG)/OutStream.java \
-		$(PKG)/StreamController.java \
-		$(PKG)/ServerShutdownHook.java \
-		$(PKG)/AbstractNIOServer.java \
-		Test.java \
-		AppliServer.java \
-		items/User.java \
-		items/Food.java \
-		dao/DAOException.java \
-		dao/DAOConfigurationException.java \
-		dao/DAOFactory.java \
-		dao/DAOUtilitaire.java \
-		dao/UserDAO.java \
-		dao/UserDAOImpl.java \
-		dao/FoodDAO.java \
-		dao/FoodDAOImpl.java \
-		doTest.java \
-		testDAO.java 
+# Set compiler & its flags
+ifeq (${JFLAGS},)
+	JFLAGS = -g -cp "${EXTERNLIBS}/*:."
+endif
 
-# JAR dependencies
-LIBDIR = libs
+ifeq (${JC},)
+	JC = javac
+endif
 
-# Default target entry
-default: classes
+# Set dummy rules
+.PHONY: all client server test
 
-classes: $(CLASSES:.java=.class)
+# Default
+all: client server test
 
+client: ${CLI_DEPENDENCIES}
+
+server: ${SERV_DEPENDENCIES} AppliServer.class
+
+test: Test.class doTest.class testDAO.class
+
+# Pattern substitution, to build MyClass.class we need MyClass.java. 
+# To achieve that, execute the task below. $^ = %.java
+%.class: %.java
+	${JC} ${JFLAGS} $^
+
+# Recursively delete all .class files in directory
 clean:
-		rm *.class && rm -f $(PKG)/*.class && rm dao/*.class && rm items/*.class
+		rm -f $(shell find . -name "*.class")
 
-runclient: 
-		java -cp "$(LIBDIR)/*:." Test
+runclient: client
+		java -cp "${EXTERNLIBS}/*:." Test
 
-runserver:
-		java -cp "$(LIBDIR)/*:." AppliServer
+runserver: server
+		java -cp "${EXTERNLIBS}/*:." AppliServer
 
-runtestDAO:
-		java -cp "$(LIBDIR)/*:." testDAO
+runtestDAO: test
+		java -cp "${EXTERNLIBS}/*:." testDAO
 
 	
