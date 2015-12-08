@@ -29,7 +29,7 @@ public class doTest {
 		User user = new User("testTrol","K");
 		user.addToDeppreciatedFood(foodPref);
 		uDao.create(user);
-		/*uDao.delete(user);*/
+		uDao.delete(user);
 	}
 
 }
