@@ -180,7 +180,7 @@ CREATE TABLE db_appli.Food(
 )ENGINE=INNODB;
 
 
-LOAD DATA LOCAL INFILE '/home/mrmmtb/Downloads/en.openfoodfacts.org.products.csv' #CHEMIN à modif
+LOAD DATA LOCAL INFILE '/home/enders/Bureau/en.openfoodfacts.org.products.csv' #CHEMIN à modif
 INTO TABLE Food
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES

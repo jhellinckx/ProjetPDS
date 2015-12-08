@@ -7,6 +7,7 @@ import dao.FoodDAO;
 import dao.UserDAO;
 import items.Food;
 import items.User;
+import items.Random_user_generator;
 
 public class doTest {
 	
@@ -30,6 +31,14 @@ public class doTest {
 		user.addToDeppreciatedFood(foodPref);
 		uDao.create(user);
 		uDao.delete(user);
+
+	}
+
+	public static void test_user_generator()
+	{
+		Random_user_generator r = new Random_user_generator(20); //arg = quantity of users wanted
+		System.out.print(r.SQL_generateInsertionInstruction());
+
 	}
 
 }
