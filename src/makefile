@@ -45,15 +45,19 @@ test: Test.class doTest.class testDAO.class
 
 # Recursively delete all .class files in directory
 clean:
-		rm -f $(shell find . -name "*.class")
+	rm -f $(shell find . -name "*.class")
 
-runclient: client
-		java -cp "${EXTERNLIBS}/*:." Test
+# Get rid of test dependency when real client implemented !
+runclient: client test
+	java -cp "${EXTERNLIBS}/*:." Test
 
 runserver: server
-		java -cp "${EXTERNLIBS}/*:." AppliServer
+	java -cp "${EXTERNLIBS}/*:." AppliServer
 
 runtestDAO: test
-		java -cp "${EXTERNLIBS}/*:." testDAO
+	java -cp "${EXTERNLIBS}/*:." testDAO
+
+rundummyclient: test
+	java -cp "${EXTERNLIBS}/*:." Test
 
 	
