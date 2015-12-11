@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home"
+            android:textColor="@color/greenfont"/>
+        <item
+            android:id="@+id/nav_data"
+            android:icon="@drawable/ic_data"
+            android:title="Personal Data"
+            android:textColor="@color/greenfont"/>
+        <item
+            android:id="@+id/nav_recommend"
+            android:icon="@drawable/ic_recommend"
+            android:title="Recommendation"
+            android:textColor="@color/greenfont"/>
+        <item
+            android:id="@+id/nav_rating"
+            android:icon="@drawable/ic_rating"
+            android:title="Ratings"
+            android:textColor="@color/greenfont"/>
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_history"
+            android:title="History"
+            android:textColor="@color/greenfont"/>
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_camera"
+            android:title="Barcode Scanner"
+            android:textColor="@color/greenfont"/>
+    </group>
+
+</menu>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="navdraw">
+        <item>Home</item>
+        <item>Personal Data</item>
+        <item>History</item>
+        <item>Rating</item>
+        <item>Recommendation</item>
+    </array>
+
+    <array name="homenav">
+        <item>@string/homeitem1</item>
+        <item>@string/homeitem2</item>
+        <item>@string/homeitem3</item>
+        <item>@string/homeitem4</item>
+    </array>
+</resources>
