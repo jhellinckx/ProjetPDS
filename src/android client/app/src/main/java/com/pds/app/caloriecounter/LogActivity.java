@@ -2,12 +2,15 @@ package com.pds.app.caloriecounter;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
+import org.json.simple.JSONObject;
 
-public class LogActivity extends AppCompatActivity {
+import java.io.IOException;
 
+public class LogActivity extends NotifiableAppCompatActivity {
     private Button signup = null;
     private Button login = null;
 
@@ -18,7 +21,6 @@ public class LogActivity extends AppCompatActivity {
                 //Todo Send to server and check id. true ? : next activity,show error;
 
                 Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-
                 startActivity(personalActivity);
             }
         });
@@ -35,6 +37,9 @@ public class LogActivity extends AppCompatActivity {
         });
     }
 
+    public void handleMessage(JSONObject msg){
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

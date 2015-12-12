@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.widget.FrameLayout;
 import android.view.View;
 
-public abstract class HomeActivity extends AppCompatActivity
+import org.json.simple.JSONObject;
+
+public abstract class HomeActivity extends NotifiableAppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected FrameLayout frameLayout;
@@ -31,6 +33,10 @@ public abstract class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    public void handleMessage(JSONObject msg){
 
     }
 
