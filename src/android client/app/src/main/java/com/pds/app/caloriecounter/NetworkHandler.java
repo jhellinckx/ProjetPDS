@@ -13,9 +13,9 @@ import org.json.simple.parser.ParseException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +29,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class NetworkHandler {
     private static NetworkHandler _instance;
     private Context _context;
-    private Listener _listener;
-    private Sender _sender;
     private List<JSONObject> _in;
     private List<JSONObject> _out;
     private ActivityNetworkCallback _callback;
     private HashMap<String, ArrayList<String>> _messagesOnHold;
-    private Socket _socket;
+
+    protected Socket _socket;
+    protected Listener _listener;
+    protected Sender _sender;
 
     public static String HOST = "localhost";
     public static int PORT = 2015;
@@ -45,10 +46,11 @@ public class NetworkHandler {
         _context = context;
         _listener = new Listener(this);
         _sender = new Sender(this);
-        _in = new LinkedList<JSONObject>();
-        _out = new LinkedList<JSONObject>();
+        _in = new LinkedList<>();
+        _out = new LinkedList<>();
         _socket = null;
         _callback = new ActivityNetworkCallback(this);
+        ((Application)context.getApplicationContext()).registerActivityLifecycleCallbacks(_callback);
         _messagesOnHold = new HashMap<String, ArrayList<String>>();
     }
 
@@ -59,24 +61,38 @@ public class NetworkHandler {
         return _instance;
     }
 
-    private void launchThreads(){
-        new Thread(_sender).start();
+    public void launchThreads(){
         new Thread(_listener).start();
+        new Thread(_sender).start();
     }
 
-    public void connect() throws IOException{
-        connect(HOST, PORT);
-    }
+    private void dispatch(JSONObject msg){
+        try{
+            /* Assert message validity */
+            if(!msg.containsKey("RequestType"))
+                throw new IOException("Network message has to contain a RequestType key.");
+            if(!msg.containsKey("Data"))
+                throw new IOException("Network message has to contain a Data key");
 
-    public void connect(String host, int port) throws IOException{
-        if(_socket == null || _socket.isClosed()){
-            _socket = new Socket(host, port);
-            launchThreads();
+            String request = (String) msg.get("RequestType");
+            if(request.equals("CONNECTION_NOTIFIER")){
+                _doDispatch(msg, LogActivity.class);
+            }
+        }
+        catch(IOException e){
+            Log.d("Dispatcher, : ", e.getMessage());
         }
     }
 
-    public Socket socket(){
-        return _socket;
+    private <T extends NotifiableActivity> void _doDispatch(JSONObject msg, Class<T> classname){
+        NotifiableActivity dest = (NotifiableActivity)_callback.getActivityByName(classname.getName());
+        if(dest == null){
+            //TODO : Activity not created, push JSONObject in HashMap
+            Log.d("BIGWTFLOL","slt");
+        }
+        else{
+            dest.handleMessage(msg);
+        }
     }
 
     public void stop(){
@@ -147,15 +163,33 @@ public class NetworkHandler {
             }
         }
 
+        private void _doConnect() throws IOException{
+            synchronized (_handler) {
+                if (_handler._socket == null || _handler._socket.isClosed()) {
+                    _handler._socket = new Socket(_handler.HOST, _handler.PORT);
+                }
+                _handler.notify();
+            }
+            JSONObject connectionNotifier = new JSONObject();
+            connectionNotifier.put("RequestType","CONNECTION_NOTIFIER");
+            connectionNotifier.put("Data","CONNECTION_SUCCESS");
+            _handler.dispatch(connectionNotifier);
+        }
+
         public void run(){
             try {
-                if (_handler.socket() == null || _handler.socket().isClosed())
-                    throw new IOException("Listener needs a working connection before running.");
-                _inStream = new DataInputStream(_handler.socket().getInputStream());
+                _doConnect();
+                _inStream = new DataInputStream(_handler._socket.getInputStream());
                 _run = true;
                 while (isRunning()) {
                     _doRead();
                 }
+            }
+            catch(ConnectException e){
+                JSONObject connectionNotifier = new JSONObject();
+                connectionNotifier.put("RequestType","CONNECTION_NOTIFIER");
+                connectionNotifier.put("Data","CONNECTION_FAILURE");
+                _handler.dispatch(connectionNotifier);
             }
             catch(IOException e){
                 Log.d("Listener : ", e.getMessage());
@@ -188,9 +222,14 @@ public class NetworkHandler {
 
         public void run(){
             try {
-                if (_handler.socket() == null || _handler.socket().isClosed())
-                    throw new IOException("Sender needs a working connection before running.");
-                _outStream = new DataOutputStream(_handler.socket().getOutputStream());
+                synchronized (_handler) {
+                    if (_handler._socket == null || _handler._socket.isClosed()) {
+                        try {
+                            _handler.wait();
+                        } catch (InterruptedException e) {}
+                    }
+                }
+                _outStream = new DataOutputStream(_handler._socket.getOutputStream());
                 _run = true;
                 while (isRunning()) {
                     try {
@@ -230,43 +269,21 @@ public class NetworkHandler {
         }
     }
 
-    private void dispatch(JSONObject msg){
-        try{
-            if(!msg.containsKey("RequestType"))
-                throw new IOException("Network message has to contain a RequestType key.");
-            if(!msg.containsKey("Data"))
-                throw new IOException("Network message has to contain a Data key");
-            String request = (String) msg.get("RequestType");
-            NotifiableAppCompatActivity dest = null;
-            if(request.equals("login")){
-                dest = (NotifiableAppCompatActivity)_callback.getActivityByName(LogActivity.class.getName());
-               if(dest == null){
-                   //TODO
-               }
-               else{
-                   dest.handleMessage(msg);
-               }
-
-            }
-        }
-        catch(IOException e){
-            Log.d("Dispatcher, : ", e.getMessage());
-        }
-    }
-
     private class ActivityNetworkCallback implements Application.ActivityLifecycleCallbacks{
         private NetworkHandler _handler;
         private Activity _front;
+        private Object _frontLock;
         private List<Activity> _createdActivities;
 
         public ActivityNetworkCallback(NetworkHandler handler){
             _handler = handler;
             _front = null;
+            _frontLock = new Object();
             _createdActivities = new LinkedList<Activity>();
         }
 
         public Activity getFrontActivity(){
-            synchronized(_front){
+            synchronized(_frontLock){
                 return _front;
             }
         }
@@ -284,6 +301,7 @@ public class NetworkHandler {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            Log.d("HOOKD CREATE",activity.getClass().getName());
             synchronized (_createdActivities){
                 _createdActivities.add(activity);
             }
@@ -292,6 +310,7 @@ public class NetworkHandler {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
+            Log.d("HOOKD DESTROY",activity.getClass().getName());
             synchronized(_createdActivities){
                 _createdActivities.remove(activity);
             }
@@ -299,14 +318,14 @@ public class NetworkHandler {
 
         @Override
         public void onActivityResumed(Activity activity) {
-            synchronized(_front){
+            synchronized(_frontLock){
                 _front = activity;
             }
         }
 
         @Override
         public void onActivityPaused(Activity activity) {
-            synchronized (_front){
+            synchronized (_frontLock){
                 if(_front.equals(activity))
                     _front = null;
             }

@@ -60,4 +60,13 @@
         android:background="@drawable/background"
         android:clickable="false" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/connectionState"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="56dp"
+        android:text="Connecting..." />
+
 </RelativeLayout>

@@ -1,18 +1,18 @@
 package com.pds.app.caloriecounter;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
+import android.widget.TextView;
+
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-
-public class LogActivity extends NotifiableAppCompatActivity {
+public class LogActivity extends NotifiableActivity {
     private Button signup = null;
     private Button login = null;
+    private TextView connectionState = null;
 
     private void initButtonListener(){
         signup.setOnClickListener(new View.OnClickListener() {
@@ -38,8 +38,27 @@ public class LogActivity extends NotifiableAppCompatActivity {
     }
 
     public void handleMessage(JSONObject msg){
+        Log.d("HANDLE LOG MESSAGE : ",msg.toString());
+        String request = (String) msg.get("RequestType");
+        if(request.equals("CONNECTION_NOTIFIER")){
+            String res = (String) msg.get("Data");
+            if(res.equals("CONNECTION_SUCCESS")){
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        connectionState.setText("connection success");
+                    }
+                });
+            } else if (res.equals("CONNECTION_FAILURE")) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        connectionState.setText("connection failure");
+                    }
+                });
+            }
+        }
 
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +67,11 @@ public class LogActivity extends NotifiableAppCompatActivity {
         signup = (Button) findViewById(R.id.signup);
         login = (Button) findViewById(R.id.login);
 
+        connectionState = (TextView) findViewById(R.id.connectionState);
+
         initButtonListener();
+
+        NetworkHandler.getInstance(getApplicationContext()).launchThreads();
+
     }
 }
