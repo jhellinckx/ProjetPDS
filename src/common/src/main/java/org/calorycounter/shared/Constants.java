@@ -1,11 +1,13 @@
-package nioserver;
+package org.calorycounter.shared;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
+import java.net.InetAddress;
 
 public final class Constants {
 	public static final int PORT = 2015;
-	public static final String HOST = "localhost";
+	public static final String HOST = "127.0.0.1";
+	public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 	public static final int MAX_CLIENTS = 100;
 	public static final int BUFFER_SIZE = 1000;
 	public static final int INT_SIZE = 4;
@@ -25,15 +27,23 @@ public final class Constants {
 	public static final String O_IN = OC_CYAN + " >> " + OC_RESET;
 	public static final String O_OUT = OC_PURPLE + " << " + OC_RESET;
 
+	public static String localhost(){
+		try{
+			return InetAddress.getLocalHost().getHostAddress();
+		}catch(Exception e){
+			return "";
+		}
+	}
+
 	public static String repr(Object obj){
 		return "[" + obj.getClass().getName() + "]";
 	}
 
 	public static String errorMessage(String msg, Object obj){
-		return repr(obj) + Constants.OC_RED + " Error : " + msg + Constants.OC_RESET;  
+		return repr(obj) + OC_RED + " Error : " + msg + OC_RESET;  
 	}
 
 	public static String errorMessage(String msg, String str){
-		return "[" + str +"]" + Constants.OC_RED + " Error : " + msg + Constants.OC_RESET;  
+		return "[" + str +"]" + OC_RED + " Error : " + msg + OC_RESET;  
 	}
 }

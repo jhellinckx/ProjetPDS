@@ -1,5 +1,7 @@
 package com.pds.app.caloriecounter;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +19,7 @@ public class LogActivity extends NotifiableActivity {
     private void initButtonListener(){
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Todo Send to server and check id. true ? : next activity,show error;
 
                 Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
@@ -27,11 +29,10 @@ public class LogActivity extends NotifiableActivity {
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Todo Send to server and check id. true ? : next activity,show error;
 
                 Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-
                 startActivity(personalActivity);
             }
         });
@@ -46,12 +47,14 @@ public class LogActivity extends NotifiableActivity {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         connectionState.setText("connection success");
+                        connectionState.setTextColor(Color.GREEN);
                     }
                 });
             } else if (res.equals("CONNECTION_FAILURE")) {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         connectionState.setText("connection failure");
+                        connectionState.setTextColor(Color.RED);
                     }
                 });
             }

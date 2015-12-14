@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -10,6 +11,8 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        //multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -17,13 +20,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+     lintOptions{
+        abortOnError false
+    }
 }
 
 dependencies {
+    compile 'com.android.support:multidex:1.0.0'
+    compile project(":common")
+    def commonDir = "../../common"
+    def commonExternLibsDir = "$commonDir/libs"
+    def commonLocalLibsDir = "$commonDir/build/libs"
+    compile fileTree(dir: "$commonLocalLibsDir", include: ['*.jar'])
+    compile fileTree(dir: "$commonExternLibsDir", include: ['*.jar'])
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.journeyapps:zxing-android-embedded:3.0.3@aar'
     compile 'com.google.zxing:core:3.2.0'
+
 }

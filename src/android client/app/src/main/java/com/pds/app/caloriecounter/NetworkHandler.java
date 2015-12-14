@@ -10,10 +10,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -21,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import org.calorycounter.shared.Constants;
 
-/**
+/*
  * Created by jhellinckx on 12/12/15.
  */
 public class NetworkHandler {
@@ -37,10 +39,6 @@ public class NetworkHandler {
     protected Socket _socket;
     protected Listener _listener;
     protected Sender _sender;
-
-    public static String HOST = "localhost";
-    public static int PORT = 2015;
-    public static Charset ENCODING = UTF_8;
 
     private NetworkHandler(Context context) {
         _context = context;
@@ -88,7 +86,6 @@ public class NetworkHandler {
         NotifiableActivity dest = (NotifiableActivity)_callback.getActivityByName(classname.getName());
         if(dest == null){
             //TODO : Activity not created, push JSONObject in HashMap
-            Log.d("BIGWTFLOL","slt");
         }
         else{
             dest.handleMessage(msg);
@@ -152,7 +149,7 @@ public class NetworkHandler {
                 int bytesRead = _inStream.read(rawMsg, 0, msgLength);
                 if(bytesRead != msgLength)
                     throw new IOException("could not read a message of given size.");
-                String msg = new String(rawMsg, ENCODING);
+                String msg = new String(rawMsg, Constants.ENCODING);
                 _handler.dispatch((JSONObject)_parser.parse(msg));
             }
             catch(IOException e){
@@ -166,7 +163,7 @@ public class NetworkHandler {
         private void _doConnect() throws IOException{
             synchronized (_handler) {
                 if (_handler._socket == null || _handler._socket.isClosed()) {
-                    _handler._socket = new Socket(_handler.HOST, _handler.PORT);
+                    _handler._socket = new Socket(Constants.EMULATOR_DEVICE_ADDRESS, Constants.PORT);
                 }
                 _handler.notify();
             }
@@ -246,7 +243,7 @@ public class NetworkHandler {
         }
 
         private void _doWrite(JSONObject msg) {
-            byte[] rawMsg = msg.toString().getBytes(ENCODING);
+            byte[] rawMsg = msg.toString().getBytes(Constants.ENCODING);
             try {
                 _outStream.writeInt(rawMsg.length);
                 _outStream.write(rawMsg, 0, rawMsg.length);
@@ -301,7 +298,6 @@ public class NetworkHandler {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            Log.d("HOOKD CREATE",activity.getClass().getName());
             synchronized (_createdActivities){
                 _createdActivities.add(activity);
             }
@@ -310,7 +306,6 @@ public class NetworkHandler {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            Log.d("HOOKD DESTROY",activity.getClass().getName());
             synchronized(_createdActivities){
                 _createdActivities.remove(activity);
             }
@@ -326,8 +321,10 @@ public class NetworkHandler {
         @Override
         public void onActivityPaused(Activity activity) {
             synchronized (_frontLock){
-                if(_front.equals(activity))
-                    _front = null;
+                if(_front != null){
+                    if(_front.equals(activity))
+                        _front = null;
+                }
             }
         }
 

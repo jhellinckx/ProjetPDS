@@ -2,10 +2,12 @@ import java.net.ConnectException;
 import org.json.simple.JSONObject;
 import java.net.*;
 import java.io.*;
-import nioserver.Constants;
+import org.calorycounter.shared.Constants;
+import java.net.InetAddress;
 
 public class Test{
 	public static void main(String[] args){
+
 		try{
 			Socket client = new Socket(Constants.HOST, Constants.PORT);
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());

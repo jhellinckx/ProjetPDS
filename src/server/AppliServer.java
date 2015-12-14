@@ -1,7 +1,7 @@
 import org.json.simple.JSONObject;
-import nioserver.Message;
+import org.calorycounter.shared.Constants;
 import nioserver.AbstractNIOServer;
-import nioserver.Constants;
+import nioserver.Message;
 
 public class AppliServer extends AbstractNIOServer{
 

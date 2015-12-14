@@ -1,10 +1,8 @@
 package nioserver;
+import org.calorycounter.shared.Constants;
 
 import org.json.simple.JSONObject;
 import java.io.IOException;
-import nioserver.StreamController;
-import nioserver.ServerShutdownHook;
-import nioserver.Message;
 
 public abstract class AbstractNIOServer{
 	private StreamController _controller;

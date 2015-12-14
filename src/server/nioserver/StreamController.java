@@ -1,4 +1,5 @@
 package nioserver;
+import org.calorycounter.shared.Constants;
 
 import java.io.IOException;
 import java.util.LinkedList;

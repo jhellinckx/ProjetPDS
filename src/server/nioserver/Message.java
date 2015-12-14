@@ -1,4 +1,5 @@
 package nioserver;
+import org.calorycounter.shared.Constants;
 
 import java.net.Socket;
 import org.json.simple.JSONObject;

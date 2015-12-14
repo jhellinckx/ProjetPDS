@@ -1,4 +1,5 @@
 package nioserver;
+import org.calorycounter.shared.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
