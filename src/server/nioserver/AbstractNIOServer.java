@@ -35,8 +35,8 @@ public abstract class AbstractNIOServer{
 		this.setRunning();
 		_controller.startStreams();
 		Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(this, this._controller)));
-		System.out.println("Server " + Constants.OC_GREEN + Constants.HOST + Constants.OC_RESET
-			+" launched. Listening on port " + Constants.OC_YELLOW + Constants.PORT + Constants.OC_RESET + ".");
+		System.out.println("Server " + Constants.color.GREEN + Constants.network.HOST + Constants.color.RESET
+			+" launched. Listening on port " + Constants.color.YELLOW + Constants.network.PORT + Constants.color.RESET + ".");
 		this.listen();
 	}
 

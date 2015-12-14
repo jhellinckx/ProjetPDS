@@ -67,13 +67,15 @@ public class NetworkHandler {
     private void dispatch(JSONObject msg){
         try{
             /* Assert message validity */
-            if(!msg.containsKey("RequestType"))
-                throw new IOException("Network message has to contain a RequestType key.");
-            if(!msg.containsKey("Data"))
-                throw new IOException("Network message has to contain a Data key");
+            if(!msg.containsKey(Constants.network.REQUEST_TYPE))
+                throw new IOException("Network message has to contain a " +
+                        Constants.network.REQUEST_TYPE +" key.");
+            if(!msg.containsKey(Constants.network.DATA))
+                throw new IOException("Network message has to contain a " +
+                        Constants.network.DATA + " key");
 
-            String request = (String) msg.get("RequestType");
-            if(request.equals("CONNECTION_NOTIFIER")){
+            String request = (String) msg.get(Constants.network.REQUEST_TYPE);
+            if(request.equals(Constants.network.CONNECTION_STATUS)){
                 _doDispatch(msg, LogActivity.class);
             }
         }
@@ -149,7 +151,7 @@ public class NetworkHandler {
                 int bytesRead = _inStream.read(rawMsg, 0, msgLength);
                 if(bytesRead != msgLength)
                     throw new IOException("could not read a message of given size.");
-                String msg = new String(rawMsg, Constants.ENCODING);
+                String msg = new String(rawMsg, Constants.network.ENCODING);
                 _handler.dispatch((JSONObject)_parser.parse(msg));
             }
             catch(IOException e){
@@ -163,13 +165,13 @@ public class NetworkHandler {
         private void _doConnect() throws IOException{
             synchronized (_handler) {
                 if (_handler._socket == null || _handler._socket.isClosed()) {
-                    _handler._socket = new Socket(Constants.EMULATOR_DEVICE_ADDRESS, Constants.PORT);
+                    _handler._socket = new Socket(Constants.network.EMULATOR_DEVICE_ADDRESS, Constants.network.PORT);
                 }
                 _handler.notify();
             }
             JSONObject connectionNotifier = new JSONObject();
-            connectionNotifier.put("RequestType","CONNECTION_NOTIFIER");
-            connectionNotifier.put("Data","CONNECTION_SUCCESS");
+            connectionNotifier.put(Constants.network.REQUEST_TYPE,Constants.network.CONNECTION_STATUS);
+            connectionNotifier.put(Constants.network.DATA, Constants.network.CONNECTION_SUCCESS);
             _handler.dispatch(connectionNotifier);
         }
 
@@ -184,8 +186,8 @@ public class NetworkHandler {
             }
             catch(ConnectException e){
                 JSONObject connectionNotifier = new JSONObject();
-                connectionNotifier.put("RequestType","CONNECTION_NOTIFIER");
-                connectionNotifier.put("Data","CONNECTION_FAILURE");
+                connectionNotifier.put(Constants.network.REQUEST_TYPE,Constants.network.CONNECTION_STATUS);
+                connectionNotifier.put(Constants.network.DATA, Constants.network.CONNECTION_FAILURE);
                 _handler.dispatch(connectionNotifier);
             }
             catch(IOException e){
@@ -243,7 +245,7 @@ public class NetworkHandler {
         }
 
         private void _doWrite(JSONObject msg) {
-            byte[] rawMsg = msg.toString().getBytes(Constants.ENCODING);
+            byte[] rawMsg = msg.toString().getBytes(Constants.network.ENCODING);
             try {
                 _outStream.writeInt(rawMsg.length);
                 _outStream.write(rawMsg, 0, rawMsg.length);

@@ -29,6 +29,6 @@ public class ServerShutdownHook implements Runnable{
 			catch(InterruptedException e){}
 		}
 		this._controller.disconnectAll();
-		System.out.println("Server shutted down "+Constants.OC_GREEN+"successfully " +Constants.OC_RESET+"!");
+		System.out.println("Server shutted down "+Constants.color.GREEN+"successfully " +Constants.color.RESET+"!");
 	}
 }

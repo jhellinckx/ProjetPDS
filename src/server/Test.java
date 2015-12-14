@@ -9,22 +9,22 @@ public class Test{
 	public static void main(String[] args){
 
 		try{
-			Socket client = new Socket(Constants.HOST, Constants.PORT);
+			Socket client = new Socket(Constants.network.HOST, Constants.network.PORT);
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			JSONObject greetings = new JSONObject();
 			greetings.put("greetings","slt sa va??");
-			byte[] data = greetings.toString().getBytes(Constants.ENCODING);
+			byte[] data = greetings.toString().getBytes(Constants.network.ENCODING);
 			out.writeInt(data.length);
 			out.write(data, 0, data.length);
 			DataInputStream in = new DataInputStream(client.getInputStream());
 			int size = in.readInt();
 			byte[] inMsg = new byte[size];
 			in.read(inMsg, 0, size);
-			System.out.println("Server response : "+new String(inMsg,Constants.ENCODING));
+			System.out.println("Server response : "+new String(inMsg,Constants.network.ENCODING));
 		}
 		catch(ConnectException e){
-			System.out.println("Could not connect to " + Constants.OC_GREEN + Constants.HOST + Constants.OC_RESET
-			+":" + Constants.OC_YELLOW + Constants.PORT + Constants.OC_RESET + ". Server maybe offline ?");
+			System.out.println("Could not connect to " + Constants.color.GREEN + Constants.network.HOST + Constants.color.RESET
+			+":" + Constants.color.YELLOW + Constants.network.PORT + Constants.color.RESET + ". Server maybe offline ?");
 		}
 		catch(IOException e){
 			e.printStackTrace();

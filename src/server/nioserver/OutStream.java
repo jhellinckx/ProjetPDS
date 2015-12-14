@@ -28,7 +28,7 @@ public class OutStream implements Runnable{
 		}
 		if(Constants.SHOW_LOG){
 			System.out.println(Constants.repr(this) + " " + msg.socket().getRemoteSocketAddress().toString()
-				+ Constants.O_OUT + msg.toString());
+				+ Constants.OUT + msg.toString());
 		}
 	}
 

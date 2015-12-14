@@ -21,11 +21,11 @@ public class InStream implements Runnable{
 
 	public InStream(StreamController controller){
 		try{
-			this._msgDataBuffer = ByteBuffer.allocate(Constants.BUFFER_SIZE);
-			this._msgSizeBuffer = ByteBuffer.allocate(Constants.INT_SIZE);
+			this._msgDataBuffer = ByteBuffer.allocate(Constants.network.BUFFER_SIZE);
+			this._msgSizeBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE);
 			this._acceptChannel = ServerSocketChannel.open();
 			this._acceptChannel.configureBlocking(false);
-			this._acceptChannel.socket().bind(new InetSocketAddress(Constants.HOST, Constants.PORT));
+			this._acceptChannel.socket().bind(new InetSocketAddress(Constants.network.HOST, Constants.network.PORT));
 			this._selector = Selector.open();
 			this._acceptChannel.register(this._selector, SelectionKey.OP_ACCEPT);
 			this._controller = controller;
@@ -44,7 +44,7 @@ public class InStream implements Runnable{
 			if(Constants.SHOW_LOG){
 				System.out.println(Constants.repr(this) + " " 
 					+ clientChannel.socket().getRemoteSocketAddress().toString() 
-					+ Constants.OC_YELLOW + " connected" + Constants.OC_RESET);
+					+ Constants.color.YELLOW + " connected" + Constants.color.RESET);
 			}
 		}
 		catch(IOException e){
@@ -59,7 +59,7 @@ public class InStream implements Runnable{
 			if(Constants.SHOW_LOG){
 				System.out.println(Constants.repr(this) + " " 
 					+ clientChannel.socket().getRemoteSocketAddress().toString() 
-					+ Constants.OC_YELLOW + " disconnected" + Constants.OC_RESET);
+					+ Constants.color.YELLOW + " disconnected" + Constants.color.RESET);
 			}
 		} 
 		catch(IOException e){
@@ -110,7 +110,7 @@ public class InStream implements Runnable{
 		Message msg = new Message(clientChannel.socket(), this._msgDataBuffer.array(), msgSize);
 		if(Constants.SHOW_LOG){
 			System.out.println(Constants.repr(this) + " " + clientChannel.socket().getRemoteSocketAddress().toString() 
-				+ Constants.O_IN + msg.toString());
+				+ Constants.IN + msg.toString());
 		}
 		this._controller.addIncomingMessage(msg);
 	}
