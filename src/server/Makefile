@@ -32,7 +32,7 @@ define buildInit
 endef
 
 define buildEnd
-	echo "\033[1;35mFinished building $@ for server\033[0m"
+	@echo "\033[1;35mFinished building $@ for server\033[0m"
 endef
 
 # Set compiler & its flags
@@ -54,7 +54,7 @@ server: common ${SERV_DEPENDENCIES}
 
 common:
 	$(call buildInit)
-	@cd ${COMMONDIR}; gradle build;\
+	@cd ${COMMONDIR}; gradle build
 	$(call buildEnd)
 
 
