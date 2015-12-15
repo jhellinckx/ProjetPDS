@@ -11,12 +11,14 @@ import java.util.Arrays;
 public class Message{
 	private Socket _clientSocket;
 	private ByteBuffer _dataBuffer;
+	private JSONObject _obj;
 
 	public Message(Socket clientSocket, byte[] dataBytes, int msgSize){
 		this._clientSocket = clientSocket;
 		this._dataBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE + msgSize);
 		this._dataBuffer.putInt(msgSize);
 		this._dataBuffer.put(dataBytes, 0, msgSize);
+		this._obj = null;
 	}
 
 	public Message(Socket clientSocket, JSONObject obj){
@@ -25,7 +27,10 @@ public class Message{
 		this._dataBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE + dataBytes.length);
 		this._dataBuffer.putInt(dataBytes.length);
 		this._dataBuffer.put(dataBytes);
+		this._obj = null;
 	}
+
+
 
 	/* Returns byte array of the JSON object -- thus ignoring the size header. */
 	private byte[] rawObject() {
@@ -39,8 +44,21 @@ public class Message{
 
 	public String toString(){ return new String(this.rawObject(), Constants.network.ENCODING); }
 
-	public JSONObject toJSON() throws ParseException { 
-		return (JSONObject)(new JSONParser()).parse(new String(this.rawObject(), Constants.network.ENCODING));
+	public JSONObject toJSON(){
+		if(this._obj == null){
+			try{
+				this._obj = (JSONObject)(new JSONParser()).parse(new String(this.rawObject(), Constants.network.ENCODING));
+			}
+			catch(ParseException e){
+				System.out.println(Constants.errorMessage(e.getMessage(), this));
+				this._obj = null;
+			}
+		}
+		return this._obj;
+	}
+
+	public void setJSON(JSONObject other){
+		this._obj = other;
 	}
 
 	public ByteBuffer raw(){ 

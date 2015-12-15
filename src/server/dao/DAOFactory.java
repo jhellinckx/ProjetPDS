@@ -95,15 +95,15 @@ public class DAOFactory {
     /*
      * Methodes de recuperation de l'implementation des differents DAO
      */
-    public UserDAO getUserDao() {
+    public UserDAO getUserDAO() {
         return new UserDAOImpl( this );
     }
     
-    public FoodDAO getFoodDao() {
+    public FoodDAO getFoodDAO() {
     	return new FoodDAOImpl( this );
     }
     
-    public UserPrefDAO getUserPrefDao() {
+    public UserPrefDAO getUserPrefDAO() {
     	return new UserPrefDAOImpl ( this );
     }
 }

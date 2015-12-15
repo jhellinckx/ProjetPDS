@@ -75,6 +75,7 @@ public class NetworkHandler {
                         Constants.network.DATA + " key");
 
             String request = (String) msg.get(Constants.network.REQUEST_TYPE);
+
             if(request.equals(Constants.network.CONNECTION_STATUS)){
                 _doDispatch(msg, LogActivity.class);
             }

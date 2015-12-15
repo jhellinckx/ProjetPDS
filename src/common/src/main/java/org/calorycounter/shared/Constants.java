@@ -4,15 +4,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
 import java.net.InetAddress;
 
+import org.json.simple.JSONObject;
+
 public final class Constants {
 
 	/* Network related constants, used to normalise communication */
 	public static final class network {
-		public static final String REQUEST_TYPE = "requesttype";
-		public static final String DATA = "data";
-		public static final String CONNECTION_STATUS = "co_status";
-		public static final String CONNECTION_SUCCESS = "co_success";
-		public static final String CONNECTION_FAILURE = "co_failure";
+		/* Network config */
 		public static final int PORT = 2015;
 		public static final String HOST = "127.0.0.1";
 		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
@@ -21,13 +19,46 @@ public final class Constants {
 		public static final int INT_SIZE = 4;
 		public static final Charset ENCODING = StandardCharsets.UTF_8;
 
+		/* Base keys of a JSON network message */
+		public static final String REQUEST_TYPE = "requesttype";
+		public static final String DATA = "data";
 
-		public static String localhost(){
+		/* Client connection handling */
+		public static final String CONNECTION_STATUS = "co_status";
+		public static final String CONNECTION_SUCCESS = "co_success";
+		public static final String CONNECTION_FAILURE = "co_failure";
+		
+		/* Login / signup */
+		public static final String USERNAME = "d_username";
+		public static final String PASSWORD = "d_password";
+
+		public static final String LOG_IN_REQUEST = "r_login";
+		public static final String LOG_IN_RESPONSE = "d_login_res";
+		public static final String LOG_IN_SUCCESS = "d_login_ok";
+		public static final String LOG_IN_FAILURE = "d_login_nope";
+
+		public static final String LOG_OUT_REQUEST = "r_logout";
+
+		public static final String SIGN_UP_REQUEST = "r_signup";
+		public static final String SIGN_UP_RESPONSE = "d_signup_res";
+		public static final String SIGN_UP_USERNAME_EXISTS = "d_sign_nope_usr_exists";
+		public static final String SIGN_UP_ALREADY_CONNECTED = "d_sign_nope_usr_connected";
+
+
+
+		public static String local_ip(){
 			try{
 				return InetAddress.getLocalHost().getHostAddress();
 			}catch(Exception e){
 				return "";
 			}
+		}
+
+		public static JSONObject networkJSON(String request, JSONObject data){
+			JSONObject obj = new JSONObject();
+			obj.put(REQUEST_TYPE, request);
+			obj.put(DATA, data);
+			return obj;
 		}
 	}
 

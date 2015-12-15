@@ -66,7 +66,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USERS_APPRECIATING_FOOD, false, food.getId() );
 			resultSet = preparedStatement.executeQuery();
-			userDAO = this.daoFactory.getUserDao();
+			userDAO = this.daoFactory.getUserDAO();
 			while (resultSet.next()) {
 				Long idUser = (long) resultSet.getInt("numUser");
 				User user = userDAO.findById(idUser);
@@ -110,7 +110,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_DE_APPRECIATED_FOOD, false, user.getId(), rank );
 			resultSet = preparedStatement.executeQuery();
-			foodDAO = this.daoFactory.getFoodDao();
+			foodDAO = this.daoFactory.getFoodDAO();
 			while (resultSet.next()) {
 				Long idFood = (long) resultSet.getInt("numFood");
 				Food food = foodDAO.findById( idFood );

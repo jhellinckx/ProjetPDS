@@ -42,7 +42,7 @@ public class UserDAOImpl implements UserDAO {
             /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
             if ( resultSet.next() ) {
                 user = map( resultSet );
-                userPrefDao = this.daoFactory.getUserPrefDao();
+                userPrefDao = this.daoFactory.getUserPrefDAO();
                 user.setApprecitedFood(userPrefDao.findUserAppreciatedFood(user)); 
                 user.setDepreciatedFood(userPrefDao.findUserDeppreciatedFood(user));
             }
@@ -71,7 +71,7 @@ public class UserDAOImpl implements UserDAO {
             /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
             if ( resultSet.next() ) {
                 user = map( resultSet );
-                userPrefDao = this.daoFactory.getUserPrefDao();
+                userPrefDao = this.daoFactory.getUserPrefDAO();
                 user.setApprecitedFood(userPrefDao.findUserAppreciatedFood(user)); 
                 user.setDepreciatedFood(userPrefDao.findUserDeppreciatedFood(user));
             }
@@ -139,7 +139,7 @@ public class UserDAOImpl implements UserDAO {
                 /* Puis initialisation de la propriete id du item User avec sa valeur */
                 user.setId( valeursAutoGenerees.getLong( 1 ) );
                 /* cree dans la table User_preferences les liaisons de l'User avec les food qu'il aime bien/aime pas */
-                userPrefDao = this.daoFactory.getUserPrefDao();
+                userPrefDao = this.daoFactory.getUserPrefDAO();
                 addUserPrefsInTable(userPrefDao, user);
                 }
              else {

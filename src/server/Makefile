@@ -23,6 +23,10 @@ SERV_SOURCES := $(foreach dir,${SERV_SOURCES_DIRS},${FIND_JAVA_FILES})
 # Replace .java by .class in SERV_SOURCES
 SERV_DEPENDENCIES := $(patsubst %.java,%.class,${SERV_SOURCES})
 
+SERV_PATHS = ":nioserver:items:dao:."
+
+SERV_CLASSPATHS = "${LOCALCOMMONLIBS}/*:${EXTERNCOMMONLIBS}/*:${EXTERNSERVERLIBS}/*${SERV_PATHS}"
+
 define buildInit
 	@echo "\033[1;35mBuilding $@ for server\033[0m"
 endef
@@ -33,7 +37,7 @@ endef
 
 # Set compiler & its flags
 ifeq (${JFLAGS},)
-	JFLAGS = -cp "${LOCALCOMMONLIBS}/*:${EXTERNCOMMONLIBS}/*:${EXTERNSERVERLIBS}/*:."
+	JFLAGS = -cp "${SERV_CLASSPATHS}"
 endif
 
 ifeq (${JC},)
