@@ -11,9 +11,12 @@ import android.widget.TextView;
 
 import org.json.simple.JSONObject;
 
+import static org.calorycounter.shared.Constants.network.*;
+
 public class LogActivity extends NotifiableActivity {
     private Button signup = null;
     private Button login = null;
+    private Button retry = null;
     private TextView connectionState = null;
 
     private void initButtonListener(){
@@ -36,45 +39,68 @@ public class LogActivity extends NotifiableActivity {
                 startActivity(personalActivity);
             }
         });
+        retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setWaitConnect();
+                retryConnect();
+            }
+        });
     }
 
     public void handleMessage(JSONObject msg){
-        Log.d("HANDLE LOG MESSAGE : ",msg.toString());
-        String request = (String) msg.get("RequestType");
-        if(request.equals("CONNECTION_NOTIFIER")){
-            String res = (String) msg.get("Data");
-            if(res.equals("CONNECTION_SUCCESS")){
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        connectionState.setText("connection success");
-                        connectionState.setTextColor(Color.GREEN);
-                    }
-                });
-            } else if (res.equals("CONNECTION_FAILURE")) {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        connectionState.setText("connection failure");
-                        connectionState.setTextColor(Color.RED);
-                    }
-                });
+        Log.d("LOGACTIVITY HANDLE MSG" + msg.toString(), "");
+        String request = (String) msg.get(REQUEST_TYPE);
+        if(request.equals(CONNECTION_STATUS)){
+            String res = (String) msg.get(DATA);
+            if(res.equals(CONNECTION_SUCCESS)){
+                setConnected();
+            } else if (res.equals(CONNECTION_FAILURE)) {
+                setDisconnected();
             }
         }
 
+    }
+
+    public void setConnected(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                connectionState.setText("Connection success");
+                connectionState.setTextColor(Color.GREEN);
+                retry.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public void setDisconnected(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                connectionState.setText("Connection failure");
+                connectionState.setTextColor(Color.RED);
+                retry.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void setWaitConnect(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                connectionState.setText("Connecting...");
+                connectionState.setTextColor(Color.GRAY);
+            }
+        });
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-
         signup = (Button) findViewById(R.id.signup);
         login = (Button) findViewById(R.id.login);
-
+        retry = (Button) findViewById(R.id.retry);
         connectionState = (TextView) findViewById(R.id.connectionState);
-
         initButtonListener();
 
-        NetworkHandler.getInstance(getApplicationContext()).launchThreads();
-
+        updateWithNetInfo(); //inherited from NotifiableActivity
     }
 }

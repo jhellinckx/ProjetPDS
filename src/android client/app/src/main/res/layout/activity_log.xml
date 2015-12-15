@@ -69,4 +69,14 @@
         android:layout_marginBottom="56dp"
         android:text="Connecting..." />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retry"
+        android:id="@+id/retry"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/background"
+        android:textColor="#ffffff" />
+
 </RelativeLayout>

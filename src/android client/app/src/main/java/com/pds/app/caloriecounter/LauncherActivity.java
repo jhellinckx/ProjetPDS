@@ -34,8 +34,9 @@ public class LauncherActivity extends Activity {
 
         //TODO Si on connait ses identifiants grâce au savedState, directement aller vers HomeActivity
 
-        NetworkHandler.getInstance(getApplicationContext()).launchThreads();
         initButtonListener();
+        NetworkHandler.getInstance(getApplicationContext()).launchThreads();
+
         Intent logActivity = new Intent(LauncherActivity.this, LogActivity.class);
         startActivity(logActivity);
     }

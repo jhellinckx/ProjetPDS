@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.calorycounter.shared.Constants;
+import static org.calorycounter.shared.Constants.network.*;
 
 /*
  * Created by jhellinckx on 12/12/15.
@@ -39,6 +39,7 @@ public class NetworkHandler {
     protected Socket _socket;
     protected Listener _listener;
     protected Sender _sender;
+    protected Object _socketLock;
 
     private NetworkHandler(Context context) {
         _context = context;
@@ -50,6 +51,8 @@ public class NetworkHandler {
         _callback = new ActivityNetworkCallback(this);
         ((Application)context.getApplicationContext()).registerActivityLifecycleCallbacks(_callback);
         _messagesOnHold = new HashMap<String, ArrayList<String>>();
+        _socketLock = new Object();
+
     }
 
     public static synchronized NetworkHandler getInstance(Context context){
@@ -64,24 +67,33 @@ public class NetworkHandler {
         new Thread(_sender).start();
     }
 
+    public void retryConnect(){
+        synchronized (_socketLock) {
+            _socketLock.notifyAll(); //Wake up Listener and Sender threads
+        }
+    }
+
+    public boolean isConnected(){
+        synchronized (_socketLock){
+            return (_socket == null) ? false : _socket.isConnected() && !_socket.isClosed();
+        }
+    }
+
     private void dispatch(JSONObject msg){
         try{
             /* Assert message validity */
-            if(!msg.containsKey(Constants.network.REQUEST_TYPE))
+            if(!msg.containsKey(REQUEST_TYPE) || !msg.containsKey(DATA))
                 throw new IOException("Network message has to contain a " +
-                        Constants.network.REQUEST_TYPE +" key.");
-            if(!msg.containsKey(Constants.network.DATA))
-                throw new IOException("Network message has to contain a " +
-                        Constants.network.DATA + " key");
+                        REQUEST_TYPE +" key and a " + DATA + " key.");
 
-            String request = (String) msg.get(Constants.network.REQUEST_TYPE);
+            String request = (String) msg.get(REQUEST_TYPE);
 
-            if(request.equals(Constants.network.CONNECTION_STATUS)){
+            if(request.equals(CONNECTION_STATUS)){
                 _doDispatch(msg, LogActivity.class);
             }
         }
         catch(IOException e){
-            Log.d("Dispatcher, : ", e.getMessage());
+            Log.d("Dispatcher", e.getMessage());
         }
     }
 
@@ -89,12 +101,18 @@ public class NetworkHandler {
         NotifiableActivity dest = (NotifiableActivity)_callback.getActivityByName(classname.getName());
         if(dest == null){
             //TODO : Activity not created, push JSONObject in HashMap
+            Log.d("cannot dispatch : ",msg.toString());
         }
         else{
             dest.handleMessage(msg);
         }
     }
 
+    /*
+        - Listener gets automatically interrupted on read() since socket is closed
+        - Sender gets interrupted by _out.notify()
+        - if Listener and Sender waiting for socket to connect, _socketLock.notifyAll() interrupts them both
+    */
     public void stop(){
         try {
             _socket.close();
@@ -103,7 +121,8 @@ public class NetworkHandler {
         }
         _listener.stop();
         _sender.stop();
-        _out.notify();
+        synchronized(_out) {_out.notify(); }
+        synchronized(_socketLock){_socketLock.notifyAll();}
     }
 
     public void addOutgoingMessage(JSONObject msg){
@@ -145,18 +164,15 @@ public class NetworkHandler {
             _parser = new JSONParser();
         }
 
-        private void _doRead(){
+        private void _doRead() throws IOException {
             try{
                 int msgLength = _inStream.readInt();
                 byte[] rawMsg = new byte[msgLength];
                 int bytesRead = _inStream.read(rawMsg, 0, msgLength);
                 if(bytesRead != msgLength)
                     throw new IOException("could not read a message of given size.");
-                String msg = new String(rawMsg, Constants.network.ENCODING);
+                String msg = new String(rawMsg, ENCODING);
                 _handler.dispatch((JSONObject)_parser.parse(msg));
-            }
-            catch(IOException e){
-                Log.d("Listener", e.getMessage());
             }
             catch(ParseException e){
                 Log.d("Listener", e.getMessage());
@@ -164,35 +180,44 @@ public class NetworkHandler {
         }
 
         private void _doConnect() throws IOException{
-            synchronized (_handler) {
+            synchronized (_handler._socketLock) {
                 if (_handler._socket == null || _handler._socket.isClosed()) {
-                    _handler._socket = new Socket(Constants.network.EMULATOR_DEVICE_ADDRESS, Constants.network.PORT);
+                    _handler._socket = new Socket(EMULATOR_DEVICE_ADDRESS, PORT);
                 }
-                _handler.notify();
+                _handler._socketLock.notify(); //notify Sender thread
             }
             JSONObject connectionNotifier = new JSONObject();
-            connectionNotifier.put(Constants.network.REQUEST_TYPE,Constants.network.CONNECTION_STATUS);
-            connectionNotifier.put(Constants.network.DATA, Constants.network.CONNECTION_SUCCESS);
+            connectionNotifier.put(REQUEST_TYPE,CONNECTION_STATUS);
+            connectionNotifier.put(DATA, CONNECTION_SUCCESS);
             _handler.dispatch(connectionNotifier);
         }
 
         public void run(){
-            try {
-                _doConnect();
-                _inStream = new DataInputStream(_handler._socket.getInputStream());
-                _run = true;
-                while (isRunning()) {
-                    _doRead();
+            _run = true;
+            while(isRunning()) {
+                try {
+                    _doConnect();
+                    _inStream = new DataInputStream(_handler._socket.getInputStream());
+                    while (isRunning()) {
+                        _doRead();
+                    }
+                } catch (IOException e) {
+                    try {
+                        if(_handler._socket != null)
+                            _handler._socket.close();
+                    }catch (IOException innerE){
+                        Log.d("Socket close","could not close socket");
+                    }
+                    JSONObject connectionNotifier = new JSONObject();
+                    connectionNotifier.put(REQUEST_TYPE, CONNECTION_STATUS);
+                    connectionNotifier.put(DATA, CONNECTION_FAILURE);
+                    _handler.dispatch(connectionNotifier);
                 }
-            }
-            catch(ConnectException e){
-                JSONObject connectionNotifier = new JSONObject();
-                connectionNotifier.put(Constants.network.REQUEST_TYPE,Constants.network.CONNECTION_STATUS);
-                connectionNotifier.put(Constants.network.DATA, Constants.network.CONNECTION_FAILURE);
-                _handler.dispatch(connectionNotifier);
-            }
-            catch(IOException e){
-                Log.d("Listener : ", e.getMessage());
+                synchronized (_handler._socketLock) {
+                    try {
+                        _handler._socketLock.wait(); //Wait for connection retry
+                    } catch (InterruptedException e) {}
+                }
             }
         }
 
@@ -220,40 +245,44 @@ public class NetworkHandler {
             _outStream = null;
         }
 
+        /* Double loop on isRunning ?
+        *   - Outer loop always checks first if socket connected, and wait until it is
+        *   - Outer loop then create a stream from this socket and enters inner isRunning loop
+        *      - inner loop is a trivial loop on waiting for a message to be sent, then write it on socket
+        *      - inner loop can however be interrupted by _doWrite if socket is closed
+        *  - hence the need of an outer loop : if inner loop interrupted, don't break run() if _run is true
+        *  but instead wait again for a new socket
+        *  */
         public void run(){
-            try {
-                synchronized (_handler) {
-                    if (_handler._socket == null || _handler._socket.isClosed()) {
+            _run = true;
+            while(isRunning()) {
+                try {
+                    synchronized(_handler._socketLock) {
+                        while ((_handler._socket == null || _handler._socket.isClosed()) && isRunning()) {
+                            try {
+                                _handler._socketLock.wait();
+                            } catch (InterruptedException e) {}
+                        }
+                    }
+                    _outStream = new DataOutputStream(_handler._socket.getOutputStream());
+                    while (isRunning()) {
                         try {
-                            _handler.wait();
-                        } catch (InterruptedException e) {}
+                            JSONObject msg = _handler.receiveOutgoingMessage();
+                            _doWrite(msg);
+                        } catch (InterruptedException e) {
+                            Log.d("Sender : ", e.getMessage());
+                        }
                     }
+                } catch (IOException e) {
+                    Log.d("Sender : ", e.getMessage());
                 }
-                _outStream = new DataOutputStream(_handler._socket.getOutputStream());
-                _run = true;
-                while (isRunning()) {
-                    try {
-                        JSONObject msg = _handler.receiveOutgoingMessage();
-                        _doWrite(msg);
-                    } catch (InterruptedException e) {
-                        Log.d("Sender : ", e.getMessage());
-                    }
-                }
-            }
-            catch(IOException e){
-                Log.d("Sender : ", e.getMessage());
             }
         }
 
-        private void _doWrite(JSONObject msg) {
-            byte[] rawMsg = msg.toString().getBytes(Constants.network.ENCODING);
-            try {
-                _outStream.writeInt(rawMsg.length);
-                _outStream.write(rawMsg, 0, rawMsg.length);
-            }
-            catch(IOException e){
-                Log.d("Sender :", e.getMessage());
-            }
+        private void _doWrite(JSONObject msg) throws IOException{
+            byte[] rawMsg = msg.toString().getBytes(ENCODING);
+            _outStream.writeInt(rawMsg.length);
+            _outStream.write(rawMsg, 0, rawMsg.length);
         }
 
         public void stop(){
@@ -301,6 +330,7 @@ public class NetworkHandler {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            Log.d("CREATE ACTIVITY",activity.getClass().getName());
             synchronized (_createdActivities){
                 _createdActivities.add(activity);
             }
@@ -309,6 +339,7 @@ public class NetworkHandler {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
+            Log.d("DESTROY ACTIVITY",activity.getClass().getName());
             synchronized(_createdActivities){
                 _createdActivities.remove(activity);
             }
