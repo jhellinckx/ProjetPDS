@@ -3,6 +3,8 @@
 SERVERDIR = "server"
 CLIENTDIR = "android client"
 
+all: server client
+	
 info:
 	@echo "\033[1;31mTo build client, adapt your .bash_profile :";\
 	echo "1) add gradle bin in PATH variable (need to download gradle)";\
@@ -22,4 +24,4 @@ clean:
 	make -C ${SERVERDIR} clean;
 	cd ${CLIENTDIR}; gradle clean;
 
-all: server client
+
