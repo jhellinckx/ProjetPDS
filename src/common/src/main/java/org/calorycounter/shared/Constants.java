@@ -17,7 +17,7 @@ public final class Constants {
 		public static final int MAX_CLIENTS = 100;
 		public static final int BUFFER_SIZE = 1000;
 		public static final int INT_SIZE = 4;
-		public static final Charset ENCODING = StandardCharsets.UTF_8;
+		public static final String ENCODING = "UTF-8";
 
 		/* Base keys of a JSON network message */
 		public static final String REQUEST_TYPE = "requesttype";

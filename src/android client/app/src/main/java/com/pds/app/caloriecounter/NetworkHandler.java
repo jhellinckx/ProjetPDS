@@ -14,6 +14,7 @@ import org.json.simple.parser.ParseException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -189,6 +190,9 @@ public class NetworkHandler {
             catch(ParseException e){
                 Log.d("Listener", e.getMessage());
             }
+            catch(UnsupportedEncodingException e){
+                Log.d("Listener",e.getMessage());
+            }
         }
 
         private void _doConnect() throws IOException{
@@ -291,9 +295,14 @@ public class NetworkHandler {
         }
 
         private void _doWrite(JSONObject msg) throws IOException{
-            byte[] rawMsg = msg.toString().getBytes(ENCODING);
-            _outStream.writeInt(rawMsg.length);
-            _outStream.write(rawMsg, 0, rawMsg.length);
+            try{
+                byte[] rawMsg = msg.toString().getBytes(ENCODING);
+                _outStream.writeInt(rawMsg.length);
+                _outStream.write(rawMsg, 0, rawMsg.length);
+            }
+            catch(UnsupportedEncodingException e){
+                Log.d("Listener",e.getMessage());
+            }
         }
 
         public void stop(){

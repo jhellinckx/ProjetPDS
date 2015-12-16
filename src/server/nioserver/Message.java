@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
 
 public class Message{
 	private Socket _clientSocket;
@@ -27,11 +28,16 @@ public class Message{
 	}
 
 	private void setByteBuffer(JSONObject obj){
-		byte[] dataBytes = obj.toString().getBytes(Constants.network.ENCODING);
-		this._dataBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE + dataBytes.length);
-		this._dataBuffer.putInt(dataBytes.length);
-		this._dataBuffer.put(dataBytes);
-		this._obj = null;
+		try{
+			byte[] dataBytes = obj.toString().getBytes(Constants.network.ENCODING);
+			this._dataBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE + dataBytes.length);
+			this._dataBuffer.putInt(dataBytes.length);
+			this._dataBuffer.put(dataBytes);
+			this._obj = null;
+		}
+		catch(UnsupportedEncodingException e){
+			System.out.println(Constants.errorMessage(e.getMessage(),this));
+		}
 	}
 
 
@@ -45,7 +51,16 @@ public class Message{
 
 	public Socket socket(){ return this._clientSocket; }
 
-	public String toString(){ return new String(this.rawObject(), Constants.network.ENCODING); }
+	public String toString(){ 
+		try{
+			return new String(this.rawObject(), Constants.network.ENCODING);
+		}
+		catch(UnsupportedEncodingException e){
+			System.out.println(Constants.errorMessage(e.getMessage(),this));
+			return "";
+		}
+	}
+
 
 	public JSONObject toJSON(){
 		if(this._obj == null){
@@ -55,6 +70,9 @@ public class Message{
 			catch(ParseException e){
 				System.out.println(Constants.errorMessage(e.getMessage(), this));
 				this._obj = null;
+			}
+			catch(UnsupportedEncodingException e){
+				System.out.println(Constants.errorMessage(e.getMessage(),this));
 			}
 		}
 		return this._obj;
