@@ -26,4 +26,7 @@
     <string name="recosport">Select last physical activity</string>
 
     <string name="nextbutton">Next</string>
+
+    <string name="urlinfo">url for extra info:</string>
+    <string name="productinfos">Product Information:</string>
 </resources>

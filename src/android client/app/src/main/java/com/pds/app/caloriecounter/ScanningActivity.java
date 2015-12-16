@@ -3,9 +3,10 @@ package com.pds.app.caloriecounter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -14,7 +15,7 @@ import com.google.zxing.integration.android.IntentResult;
 public class ScanningActivity extends HomeActivity{
 
     private Button scan;
-    private TextView format, content;
+    private FragmentManager manager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +23,6 @@ public class ScanningActivity extends HomeActivity{
         v = getLayoutInflater().inflate(R.layout.activity_camera, frameLayout);
 
         scan = (Button) v.findViewById(R.id.scan_button);
-        format = (TextView) v.findViewById(R.id.formatTxt);
-        content = (TextView) v.findViewById(R.id.contentTxt);
 
         scan.setOnClickListener(new View.OnClickListener() {
 
@@ -32,7 +31,6 @@ public class ScanningActivity extends HomeActivity{
                 startScan();
             }
         });
-
     }
 
     public void startScan() {
@@ -43,15 +41,19 @@ public class ScanningActivity extends HomeActivity{
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
 
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResults != null){
+        if (scanResults != null && scanResults.getContents() != null){
 
             // TODO Send scanned content to server.
 
             String scanContent = scanResults.getContents();
             String scanFormat = scanResults.getFormatName();
 
-            format.setText("FORMAT: " + scanFormat);
-            content.setText("CONTENT: " + scanContent);
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.add(R.id.infos_layout, new ItemInfosFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+
 
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
