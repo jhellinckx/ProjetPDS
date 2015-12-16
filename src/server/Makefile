@@ -15,7 +15,7 @@ LOCALCOMMONLIBS := ${COMMONBUILD}/libs
 FIND_JAVA_FILES = $(wildcard $(dir)/*.java)
 
 # Dirs containing server sources files
-SERV_SOURCES_DIRS := nioserver items dao .
+SERV_SOURCES_DIRS := nioserver items dao recommender .
 
 # For each directory in SERV_SOURCES_DIRS, get all its java files
 SERV_SOURCES := $(foreach dir,${SERV_SOURCES_DIRS},${FIND_JAVA_FILES}) 
@@ -23,7 +23,7 @@ SERV_SOURCES := $(foreach dir,${SERV_SOURCES_DIRS},${FIND_JAVA_FILES})
 # Replace .java by .class in SERV_SOURCES
 SERV_DEPENDENCIES := $(patsubst %.java,%.class,${SERV_SOURCES})
 
-SERV_PATHS = ":nioserver:items:dao:."
+SERV_PATHS = ":nioserver:items:dao:recommender:."
 
 SERV_CLASSPATHS = "${LOCALCOMMONLIBS}/*:${EXTERNCOMMONLIBS}/*:${EXTERNSERVERLIBS}/*${SERV_PATHS}"
 
@@ -58,7 +58,7 @@ common:
 	$(call buildEnd)
 
 
-test: Test.class doTest.class testDAO.class
+test: Test.class doTest.class testDAO.class TestRecommender.class
 
 # Pattern substitution, to build MyClass.class we need MyClass.java. 
 # To achieve that, execute the task below. $< = %.java
@@ -81,5 +81,8 @@ runtestDAO:
 
 runservertest:
 	java ${JFLAGS} Test
+
+runtestrecom:
+	java $(JFLAGS) TestRecommender
 
 	
