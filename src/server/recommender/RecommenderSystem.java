@@ -30,7 +30,7 @@ public class RecommenderSystem {
 		recomstrategies.add(rstrat);
 		if (hybridstrategy == null && recomstrategies.size() > 1){
 
-			hybridstrategy = RecommenderSystem.defaultstrat;
+			hybridstrategy = RecommenderSystem.default_hybride_strat;
 		}
 	}
 	
@@ -41,6 +41,13 @@ public class RecommenderSystem {
 	public void recommendAnItem(){
 		if (recomstrategies.isEmpty()){
 			recomstrategies.add(RecommenderSystem.default_recom_strat);
+		}
+
+		if (recomstrategies.size() == 1){
+			recomstrategies.get(0).recommend();
+		}
+		else{
+			hybridstrategy.recommend(recomstrategies);
 		}
 		
 		
