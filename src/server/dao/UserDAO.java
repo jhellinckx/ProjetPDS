@@ -5,7 +5,7 @@ import java.util.List;
 import items.User;
 
 public interface UserDAO {
-	void create( User user ) throws DAOException;
+	boolean create( User user ) throws DAOException;
 
     User findByUsername ( String username ) throws DAOException;
     

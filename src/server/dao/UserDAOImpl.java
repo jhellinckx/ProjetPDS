@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import items.User;
 import items.Food;
@@ -118,11 +119,12 @@ public class UserDAOImpl implements UserDAO {
 
     /* Implementation de la methode create() definie dans l'interface UserDao */
     @Override
-    public void create( User user ) throws IllegalArgumentException, DAOException {
+    public boolean create( User user ) throws IllegalArgumentException, DAOException {
     	Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet valeursAutoGenerees = null;
         UserPrefDAO userPrefDao = null;
+        boolean error = false;
 
         try {
             /* Recuperation d'une connexion depuis la Factory */
@@ -145,11 +147,18 @@ public class UserDAOImpl implements UserDAO {
              else {
                 throw new DAOException( "Failed to create a user, no auto-generated ID returned." );
             }
-        } catch ( SQLException e ) {
+        } 
+        catch (MySQLIntegrityConstraintViolationException e){
+            System.out.print("Failed to create a user, username already exists\n");
+            error = true;
+        }
+        catch ( SQLException e ) {
             throw new DAOException( e );
-        } finally {
+        } 
+        finally {
             silentClosures( valeursAutoGenerees, preparedStatement, connexion );
         }
+        return error;
     }
     
     @Override

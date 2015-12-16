@@ -12,25 +12,30 @@ import items.Random_user_generator;
 public class doTest {
 	
 	public static void test(DAOFactory d) {
+		boolean error = false;
+
 		UserDAO uDao = d.getUserDAO();
 		List<String> messages = uDao.findAll();
 		System.out.println(messages);
 		User u = new User("testest","F");
-		uDao.create(u);
+		error = uDao.create(u);
+		System.out.print(error);
 		List<String> messages2 = uDao.findAll();
 		System.out.println(messages2);
 		uDao.delete(u);
 		List<String> messages3 = uDao.findAll();
 		System.out.println(messages3);
 		
+		/*
 		FoodDAO fDao = d.getFoodDAO();
-		/*List<String> messages4 = fDao.findAll();
-		System.out.println(messages4); */
+		//List<String> messages4 = fDao.findAll();
+		//System.out.println(messages4); 
 		Food foodPref = fDao.findByName("oeuf");
 		User user = new User("testTrol","K");
 		user.addToDeppreciatedFood(foodPref);
 		uDao.create(user);
 		uDao.delete(user);
+		*/
 
 	}
 
