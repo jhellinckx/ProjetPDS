@@ -17,7 +17,9 @@ public class LogActivity extends NotifiableActivity {
     private Button signup = null;
     private Button login = null;
     private Button retry = null;
+    private TextView usernametext = null;
     private TextView connectionState = null;
+    private TextView errormessage = null;
 
     private void initButtonListener(){
         signup.setOnClickListener(new View.OnClickListener() {
@@ -34,9 +36,12 @@ public class LogActivity extends NotifiableActivity {
             @Override
             public void onClick(View v) {
                 //Todo Send to server and check id. true ? : next activity,show error;
-
-                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-                startActivity(personalActivity);
+                String username = usernametext.getText().toString();
+                if(!username.isEmpty()) {
+                    JSONObject data = new JSONObject();
+                    data.put(USERNAME, username);
+                    send(networkJSON(LOG_IN_REQUEST, data));
+                }
             }
         });
         retry.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +75,21 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginResponse(JSONObject data){
+        String response = (String) data.get(LOG_IN_RESPONSE);
+        if(response.equals(LOG_IN_SUCCESS)){
+            Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
+            startActivity(personalActivity);
+        }
+        else if(response.equals(LOG_IN_FAILURE)){
+            String reason = (String)data.get(REASON);
+            if(reason.equals(LOG_IN_ALREADY_CONNECTED)){
+                setErrorMsg("This username is already connected");
+            }
+            else if(reason.equals(LOG_IN_USERNAME_NOT_FOUND)){
+                setErrorMsg("Username not found");
+            }
+
+        }
 
     }
 
@@ -106,6 +126,15 @@ public class LogActivity extends NotifiableActivity {
         });
     }
 
+    public void setErrorMsg(final String errormsg){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                errormessage.setText(errormsg);
+                errormessage.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +142,9 @@ public class LogActivity extends NotifiableActivity {
         signup = (Button) findViewById(R.id.signup);
         login = (Button) findViewById(R.id.login);
         retry = (Button) findViewById(R.id.retry);
+        usernametext = (TextView) findViewById(R.id.usernametext);
         connectionState = (TextView) findViewById(R.id.connectionState);
+        errormessage = (TextView) findViewById(R.id.errormessage);
         initButtonListener();
 
         updateWithNetInfo(); //inherited from NotifiableActivity

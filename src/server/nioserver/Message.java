@@ -23,13 +23,16 @@ public class Message{
 
 	public Message(Socket clientSocket, JSONObject obj){
 		this._clientSocket = clientSocket;
+		setByteBuffer(obj);
+	}
+
+	private void setByteBuffer(JSONObject obj){
 		byte[] dataBytes = obj.toString().getBytes(Constants.network.ENCODING);
 		this._dataBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE + dataBytes.length);
 		this._dataBuffer.putInt(dataBytes.length);
 		this._dataBuffer.put(dataBytes);
 		this._obj = null;
 	}
-
 
 
 	/* Returns byte array of the JSON object -- thus ignoring the size header. */
@@ -58,6 +61,7 @@ public class Message{
 	}
 
 	public void setJSON(JSONObject other){
+		setByteBuffer(other);
 		this._obj = other;
 	}
 
