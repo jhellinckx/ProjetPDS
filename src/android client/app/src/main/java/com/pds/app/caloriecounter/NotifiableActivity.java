@@ -16,10 +16,9 @@ public abstract class NotifiableActivity extends AppCompatActivity {
 
     public void updateWithNetInfo(){
         /* Auto-notify connection status, will be deprecated when _messagesOnHold implemented in NetworkHandler */
-        JSONObject status = new JSONObject();
-        status.put(REQUEST_TYPE, CONNECTION_STATUS);
-        status.put(DATA, connectionStatus());
-        handleMessage(status);
+        JSONObject connectionNotifierData = new JSONObject();
+        connectionNotifierData.put(CONNECTION_STATUS, connectionStatus());
+        handleMessage(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
     }
 
     abstract public void handleMessage(JSONObject msg);

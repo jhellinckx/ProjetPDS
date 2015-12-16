@@ -88,8 +88,14 @@ public class NetworkHandler {
 
             String request = (String) msg.get(REQUEST_TYPE);
 
-            if(request.equals(CONNECTION_STATUS)){
+            if(request.equals(CONNECTION_NOTIFIER)){
                 _doDispatch(msg, LogActivity.class);
+            }
+            else if(request.equals(LOG_IN_REQUEST)){
+                _doDispatch(msg, LogActivity.class);
+            }
+            else if(request.equals(SIGN_UP_REQUEST)){
+                _doDispatch(msg,LogActivity.class);
             }
         }
         catch(IOException e){
@@ -186,10 +192,9 @@ public class NetworkHandler {
                 }
                 _handler._socketLock.notify(); //notify Sender thread
             }
-            JSONObject connectionNotifier = new JSONObject();
-            connectionNotifier.put(REQUEST_TYPE,CONNECTION_STATUS);
-            connectionNotifier.put(DATA, CONNECTION_SUCCESS);
-            _handler.dispatch(connectionNotifier);
+            JSONObject connectionNotifierData = new JSONObject();
+            connectionNotifierData.put(CONNECTION_STATUS, CONNECTION_SUCCESS);
+            _handler.dispatch(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
         }
 
         public void run(){
@@ -208,10 +213,9 @@ public class NetworkHandler {
                     }catch (IOException innerE){
                         Log.d("Socket close","could not close socket");
                     }
-                    JSONObject connectionNotifier = new JSONObject();
-                    connectionNotifier.put(REQUEST_TYPE, CONNECTION_STATUS);
-                    connectionNotifier.put(DATA, CONNECTION_FAILURE);
-                    _handler.dispatch(connectionNotifier);
+                    JSONObject connectionNotifierData = new JSONObject();
+                    connectionNotifierData.put(CONNECTION_STATUS, CONNECTION_FAILURE);
+                    _handler.dispatch(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
                 }
                 synchronized (_handler._socketLock) {
                     try {

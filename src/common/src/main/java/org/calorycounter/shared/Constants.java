@@ -24,11 +24,13 @@ public final class Constants {
 		public static final String DATA = "data";
 
 		/* Client connection handling */
+		public static final String CONNECTION_NOTIFIER = "co_notifier";
 		public static final String CONNECTION_STATUS = "co_status";
 		public static final String CONNECTION_SUCCESS = "co_success";
 		public static final String CONNECTION_FAILURE = "co_failure";
 		
 		/* Login / signup */
+		public static final String REASON = "d_reason";
 		public static final String USERNAME = "d_username";
 		public static final String PASSWORD = "d_password";
 
@@ -36,13 +38,17 @@ public final class Constants {
 		public static final String LOG_IN_RESPONSE = "d_login_res";
 		public static final String LOG_IN_SUCCESS = "d_login_ok";
 		public static final String LOG_IN_FAILURE = "d_login_nope";
+		public static final String LOG_IN_USERNAME_NOT_FOUND = "d_login_nope_null";
+		public static final String LOG_IN_ALREADY_CONNECTED = "d_login_nope_usr_connected";
 
 		public static final String LOG_OUT_REQUEST = "r_logout";
 
 		public static final String SIGN_UP_REQUEST = "r_signup";
 		public static final String SIGN_UP_RESPONSE = "d_signup_res";
-		public static final String SIGN_UP_USERNAME_EXISTS = "d_sign_nope_usr_exists";
-		public static final String SIGN_UP_ALREADY_CONNECTED = "d_sign_nope_usr_connected";
+		public static final String SIGN_UP_SUCCESS = "d_signup_ok";
+		public static final String SIGN_UP_FAILURE = "d_signup_nope";
+		public static final String SIGN_UP_USERNAME_EXISTS = "d_signup_nope_usr_exists";
+		public static final String SIGN_UP_ALREADY_CONNECTED = "d_signup_nope_usr_connected";
 
 
 

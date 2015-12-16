@@ -41,12 +41,20 @@ public class AppliServer extends AbstractNIOServer{
 		User usr = this._userDatabase.findByUsername(username);
 		if(usr == null){
 			responseData.put(LOG_IN_RESPONSE, LOG_IN_FAILURE);
+			responseData.put(REASON, LOG_IN_USERNAME_NOT_FOUND);
 			responseData.put(USERNAME, username);
 		}
 		else{
-			addClient(username, msg);
-			responseData.put(LOG_IN_RESPONSE, LOG_IN_SUCCESS);
-			responseData.put(USERNAME, username);
+			if(userConnected(usr.getUsername())){ // Check if username is already connected
+				responseData.put(LOG_IN_RESPONSE, LOG_IN_FAILURE);
+				responseData.put(REASON, LOG_IN_ALREADY_CONNECTED);
+				responseData.put(USERNAME, username);
+			}
+			else{
+				addClient(username, msg);
+				responseData.put(LOG_IN_RESPONSE, LOG_IN_SUCCESS);
+				responseData.put(USERNAME, username);
+			}
 		}
 		/* Adjust message with json response. networkJSON is defined in Constants.network */
 		msg.setJSON(networkJSON(LOG_IN_REQUEST, responseData));

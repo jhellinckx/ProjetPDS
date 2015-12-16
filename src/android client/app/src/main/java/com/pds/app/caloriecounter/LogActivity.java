@@ -49,17 +49,32 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void handleMessage(JSONObject msg){
-        Log.d("LOGACTIVITY HANDLE MSG" + msg.toString(), "");
+        Log.d("LOGACTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
-        if(request.equals(CONNECTION_STATUS)){
-            String res = (String) msg.get(DATA);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if(request.equals(CONNECTION_NOTIFIER)){
+            String res = (String) data.get(CONNECTION_STATUS);
             if(res.equals(CONNECTION_SUCCESS)){
                 setConnected();
             } else if (res.equals(CONNECTION_FAILURE)) {
                 setDisconnected();
             }
         }
+        else if(request.equals(LOG_IN_REQUEST)){
+            onLoginResponse(data);
+        }
+        else if(request.equals(SIGN_UP_REQUEST)){
+            onSignupResponse(data);
+        }
 
+    }
+
+    public void onLoginResponse(JSONObject data){
+
+    }
+
+    public void onSignupResponse(JSONObject data){
+        //TODO
     }
 
     public void setConnected(){

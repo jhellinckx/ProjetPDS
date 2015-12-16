@@ -50,7 +50,7 @@ public abstract class AbstractNIOServer{
 		_clients.remove(socket);
 	}
 
-	public boolean isConnected(String name){
+	public boolean userConnected(String name){
 		return _clients.containsValue(name);
 	}
 
