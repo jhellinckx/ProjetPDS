@@ -19,4 +19,11 @@
     <string name="homeitem3">A rating system givess you the opportunity to rate the recommendations.
     By doing so, the further recommendations will be more accurate.</string>
     <string name="homeitem4">A barcode scanner allows you to scan aliments code in order to get information about them.</string>
+
+    <string name="recommendation">Here you can get recommendations</string>
+    <string name="recotype">Select the type of recommendation</string>
+    <string name="recopast">Add past meals</string>
+    <string name="recosport">Select last physical activity</string>
+
+    <string name="nextbutton">Next</string>
 </resources>

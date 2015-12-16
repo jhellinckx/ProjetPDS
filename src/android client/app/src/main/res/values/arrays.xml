@@ -14,4 +14,13 @@
         <item>@string/homeitem3</item>
         <item>@string/homeitem4</item>
     </array>
+
+    <array name="resultsplaceholder">
+        <item>First Recommendation</item>
+        <item>Second Recommendation</item>
+        <item>Third Recommendation</item>
+        <item>Fourth Recommendation</item>
+        <item>Fifth Recommendation</item>
+        <item>...</item>
+    </array>
 </resources>
