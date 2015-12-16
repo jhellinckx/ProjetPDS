@@ -7,9 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-/**
- * Created by jhellinckx on 13/12/15.
- */
+
 public class LauncherActivity extends Activity {
     private Button login = null;
 

@@ -26,9 +26,6 @@ import java.util.LinkedList;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-/*
- * Created by jhellinckx on 12/12/15.
- */
 public class NetworkHandler {
     private static NetworkHandler _instance;
     private Context _context;
