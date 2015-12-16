@@ -85,7 +85,10 @@ public class InStream implements Runnable{
 			if(msgSize <= 0) return;
 			// Read n (msgSize) bytes, where n = size of the message which is thus given in the 4 bytes header.
 			this._msgDataBuffer.limit(msgSize);
-			bytesRead = clientChannel.read(this._msgDataBuffer);
+			bytesRead = 0;
+			while(_msgDataBuffer.remaining()>0 && bytesRead != -1){
+				bytesRead = clientChannel.read(this._msgDataBuffer);
+			}
 			if(bytesRead == -1){
 				this._disconnect(clientChannel);
 				return;

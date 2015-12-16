@@ -140,7 +140,7 @@ public class NetworkHandler {
         }
     }
 
-    public JSONObject receiveOutgoingMessage() throws InterruptedException{
+    public JSONObject receiveOutgoingMessage() throws InterruptedException,IOException{
         synchronized(this._out){
             while(this._out.isEmpty()){
                 if(!this._sender.isRunning()){
@@ -149,7 +149,11 @@ public class NetworkHandler {
                 try{
                     this._out.wait();
                 }
-                catch(InterruptedException e){}
+                catch(InterruptedException e){
+                    Log.d("IS CONNECTED -> ",new Boolean(isConnected()).toString());
+                    if(!this.isConnected())
+                        throw new IOException("Connection lost");
+                }
             }
             return this._out.remove(0);
         }
@@ -215,6 +219,7 @@ public class NetworkHandler {
                     }catch (IOException innerE){
                         Log.d("Socket close","could not close socket");
                     }
+                   synchronized (_handler._out) { _handler._out.notify(); } // Notify Sender that connection is lost
                     JSONObject connectionNotifierData = new JSONObject();
                     connectionNotifierData.put(CONNECTION_STATUS, CONNECTION_FAILURE);
                     _handler.dispatch(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
