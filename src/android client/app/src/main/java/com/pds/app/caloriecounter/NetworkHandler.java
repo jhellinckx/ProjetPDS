@@ -132,9 +132,11 @@ public class NetworkHandler {
     }
 
     public void addOutgoingMessage(JSONObject msg){
-        synchronized(this._out){
-            this._out.add(msg);
-            this._out.notify();
+        if(isConnected()) {
+            synchronized (this._out) {
+                this._out.add(msg);
+                this._out.notify();
+            }
         }
     }
 
@@ -187,7 +189,7 @@ public class NetworkHandler {
 
         private void _doConnect() throws IOException{
             synchronized (_handler._socketLock) {
-                if (_handler._socket == null || _handler._socket.isClosed()) {
+                if (!isConnected()){
                     _handler._socket = new Socket(EMULATOR_DEVICE_ADDRESS, PORT);
                 }
                 _handler._socketLock.notify(); //notify Sender thread
@@ -262,14 +264,14 @@ public class NetworkHandler {
             while(isRunning()) {
                 try {
                     synchronized(_handler._socketLock) {
-                        while ((_handler._socket == null || _handler._socket.isClosed()) && isRunning()) {
+                        while ((!isConnected()) && isRunning()) {
                             try {
                                 _handler._socketLock.wait();
                             } catch (InterruptedException e) {}
                         }
                     }
                     _outStream = new DataOutputStream(_handler._socket.getOutputStream());
-                    while (isRunning()) {
+                    while (isRunning() && isConnected()) {
                         try {
                             JSONObject msg = _handler.receiveOutgoingMessage();
                             _doWrite(msg);

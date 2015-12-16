@@ -37,7 +37,10 @@ public class LogActivity extends NotifiableActivity {
             public void onClick(View v) {
                 //Todo Send to server and check id. true ? : next activity,show error;
                 String username = usernametext.getText().toString();
-                if(!username.isEmpty()) {
+                if(username.isEmpty()){
+                    setErrorMsg("Empty field");
+                }
+                else {
                     JSONObject data = new JSONObject();
                     data.put(USERNAME, username);
                     send(networkJSON(LOG_IN_REQUEST, data));
