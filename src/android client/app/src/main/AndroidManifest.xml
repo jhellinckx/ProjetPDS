@@ -29,7 +29,8 @@
         android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name="com.pds.app.caloriecounter.RecommendationActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name="com.pds.app.caloriecounter.RatingActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -38,7 +39,8 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name="com.pds.app.caloriecounter.ScanningActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
