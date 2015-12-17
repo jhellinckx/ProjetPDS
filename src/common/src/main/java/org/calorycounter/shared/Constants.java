@@ -50,6 +50,18 @@ public final class Constants {
 		public static final String SIGN_UP_USERNAME_EXISTS = "d_signup_nope_usr_exists";
 		public static final String SIGN_UP_ALREADY_CONNECTED = "d_signup_nope_usr_connected";
 
+		/* Food code request */
+		public static final String FOOD_CODE = "d_foodcode";
+		public static final String FOOD_NAME = "d_foodname";
+		public static final String FOOD_IMAGE_URL = "d_food_imgurl";
+		public static final String FOOD_ENERGY100G = "d_food_energy100g";
+
+		public static final String FOOD_CODE_REQUEST = "r_foodcode";
+		public static final String FOOD_CODE_RESPONSE = "d_foodcode_res";
+		public static final String FOOD_CODE_SUCCESS = "d_foodcode_ok";
+		public static final String FOOD_CODE_FAILURE = "d_foodcode_nope";
+		public static final String FOOD_CODE_NOT_FOUND = "d_foodcode_nope_null";
+
 
 
 		public static String local_ip(){

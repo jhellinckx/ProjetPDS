@@ -15,10 +15,10 @@ import items.User;
 
 public class FoodDAOImpl implements FoodDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, code, product_name FROM Food WHERE product_name = ?";
-	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, code, product_name FROM Food WHERE code = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name FROM Food WHERE id_food = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name FROM Food";
+	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE product_name = ?";
+	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE code = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE id_food = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food";
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -131,6 +131,9 @@ public class FoodDAOImpl implements FoodDAO {
         food.setUrl( resultSet.getString( "url" ) );
         food.setCode( resultSet.getString( "code" ) );
         food.setProductName( resultSet.getString( "product_name" ) );
+        food.setImageUrl( resultSet.getString( "image_url" ) );
+        food.setEnergy100g( resultSet.getString( "energy_100g" ) );
+
         return food;
     }
 }

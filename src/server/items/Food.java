@@ -6,6 +6,8 @@ public class Food {
     private String    url;
     private String    code;
     private String    productName;
+    private String    image_url;
+    private String    energy_100g;
     
     public Long getId() {
         return id;
@@ -33,6 +35,20 @@ public class Food {
     }
     public void setProductName( String productName ) {
         this.productName = productName;
+    }
+
+    public String getImageUrl() {
+        return image_url;
+    }
+    public void setImageUrl( String image_url ) {
+        this.image_url = image_url;
+    }
+
+    public String getEnergy100g() {
+        return energy_100g;
+    }
+    public void setEnergy100g( String energy_100g ) {
+        this.energy_100g = energy_100g;
     }
 
 }

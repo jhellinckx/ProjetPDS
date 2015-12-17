@@ -3,6 +3,7 @@ package com.pds.app.caloriecounter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -11,6 +12,10 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import org.json.simple.JSONObject;
+
+import static org.calorycounter.shared.Constants.network.*;
 
 public class ScanningActivity extends HomeActivity{
 
@@ -33,9 +38,31 @@ public class ScanningActivity extends HomeActivity{
         });
     }
 
+    public void handleMessage(JSONObject msg){
+        Log.d("SCANNINGCTIVITY HANDLE MSG", msg.toString());
+        String request = (String) msg.get(REQUEST_TYPE);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if(request.equals(FOOD_CODE_REQUEST)){
+            String response =  (String)data.get(FOOD_CODE_RESPONSE);
+            if(response.equals(FOOD_CODE_SUCCESS)){
+                String image_url = (String) data.get(FOOD_IMAGE_URL);
+                System.out.println("\n"+image_url+"\n");
+
+                String product_name = (String) data.get(FOOD_NAME);
+                String energy_100g = (String) data.get(FOOD_ENERGY100G);
+            }
+        }
+    }
+
     public void startScan() {
-        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        scanIntegrator.initiateScan();
+        //Sending test code
+        String code = "0000000024600";
+        JSONObject data = new JSONObject();
+        data.put(FOOD_CODE, code);
+        send(networkJSON(FOOD_CODE_REQUEST, data));
+        System.out.println("------------------CODE SENT -------------------");
+        //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        //scanIntegrator.initiateScan();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){

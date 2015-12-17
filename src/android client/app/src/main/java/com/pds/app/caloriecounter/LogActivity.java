@@ -26,9 +26,18 @@ public class LogActivity extends NotifiableActivity {
             @Override
             public void onClick(View v) {
                 //Todo Send to server and check id. true ? : next activity,show error;
-
+                /*
                 Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
                 startActivity(personalActivity);
+                */
+                String username = usernametext.getText().toString();
+                if (username.isEmpty()) {
+                    setErrorMsg("Empty field");
+                } else {
+                    JSONObject data = new JSONObject();
+                    data.put(USERNAME, username);
+                    send(networkJSON(SIGN_UP_REQUEST, data));
+                }
             }
         });
 
@@ -97,7 +106,21 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onSignupResponse(JSONObject data){
-        //TODO
+        String response = (String) data.get(SIGN_UP_RESPONSE);
+        if(response.equals(SIGN_UP_SUCCESS)){
+            Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
+            startActivity(personalActivity);
+        }
+        else if(response.equals(SIGN_UP_FAILURE)){
+            String reason = (String)data.get(REASON);
+            if(reason.equals(SIGN_UP_USERNAME_EXISTS)){
+                setErrorMsg("This username already exists");
+            }
+            else if(reason.equals(SIGN_UP_ALREADY_CONNECTED)){
+                setErrorMsg("This username is already connected");
+            }
+        }
+
     }
 
     public void setConnected(){

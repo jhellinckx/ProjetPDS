@@ -95,6 +95,9 @@ public class NetworkHandler {
             else if(request.equals(SIGN_UP_REQUEST)){
                 _doDispatch(msg,LogActivity.class);
             }
+            else if(request.equals(FOOD_CODE_REQUEST)){
+                _doDispatch(msg,ScanningActivity.class);
+            }
         }
         catch(IOException e){
             Log.d("Dispatcher", e.getMessage());
