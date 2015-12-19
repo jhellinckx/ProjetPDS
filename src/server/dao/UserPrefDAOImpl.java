@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import static dao.DAOUtilitaire.*;
 
 
@@ -19,6 +20,9 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	private static final String SQL_FIND_USERS_APPRECIATING_FOOD = "SELECT numUser FROM User_preferences WHERE numFood = ?";
 	private static final String SQL_DELETE = "DELETE FROM User_preferences WHERE numUser = ? AND numFood = ? AND rank = ?";
 	private static final String SQL_UPDATE = "UPDATE User_preferences SET numFood = ? WHERE numUser = ?";
+
+	private static final String	SQL_FIND_USER_RANK = "SELECT numFood, rank FROM User_preferences WHERE numUser = ?";
+	private static final String SQL_FIND_FOOD_RANK = "SELECT numUser, rank FROM User_preferences WHERE numFood = ?";
 	
 	UserPrefDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -53,7 +57,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	public List<Food> findUserDeppreciatedFood(User user) throws DAOException {
 		return findDe_AppreciatedFood( user , "-" );
 	}
-
+	
 	@Override
 	public List<User> findUsersAppreciating(Food food) throws DAOException {
 		List<User> usersAppreciatingFood = new ArrayList<User>();
@@ -79,6 +83,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		}
 		return usersAppreciatingFood;
 	}
+	
 
 	@Override
 	public void delete(User user, Food food, String rank) throws IllegalArgumentException, DAOException {
@@ -124,4 +129,58 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		return appreciatedFood;
 	}
 
+
+	@Override
+	public HashMap findUsersAndRankForFood(Food food) throws DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		UserDAO userDAO = null;
+		HashMap m = new HashMap();// max size = 16 !!!
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_FOOD_RANK, false, food.getId() );
+			resultSet = preparedStatement.executeQuery();
+			userDAO = this.daoFactory.getUserDAO();
+			while (resultSet.next()) {
+				Long idUser = (long) resultSet.getInt("numUser");
+				User user = userDAO.findById(idUser);
+				String rank = (String) resultSet.getString("rank");
+				m.put(user,rank);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return m ;
+	}
+
+	@Override
+	public HashMap findFoodsAndRankForUser(User user) throws DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		FoodDAO foodDAO = null;
+		HashMap m = new HashMap();// max size = 16 !!!
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_RANK, false, user.getId() );
+			resultSet = preparedStatement.executeQuery();
+			foodDAO = this.daoFactory.getFoodDAO();
+			while (resultSet.next()) {
+				Long idFood = (long) resultSet.getInt("numFood");
+				Food food = foodDAO.findById(idFood);
+				String rank = (String) resultSet.getString("rank");
+				m.put(food,rank);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return m ;
+	}
 }
