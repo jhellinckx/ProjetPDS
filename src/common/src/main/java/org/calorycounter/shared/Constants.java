@@ -13,7 +13,7 @@ public final class Constants {
 		/* Network config */
 		public static final int PORT = 2015;
 		public static final String HOST ="127.0.0.1";
-		public static final String EMULATOR_DEVICE_ADDRESS = "aurelien-N550JV";
+		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 		public static final int MAX_CLIENTS = 100;
 		public static final int BUFFER_SIZE = 1000;
 		public static final int INT_SIZE = 4;
