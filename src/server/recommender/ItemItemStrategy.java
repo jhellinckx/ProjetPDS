@@ -9,7 +9,6 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 	
 	@Override
 	public ArrayList<Food> recommend(){
-		
 
 		return new ArrayList<Food>();
 		

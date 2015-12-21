@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.pds.app.caloriecounter.LogActivity">
+        <activity android:name="com.pds.app.caloriecounter.LogActivity"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity android:name="com.pds.app.caloriecounter.PersonalDataActivity"

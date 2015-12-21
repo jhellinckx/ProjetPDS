@@ -14,8 +14,7 @@
         android:layout_marginTop="22dp"
         android:maxHeight="130sp"
         android:maxWidth="130sp"
-        android:scaleType="fitXY"
-        android:scrollIndicators="none" />
+        android:scaleType="fitXY" />
 
     <TextView
         android:layout_width="wrap_content"

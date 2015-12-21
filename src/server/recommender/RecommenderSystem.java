@@ -43,7 +43,7 @@ public class RecommenderSystem {
 			recomstrategies.add(RecommenderSystem.default_recom_strat);
 		}
 
-		if (recomstrategies.size() == 1){
+		if (recomstrategies.size() == 1){			// Hybridation useless for 1 recommendation system.
 			recomstrategies.get(0).recommend();
 		}
 		else{
