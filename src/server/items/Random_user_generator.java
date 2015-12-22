@@ -92,7 +92,7 @@ public class Random_user_generator
 		for (int j = 0 ; j<2 ; ++j){//appreciated and deppreciated
 			List<Food> foodList = new ArrayList<Food>();
 			List<Long> ids = new ArrayList<Long> ();
-			int nb_of_pref = generateRandomNumberBetween(1,20);
+			int nb_of_pref = generateRandomNumberBetween(1,5);
 			for(int i = 0 ; i<nb_of_pref ; ++i){
 				Long randomId = new Long(generateRandomNumberBetween(1,63016));
 				ids.add(randomId);
@@ -127,7 +127,7 @@ public class Random_user_generator
 	}
 
 	public static ArrayList<Long> generateFoodIds(){
-		int nb_of_pref = generateRandomNumberBetween(1,20);
+		int nb_of_pref = generateRandomNumberBetween(1,5);
 		ArrayList<Long> Ids = new ArrayList<Long>();
 		for (int i=0; i<nb_of_pref ; ++i){
 			Ids.add(new Long(generateRandomNumberBetween(1,63016)));

@@ -229,9 +229,11 @@ public class UserDAOImpl implements UserDAO {
         Random_user_generator r = new Random_user_generator(quantity, foodDao, true);
         ArrayList<User> randUserList = r.get_random_users_list();
         
+        
         for (int i = 0 ; i<randUserList.size() ; ++i){
              create(randUserList.get(i));
         }
+        
 
         UserPrefDAO userPrefDao = this.daoFactory.getUserPrefDAO();
         List<Long> Ids = r.generateFoodIds();
