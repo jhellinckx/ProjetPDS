@@ -29,48 +29,18 @@ public class doTest {
 		List<String> messages3 = uDao.findAll();
 		System.out.println(messages3);
 
-		*/
-
-		/*
-		HashMap m = new HashMap();//16 cap
-		User u = new User("testest","F");
-		String r = "+";
-		m.put(u,r);
-
-		Set<User> s = m.keySet();
-		
-		for(User p : s){
-			System.out.print(u.getUsername());
-		}
-		*/
-
-
-		
-		
-		
-		FoodDAO fDao = d.getFoodDAO();
-		//List<String> messages4 = fDao.findAll();
-		//System.out.println(messages4); 
-		Food foodPref = fDao.findByName("Corn starch");
-		//User user = new User("testTrol","K");
-		//user.addToDeppreciatedFood(foodPref);
-		//uDao.create(user);
-		//uDao.delete(user);
-		UserPrefDAO uprefDAO = d.getUserPrefDAO();
-		HashMap m = uprefDAO.findUsersAndRankForFood(foodPref);
-
-		Set<User> s = m.keySet();
-		for(User p : s){
-			System.out.print("\n"+p.getUsername()+"\n");
-		}
-
+		*/	
 	}
 
-	public static void test_user_generator()
+	public static void test_user_generator(DAOFactory d)
 	{
-		Random_user_generator r = new Random_user_generator(20); //arg = quantity of users wanted
-		System.out.print(r.SQL_generateInsertionInstruction());
+		Long start_time = System.currentTimeMillis();
+		
+		UserDAO uDao = d.getUserDAO();
+		uDao.quick_createRandomUsers(10);
 
+		Long end_time = System.currentTimeMillis();
+		System.out.println("\n"+(end_time-start_time)+"ms");
 	}
 
 	public static void test_findUsersAndRankForfood(DAOFactory d){

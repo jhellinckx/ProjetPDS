@@ -6,9 +6,13 @@ package items;
 
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.List;
+import dao.DAOFactory;
+import dao.FoodDAO;
 
 
-public class Random_user_generator 
+
+public class Random_user_generator
 {
 	//settings for random usernames
 	private static int MINCHAR = 3;
@@ -22,28 +26,34 @@ public class Random_user_generator
 	private static boolean CHECK = true;
 	
 	private static ArrayList<User> random_users_list = new ArrayList<User>();
-	/*
-	public static void main(String[] args)
-	{
-		ArrayList<User> ulist =  getRandomUsers(QUANTITY);		//Generate QUANTITY users in ulist
-		//String SQL_instruction = SQL_generateInsertionInstruction(ulist); 
-	}
-	*/
+	private static FoodDAO foodDao = null;
 
-	public Random_user_generator()
+	public Random_user_generator(FoodDAO foodDao_, Boolean quick)
 	{
-		random_users_list =  getRandomUsers(QUANTITY);
+		foodDao = foodDao_;
+		if(quick){
+			random_users_list =  getRandomUsers(QUANTITY);
+		}
+		else{
+			random_users_list =  getRandomUsersComplete(QUANTITY);
+		}
 	}
 
-	public Random_user_generator(int quantity_)
+	public Random_user_generator(int quantity_, FoodDAO foodDao_, Boolean quick)
 	{
 		QUANTITY = quantity_;
-		random_users_list =  getRandomUsers(QUANTITY);
+		foodDao = foodDao_;
+		if(quick){
+			random_users_list =  getRandomUsers(QUANTITY);
+		}
+		else{
+			random_users_list =  getRandomUsersComplete(QUANTITY);
+		}
 	}
 	
 	//input : bounds of random int
 	//ouptut : random int
-	private static int generateRandomNumberBetween(int min, int max)
+	public static int generateRandomNumberBetween(int min, int max)
 	{
 		Random r = new Random();
 		if (min >= max) {
@@ -72,18 +82,57 @@ public class Random_user_generator
 	
 	//input : minimum and maximum characters length composing the username, max value terminating username
 	//ouput : randomly created user;
+	private static User generateRandomUserComplete()
+	{
+		//user created
+		User random_user = generateRandomUser();
+
+		//init food pref
+		
+		for (int j = 0 ; j<2 ; ++j){//appreciated and deppreciated
+			List<Food> foodList = new ArrayList<Food>();
+			List<Long> ids = new ArrayList<Long> ();
+			int nb_of_pref = generateRandomNumberBetween(1,20);
+			for(int i = 0 ; i<nb_of_pref ; ++i){
+				Long randomId = new Long(generateRandomNumberBetween(1,63016));
+				ids.add(randomId);
+			}
+			foodList = foodDao.findByIds(ids);
+			if(j==0){
+				random_user.setApprecitedFood(foodList);
+			}
+			else{
+				random_user.setDepreciatedFood(foodList);
+			}
+		}
+		
+		return random_user;
+	}
+
 	private static User generateRandomUser()
 	{
+		//init username
 		String username = generateRandomUsername(generateRandomNumberBetween(MINCHAR,MAXCHAR),MAXVALUE);
-		
+
+		//init genre
 		String gender;
 		int random_flag = generateRandomNumberBetween(0,2);
 		if(random_flag==0){gender = "M";}
 		else if(random_flag==1){gender = "F";}
 		else{gender = "K";}
 		
+		//user created
 		User random_user = new User(username,gender);
 		return random_user;
+	}
+
+	public static ArrayList<Long> generateFoodIds(){
+		int nb_of_pref = generateRandomNumberBetween(1,20);
+		ArrayList<Long> Ids = new ArrayList<Long>();
+		for (int i=0; i<nb_of_pref ; ++i){
+			Ids.add(new Long(generateRandomNumberBetween(1,63016)));
+		}
+		return Ids;
 	}
 	
 	
@@ -104,6 +153,24 @@ public class Random_user_generator
 	
 	//input : number of random users desired
 	//output : List of randomly generated users
+	public static ArrayList<User> getRandomUsersComplete(int length)
+	{
+		ArrayList<User> random_users = new ArrayList<User>();
+		for(int i=0 ; i<length ; ++i)
+		{
+			User random_user = generateRandomUserComplete();
+			if(CHECK)
+			{
+				if(!alreadyExists(random_user))
+				{
+					random_users.add(random_user);
+				}
+			}
+			else{random_users.add(random_user);}
+		}
+		return random_users;
+	}
+
 	public static ArrayList<User> getRandomUsers(int length)
 	{
 		ArrayList<User> random_users = new ArrayList<User>();
@@ -130,10 +197,7 @@ public class Random_user_generator
 		for (int i=0 ; i<random_users_list.size() ; ++i)
 		{
 			User u = random_users_list.get(i);
-			System.out.print(u.getUsername());
-			System.out.print(" - ");
-			System.out.print(u.getGender());
-			System.out.print("\n");
+			System.out.println(u.getUsername()+" - "+ u.getGender()+"\n");
 		}
 	}
 	
@@ -150,14 +214,49 @@ public class Random_user_generator
 		
 		for (int i=0 ; i<random_users_list.size() ; ++i)
 		{	
-			values+= "(";
+			values+= "('";
 			values += random_users_list.get(i).getUsername();
-			values += ",";
+			values += "','";
 			values += random_users_list.get(i).getGender();
-			values += ")";
+			values += "')";
 			if (i != random_users_list.size()-1){values += ",";}
 		}
 		SQL_instruction = "INSERT INTO User (username,gender) VALUES"+values+";";
+		return SQL_instruction;
+	}
+
+
+	//Function called AFTER random users have been into DB (then they have an id to work with)
+	public static String SQL_generatePrefInsertionInstruction(ArrayList<User> randUserList)
+	{
+		String SQL_instruction = new String();
+		String values = new String();
+
+		for(int i = 0; i<randUserList.size(); ++i)
+		{
+			String userId = String.valueOf(randUserList.get(i).getId());
+			for(int j = 0 ; j<randUserList.get(i).getAppreciatedFood().size() ; ++j){
+				values += "(";
+				values += userId;
+				values += ",";
+				values += randUserList.get(i).getAppreciatedFood().get(j).getId();
+				values+= ",'+')";
+				if (j != randUserList.get(i).getAppreciatedFood().size()-1){values += ",";}
+				//else if(randUserList.get(i).getDepreciatedFood().size()!=0){values += ",";}
+			}
+			values += ",";
+			for(int j = 0 ; j<randUserList.get(i).getDepreciatedFood().size() ; ++j){
+				values += "(";
+				values += userId;
+				values += ",";
+				values += randUserList.get(i).getDepreciatedFood().get(j).getId();
+				values+= ",'-')";
+				if (j != randUserList.get(i).getDepreciatedFood().size()-1){values += ",";}
+			}
+			if(i!= randUserList.size()-1){values += ',';}
+		}
+		SQL_instruction = "INSERT INTO User_preferences (numUser,numFood,rank) VALUES"+values+";";
+		//System.out.println(SQL_instruction);
 		return SQL_instruction;
 	}
 	

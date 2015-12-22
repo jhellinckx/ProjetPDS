@@ -40,6 +40,11 @@ public class FoodDAOImpl implements FoodDAO {
 	public Food findById(Long id) throws DAOException {
         return find( SQL_SELECT_BY_ID, id );
 	}
+
+    @Override
+    public List<Food> findByIds(List<Long> ids) throws DAOException{
+        return find(SQL_SELECT_BY_ID, ids);
+    }
 	
 	@Override
 	/* Juse utilisee pr les test at the moment */
@@ -72,6 +77,52 @@ public class FoodDAOImpl implements FoodDAO {
         return messages;
     }
 
+
+
+    private List<Food> find( String sqlQuery, List<Long> parameter ){
+        List<Food> foodList = new ArrayList<Food>();
+        for(int i = 0 ; i<parameter.size() ; ++i){
+            foodList.add(find(sqlQuery, parameter.get(i)));
+        }
+        /*
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Food food = null;
+        List<Food> foodList = new ArrayList<Food>();
+
+        try {
+            // Recuperation d'une connexion depuis la Factory 
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, sqlQuery, false);
+            int i = 0;
+            for(Long id : parameter){
+                preparedStatement.setString(1,String.valueOf(parameter.get(i)));
+                //preparedStatement.addBatch();
+                i++;
+                //if(i%100 == 0 || i == parameter.size()){
+                   // preparedStatement.executeBatch();
+                //}
+            
+                preparedStatement.executeQuery();
+            }
+            // Parcours de la ligne de donnees de l'eventuel ResulSet retourne 
+            
+            if ( resultSet.next() ) {
+                food = map( resultSet );
+                foodList.add(food);
+            }
+            
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+        */
+
+        return foodList;
+    }
+    
 	private Food find( String sqlQuery, String parameter ){
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;
@@ -79,11 +130,11 @@ public class FoodDAOImpl implements FoodDAO {
         Food food = null;
 
         try {
-            /* Recuperation d'une connexion depuis la Factory */
+            // Recuperation d'une connexion depuis la Factory 
             connexion = daoFactory.getConnection();
             preparedStatement = initializationPreparedRequest( connexion, sqlQuery, false, parameter );
             resultSet = preparedStatement.executeQuery();
-            /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
+            // Parcours de la ligne de donnees de l'eventuel ResulSet retourne 
             if ( resultSet.next() ) {
                 food = map( resultSet );
             }
@@ -96,6 +147,8 @@ public class FoodDAOImpl implements FoodDAO {
         return food;
 	}
 	
+
+
 	private Food find( String sqlQuery, Long parameter ){
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;

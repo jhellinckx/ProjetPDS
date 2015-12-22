@@ -49,6 +49,25 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 
 	@Override
+	public void create(Long id_user, Long id_food, String rank) throws IllegalArgumentException, DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, id_user, id_food, rank );
+			int statut = preparedStatement.executeUpdate();
+			if (statut == 0) {
+				throw new DAOException ("Failed to create a user preference, no new line added to the DB");
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			silentClosures(preparedStatement, connection );
+		}
+	}
+
+	@Override
 	public List<Food> findUserAppreciatedFood(User user) throws DAOException {
 		return findDe_AppreciatedFood( user , "+" );
 	}

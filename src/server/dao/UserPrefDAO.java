@@ -8,6 +8,8 @@ import items.Food;
 public interface UserPrefDAO {
 	
 	void create( User user, Food food , String rank) throws DAOException;
+
+	void create(Long id_user, Long id_food, String rank) throws IllegalArgumentException, DAOException;
 	
 	List<Food> findUserAppreciatedFood( User user ) throws DAOException;
 	
