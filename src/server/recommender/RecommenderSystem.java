@@ -3,11 +3,11 @@ import java.util.ArrayList;
 
 public class RecommenderSystem {
 
-	private static FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
-	private static ItemItemStrategy default_recom_strat = new ItemItemStrategy();
+	private static final FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
 	
 	private ArrayList<RecommendationStrategy> recomstrategies;
 	private HybridationStrategy hybridstrategy;
+	private int recommendationsRequired = 0;
 	
 	public RecommenderSystem(RecommendationStrategy rstrat, HybridationStrategy hstrat){
 		recomstrategies = new ArrayList<RecommendationStrategy>();
@@ -25,8 +25,13 @@ public class RecommenderSystem {
 	public RecommenderSystem(){
 		recomstrategies = new ArrayList<RecommendationStrategy>();
 	}
+
+	public void setNumberRecommendations(int nb){
+		recommendationsRequired = nb;
+	}
 	
 	public void addRecommendationStrategy(RecommendationStrategy rstrat){
+		rstrat.setRecommendationsNumber(recommendationsRequired);
 		recomstrategies.add(rstrat);
 		if (hybridstrategy == null && recomstrategies.size() > 1){
 
@@ -39,10 +44,7 @@ public class RecommenderSystem {
 	}
 	
 	public void recommendAnItem(){
-		if (recomstrategies.isEmpty()){
-			recomstrategies.add(RecommenderSystem.default_recom_strat);
-		}
-
+		
 		if (recomstrategies.size() == 1){			// Hybridation useless for 1 recommendation system.
 			recomstrategies.get(0).recommend();
 		}

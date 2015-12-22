@@ -30,9 +30,9 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	protected ArrayList<User> userData;
 	protected RatingMatrix ratingMatrix;
 
-	public void CollaborativeStrategy(){
+	public CollaborativeStrategy(UserPrefDAOImpl pref){
 		ratingPredictions = new ArrayList<FoodRatingPair>();
-		ratingMatrix = new RatingMatrix();
+		ratingMatrix = new RatingMatrix(pref);
 		recommendationsRequired = 0;
 	}
 
@@ -47,16 +47,12 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		recommendationsRequired = nb;
 	}
 
-	public void setUserPrefDAO(UserPrefDAOImpl upDAO){
-		ratingMatrix.setUserPrefDAO(upDAO);
-	}
-
 	protected final class RatingMatrix{		// nested class used to get all notes for a food/a user.
 
 		private UserPrefDAO preferences;
 
-		public void setUserPrefDAO(UserPrefDAOImpl upDAO){
-			preferences = upDAO;
+		public RatingMatrix(UserPrefDAOImpl pref){
+			preferences = pref;
 		}
 
 		public HashMap getUsersAndRankForFood(Food food){
