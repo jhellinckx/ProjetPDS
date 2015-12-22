@@ -84,42 +84,6 @@ public class FoodDAOImpl implements FoodDAO {
         for(int i = 0 ; i<parameter.size() ; ++i){
             foodList.add(find(sqlQuery, parameter.get(i)));
         }
-        /*
-        Connection connexion = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        Food food = null;
-        List<Food> foodList = new ArrayList<Food>();
-
-        try {
-            // Recuperation d'une connexion depuis la Factory 
-            connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, sqlQuery, false);
-            int i = 0;
-            for(Long id : parameter){
-                preparedStatement.setString(1,String.valueOf(parameter.get(i)));
-                //preparedStatement.addBatch();
-                i++;
-                //if(i%100 == 0 || i == parameter.size()){
-                   // preparedStatement.executeBatch();
-                //}
-            
-                preparedStatement.executeQuery();
-            }
-            // Parcours de la ligne de donnees de l'eventuel ResulSet retourne 
-            
-            if ( resultSet.next() ) {
-                food = map( resultSet );
-                foodList.add(food);
-            }
-            
-        } catch ( SQLException e ) {
-            throw new DAOException( e );
-        } finally {
-            silentClosures( resultSet, preparedStatement, connexion );
-        }
-        */
-
         return foodList;
     }
     
