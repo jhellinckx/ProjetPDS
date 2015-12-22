@@ -224,40 +224,5 @@ public class Random_user_generator
 		SQL_instruction = "INSERT INTO User (username,gender) VALUES"+values+";";
 		return SQL_instruction;
 	}
-
-
-	//Function called AFTER random users have been into DB (then they have an id to work with)
-	public static String SQL_generatePrefInsertionInstruction(ArrayList<User> randUserList)
-	{
-		String SQL_instruction = new String();
-		String values = new String();
-
-		for(int i = 0; i<randUserList.size(); ++i)
-		{
-			String userId = String.valueOf(randUserList.get(i).getId());
-			for(int j = 0 ; j<randUserList.get(i).getAppreciatedFood().size() ; ++j){
-				values += "(";
-				values += userId;
-				values += ",";
-				values += randUserList.get(i).getAppreciatedFood().get(j).getId();
-				values+= ",'+')";
-				if (j != randUserList.get(i).getAppreciatedFood().size()-1){values += ",";}
-				//else if(randUserList.get(i).getDepreciatedFood().size()!=0){values += ",";}
-			}
-			values += ",";
-			for(int j = 0 ; j<randUserList.get(i).getDepreciatedFood().size() ; ++j){
-				values += "(";
-				values += userId;
-				values += ",";
-				values += randUserList.get(i).getDepreciatedFood().get(j).getId();
-				values+= ",'-')";
-				if (j != randUserList.get(i).getDepreciatedFood().size()-1){values += ",";}
-			}
-			if(i!= randUserList.size()-1){values += ',';}
-		}
-		SQL_instruction = "INSERT INTO User_preferences (numUser,numFood,rank) VALUES"+values+";";
-		//System.out.println(SQL_instruction);
-		return SQL_instruction;
-	}
 	
 }
