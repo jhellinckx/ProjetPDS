@@ -26,8 +26,9 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	protected int recommendationsRequired;
 	protected ArrayList<Food> recommendations;
 	protected ArrayList<FoodRatingPair> ratingPredictions;       // nested pair <Food, Rating>, used for sorting recommendations.
-	protected ArrayList<Food> foodData;
-	protected ArrayList<User> userData;
+	protected ArrayList<Food> foodData = null;
+	protected ArrayList<User> userData = null;
+	protected User currentUser = null;
 	protected RatingMatrix ratingMatrix;
 
 	public CollaborativeStrategy(UserPrefDAOImpl pref){
@@ -37,10 +38,11 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users ){  
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){  
 
 		foodData = foods;
 		userData = users;
+		currentUser = curUser;
 	}
 
 	public void setRecommendationsNumber(int nb){

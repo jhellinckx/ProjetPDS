@@ -8,7 +8,7 @@ public abstract class ContentBasedStrategy implements RecommendationStrategy{
 
 	protected int recommendationsRequired;
 
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users){
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){
 		
 	}
 

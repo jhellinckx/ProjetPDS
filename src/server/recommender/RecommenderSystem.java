@@ -1,6 +1,9 @@
 package recommender;
 import java.util.ArrayList;
 
+import items.User;
+import items.Food;
+
 public class RecommenderSystem {
 
 	private static final FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
@@ -54,5 +57,15 @@ public class RecommenderSystem {
 		
 		
 	}
+
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User currentUser){
+		int size = recomstrategies.size();
+
+		for (int i = 0; i < size; i++){
+			recomstrategies.get(i).updateData(foods, users, currentUser);
+		}
+	}
+
+
 
 }
