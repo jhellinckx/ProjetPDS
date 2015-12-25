@@ -21,8 +21,8 @@ RESET = "\033[0m"
 
 db_name = "db_appli"
 db_properties_filename = "../dao/dao.properties"
-ingredients_filename = "db_ingredients.txt"
-recipes_filename = "db_recipes.txt"
+ingredients_filename = "raw/db_ingredients.txt"
+recipes_filename = "raw/db_recipes.txt"
 
 def db_params():
 	username = None
@@ -148,10 +148,11 @@ def add_recipes_in_db():
 		REFERENCES `Recipes` (`id`)")
 
 	recipes_ingredients_binding_command = (
-		"INSERT INTO RecipesIngredientsLists "
-		"(ingredient_id, recipe_id) "
-		"VALUES ((SELECT id from Ingredients WHERE name=%(ingredient_name)s),"
-		" (SELECT id from Recipes WHERE url=%(recipe_url)s))")
+		"INSERT INTO RecipesIngredientsLists"
+		" (ingredient_id, recipe_id) VALUES ")
+
+	recipes_ingredients_ids = "((SELECT id from Ingredients WHERE name=%(ingredient_name)s), (SELECT id from Recipes WHERE url=%(recipe_url)s))"
+
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
@@ -181,14 +182,22 @@ def add_recipes_in_db():
 	recipes_file.close()
 	i = 1
 	for recipe in recipes_list:
-		ingredients_list = recipe.pop("ingredients", None) # Remove ingredients key to use it in RecipesIngredientsLists insert
+		raw_ingredients_list = recipe.pop("ingredients", None).split(", ") # Remove ingredients key to use it in RecipesIngredientsLists insert
+		unique_ingredients_list = []
+		for ingredient in raw_ingredients_list:
+			if ingredient not in unique_ingredients_list:
+				unique_ingredients_list.append(ingredient)
+
 		index_format = "%" + str(len(str(len(recipes_list)))) + "d"
 		indicator = "["+index_format+"/"+index_format+"]"
 		sys.stdout.write(indicator%(i, len(recipes_list)) + " Inserting " + YELLOW + recipe["title"] + RESET + " into " + MAGENTA + "Recipes" + RESET + "... ")
 		try:
 			cursor.execute(recipes_insert_command, recipe)
-			for ingredient in ingredients_list:
-				cursor.execute(recipes_ingredients_binding_command, {"ingredient_name" : ingredient, "recipe_url" : recipe["href"]})
+			preparedBindingInsert = recipes_ingredients_binding_command 
+			for ingredient in unique_ingredients_list:
+				preparedBindingInsert += recipes_ingredients_ids%{"ingredient_name" : ingredient, "recipe_url" : recipe["href"]}
+				preparedBindingInsert += ", "
+			cursor.execute(preparedBindingInsert[:-2],multi=True)
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
