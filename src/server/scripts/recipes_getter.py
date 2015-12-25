@@ -24,8 +24,9 @@ def recipes_from_recipepuppy():
 		responseDict = ast.literal_eval(response.content)
 		recipes = responseDict["results"]
 		for recipe in recipes :
-			all_recipes.append(recipe)
-	f = open("recipes.txt","w+")
+			if "allrecipes" in recipe["href"]:
+				all_recipes.append(recipe)
+	f = open("allrecipes.txt","w+")
 	f.write(str(all_recipes))
 
 def parse_recipe_info(url):
