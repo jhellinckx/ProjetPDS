@@ -8,11 +8,12 @@ try:
 	from mysql.connector import errorcode
 
 except: # no mysql.connector
-	print "Error : need MySQL python connector (provided by Oracle at https://dev.mysql.com/downloads/connector/python/)"
+	print "Error : need MySQL python connector (provided by Oracle at https://dev.mysql.com/downloads/connector/python/).\n\
+	Ubuntu install : http://codeinthehole.com/writing/how-to-set-up-mysql-for-python-on-ubuntu/"
 	sys.exit()
 
-BLUE = "\033[33m"
-CYAN = "\033[35m"
+YELLOW = "\033[33m"
+MAGENTA = "\033[35m"
 GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
@@ -43,7 +44,7 @@ def drop_added_tables_in_db(tables=None):
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 	for table in tables:
-		sys.stdout.write("Dropping " + BLUE + table + RESET + " table... ")
+		sys.stdout.write("Dropping " + MAGENTA + table + RESET + " table... ")
 		try:
 			cursor.execute(drop_command%table)
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -73,7 +74,7 @@ def add_ingredients_in_db():
 	cursor = cnx.cursor()
 
 	# Create RecipesIngredients table
-	sys.stdout.write("Creating " + BLUE + "RecipesIngredients" + RESET + " table... ")
+	sys.stdout.write("Creating " + MAGENTA + "RecipesIngredients" + RESET + " table... ")
 	try:
 		cursor.execute(ingredients_table_command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -85,7 +86,7 @@ def add_ingredients_in_db():
 	ingredients_list = ast.literal_eval(ingredients_file.read())
 	ingredients_file.close()
 	for ingredient in ingredients_list:
-		sys.stdout.write("Inserting " + CYAN + ingredient + RESET + " into " + BLUE + "RecipesIngredients" + RESET + "... ")
+		sys.stdout.write("Inserting " + YELLOW + ingredient + RESET + " into " + MAGENTA + "RecipesIngredients" + RESET + "... ")
 		try:
 			cursor.execute(ingredients_insert_command, {"name" : ingredient})
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -143,7 +144,7 @@ def add_recipes_in_db():
 	cursor = cnx.cursor()
 
 	# Create Recipes table
-	sys.stdout.write("Creating " + BLUE + "Recipes" + RESET + " table... ")
+	sys.stdout.write("Creating " + MAGENTA + "Recipes" + RESET + " table... ")
 	try:
 		cursor.execute(recipes_table_command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -151,7 +152,7 @@ def add_recipes_in_db():
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 
 	# Create RecipesIngredientsLists table
-	sys.stdout.write("Creating " + BLUE + "RecipesIngredientsLists" + RESET + " table... ")
+	sys.stdout.write("Creating " + MAGENTA + "RecipesIngredientsLists" + RESET + " table... ")
 	try:
 		cursor.execute(recipes_ingredients_lists_table_command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -164,7 +165,7 @@ def add_recipes_in_db():
 	recipes_file.close()
 	for recipe in recipes_list:
 		ingredients_list = recipe.pop("ingredients", None) # Remove ingredients key to use it in RecipesIngredientsLists insert
-		sys.stdout.write("Inserting " + CYAN + recipe["title"] + RESET + " into " + BLUE + "Recipes" + RESET + "... ")
+		sys.stdout.write("Inserting " + YELLOW + recipe["title"] + RESET + " into " + MAGENTA + "Recipes" + RESET + "... ")
 		try:
 			cursor.execute(recipes_insert_command, recipe)
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
