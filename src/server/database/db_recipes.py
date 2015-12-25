@@ -36,14 +36,20 @@ def db_params():
 	return (username, password)
 
 def drop_added_tables_in_db(tables=None):
-	if tables == None : tables = ["RecipesIngredients"]
+	if tables == None : tables = ["RecipesIngredients", "Recipes", "RecipesIngredientsLists"]
 	drop_command = ("DROP TABLE `%s`")
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 	for table in tables:
-		cursor.execute(drop_command%table)
+		sys.stdout.write("Dropping " + BLUE + table + RESET + " table... ")
+		try:
+			cursor.execute(drop_command%table)
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+		except mysql.connector.Error as err:
+			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+		
 
 	cnx.commit()
 	cursor.close()
@@ -123,6 +129,10 @@ def add_recipes_in_db():
 		"ALTER TABLE `RecipesIngredientsLists` ADD FOREIGN KEY (recipe_id)\
 		REFERENCES `Recipes` (`id`)")
 
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
 	# Create Recipes table
 	sys.stdout.write("Creating " + BLUE + "Recipes" + RESET + " table... ")
 	try:
@@ -131,7 +141,18 @@ def add_recipes_in_db():
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 
+	# Create RecipesIngredientsLists table
+	sys.stdout.write("Creating " + BLUE + "RecipesIngredientsLists" + RESET + " table... ")
+	try:
+		cursor.execute(recipes_ingredients_lists_table_command)
+		sys.stdout.write(GREEN + "OK" + RESET + "\n")
+	except mysql.connector.Error as err:
+		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+
+	cnx.commit()
+	cursor.close()
+	cnx.close()
 
 drop_added_tables_in_db()
-add_ingredients_in_db()
+add_recipes_in_db()
 
