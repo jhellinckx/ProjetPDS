@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
 import sys
 import ast
@@ -43,6 +44,7 @@ def drop_added_tables_in_db(tables=None):
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
+	cursor.execute(("SET FOREIGN_KEY_CHECKS=0"))
 	for table in tables:
 		sys.stdout.write("Dropping " + MAGENTA + table + RESET + " table... ")
 		try:
@@ -50,7 +52,9 @@ def drop_added_tables_in_db(tables=None):
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
-		
+	
+	cursor.execute(("SET FOREIGN_KEY_CHECKS=1"))
+
 
 	cnx.commit()
 	cursor.close()
@@ -85,13 +89,17 @@ def add_ingredients_in_db():
 	ingredients_file = open(ingredients_filename, "r")
 	ingredients_list = ast.literal_eval(ingredients_file.read())
 	ingredients_file.close()
+	i = 1
 	for ingredient in ingredients_list:
-		sys.stdout.write("Inserting " + YELLOW + ingredient + RESET + " into " + MAGENTA + "RecipesIngredients" + RESET + "... ")
+		index_format = "%" + str(len(str(len(ingredients_list)))) + "d"
+		indicator = "["+index_format+"/"+index_format+"]"
+		sys.stdout.write(indicator%(i, len(ingredients_list)) + " Inserting " + YELLOW + ingredient + RESET + " into " + MAGENTA + "RecipesIngredients" + RESET + "... ")
 		try:
 			cursor.execute(ingredients_insert_command, {"name" : ingredient})
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+		i += 1
 
 	cnx.commit()
 	cursor.close()
@@ -118,7 +126,7 @@ def add_recipes_in_db():
 		"INSERT INTO Recipes "
 		"(rating, n_ratings, calories, fatContent,"
 		" carbsContent, cholesterolContent, proteinContent,"
-		" url, thumbnail, title)"
+		" url, thumbnail, title) "
 		"VALUES (%(rating)s, %(n_ratings)s, %(calories)s, %(fatContent)s,"
 		" %(carbohydrateContent)s, %(cholesterolContent)s, %(proteinContent)s,"
 		" %(href)s, %(thumbnail)s, %(title)s)")
@@ -139,6 +147,12 @@ def add_recipes_in_db():
 		"ALTER TABLE `RecipesIngredientsLists` ADD FOREIGN KEY (recipe_id)\
 		REFERENCES `Recipes` (`id`)")
 
+	recipes_ingredients_binding_command = (
+		"INSERT INTO RecipesIngredientsLists "
+		"(ingredient_id, recipe_id) "
+		"VALUES ((SELECT id from Ingredients WHERE name=%(ingredient_name)s),"
+		" (SELECT id from Recipes WHERE url=%(recipe_url)s))")
+
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
@@ -155,6 +169,8 @@ def add_recipes_in_db():
 	sys.stdout.write("Creating " + MAGENTA + "RecipesIngredientsLists" + RESET + " table... ")
 	try:
 		cursor.execute(recipes_ingredients_lists_table_command)
+		cursor.execute(recipe_id_foreign_key_command)
+		cursor.execute(ingredient_id_foreign_key_command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
@@ -163,21 +179,28 @@ def add_recipes_in_db():
 	recipes_file = open(recipes_filename, "r")
 	recipes_list = ast.literal_eval(recipes_file.read())
 	recipes_file.close()
+	i = 1
 	for recipe in recipes_list:
 		ingredients_list = recipe.pop("ingredients", None) # Remove ingredients key to use it in RecipesIngredientsLists insert
-		sys.stdout.write("Inserting " + YELLOW + recipe["title"] + RESET + " into " + MAGENTA + "Recipes" + RESET + "... ")
+		index_format = "%" + str(len(str(len(recipes_list)))) + "d"
+		indicator = "["+index_format+"/"+index_format+"]"
+		sys.stdout.write(indicator%(i, len(recipes_list)) + " Inserting " + YELLOW + recipe["title"] + RESET + " into " + MAGENTA + "Recipes" + RESET + "... ")
 		try:
 			cursor.execute(recipes_insert_command, recipe)
+			for ingredient in ingredients_list:
+				cursor.execute(recipes_ingredients_binding_command, {"ingredient_name" : ingredient, "recipe_url" : recipe["href"]})
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+		i += 1
 
 
 	cnx.commit()
 	cursor.close()
 	cnx.close()
 
-drop_added_tables_in_db()
-add_ingredients_in_db()
-add_recipes_in_db()
+if __name__ == '__main__':
+	drop_added_tables_in_db()
+	add_ingredients_in_db()
+	add_recipes_in_db()
 
