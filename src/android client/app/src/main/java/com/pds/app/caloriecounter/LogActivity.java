@@ -1,5 +1,6 @@
 package com.pds.app.caloriecounter;
 
+import android.app.ProgressDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.content.Intent;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
@@ -21,19 +23,14 @@ public class LogActivity extends NotifiableActivity {
     @Bind(R.id.input_username) EditText _usernameText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.link_signup) TextView _linkSignup;
+    @Bind(R.id.connection_state) View _connectionState;
 
     private void initButtonListener(){
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = _usernameText.getText().toString();
-                if (username.isEmpty()) {
-                    setErrorMsg("Empty field");
-                } else {
-                    JSONObject data = new JSONObject();
-                    data.put(USERNAME, username);
-                    send(networkJSON(SIGN_UP_REQUEST, data));
-                }
+                onLogin();
+
             }
         });
 
@@ -68,6 +65,33 @@ public class LogActivity extends NotifiableActivity {
 
     }
 
+    public void onLogin() {
+        /* Update GUI */
+        _loginButton.setEnabled(false);
+        final ProgressDialog progressDialog = new ProgressDialog(LogActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        onLoginFailed();
+                        progressDialog.dismiss();
+                    }
+                }, 3000
+        );
+
+        /* Get credentials */
+        String username = _usernameText.getText().toString();
+        if (username.isEmpty()) {
+            setErrorMsg("Empty field");
+        } else {
+            JSONObject data = new JSONObject();
+            data.put(USERNAME, username);
+            send(networkJSON(SIGN_UP_REQUEST, data));
+        }
+    }
+
     public void onLoginResponse(JSONObject data){
         String response = (String) data.get(LOG_IN_RESPONSE);
         if(response.equals(LOG_IN_SUCCESS)){
@@ -87,23 +111,17 @@ public class LogActivity extends NotifiableActivity {
 
     }
 
-    public void onSignupResponse(JSONObject data){
-        String response = (String) data.get(SIGN_UP_RESPONSE);
-        if(response.equals(SIGN_UP_SUCCESS)){
-            Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-            startActivity(personalActivity);
-        }
-        else if(response.equals(SIGN_UP_FAILURE)){
-            String reason = (String)data.get(REASON);
-            if(reason.equals(SIGN_UP_USERNAME_EXISTS)){
-                setErrorMsg("This username already exists");
-            }
-            else if(reason.equals(SIGN_UP_ALREADY_CONNECTED)){
-                setErrorMsg("This username is already connected");
-            }
-        }
-
+    public void onLoginSuccess() {
+        _loginButton.setEnabled(true);
+        finish();
     }
+
+    public void onLoginFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        _loginButton.setEnabled(true);
+    }
+
 
     public void setConnected(){
         runOnUiThread(new Runnable() {
@@ -147,11 +165,15 @@ public class LogActivity extends NotifiableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-        signup = (Button) findViewById(R.id.btn_signup);
-        login = (Button) findViewById(R.id.btn_login);
-        usernametext = (TextView) findViewById(R.id.input_username);
+        ButterKnife.bind(this);
         initButtonListener();
 
         updateWithNetInfo(); //inherited from NotifiableActivity
     }
 }
+
+    /* Don't go back to main activity ! */
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }

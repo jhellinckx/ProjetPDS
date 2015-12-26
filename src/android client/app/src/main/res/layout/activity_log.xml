@@ -12,6 +12,7 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
+
         <ImageView android:src="@drawable/logo"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
@@ -54,5 +55,12 @@
             android:gravity="center"
             android:textSize="16dip"/>
 
+
+        <View android:background="@drawable/connection_state"
+            android:layout_height="15dp"
+            android:layout_width="15dp"
+            android:layout_gravity="end"
+            android:id="@+id/connection_state">
     </LinearLayout>
+
 </ScrollView>
