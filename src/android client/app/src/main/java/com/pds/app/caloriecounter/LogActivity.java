@@ -7,59 +7,42 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.simple.JSONObject;
 
 import static org.calorycounter.shared.Constants.network.*;
+import butterknife.ButterKnife;
+import butterknife.Bind;
 
 public class LogActivity extends NotifiableActivity {
-    private Button signup = null;
-    private Button login = null;
-    private Button retry = null;
-    private TextView usernametext = null;
-    private TextView connectionState = null;
-    private TextView errormessage = null;
+    @Bind(R.id.btn_login) Button _loginButton;
+    @Bind(R.id.input_username) EditText _usernameText;
+    @Bind(R.id.input_password) EditText _passwordText;
+    @Bind(R.id.link_signup) TextView _linkSignup;
 
     private void initButtonListener(){
-        signup.setOnClickListener(new View.OnClickListener() {
+        _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Todo Send to server and check id. true ? : next activity,show error;
-                /*
-                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-                startActivity(personalActivity);
-                */
-                String username = usernametext.getText().toString();
+                String username = _usernameText.getText().toString();
                 if (username.isEmpty()) {
                     setErrorMsg("Empty field");
                 } else {
                     JSONObject data = new JSONObject();
                     data.put(USERNAME, username);
-                    send(networkJSON(SIGN_UP_REQUEST, d            }
+                    send(networkJSON(SIGN_UP_REQUEST, data));
+                }
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
+        _linkSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Todo Send to server and check id. true ? : next activity,show error;
-                String username = usernametext.getText().toString();
-                if(username.isEmpty()){
-                    setErrorMsg("Empty field");
-                }
-                else {
-                    JSONObject data = new JSONObject();
-                    data.put(USERNAME, username);
-                    send(networkJSON(LOG_IN_REQUEST, data));
-                }
-            }
-        });
-        retry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setWaitConnect();
-                retryConnect();
+                Intent signActivity = new Intent(LogActivity.this, SignActivity.class);
+                startActivity(signActivity);
+
             }
         });
     }
@@ -164,12 +147,9 @@ public class LogActivity extends NotifiableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-        signup = (Button) findViewById(R.id.signup);
-        login = (Button) findViewById(R.id.login);
-        retry = (Button) findViewById(R.id.retry);
-        usernametext = (TextView) findViewById(R.id.usernametext);
-        connectionState = (TextView) findViewById(R.id.connectionState);
-        errormessage = (TextView) findViewById(R.id.errormessage);
+        signup = (Button) findViewById(R.id.btn_signup);
+        login = (Button) findViewById(R.id.btn_login);
+        usernametext = (TextView) findViewById(R.id.input_username);
         initButtonListener();
 
         updateWithNetInfo(); //inherited from NotifiableActivity
