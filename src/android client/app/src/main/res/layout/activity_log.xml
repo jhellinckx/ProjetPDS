@@ -56,11 +56,11 @@
             android:textSize="16dip"/>
 
 
-        <View android:background="@drawable/connection_state"
+        <View android:background="@drawable/connection_state_failure"
             android:layout_height="15dp"
             android:layout_width="15dp"
             android:layout_gravity="end"
-            android:id="@+id/connection_state">
+            android:id="@+id/connection_state"/>
     </LinearLayout>
 
 </ScrollView>

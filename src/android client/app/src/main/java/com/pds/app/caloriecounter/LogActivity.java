@@ -3,6 +3,8 @@ package com.pds.app.caloriecounter;
 import android.app.ProgressDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -59,13 +61,38 @@ public class LogActivity extends NotifiableActivity {
         else if(request.equals(LOG_IN_REQUEST)){
             onLoginResponse(data);
         }
-        else if(request.equals(SIGN_UP_REQUEST)){
-            onSignupResponse(data);
+    }
+
+    public boolean validate(String username, String password){
+        boolean valid = true;
+        if(username.isEmpty()) {
+            _usernameText.setError("Username cannot be empty");
+            valid = false;
+        }
+        else{
+            _usernameText.setError(null);
         }
 
+        if(password.isEmpty()){
+            _passwordText.setError("Password cannot be empty");
+            valid = false;
+        }
+        else{
+            _passwordText.setError(null);
+        }
+        return valid;
     }
 
     public void onLogin() {
+         /* Get credentials */
+        String username = _usernameText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        /* Client side verification first */
+        if(!validate(username, password)) {
+            onLoginFailed();
+            return;
+        }
         /* Update GUI */
         _loginButton.setEnabled(false);
         final ProgressDialog progressDialog = new ProgressDialog(LogActivity.this);
@@ -81,54 +108,50 @@ public class LogActivity extends NotifiableActivity {
                 }, 3000
         );
 
-        /* Get credentials */
-        String username = _usernameText.getText().toString();
-        if (username.isEmpty()) {
-            setErrorMsg("Empty field");
-        } else {
-            JSONObject data = new JSONObject();
-            data.put(USERNAME, username);
-            send(networkJSON(SIGN_UP_REQUEST, data));
-        }
+        /* Send credentials for server side verification */
+        JSONObject data = new JSONObject();
+        data.put(USERNAME, username);
+        send(networkJSON(SIGN_UP_REQUEST, data));
     }
 
     public void onLoginResponse(JSONObject data){
         String response = (String) data.get(LOG_IN_RESPONSE);
         if(response.equals(LOG_IN_SUCCESS)){
-            Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-            startActivity(personalActivity);
+            onLoginSuccess();
         }
         else if(response.equals(LOG_IN_FAILURE)){
             String reason = (String)data.get(REASON);
             if(reason.equals(LOG_IN_ALREADY_CONNECTED)){
-                setErrorMsg("This username is already connected");
+                _usernameText.setError("Username already connected");
             }
             else if(reason.equals(LOG_IN_USERNAME_NOT_FOUND)){
-                setErrorMsg("Username not found");
+                _usernameText.setError("Username not found");
             }
-
+            onLoginFailed();
         }
-
     }
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+        Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
+        startActivity(personalActivity);
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         _loginButton.setEnabled(true);
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
     }
 
 
     public void setConnected(){
         runOnUiThread(new Runnable() {
             public void run() {
-                connectionState.setText("Connection success");
-                connectionState.setTextColor(Color.GREEN);
-                retry.setVisibility(View.GONE);
+                final int sdk = android.os.Build.VERSION.SDK_INT;
+                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    _connectionState.setBackgroundDrawable(getResources().getDrawable(R.drawable.connection_state_success));
+                } else {
+                    _connectionState.setBackground(getResources().getDrawable(R.drawable.connection_state_success));
+                }
             }
         });
     }
@@ -136,27 +159,12 @@ public class LogActivity extends NotifiableActivity {
     public void setDisconnected(){
         runOnUiThread(new Runnable() {
             public void run() {
-                connectionState.setText("Connection failure");
-                connectionState.setTextColor(Color.RED);
-                retry.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    public void setWaitConnect(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                connectionState.setText("Connecting...");
-                connectionState.setTextColor(Color.GRAY);
-            }
-        });
-    }
-
-    public void setErrorMsg(final String errormsg){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                errormessage.setText(errormsg);
-                errormessage.setVisibility(View.VISIBLE);
+                final int sdk = android.os.Build.VERSION.SDK_INT;
+                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    _connectionState.setBackgroundDrawable(getResources().getDrawable(R.drawable.connection_state_failure));
+                } else {
+                    _connectionState.setBackground(getResources().getDrawable(R.drawable.connection_state_failure));
+                }
             }
         });
     }
