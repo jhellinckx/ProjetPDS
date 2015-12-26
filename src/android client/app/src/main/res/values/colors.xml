@@ -4,9 +4,11 @@
     <color name="colorPrimaryDark">#22780F</color>
     <color name="colorAccent">#000000</color>
     <color name="greenfont">#0e4303</color>
-    
+
     <color name="snowy_mint">#CCFFCC</color>
     <color name="pacific_blue">#0099CC</color>
     <color name="malibu"> #66CCFF</color>
     <color name="smalt"> #003399</color>
+
+    <color name="box_background">#ffffff</color>
 </resources>

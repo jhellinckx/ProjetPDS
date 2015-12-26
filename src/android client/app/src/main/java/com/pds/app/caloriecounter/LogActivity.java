@@ -36,8 +36,7 @@ public class LogActivity extends NotifiableActivity {
                 } else {
                     JSONObject data = new JSONObject();
                     data.put(USERNAME, username);
-                    send(networkJSON(SIGN_UP_REQUEST, data));
-                }
+                    send(networkJSON(SIGN_UP_REQUEST, d            }
             }
         });
 
