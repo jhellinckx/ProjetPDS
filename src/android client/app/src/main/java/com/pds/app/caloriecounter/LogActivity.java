@@ -1,10 +1,6 @@
 package com.pds.app.caloriecounter;
 
 import android.app.ProgressDialog;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -27,12 +23,21 @@ public class LogActivity extends NotifiableActivity {
     @Bind(R.id.link_signup) TextView _linkSignup;
     @Bind(R.id.connection_state) View _connectionState;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_log);
+        ButterKnife.bind(this);
+        initButtonListener();
+
+        updateWithNetInfo(); //TODO deprecated when onHoldMessages handled in NetworkHandler!!
+    }
+
     private void initButtonListener(){
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onLogin();
-
             }
         });
 
@@ -41,9 +46,14 @@ public class LogActivity extends NotifiableActivity {
             public void onClick(View v) {
                 Intent signActivity = new Intent(LogActivity.this, SignActivity.class);
                 startActivity(signActivity);
-
             }
         });
+    }
+
+    /* Don't go back to main activity ! */
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
     }
 
     public void handleMessage(JSONObject msg){
@@ -160,7 +170,7 @@ public class LogActivity extends NotifiableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 final int sdk = android.os.Build.VERSION.SDK_INT;
-                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
                     _connectionState.setBackgroundDrawable(getResources().getDrawable(R.drawable.connection_state_failure));
                 } else {
                     _connectionState.setBackground(getResources().getDrawable(R.drawable.connection_state_failure));
@@ -169,19 +179,5 @@ public class LogActivity extends NotifiableActivity {
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log);
-        ButterKnife.bind(this);
-        initButtonListener();
 
-        updateWithNetInfo(); //inherited from NotifiableActivity
-    }
 }
-
-    /* Don't go back to main activity ! */
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-    }

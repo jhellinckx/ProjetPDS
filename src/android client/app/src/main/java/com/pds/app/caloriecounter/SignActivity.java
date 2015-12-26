@@ -7,8 +7,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.simple.JSONObject;
+
+import butterknife.Bind;
 
 import static org.calorycounter.shared.Constants.network.REASON;
 import static org.calorycounter.shared.Constants.network.SIGN_UP_ALREADY_CONNECTED;
@@ -18,37 +23,32 @@ import static org.calorycounter.shared.Constants.network.SIGN_UP_SUCCESS;
 import static org.calorycounter.shared.Constants.network.SIGN_UP_USERNAME_EXISTS;
 
 public class SignActivity extends AppCompatActivity {
+    @Bind(R.id.btn_signup) Button _signupButton;
+    @Bind(R.id.input_username) EditText _usernameText;
+    @Bind(R.id.input_password) EditText _passwordText;
+    @Bind(R.id.input_password_repeat) EditText _passwordRepeatText;
+    @Bind(R.id.link_login) TextView _linkLogin;
+    @Bind(R.id.connection_state) View _connectionState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     public void onSignupResponse(JSONObject data){
         String response = (String) data.get(SIGN_UP_RESPONSE);
         if(response.equals(SIGN_UP_SUCCESS)){
-            Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-            startActivity(personalActivity);
+            Intent logActivity = new Intent(SignActivity.this, LogActivity.class);
+            startActivity(logActivity);
         }
         else if(response.equals(SIGN_UP_FAILURE)){
             String reason = (String)data.get(REASON);
             if(reason.equals(SIGN_UP_USERNAME_EXISTS)){
-                setErrorMsg("This username already exists");
+                //setErrorMsg("This username already exists");
             }
             else if(reason.equals(SIGN_UP_ALREADY_CONNECTED)){
-                setErrorMsg("This username is already connected");
+                //setErrorMsg("This username is already connected");
             }
         }
 

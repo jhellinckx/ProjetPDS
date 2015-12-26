@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Thème d'Auré
     <color name="primary">#85c17e</color>
     <color name="primary_dark">#22780F</color>
     <color name="accent">#000000</color>
     <color name="greenfont">#0e4303</color>
+    -->
+
+    <!-- Generic color names -->
+    <color name="iron">#434b4d</color>
+    <color name="white">#FFFFFF</color>
+    <color name="red">#E00702</color>
+    <color name="green">#41F51D</color>
 
     <color name="snowy_mint">#CCFFCC</color>
     <color name="pacific_blue">#0099CC</color>
     <color name="malibu"> #66CCFF</color>
     <color name="smalt"> #003399</color>
 
-    <color name="box_background">#ffffff</color>
+    <!-- Application color theme -->
+    <color name="primary">@color/malibu</color>
+    <color name="primary_dark">@color/pacific_blue</color>
+    <color name="accent">@color/smalt</color>
 
-    <color name="connection_state_green">#41F51D</color>
-    <color name="connection_state_red">#E00702</color>
+    <!-- Specific widget color style -->
+    <color name="box_background">@color/white</color>
 
-    <color name="iron">#434b4d</color>
-    <color name="white">#FFFFFF</color>
+    <color name="connection_state_green">@color/green</color>
+    <color name="connection_state_red">@color/red</color>
+
+    <color name="buttonBackgroundColor">@color/primary_dark</color>
+    <color name="buttonTextColor">@color/white</color>
+
+
 </resources>
