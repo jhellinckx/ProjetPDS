@@ -25,7 +25,7 @@ public class LogActivity extends NotifiableActivity {
     @Bind(R.id.input_username) EditText _usernameText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.link_signup) TextView _linkSignup;
-    @Bind(R.id.connection_state) View _connectionState;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class LogActivity extends NotifiableActivity {
         });
     }
 
-    /* Don't go back to main activity ! */
+    /* Don't go back to launch activity ! */
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
@@ -149,9 +149,9 @@ public class LogActivity extends NotifiableActivity {
     public void onLoginSuccess() {
         runOnUiThread(new Runnable() {
             public void run() {
-                _loginButton.setEnabled(true);
                 Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
                 startActivity(personalActivity);
+                finish(); // If logged in, only come back to this activity when log out called, not when user presses back
             }
         });
 
@@ -169,31 +169,7 @@ public class LogActivity extends NotifiableActivity {
 
     }
 
-    public void setConnected(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                final int sdk = android.os.Build.VERSION.SDK_INT;
-                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    _connectionState.setBackgroundDrawable(getResources().getDrawable(R.drawable.connection_state_success));
-                } else {
-                    _connectionState.setBackground(getResources().getDrawable(R.drawable.connection_state_success));
-                }
-            }
-        });
-    }
 
-    public void setDisconnected(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                final int sdk = android.os.Build.VERSION.SDK_INT;
-                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    _connectionState.setBackgroundDrawable(getResources().getDrawable(R.drawable.connection_state_failure));
-                } else {
-                    _connectionState.setBackground(getResources().getDrawable(R.drawable.connection_state_failure));
-                }
-            }
-        });
-    }
 
 
 }
