@@ -33,7 +33,6 @@ public class LogActivity extends NotifiableActivity {
         setContentView(R.layout.activity_log);
         ButterKnife.bind(this);
         initButtonListener();
-        updateWithNetInfo(); //TODO deprecated when onHoldMessages handled in NetworkHandler!!
     }
 
     private void initButtonListener(){

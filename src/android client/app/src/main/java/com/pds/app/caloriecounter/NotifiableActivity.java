@@ -12,6 +12,7 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 
@@ -22,17 +23,27 @@ public abstract class NotifiableActivity extends AppCompatActivity {
 
     protected ProgressDialog _networkProgressDialog = null;
 
+    @Override
     protected void onCreate(Bundle savedInstanceBundle){
         super.onCreate((savedInstanceBundle));
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        handleMessagesOnHold();
+    }
+
     abstract public void handleMessage(JSONObject msg);
 
-    public void updateWithNetInfo(){
-        /* Auto-notify connection status, will be deprecated when _messagesOnHold implemented in NetworkHandler */
-        JSONObject connectionNotifierData = new JSONObject();
-        connectionNotifierData.put(CONNECTION_STATUS, connectionStatus());
-        handleMessage(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
+    public void handleMessagesOnHold(){
+        for(JSONObject msg : messagesOnHold()){
+            this.handleMessage(msg);
+        }
+    }
+
+    public ArrayList<JSONObject> messagesOnHold(){
+        return NetworkHandler.getInstance(getApplicationContext()).getMessagesOnHold(this.getClass());
     }
 
     public void send(JSONObject msg) throws IOException{

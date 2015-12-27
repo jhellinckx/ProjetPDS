@@ -32,7 +32,7 @@ public class NetworkHandler {
     private List<JSONObject> _in;
     private List<JSONObject> _out;
     private ActivityNetworkCallback _callback;
-    private HashMap<String, ArrayList<String>> _messagesOnHold;
+    private HashMap<Class<? extends NotifiableActivity>, ArrayList<JSONObject>> _messagesOnHold;
 
     protected Socket _socket;
     protected Listener _listener;
@@ -49,8 +49,8 @@ public class NetworkHandler {
         _out = new LinkedList<>();
         _socket = null;
         _callback = new ActivityNetworkCallback(this);
-        ((Application)context.getApplicationContext()).registerActivityLifecycleCallbacks(_callback);
-        _messagesOnHold = new HashMap<String, ArrayList<String>>();
+        ((Application)_context.getApplicationContext()).registerActivityLifecycleCallbacks(_callback);
+        _messagesOnHold = new HashMap<>();
         _socketLock = new Object();
 
     }
@@ -84,8 +84,10 @@ public class NetworkHandler {
 
             String request = (String) msg.get(REQUEST_TYPE);
 
+            /* When no activity is specified in _doDispatch, the message is dispatched to
+            * the current front activity */
             if(request.equals(CONNECTION_NOTIFIER)){
-                _doDispatch(msg, LogActivity.class);
+                _doDispatch(msg);
             }
             else if(request.equals(LOG_IN_REQUEST)){
                 _doDispatch(msg, LogActivity.class);
@@ -102,14 +104,59 @@ public class NetworkHandler {
         }
     }
 
+    private void _doDispatch(JSONObject msg){
+        /* No specified activity, dispatch to front activity */
+        _doDispatch(msg, NotifiableActivity.class);
+    }
+
     private <T extends NotifiableActivity> void _doDispatch(JSONObject msg, Class<T> classname){
-        NotifiableActivity dest = (NotifiableActivity)_callback.getActivityByName(classname.getName());
-        if(dest == null){
-            //TODO : Activity not created, push JSONObject in HashMap
-            Log.d("cannot dispatch : ",msg.toString());
+        NotifiableActivity destActivity;
+         /* First case, no activity was specified, thus dispatch msg to front activity */
+        if(classname.equals(NotifiableActivity.class)) destActivity = getFrontActivity();
+        /* Else, get specified activity */
+        else destActivity = (NotifiableActivity)_callback.getActivityByName(classname.getName());
+
+        /*  Despite its certain assignation, destActivity can be null.
+         *  First case - no activity was specified :
+         *      - destActivity == null in this case happens when
+         *      no activity is visible. e.g. at application launch or when
+         *      application is in background.
+         *  Second case - activity is specified :
+         *      - destActivity == null here simply happens when
+         *      the specified activity has not yet been created.
+         *  In any case, we put the message on hold. The activity will
+         *  then have to retrieve the message when it is created. */
+        if(destActivity == null) {
+            _addMessageOnHold(msg, classname);
         }
-        else{
-            dest.handleMessage(msg);
+        else destActivity.handleMessage(msg);
+    }
+
+    private <T extends NotifiableActivity> void _addMessageOnHold(JSONObject msg, Class<T> classname){
+        synchronized (_messagesOnHold) {
+            if (!_messagesOnHold.containsKey(classname)) {
+                _messagesOnHold.put(classname, new ArrayList<JSONObject>());
+            }
+            _messagesOnHold.get(classname).add(msg);
+        }
+    }
+
+    public <T extends NotifiableActivity> ArrayList<JSONObject> getMessagesOnHold(Class<T> classname){
+        /*  Return messages intended for the specified activity and for
+         *  NotifiableActivity.class (since the messages intended for this
+         *  super class are intended for every activity). */
+        synchronized (_messagesOnHold){
+            ArrayList<JSONObject> messages = new ArrayList<>();
+
+            /* Get the messages intended for every activity */
+            if(_messagesOnHold.containsKey(NotifiableActivity.class))
+                messages.addAll(_messagesOnHold.put(NotifiableActivity.class, new ArrayList<JSONObject>(0)));
+
+            /* Get the messages intended for the specified activity */
+            if(_messagesOnHold.containsKey(classname))
+                messages.addAll(_messagesOnHold.remove(classname));
+
+            return messages;
         }
     }
 
@@ -152,8 +199,8 @@ public class NetworkHandler {
         }
     }
 
-    public Activity getFrontActivity(){
-        return _callback.getFrontActivity();
+    public NotifiableActivity getFrontActivity(){
+        return (NotifiableActivity)_callback.getFrontActivity();
     }
 
     private class Listener implements Runnable{
