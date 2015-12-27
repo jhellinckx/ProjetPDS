@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter;
 
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import org.json.simple.JSONObject;
+
+import java.io.IOException;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -59,7 +62,13 @@ public class ScanningActivity extends HomeActivity{
         String code = "0000000024600";
         JSONObject data = new JSONObject();
         data.put(FOOD_CODE, code);
-        send(networkJSON(FOOD_CODE_REQUEST, data));
+        try {
+            send(networkJSON(FOOD_CODE_REQUEST, data));
+        } catch (IOException e) {
+            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
+            toast.getView().setBackgroundColor(Color.RED);
+            toast.show();;
+        }
         System.out.println("------------------CODE SENT -------------------");
         //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
         //scanIntegrator.initiateScan();

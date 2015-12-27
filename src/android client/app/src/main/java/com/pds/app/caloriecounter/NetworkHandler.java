@@ -65,12 +65,6 @@ public class NetworkHandler {
         new Thread(_sender).start();
     }
 
-    public void retryConnect(){
-        synchronized (_socketLock) {
-            _socketLock.notifyAll(); //Wake up Listener and Sender threads
-        }
-    }
-
     public boolean isConnected(){
         synchronized (_socketLock){
             return (_socket == null) ? false : _socket.isConnected() && !_socket.isClosed();
@@ -115,11 +109,6 @@ public class NetworkHandler {
         }
     }
 
-    /*
-        - Listener gets automatically interrupted on read() since socket is closed
-        - Sender gets interrupted by _out.notify()
-        - if Listener and Sender waiting for socket to connect, _socketLock.notifyAll() interrupts them both
-    */
     public void stop(){
         try {
             _socket.close();
@@ -151,7 +140,6 @@ public class NetworkHandler {
                     this._out.wait();
                 }
                 catch(InterruptedException e){
-                    Log.d("IS CONNECTED -> ",new Boolean(isConnected()).toString());
                     if(!this.isConnected())
                         throw new IOException("Connection lost");
                 }
@@ -165,6 +153,8 @@ public class NetworkHandler {
     }
 
     private class Listener implements Runnable{
+        final int RETRY_CONNECT_INTERVAL = 5000;
+
         NetworkHandler _handler;
         Boolean _run;
         DataInputStream _inStream;
@@ -221,18 +211,16 @@ public class NetworkHandler {
                         if(_handler._socket != null)
                             _handler._socket.close();
                     }catch (IOException innerE){
-                        Log.d("Socket close","could not close socket");
+                        Log.d("Listener","could not close socket");
                     }
                    synchronized (_handler._out) { _handler._out.notify(); } // Notify Sender that connection is lost
                     JSONObject connectionNotifierData = new JSONObject();
                     connectionNotifierData.put(CONNECTION_STATUS, CONNECTION_FAILURE);
                     _handler.dispatch(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
                 }
-                synchronized (_handler._socketLock) {
-                    try {
-                        _handler._socketLock.wait(); //Wait for connection retry
-                    } catch (InterruptedException e) {}
-                }
+                try {
+                    Thread.sleep(RETRY_CONNECT_INTERVAL); //Wait for connection retry
+                } catch (InterruptedException e) {}
             }
         }
 
@@ -279,7 +267,7 @@ public class NetworkHandler {
                             } catch (InterruptedException e) {}
                         }
                     }
-                    _outStream = new DataOutputStream(_handler._socket.getOutputStream());
+                    if(isRunning()) _outStream = new DataOutputStream(_handler._socket.getOutputStream());
                     while (isRunning() && isConnected()) {
                         try {
                             JSONObject msg = _handler.receiveOutgoingMessage();
