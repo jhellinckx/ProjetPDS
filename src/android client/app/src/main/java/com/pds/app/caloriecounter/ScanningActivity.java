@@ -65,9 +65,7 @@ public class ScanningActivity extends HomeActivity{
         try {
             send(networkJSON(FOOD_CODE_REQUEST, data));
         } catch (IOException e) {
-            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.getView().setBackgroundColor(Color.RED);
-            toast.show();;
+            // Client not connected...
         }
         System.out.println("------------------CODE SENT -------------------");
         //IntentIntegrator scanIntegrator = new IntentIntegrator(this);

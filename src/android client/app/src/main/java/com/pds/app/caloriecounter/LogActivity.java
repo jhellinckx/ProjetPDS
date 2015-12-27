@@ -60,7 +60,6 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void handleMessage(JSONObject msg){
-        Log.d("LOGACTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(CONNECTION_NOTIFIER)){
@@ -69,11 +68,6 @@ public class LogActivity extends NotifiableActivity {
                 setConnected();
             } else if (res.equals(CONNECTION_FAILURE)) {
                 setDisconnected();
-            }
-
-            synchronized (_connectionState){
-                Log.d("handle message","NOTIFYING CONNECT STATE");
-                _connectionState.notify();
             }
         }
         else if(request.equals(LOG_IN_REQUEST)){
@@ -174,7 +168,6 @@ public class LogActivity extends NotifiableActivity {
         });
 
     }
-
 
     public void setConnected(){
         runOnUiThread(new Runnable() {

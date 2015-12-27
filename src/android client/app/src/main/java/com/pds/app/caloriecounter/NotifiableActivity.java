@@ -38,6 +38,7 @@ public abstract class NotifiableActivity extends AppCompatActivity {
     }
 
     public void send(JSONObject msg, boolean showProgressDialog, String dialogMessage){
+        //TODO progressdialog
         _networkProgressDialog = new ProgressDialog(NotifiableActivity.this, R.style.AppTheme_Dark_Dialog);
         _networkProgressDialog.setIndeterminate(true);
         _networkProgressDialog.setMessage("Authenticating...");

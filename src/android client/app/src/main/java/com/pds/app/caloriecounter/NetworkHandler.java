@@ -36,7 +36,9 @@ public class NetworkHandler {
 
     protected Socket _socket;
     protected Listener _listener;
+    protected Thread _listenerThread;
     protected Sender _sender;
+    protected Thread _senderThread;
     protected Object _socketLock;
 
     private NetworkHandler(Context context) {
@@ -61,8 +63,10 @@ public class NetworkHandler {
     }
 
     public void launchThreads(){
-        new Thread(_listener).start();
-        new Thread(_sender).start();
+        _listenerThread = new Thread(_listener);
+        _senderThread = new Thread(_sender);
+        _listenerThread.start();
+        _senderThread.start();
     }
 
     public boolean isConnected(){
@@ -213,7 +217,7 @@ public class NetworkHandler {
                     }catch (IOException innerE){
                         Log.d("Listener","could not close socket");
                     }
-                   synchronized (_handler._out) { _handler._out.notify(); } // Notify Sender that connection is lost
+                   _handler._senderThread.interrupt(); // Notify Sender that connection is lost
                     JSONObject connectionNotifierData = new JSONObject();
                     connectionNotifierData.put(CONNECTION_STATUS, CONNECTION_FAILURE);
                     _handler.dispatch(networkJSON(CONNECTION_NOTIFIER, connectionNotifierData));
