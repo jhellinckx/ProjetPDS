@@ -117,7 +117,7 @@ public class LogActivity extends NotifiableActivity {
         JSONObject data = new JSONObject();
         data.put(USERNAME, username);
         try {
-            send(networkJSON(SIGN_UP_REQUEST, data));
+            send(networkJSON(LOG_IN_REQUEST, data));
         } catch (IOException e) {
             _loginButton.setEnabled(true);
             Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
@@ -134,26 +134,45 @@ public class LogActivity extends NotifiableActivity {
         else if(response.equals(LOG_IN_FAILURE)){
             String reason = (String)data.get(REASON);
             if(reason.equals(LOG_IN_ALREADY_CONNECTED)){
-                _usernameText.setError("Username already connected");
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        _usernameText.setError("Username already connected");
+                    }
+                });
+
             }
             else if(reason.equals(LOG_IN_USERNAME_NOT_FOUND)){
-                _usernameText.setError("Username not found");
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        _usernameText.setError("Username not found");
+                    }
+                });
             }
             onLoginFailed();
         }
     }
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
-        Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-        startActivity(personalActivity);
+        runOnUiThread(new Runnable() {
+            public void run() {
+                _loginButton.setEnabled(true);
+                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
+                startActivity(personalActivity);
+            }
+        });
+
     }
 
     public void onLoginFailed() {
-        _loginButton.setEnabled(true);
-        Toast toast = Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG);
-        toast.getView().setBackgroundColor(Color.RED);
-        toast.show();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                _loginButton.setEnabled(true);
+                Toast toast = Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG);
+                toast.getView().setBackgroundColor(Color.RED);
+                toast.show();
+            }
+        });
+
     }
 
 
