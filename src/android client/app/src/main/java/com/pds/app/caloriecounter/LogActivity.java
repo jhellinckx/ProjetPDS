@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.simple.JSONObject;
+
+import java.util.concurrent.TimeoutException;
 
 import static org.calorycounter.shared.Constants.network.*;
 import butterknife.ButterKnife;
@@ -23,12 +26,16 @@ public class LogActivity extends NotifiableActivity {
     @Bind(R.id.link_signup) TextView _linkSignup;
     @Bind(R.id.connection_state) View _connectionState;
 
+    ProgressDialog _progressDialog = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
         ButterKnife.bind(this);
         initButtonListener();
+
+
 
         updateWithNetInfo(); //TODO deprecated when onHoldMessages handled in NetworkHandler!!
     }
@@ -67,6 +74,11 @@ public class LogActivity extends NotifiableActivity {
             } else if (res.equals(CONNECTION_FAILURE)) {
                 setDisconnected();
             }
+
+            synchronized (_connectionState){
+                Log.d("handle message","NOTIFYING CONNECT STATE");
+                _connectionState.notify();
+            }
         }
         else if(request.equals(LOG_IN_REQUEST)){
             onLoginResponse(data);
@@ -95,8 +107,8 @@ public class LogActivity extends NotifiableActivity {
 
     public void onLogin() {
          /* Get credentials */
-        String username = _usernameText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String username = _usernameText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         /* Client side verification first */
         if(!validate(username, password)) {
@@ -105,23 +117,71 @@ public class LogActivity extends NotifiableActivity {
         }
         /* Update GUI */
         _loginButton.setEnabled(false);
-        final ProgressDialog progressDialog = new ProgressDialog(LogActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
-        progressDialog.show();
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000
-        );
+        _progressDialog = new ProgressDialog(LogActivity.this, R.style.AppTheme_Dark_Dialog);
+        _progressDialog.setIndeterminate(true);
+        _progressDialog.setMessage("Authenticating...");
+        _progressDialog.show();
 
-        /* Send credentials for server side verification */
-        JSONObject data = new JSONObject();
-        data.put(USERNAME, username);
-        send(networkJSON(SIGN_UP_REQUEST, data));
+        /* By default, connection to server is always tested at client launch.
+         * This connection could however have failed, hence the need to
+         * check for connection state before we send data to server.
+         * We only try every second after the first try. */
+        final Thread sendAfterConnect =  new Thread(new Runnable(){
+            @Override
+            public void run() {
+                synchronized (_connectionState) {
+                    try {
+                        int tries = 0;
+                        while (!connected()) {
+                            if(tries > 0) Thread.sleep(1000);
+                            /* While not connected (and not interrupted, a timeout is set), retry and wait for status update */
+                            retryConnect();
+                            _connectionState.wait();
+                            tries++;
+                        }
+                        /* When connected, send credentials for server side verification */
+                        JSONObject data = new JSONObject();
+                        data.put(USERNAME, username);
+                        send(networkJSON(SIGN_UP_REQUEST, data));
+                    }
+                    /* Interrupted when timeout occurs */
+                    catch (InterruptedException e) {
+                        _progressDialog.dismiss();
+                        _loginButton.setEnabled(true);
+                        Toast toast = Toast.makeText(getBaseContext(), "Connection failure", Toast.LENGTH_LONG);
+                        toast.getView().setBackgroundColor(Color.RED);
+                        toast.show();
+                    }
+                }
+            }
+        });
+        sendAfterConnect.start();
+
+        /* Create a timeout thread */
+        final Thread timeout = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    /* Set timeout */
+                    Thread.sleep(5000);
+
+                    /* If sendAfterConnect has not yet died, no connection could be established. */
+                    if (sendAfterConnect.isAlive()) {
+                        sendAfterConnect.interrupt();
+                    }
+                    /* Else, the server could be reached, but no response was received before timeout. */
+                    else {
+                        _progressDialog.dismiss();
+                        _loginButton.setEnabled(true);
+                        Toast toast = Toast.makeText(getBaseContext(), "Response timeout", Toast.LENGTH_LONG);
+                        toast.getView().setBackgroundColor(Color.RED);
+                        toast.show();
+                    }
+                }
+                catch(InterruptedException e){}
+            }
+        });
+        
     }
 
     public void onLoginResponse(JSONObject data){
@@ -142,14 +202,24 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginSuccess() {
+        if(_progressDialog != null){
+            _progressDialog.dismiss();
+            _progressDialog = null;
+        }
         _loginButton.setEnabled(true);
         Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
         startActivity(personalActivity);
     }
 
     public void onLoginFailed() {
+        if(_progressDialog != null){
+            _progressDialog.dismiss();
+            _progressDialog = null;
+        }
         _loginButton.setEnabled(true);
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG);
+        toast.getView().setBackgroundColor(Color.RED);
+        toast.show();
     }
 
 

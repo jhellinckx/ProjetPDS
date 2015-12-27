@@ -35,8 +35,8 @@
                 <corners
                     android:radius="5dip" />
                 <gradient
-                    android:startColor="@color/colorPrimary"
-                    android:endColor="@color/colorPrimaryDark"
+                    android:startColor="@color/primary"
+                    android:endColor="@color/primary_dark"
                     android:angle="270" />
             </shape>
         </clip>

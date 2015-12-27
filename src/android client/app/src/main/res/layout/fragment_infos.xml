@@ -29,7 +29,7 @@
         android:layout_toRightOf="@+id/imageView"
         android:layout_toEndOf="@+id/imageView"
         android:layout_marginLeft="2sp"
-        android:textColor="@color/greenfont" />
+        android:textColor="@color/accent" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
         android:layout_alignStart="@+id/product_name"
         android:layout_alignRight="@+id/product_name"
         android:layout_alignEnd="@+id/product_name"
-        android:textColor="@color/colorPrimaryDark" />
+        android:textColor="@color/primary_dark" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
         android:layout_marginTop="22dp"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/colorPrimaryDark" />
+        android:textColor="@color/primary_dark" />
 
     <TableLayout
         android:layout_width="match_parent"

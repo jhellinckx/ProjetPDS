@@ -31,7 +31,11 @@ public abstract class NotifiableActivity extends AppCompatActivity {
         NetworkHandler.getInstance(getApplicationContext()).retryConnect();
     }
 
+    public boolean connected(){
+        return NetworkHandler.getInstance((getApplicationContext())).isConnected();
+    }
+
     public String connectionStatus(){
-        return NetworkHandler.getInstance((getApplicationContext())).isConnected() ? CONNECTION_SUCCESS : CONNECTION_FAILURE;
+        return  connected() ? CONNECTION_SUCCESS : CONNECTION_FAILURE;
     }
 }

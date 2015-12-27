@@ -19,32 +19,21 @@
             android:layout_marginBottom="24dp"
             android:layout_gravity="center_horizontal" />
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@id/input_username"
-                android:inputType="textPersonName"
-                android:hint="Username"
-                style="@style/AppEditText"/>
-        </android.support.design.widget.TextInputLayout>
+        <EditText android:id="@id/input_username"
+            android:inputType="textPersonName"
+            android:hint="Username"
+            style="@style/AppEditText"/>
 
         <!-- Password Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/input_password"
-                android:inputType="textPassword"
-                android:hint="Password"
-                style="@style/AppEditText"/>
-        </android.support.design.widget.TextInputLayout>
+
+        <EditText android:id="@+id/input_password"
+            android:inputType="textPassword"
+            android:hint="Password"
+            style="@style/AppEditText"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@id/btn_login"
-            android:text="Login"
+            android:text="Log in"
             style="@style/AppButton"/>
 
         <TextView android:id="@id/link_signup"
