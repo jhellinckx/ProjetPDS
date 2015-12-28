@@ -9,8 +9,9 @@ try:
 	from mysql.connector import errorcode
 
 except: # no mysql.connector
-	print "Error : need MySQL python connector (provided by Oracle at https://dev.mysql.com/downloads/connector/python/).\n\
-	Ubuntu install : http://codeinthehole.com/writing/how-to-set-up-mysql-for-python-on-ubuntu/"
+	print "Error : import impossible (MySQL python connector). Sur ubuntu, suivre \
+	'Installing Connector/Python on Linux Using a Debian Package' sur \
+	https://dev.mysql.com/doc/connector-python/en/connector-python-installation-binary.html"
 	sys.exit()
 
 YELLOW = "\033[33m"
