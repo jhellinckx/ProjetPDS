@@ -21,8 +21,7 @@
         </activity>
         <activity
             android:name=".LogActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".PersonalDataActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>

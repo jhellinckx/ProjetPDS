@@ -14,4 +14,9 @@ public interface UserDAO {
     List<String> findAll() throws DAOException; /* retourne une simple list de tous les user pour pouvoir print, utilise pr les test */
     
     void delete( User user ) throws DAOException;
+
+    void createRandomUsers(int quantity) throws DAOException;
+
+    void quick_createRandomUsers(int quantity) throws DAOException;
+
 }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -41,6 +42,21 @@ public class ScanningActivity extends HomeActivity{
         });
     }
 
+    private void updateFragment(String image, String product, String energy){
+        ItemInfosFragment frag = (ItemInfosFragment) manager.findFragmentByTag("info");
+        frag.setImage(image);
+        frag.setProductName(product);
+        frag.setCal(energy);
+
+    }
+
+    private void addFragment(){
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.infos_layout, new ItemInfosFragment(), "info");
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     public void handleMessage(JSONObject msg){
         Log.d("SCANNINGCTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
@@ -49,17 +65,23 @@ public class ScanningActivity extends HomeActivity{
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
                 String image_url = (String) data.get(FOOD_IMAGE_URL);
-                System.out.println("\n"+image_url+"\n");
 
                 String product_name = (String) data.get(FOOD_NAME);
                 String energy_100g = (String) data.get(FOOD_ENERGY100G);
+
+                addFragment();
+                updateFragment(image_url, product_name, energy_100g);
             }
         }
     }
 
     public void startScan() {
-        //Sending test code
-        String code = "0000000024600";
+
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        scanIntegrator.initiateScan();
+    }
+
+    public void sendData(String code) {
         JSONObject data = new JSONObject();
         data.put(FOOD_CODE, code);
         try {
@@ -68,8 +90,6 @@ public class ScanningActivity extends HomeActivity{
             // Client not connected...
         }
         System.out.println("------------------CODE SENT -------------------");
-        //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        //scanIntegrator.initiateScan();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
@@ -80,12 +100,8 @@ public class ScanningActivity extends HomeActivity{
             // TODO Send scanned content to server.
 
             String scanContent = scanResults.getContents();
-            String scanFormat = scanResults.getFormatName();
 
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.add(R.id.infos_layout, new ItemInfosFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            sendData(scanContent);
 
 
 

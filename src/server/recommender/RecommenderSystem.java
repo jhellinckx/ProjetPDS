@@ -1,13 +1,16 @@
 package recommender;
 import java.util.ArrayList;
 
+import items.User;
+import items.Food;
+
 public class RecommenderSystem {
 
-	private static FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
-	private static ItemItemStrategy default_recom_strat = new ItemItemStrategy();
+	private static final FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
 	
 	private ArrayList<RecommendationStrategy> recomstrategies;
 	private HybridationStrategy hybridstrategy;
+	private int recommendationsRequired = 0;
 	
 	public RecommenderSystem(RecommendationStrategy rstrat, HybridationStrategy hstrat){
 		recomstrategies = new ArrayList<RecommendationStrategy>();
@@ -25,8 +28,13 @@ public class RecommenderSystem {
 	public RecommenderSystem(){
 		recomstrategies = new ArrayList<RecommendationStrategy>();
 	}
+
+	public void setNumberRecommendations(int nb){
+		recommendationsRequired = nb;
+	}
 	
 	public void addRecommendationStrategy(RecommendationStrategy rstrat){
+		rstrat.setRecommendationsNumber(recommendationsRequired);
 		recomstrategies.add(rstrat);
 		if (hybridstrategy == null && recomstrategies.size() > 1){
 
@@ -39,11 +47,8 @@ public class RecommenderSystem {
 	}
 	
 	public void recommendAnItem(){
-		if (recomstrategies.isEmpty()){
-			recomstrategies.add(RecommenderSystem.default_recom_strat);
-		}
-
-		if (recomstrategies.size() == 1){
+		
+		if (recomstrategies.size() == 1){			// Hybridation useless for 1 recommendation system.
 			recomstrategies.get(0).recommend();
 		}
 		else{
@@ -52,5 +57,15 @@ public class RecommenderSystem {
 		
 		
 	}
+
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User currentUser){
+		int size = recomstrategies.size();
+
+		for (int i = 0; i < size; i++){
+			recomstrategies.get(i).updateData(foods, users, currentUser);
+		}
+	}
+
+
 
 }

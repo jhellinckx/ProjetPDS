@@ -13,6 +13,7 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 
 import items.User;
 import items.Food;
+import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
 	private DAOFactory daoFactory;
@@ -207,6 +208,43 @@ public class UserDAOImpl implements UserDAO {
         user.setUsername( resultSet.getString( "username" ) );
         user.setGender( resultSet.getString( "gender" ) );
         return user;
+    }
+
+
+    @Override
+    public void createRandomUsers(int quantity) throws DAOException{
+        FoodDAO foodDao = this.daoFactory.getFoodDAO();
+        Random_user_generator r = new Random_user_generator(quantity, foodDao, false);
+        ArrayList<User> randUserList = r.get_random_users_list();
+        
+        for (int i = 0 ; i<randUserList.size() ; ++i){
+             create(randUserList.get(i));
+        }
+    }
+
+    @Override
+    public void quick_createRandomUsers(int quantity) throws DAOException{
+        //Avoid creation of Food Objects for inserting into User_preferences
+        FoodDAO foodDao = this.daoFactory.getFoodDAO();
+        Random_user_generator r = new Random_user_generator(quantity, foodDao, true);
+        ArrayList<User> randUserList = r.get_random_users_list();
+        
+        
+        for (int i = 0 ; i<randUserList.size() ; ++i){
+             create(randUserList.get(i));
+        }
+        
+
+        UserPrefDAO userPrefDao = this.daoFactory.getUserPrefDAO();
+        List<Long> Ids = r.generateFoodIds();
+        for (int i = 0 ; i<randUserList.size() ; ++i){
+            Ids = r.generateFoodIds();
+            for(int j = 0 ; j<Ids.size() ; ++j){
+                int pref = r.generateRandomNumberBetween(0,1);
+                if(pref ==0){userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),"-");}
+                else{userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),"+");}
+            }
+        }
     }
     
 }	
