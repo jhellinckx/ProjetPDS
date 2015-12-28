@@ -1,7 +1,6 @@
 package com.pds.app.caloriecounter;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,16 +15,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 import static org.calorycounter.shared.Constants.network.*;
 
 public abstract class NotifiableActivity extends AppCompatActivity {
     @Bind(R.id.connection_state) View _connectionState;
 
-    protected ProgressDialog _networkProgressDialog = null;
+    //protected ProgressDialog _networkProgressDialog = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceBundle){
+    protected void onCreate(Bundle savedInstanceBundle) {
+
         super.onCreate((savedInstanceBundle));
     }
 
@@ -33,9 +34,23 @@ public abstract class NotifiableActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         handleMessagesOnHold();
+
+        if(connected()) setConnected();
+        else setDisconnected();
     }
 
-    abstract public void handleMessage(JSONObject msg);
+    public void handleMessage(JSONObject msg){
+        String request = (String) msg.get(REQUEST_TYPE);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if(request.equals(CONNECTION_NOTIFIER)){
+            String res = (String) data.get(CONNECTION_STATUS);
+            if(res.equals(CONNECTION_SUCCESS)){
+                setConnected();
+            } else if (res.equals(CONNECTION_FAILURE)) {
+                setDisconnected();
+            }
+        }
+    }
 
     public void handleMessagesOnHold(){
         for(JSONObject msg : messagesOnHold()){
@@ -74,6 +89,7 @@ public abstract class NotifiableActivity extends AppCompatActivity {
     }
 
     public void setConnected(){
+        if(_connectionState == null) return;
         runOnUiThread(new Runnable() {
             public void run() {
                 final int sdk = android.os.Build.VERSION.SDK_INT;
@@ -87,6 +103,7 @@ public abstract class NotifiableActivity extends AppCompatActivity {
     }
 
     public void setDisconnected(){
+        if(_connectionState == null) return;
         runOnUiThread(new Runnable() {
             public void run() {
                 final int sdk = android.os.Build.VERSION.SDK_INT;

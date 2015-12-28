@@ -24,6 +24,8 @@
             android:hint="Username"
             style="@style/AppEditText"/>
 
+
+
         <!-- Password Label -->
 
         <EditText android:id="@+id/input_password"
@@ -45,11 +47,8 @@
             android:textSize="16dip"/>
 
 
-        <View android:background="@drawable/connection_state_failure"
-            android:layout_height="15dp"
-            android:layout_width="15dp"
-            android:layout_gravity="end"
-            android:id="@+id/connection_state"/>
+        <include layout="@layout/activity_notifiable"/>
+
     </LinearLayout>
 
 </ScrollView>

@@ -35,6 +35,11 @@ public class LogActivity extends NotifiableActivity {
         initButtonListener();
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
     private void initButtonListener(){
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +51,7 @@ public class LogActivity extends NotifiableActivity {
         _linkSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signActivity = new Intent(LogActivity.this, SignActivity.class);
+                Intent signActivity = new Intent(getApplicationContext(), SignActivity.class);
                 startActivity(signActivity);
             }
         });
@@ -61,17 +66,10 @@ public class LogActivity extends NotifiableActivity {
     public void handleMessage(JSONObject msg){
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
-        if(request.equals(CONNECTION_NOTIFIER)){
-            String res = (String) data.get(CONNECTION_STATUS);
-            if(res.equals(CONNECTION_SUCCESS)){
-                setConnected();
-            } else if (res.equals(CONNECTION_FAILURE)) {
-                setDisconnected();
-            }
-        }
-        else if(request.equals(LOG_IN_REQUEST)){
+        if(request.equals(LOG_IN_REQUEST)){
             onLoginResponse(data);
         }
+        super.handleMessage(msg);
     }
 
     public boolean validate(String username, String password){
@@ -114,7 +112,6 @@ public class LogActivity extends NotifiableActivity {
         } catch (IOException e) {
             _loginButton.setEnabled(true);
             Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.getView().setBackgroundColor(Color.RED);
             toast.show();
         }
     }
@@ -160,8 +157,7 @@ public class LogActivity extends NotifiableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);
-                Toast toast = Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG);
-                toast.getView().setBackgroundColor(Color.RED);
+                Toast toast = Toast.makeText(getBaseContext(), "Log in failed", Toast.LENGTH_LONG);
                 toast.show();
             }
         });

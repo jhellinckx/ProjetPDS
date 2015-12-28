@@ -20,46 +20,26 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="1" />
 
-        <android.support.design.widget.TextInputLayout
+        <EditText android:id="@id/input_username"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1">
-            <EditText android:id="@id/input_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:hint="Username"
-                style="@style/AppEditText"/>
-        </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Username"
+            style="@style/AppEditText"/>
 
         <!-- Password Label -->
-        <android.support.design.widget.TextInputLayout
+        <EditText android:id="@+id/input_password"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1">
-            <EditText android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="Password"
-               style="@style/AppEditText"/>
-        </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Password"
+           style="@style/AppEditText"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1">
-            <EditText android:id="@id/input_password_repeat"
-                android:inputType="textPassword"
-                android:hint="Repeat password"
-                style="@style/AppEditText"/>
-        </android.support.design.widget.TextInputLayout>
+
+        <EditText android:id="@id/input_password_repeat"
+            android:inputType="textPassword"
+            android:hint="Repeat password"
+            style="@style/AppEditText"/>
 
         <android.support.v7.widget.AppCompatButton
             style="@style/AppButton"
@@ -76,6 +56,8 @@
             android:gravity="center"
             android:textSize="16dip"
             android:layout_weight="1" />
+
+        <include layout="@layout/activity_notifiable"/>
 
     </LinearLayout>
 </ScrollView>

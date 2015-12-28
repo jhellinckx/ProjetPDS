@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import static org.calorycounter.shared.Constants.network.*;
 
 public class NetworkHandler {
+    private final int SAME_REQUESTS_ON_HOLD_LIMIT = 5;
+
     private static NetworkHandler _instance;
     private Context _context;
     private List<JSONObject> _in;
@@ -93,7 +95,7 @@ public class NetworkHandler {
                 _doDispatch(msg, LogActivity.class);
             }
             else if(request.equals(SIGN_UP_REQUEST)){
-                _doDispatch(msg,LogActivity.class);
+                _doDispatch(msg,SignActivity.class);
             }
             else if(request.equals(FOOD_CODE_REQUEST)){
                 _doDispatch(msg,ScanningActivity.class);
@@ -127,9 +129,13 @@ public class NetworkHandler {
          *  In any case, we put the message on hold. The activity will
          *  then have to retrieve the message when it is created. */
         if(destActivity == null) {
+            Log.d("PUTTING ON HOLD",classname+ " -> " + msg.toString());
             _addMessageOnHold(msg, classname);
         }
-        else destActivity.handleMessage(msg);
+        else {
+            Log.d("DIRECT HANDLE MSG",destActivity.getClass().toString()+ " -> " + msg.toString());
+            destActivity.handleMessage(msg);
+        }
     }
 
     private <T extends NotifiableActivity> void _addMessageOnHold(JSONObject msg, Class<T> classname){
@@ -137,7 +143,30 @@ public class NetworkHandler {
             if (!_messagesOnHold.containsKey(classname)) {
                 _messagesOnHold.put(classname, new ArrayList<JSONObject>());
             }
+            removeOldestEqualRequestAtLimit(_messagesOnHold.get(classname), msg);
             _messagesOnHold.get(classname).add(msg);
+            Log.d("ON HOLD DICT",_messagesOnHold.toString());
+        }
+    }
+
+    private void removeOldestEqualRequestAtLimit(ArrayList<JSONObject> messages, JSONObject msg){
+        String request = (String) msg.get(REQUEST_TYPE);
+        int equalRequestsCount = 0;
+        int index = 0;
+        int oldestEqualRequestIndex = -1;
+
+        for(JSONObject message : messages){
+            if (message.get(REQUEST_TYPE).equals(request)) {
+                if(equalRequestsCount == 0)
+                    oldestEqualRequestIndex = index;
+                ++equalRequestsCount;
+            }
+            ++index;
+        }
+        if(equalRequestsCount > SAME_REQUESTS_ON_HOLD_LIMIT) {
+            JSONObject removed = messages.remove(oldestEqualRequestIndex);
+            Log.d("REMOVED ON HOLD",removed.toString());
+            Log.d("ON HOLD MSG SIZE",Integer.toString(messages.size()));
         }
     }
 
@@ -361,13 +390,13 @@ public class NetworkHandler {
         private NetworkHandler _handler;
         private Activity _front;
         private Object _frontLock;
-        private List<Activity> _createdActivities;
+        private ArrayList<Activity> _createdActivities;
 
         public ActivityNetworkCallback(NetworkHandler handler){
             _handler = handler;
             _front = null;
             _frontLock = new Object();
-            _createdActivities = new LinkedList<Activity>();
+            _createdActivities = new ArrayList<>();
         }
 
         public Activity getFrontActivity(){
@@ -389,34 +418,40 @@ public class NetworkHandler {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            Log.d("CREATE ACTIVITY",activity.getClass().getName());
             synchronized (_createdActivities){
-                _createdActivities.add(activity);
+                if(NotifiableActivity.class.isInstance(activity)) {
+                    _createdActivities.add(activity);
+                }
             }
-            //TODO savedInstanceState.putStringArrayList("Messages", _handler.getMessages(activity.getClass().getName()));
         }
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            Log.d("DESTROY ACTIVITY",activity.getClass().getName());
             synchronized(_createdActivities){
-                _createdActivities.remove(activity);
+                Log.d("DESTROYING ACTIVITY",activity.getClass().getName());
+                if(NotifiableActivity.class.isInstance(activity)) {
+                    _createdActivities.remove(activity);
+                }
             }
         }
 
         @Override
         public void onActivityResumed(Activity activity) {
             synchronized(_frontLock){
-                _front = activity;
+                if(NotifiableActivity.class.isInstance(activity)) {
+                    _front = activity;
+                }
             }
         }
 
         @Override
         public void onActivityPaused(Activity activity) {
             synchronized (_frontLock){
-                if(_front != null){
-                    if(_front.equals(activity))
-                        _front = null;
+                if(NotifiableActivity.class.isInstance(activity)) {
+                    if (_front != null) {
+                        if (_front.equals(activity))
+                            _front = null;
+                    }
                 }
             }
         }
