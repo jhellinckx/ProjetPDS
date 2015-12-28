@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Thème d'Auré
-    <color name="primary">#85c17e</color>
-    <color name="primary_dark">#22780F</color>
-    <color name="accent">#000000</color>
-    <color name="greenfont">#0e4303</color>
+    <!-- Thème Vert -->
+    <color name="primary">#52bf90</color>
+    <color name="primary_dark">#398564</color>
+    <color name="accent">#317256</color>
+    <color name="fontColor">#0e4303</color>
+    <!-- -->
+
+    <!-- Thème Bleu
+    <color name="primary">@color/malibu</color>
+    <color name="primary_dark">@color/pacific_blue</color>
+    <color name="accent">@color/smalt</color>
+    <color name="fontColor">@color/accent</color>
     -->
 
     <!-- Generic color names -->
@@ -31,11 +38,7 @@
     <color name="malibu"> #66CCFF</color>
     <color name="smalt"> #003399</color>
 
-    <!-- Application color theme -->
-    <color name="primary">@color/malibu</color>
-    <color name="primary_dark">@color/pacific_blue</color>
-    <color name="accent">@color/smalt</color>
-    <color name="fontColor">@color/accent</color>
+
 
     <!-- Specific widget color style -->
     <color name="box_background">@color/white</color>
