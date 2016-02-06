@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import java.util.Iterator;
+import java.util.Map;
 
 import items.User;
 import items.Food;
@@ -45,8 +47,8 @@ public class UserDAOImpl implements UserDAO {
             if ( resultSet.next() ) {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
-                user.setApprecitedFood(userPrefDao.findUserAppreciatedFood(user)); 
-                user.setDepreciatedFood(userPrefDao.findUserDeppreciatedFood(user));
+
+                user.setRankedFoods(userPrefDao.findFoodsAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -74,8 +76,8 @@ public class UserDAOImpl implements UserDAO {
             if ( resultSet.next() ) {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
-                user.setApprecitedFood(userPrefDao.findUserAppreciatedFood(user)); 
-                user.setDepreciatedFood(userPrefDao.findUserDeppreciatedFood(user));
+
+                user.setRankedFoods(userPrefDao.findFoodsAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -185,17 +187,18 @@ public class UserDAOImpl implements UserDAO {
     }
  
     
-    private void addUserPrefsInTable(UserPrefDAO userPrefDao, User user ) {
+    private void addUserPrefsInTable(UserPrefDAO userPrefDao, User user ) { //TO MODIFY FOR FLOAT RANK
     	try {
-	    	for ( Food food : user.getAppreciatedFood() ) {
-	    		userPrefDao.create(user, food, "+");
-	    	}
-	    	for (Food food : user.getDepreciatedFood()) {
-	    		userPrefDao.create(user, food, "-");
-	    	}
+            Iterator it = user.getRankedFoods().entrySet().iterator();
+            while(it.hasNext()){
+                Map.Entry entry = (Map.Entry)it.next();
+                userPrefDao.create(user, (Food)entry.getKey(), (float)entry.getValue());
+            }
     	}  catch (NullPointerException e) {
 	    }
     }
+    
+
     
     /*
      * Simple methode utilitaire permettant de faire la correspondance (le
@@ -210,7 +213,7 @@ public class UserDAOImpl implements UserDAO {
         return user;
     }
 
-
+    
     @Override
     public void createRandomUsers(int quantity) throws DAOException{
         FoodDAO foodDao = this.daoFactory.getFoodDAO();
@@ -234,18 +237,15 @@ public class UserDAOImpl implements UserDAO {
              create(randUserList.get(i));
         }
         
-
         UserPrefDAO userPrefDao = this.daoFactory.getUserPrefDAO();
         List<Long> Ids = r.generateFoodIds();
         for (int i = 0 ; i<randUserList.size() ; ++i){
             Ids = r.generateFoodIds();
             for(int j = 0 ; j<Ids.size() ; ++j){
-                int pref = r.generateRandomNumberBetween(0,1);
-                if(pref ==0){userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),"-");}
-                else{userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),"+");}
+                float rank  = r.generateRandomRank();
+                userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),rank);
             }
         }
-    }
-    
+    } 
 }	
 

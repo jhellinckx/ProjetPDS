@@ -7,9 +7,9 @@ import items.Food;
 
 public interface UserPrefDAO {
 	
-	void create( User user, Food food , String rank) throws DAOException;
+	void create( User user, Food food , float rank) throws DAOException;
 
-	void create(Long id_user, Long id_food, String rank) throws IllegalArgumentException, DAOException;
+	void create(Long id_user, Long id_food, float rank) throws IllegalArgumentException, DAOException;
 	
 	List<Food> findUserAppreciatedFood( User user ) throws DAOException;
 	
@@ -21,6 +21,6 @@ public interface UserPrefDAO {
 
 	HashMap findFoodsAndRankForUser(User user) throws DAOException;
 	
-	void delete (User user, Food food, String mark) throws DAOException;
+	void delete (User user, Food food, float mark) throws DAOException;
 
 }

@@ -2,28 +2,26 @@ package items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 public class User {
 
     private Long      id;
     private String    username;
     private String    gender;
-    private List<Food> appreciatedFood;
-    private List<Food> depreciatedFood;
-    
+    private HashMap rankedFoods;
+
     public User() {
     	this.id = null;
     	this.username = null;
     	this.gender = null;
-    	this.appreciatedFood = new ArrayList<Food>();
-    	this.depreciatedFood = new ArrayList<Food>();
+        this.rankedFoods = new HashMap(); 
     }
     
     public User( String username, String gender ) {
     	this.username = username;
     	this.gender = gender;
-    	this.appreciatedFood = new ArrayList<Food>();
-    	this.depreciatedFood = new ArrayList<Food>();
+        this.rankedFoods = new HashMap();
     }
     
     public Long getId() {
@@ -48,26 +46,16 @@ public class User {
         this.gender = gender;
     }
     
-    public List<Food> getAppreciatedFood() {
-    	return appreciatedFood;
-    }
-    public void setApprecitedFood( List<Food> appreciatedFood ) {
-        this.appreciatedFood = appreciatedFood;
-    }
-    
-    public List<Food> getDepreciatedFood() {
-    	return depreciatedFood;
-    }
-    public void setDepreciatedFood( List<Food> depreciatedFood ) {
-        this.depreciatedFood = depreciatedFood;
+
+    public HashMap getRankedFoods(){
+        return rankedFoods;
     }
 
-public void addToAppreciatedFood(Food food) {
-	this.appreciatedFood.add(food);
-}
+    public void setRankedFoods(HashMap foodList){
+        this.rankedFoods = foodList;
+    }
 
-public void addToDeppreciatedFood(Food food) {
-	this.depreciatedFood.add(food);
-}
-
+    public void addRankedfood(Food food, float rank){
+        rankedFoods.put(food,rank);
+    }
 }

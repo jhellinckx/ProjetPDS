@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import dao.DAOFactory;
 import dao.FoodDAO;
+import java.util.HashMap;
 
 
 
@@ -35,7 +36,7 @@ public class Random_user_generator
 			random_users_list =  getRandomUsers(QUANTITY);
 		}
 		else{
-			random_users_list =  getRandomUsersComplete(QUANTITY);
+			random_users_list =  getRandomUsersWithRankedFoods(QUANTITY);
 		}
 	}
 
@@ -47,7 +48,7 @@ public class Random_user_generator
 			random_users_list =  getRandomUsers(QUANTITY);
 		}
 		else{
-			random_users_list =  getRandomUsersComplete(QUANTITY);
+			random_users_list =  getRandomUsersWithRankedFoods(QUANTITY);
 		}
 	}
 	
@@ -60,6 +61,17 @@ public class Random_user_generator
 			throw new IllegalArgumentException("max must be greater than min");
 		}
 		return r.nextInt((max-min)+1)+min;	
+	}
+
+	public static float generateRandomRank()
+	{
+		int rankMIN = 0;
+		int rankMAX = 5;//MAGICAL NUMBERS !!
+		float rank = (float) generateRandomNumberBetween(rankMIN,rankMAX);
+		if(generateRandomNumberBetween(0,1)==0 && rank != rankMAX){
+			rank += 0.5;
+		}
+		return rank;
 	}
 	
 	//input : length of character composing username, maxValue of the random number
@@ -82,30 +94,32 @@ public class Random_user_generator
 	
 	//input : minimum and maximum characters length composing the username, max value terminating username
 	//ouput : randomly created user;
-	private static User generateRandomUserComplete()
+	public static User generateRandomUserWithRankedFoods()
 	{
+		//config
+		int nb_of_pref_MIN = 1;
+		int nb_of_pref_MAX = 10;
+
 		//user created
 		User random_user = generateRandomUser();
 
 		//init food pref
-		
-		for (int j = 0 ; j<2 ; ++j){//appreciated and deppreciated
-			List<Food> foodList = new ArrayList<Food>();
-			List<Long> ids = new ArrayList<Long> ();
-			int nb_of_pref = generateRandomNumberBetween(1,5);
-			for(int i = 0 ; i<nb_of_pref ; ++i){
-				Long randomId = new Long(generateRandomNumberBetween(1,63016));
-				ids.add(randomId);
-			}
-			foodList = foodDao.findByIds(ids);
-			if(j==0){
-				random_user.setApprecitedFood(foodList);
-			}
-			else{
-				random_user.setDepreciatedFood(foodList);
-			}
+		List<Food> foodList = new ArrayList<Food>();
+		List<Long> ids = new ArrayList<Long> ();
+		int nb_of_pref = generateRandomNumberBetween(nb_of_pref_MIN,nb_of_pref_MAX); 
+		for(int i = 0 ; i<nb_of_pref ; ++i){
+			Long randomId = new Long(generateRandomNumberBetween(1,63016));  //MAGIC NUMBERS => config/const file
+			ids.add(randomId);
+
 		}
-		
+
+		HashMap rankedFoods = new HashMap();
+		foodList = foodDao.findByIds(ids);
+		for(int i = 0 ; i<foodList.size() ; ++i){
+			float rank = generateRandomRank();
+			rankedFoods.put(foodList.get(i), rank);
+		}
+		random_user.setRankedFoods(rankedFoods);
 		return random_user;
 	}
 
@@ -153,12 +167,12 @@ public class Random_user_generator
 	
 	//input : number of random users desired
 	//output : List of randomly generated users
-	public static ArrayList<User> getRandomUsersComplete(int length)
+	public static ArrayList<User> getRandomUsersWithRankedFoods(int length)
 	{
 		ArrayList<User> random_users = new ArrayList<User>();
 		for(int i=0 ; i<length ; ++i)
 		{
-			User random_user = generateRandomUserComplete();
+			User random_user = generateRandomUserWithRankedFoods();
 			if(CHECK)
 			{
 				if(!alreadyExists(random_user))
@@ -206,7 +220,7 @@ public class Random_user_generator
 
 
 	//input : list of users
-	//ouput : SQL instruction tu insert users into User table in mysql
+	//ouput : SQL instruction to insert users into User table in mysql
 	public static String SQL_generateInsertionInstruction()
 	{
 		String SQL_instruction = new String();
