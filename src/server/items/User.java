@@ -58,4 +58,8 @@ public class User {
     public void addRankedfood(Food food, float rank){
         rankedFoods.put(food,rank);
     }
+
+    public boolean hasNotedFood(Food food){
+        return rankedFoods.containsKey(food);
+    }
 }

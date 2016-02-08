@@ -22,7 +22,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	private static final String SQL_UPDATE = "UPDATE User_preferences SET numFood = ? WHERE numUser = ?";
 
 	private static final String	SQL_FIND_USER_RANK = "SELECT numFood, rank FROM User_preferences WHERE numUser = ?";
-	private static final String SQL_FIND_FOOD_RANK = "SELECT numUser, rank FROM User_preferences WHERE numFood = ?";
+	private static final String SQL_FIND_FOOD_RANK = "SELECT rank FROM User_preferences WHERE numFood = ?";
 	
 	UserPrefDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -137,29 +137,25 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 
 	@Override
-	public HashMap findUsersAndRankForFood(Food food) throws DAOException {
+	public List<Float> findRankForFood(Food food) throws DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		UserDAO userDAO = null;
-		HashMap m = new HashMap();// max size = 16 !!!
+		ArrayList<Float> rankList = new ArrayList<Float>();
 		try {
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_FOOD_RANK, false, food.getId() );
 			resultSet = preparedStatement.executeQuery();
-			userDAO = this.daoFactory.getUserDAO();
 			while (resultSet.next()) {
-				Long idUser = (long) resultSet.getInt("numUser");
-				User user = userDAO.findById(idUser);
 				float rank = (float) resultSet.getFloat("rank");
-				m.put(user,rank);
+				rankList.add(rank);
 			}
 		} catch (SQLException e) {
 			throw new DAOException (e);
 		} finally {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
-		return m ;
+		return rankList ;
 	}
 
 	@Override

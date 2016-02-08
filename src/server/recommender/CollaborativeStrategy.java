@@ -12,6 +12,7 @@ Further changes will be made.
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Comparator;
@@ -30,6 +31,7 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	protected ArrayList<User> userData = null;
 	protected User currentUser = null;
 	protected RatingMatrix ratingMatrix;
+	protected SimilarityMatrix similarityMatrix = null;
 
 	public CollaborativeStrategy(UserPrefDAOImpl pref){
 		ratingPredictions = new ArrayList<FoodRatingPair>();
@@ -57,8 +59,8 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 			preferences = pref;
 		}
 
-		public HashMap getUsersAndRankForFood(Food food){
-			return preferences.findUsersAndRankForFood(food);
+		public List getRankForFood(Food food){
+			return preferences.findRankForFood(food);
 		}
 
 		public HashMap getFoodandRankForUser(User user){

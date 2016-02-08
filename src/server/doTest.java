@@ -68,11 +68,10 @@ public class doTest {
 		uDao.create(userTest2);
 
 		
-		HashMap m = uprefDAO.findUsersAndRankForFood(foodPref);
-		Set<User> s = m.keySet();
-		System.out.println("\n[Utilisateurs,rank] pour : "+foodPref.getProductName()+"\n");
-		for(User p : s){
-			System.out.println(p.getUsername()+" , "+m.get(p)+"\n");
+		List<Float> m = uprefDAO.findRankForFood(foodPref);
+		System.out.println("\n rank pour : "+foodPref.getProductName()+"\n");
+		for(float rating : m){
+			System.out.println(rating + "\n");
 		}
 		
 	}
