@@ -83,6 +83,6 @@ runservertest:
 	java ${JFLAGS} Test
 
 runtestrecom:
-	java $(JFLAGS) TestRecommender
+	java $(JFLAGS) -ea TestRecommender
 
 	

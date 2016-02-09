@@ -20,7 +20,7 @@ import java.util.Comparator;
 import items.Food;
 import items.User;
 import dao.UserPrefDAO;
-import dao.UserPrefDAOImpl;
+
 
 public abstract class CollaborativeStrategy implements RecommendationStrategy{
 
@@ -33,7 +33,7 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	protected RatingMatrix ratingMatrix;
 	protected SimilarityMatrix similarityMatrix = null;
 
-	public CollaborativeStrategy(UserPrefDAOImpl pref){
+	public CollaborativeStrategy(UserPrefDAO pref){
 		ratingPredictions = new ArrayList<FoodRatingPair>();
 		ratingMatrix = new RatingMatrix(pref);
 		recommendationsRequired = 0;
@@ -55,7 +55,7 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 
 		private UserPrefDAO preferences;
 
-		public RatingMatrix(UserPrefDAOImpl pref){
+		public RatingMatrix(UserPrefDAO pref){
 			preferences = pref;
 		}
 

@@ -187,7 +187,7 @@ public class UserDAOImpl implements UserDAO {
     }
  
     
-    private void addUserPrefsInTable(UserPrefDAO userPrefDao, User user ) { //TO MODIFY FOR FLOAT RANK
+    private void addUserPrefsInTable(UserPrefDAO userPrefDao, User user ) { 
     	try {
             Iterator it = user.getRankedFoods().entrySet().iterator();
             while(it.hasNext()){

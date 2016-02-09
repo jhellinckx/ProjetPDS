@@ -12,7 +12,7 @@ import java.util.List;
 
 import items.Food;
 import items.User;
-import dao.UserPrefDAOImpl;
+import dao.UserPrefDAO;
 import java.util.HashSet;
 
 public class ItemItemStrategy extends CollaborativeStrategy {
@@ -22,7 +22,7 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 	private HashSet neighbor;
 	private int dataSize;
 
-	public ItemItemStrategy(UserPrefDAOImpl pref){
+	public ItemItemStrategy(UserPrefDAO pref){
 		super(pref);
 		neighbor = new HashSet(ItemItemStrategy.NeighborSize);
 	}
