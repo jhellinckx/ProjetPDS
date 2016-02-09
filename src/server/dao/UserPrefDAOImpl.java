@@ -164,8 +164,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		FoodDAO foodDAO = null;
-		HashMap m = new HashMap();// max size = 16 !!!
-		
+		HashMap m = new HashMap();
 		try {
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_RANK, false, user.getId() );

@@ -1,8 +1,12 @@
 package items;
 
+import java.lang.Math;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class User {
 
@@ -28,7 +32,7 @@ public class User {
         return id;
     }
     public void setId( Long id ) {
-        this.id = id;
+        this.id = id; 
     }
 
     public String getUsername() {
@@ -55,7 +59,7 @@ public class User {
         this.rankedFoods = foodList;
     }
 
-    public void addRankedfood(Food food, float rank){
+    public void addRankedFood(Food food, float rank){
         rankedFoods.put(food,rank);
     }
 
@@ -65,5 +69,41 @@ public class User {
 
     public boolean hasNotedFood(Food food){
         return rankedFoods.containsKey(food);
+    }
+
+    public float getMeanRank(){
+        float sumRank = 0;
+        int count = 0;
+        Collection ranks = rankedFoods.values();
+        Iterator it = ranks.iterator();
+        if(it.hasNext()){
+            while(it.hasNext()){
+                count++;
+                sumRank += (float)it.next();
+            }
+            return sumRank/count;
+        }
+        return sumRank;
+    }
+
+    private float getVarianceRank(){
+        float mean = this.getMeanRank();
+        float tmp = 0;
+        int count = 0;
+        Collection ranks = rankedFoods.values();
+        Iterator it = ranks.iterator();
+        if(it.hasNext()){
+            while(it.hasNext()){
+                count++;
+                float rank = (float)it.next(); 
+                tmp += (mean - rank)*(mean-rank);
+            }
+            return tmp/count;
+        }
+        return tmp;
+    }
+
+    public float getStdDeviation(){
+        return (float)Math.sqrt(this.getVarianceRank());
     }
 }

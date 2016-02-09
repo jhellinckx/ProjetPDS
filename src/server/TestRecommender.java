@@ -12,6 +12,7 @@ import dao.UserPrefDAO;
 
 import items.Food;
 import items.User;
+import items.Random_user_generator;
 
 public class TestRecommender {
 
@@ -38,32 +39,61 @@ public class TestRecommender {
 	public static void testUserUserRecom(){
 		double expected_result;
 		double result;
-		//Factory
+		int testnr = 0;
+		
 		DAOFactory d = DAOFactory.getInstance();
 		//DAO's
 		UserPrefDAO uprefDAO = d.getUserPrefDAO();
 		FoodDAO fDao = d.getFoodDAO();
 		UserDAO uDao = d.getUserDAO();
 
+		Random_user_generator r = new Random_user_generator(10, fDao, true);
+
 		//Création 2 users sans préf => similarité == 0
 		User u = new User("test_username1","F");
 		User v = new User("test_username2","M");
 
-		//lancement du test
+		//lancement du test 1
+		testnr++;
+		System.out.println("\nTEST "+testnr+": BEGIN");
 		expected_result = 0.0;
 		UserUserStrategy uustrat = new UserUserStrategy(uprefDAO);
-		result = uustrat.computeConstrainedPearsonCorrelation( u, v);
-		checkResult(result, expected_result);
+		result = uustrat.computeConstrainedPearsonCorrelation(u,v);
+		checkResult(result, expected_result, testnr);
+
+		//test 2
+		testnr++;
+		System.out.println("\nTEST "+testnr+": BEGIN");
+		expected_result = 1.0000000000000002;
+
+		//init users 
+		Food foodPref = fDao.findById(164l);
+		u.addRankedFood(foodPref, 4.0f);
+		v.addRankedFood(foodPref, 4.0f);
+		foodPref = fDao.findById(170l);
+		u.addRankedFood(foodPref, 4.0f);
+		v.addRankedFood(foodPref, 4.0f);
+		if(uDao.create(u)){
+			u = uDao.findByUsername(u.getUsername());
+		}
+		if(uDao.create(v)){
+			v = uDao.findByUsername(v.getUsername());
+		}
+
+		result = uustrat.computeConstrainedPearsonCorrelation(u,v);
+		checkResult(result, expected_result, testnr);
+
+
 
 		//TODO moar tests 
 	}
 
-	public static void checkResult(double res, double expected_res){
+	public static void checkResult(double res, double expected_res, int testnr){
 		if(res == expected_res){
-			System.out.println("Test OK");
+			System.out.println("Test "+testnr+": OK");
 		}
 		else{
-			System.out.println("Test FAILED");
+			System.out.println("Test "+testnr+": FAILED");
 		}
 	}
 

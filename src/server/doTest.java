@@ -61,7 +61,7 @@ public class doTest {
 
 		Food foodPref = fDao.findByName("Corn starch");
 		float rank = 4.5f;
-		userTest2.addRankedfood(foodPref, rank);
+		userTest2.addRankedFood(foodPref, rank);
 
 		//création des users dans la db
 		uDao.create(userTest);

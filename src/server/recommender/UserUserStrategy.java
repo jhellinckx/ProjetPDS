@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 import java.util.Iterator;
 import items.Food;
 import items.User;
@@ -40,12 +41,10 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		//Find foods that both users have ranked
 		Set<Food> commonRankedFoods = new HashSet<Food>(uFoodRank.keySet());
 		commonRankedFoods.retainAll(vFoodRank.keySet());
-
-		return(computeSimilarityNumerator(uFoodRank,vFoodRank, commonRankedFoods));
-		//return(computeSimilarityNumerator(uFoodRank,vFoodRank, commonRankedFoods)/computeSimilarityDenominator(uFoodRank,vFoodRank, commonRankedFoods));
+		return(pearsonNumerator(uFoodRank,vFoodRank, commonRankedFoods)/pearsonDenominator(uFoodRank,vFoodRank, commonRankedFoods));
 	}
 
-	private double computeSimilarityNumerator(HashMap u, HashMap v, Set commonFoods){
+	private double pearsonNumerator(HashMap u, HashMap v, Set commonFoods){
 		double res = 0;
 		Iterator<Food> it = commonFoods.iterator();
 		while(it.hasNext()){ //Iterate through common ranked foods by users u and v
@@ -55,8 +54,21 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		return res;
 	}
 
-	private double computeSimilarityDenominator(HashMap u, HashMap v, Set commonFoods){
+	private double pearsonDenominator(HashMap u,HashMap v, Set commonFoods){	
+		double u_comp = pearsonDenominator_inner(u,commonFoods);
+		double v_comp = pearsonDenominator_inner(v,commonFoods);
+		double denom = Math.sqrt(u_comp)*Math.sqrt(v_comp);
+		denom = (denom == 0) ? 1 : denom;
+		return denom;
+	}
+
+	private double pearsonDenominator_inner(HashMap u, Set commonFoods){
 		double res = 0;
+		Iterator<Food> it = commonFoods.iterator();
+		while(it.hasNext()){ //Iterate through common ranked foods by users u and v
+			Food nextFood = it.next();
+			res += Math.pow(((float)u.get(nextFood) - neutralRank) , 2);
+		}
 		return res;
 	}
 

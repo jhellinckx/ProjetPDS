@@ -128,7 +128,6 @@ public class UserDAOImpl implements UserDAO {
         ResultSet valeursAutoGenerees = null;
         UserPrefDAO userPrefDao = null;
         boolean error = false;
-
         try {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();

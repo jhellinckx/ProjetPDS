@@ -51,4 +51,19 @@ public class Food {
         this.energy_100g = energy_100g;
     }
 
+    @Override
+    public boolean equals(Object other){
+        if(this == other) return true;
+        if(!(other instanceof Food)) return false;
+
+        final Food otherFood = (Food) other;
+        if(this.getId().equals(otherFood.getId())) return true;
+        else return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return this.getId().hashCode();
+    }
+
 }
