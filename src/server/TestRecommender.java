@@ -59,7 +59,7 @@ public class TestRecommender {
 	}
 
 	public static void checkResult(double res, double expected_res){
-		if(result == expected_result){
+		if(res == expected_res){
 			System.out.println("Test OK");
 		}
 		else{

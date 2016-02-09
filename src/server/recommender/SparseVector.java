@@ -1,6 +1,7 @@
 package recommender;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 /*
@@ -46,5 +47,10 @@ public class SparseVector {
 		else{
 			vector.put(key, value);
 		}
+	}
+
+	public Map getNearestNeighborhood(){		// Does nothing, will be filled up later.
+		return new HashMap<Double, Integer>();
+
 	}
 }

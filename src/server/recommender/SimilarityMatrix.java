@@ -3,6 +3,7 @@ package recommender;
 
 import java.util.ArrayList;
 import java.lang.Math;
+import java.util.Map;
 
 /*
 **	Similarity Matrix. This class is used to save the similarity between two items using their indexes as keys and their simimilarity
@@ -24,11 +25,23 @@ public class SimilarityMatrix{
 		}
 	}
 
+	public SimilarityMatrix(int nbRows, int trh){
+		n = nbRows;
+		rows = new SparseVector[n];
+		for (int i = 0; i < n; i++){
+			rows[i] = new NeighborhoodSparseVector(n, trh);
+		}
+	}
+
 	public void put(int i, int j, double value){
 		rows[i].add(j, value);
 	}
 
 	public double get(int i, int j){
 		return rows[i].get(j);
+	}
+
+	public Map getNearestNeighborhood(int i){
+		return rows[i].getNearestNeighborhood();
 	}
 }

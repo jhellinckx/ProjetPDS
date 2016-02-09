@@ -9,19 +9,19 @@ public class User {
     private Long      id;
     private String    username;
     private String    gender;
-    private HashMap rankedFoods;
+    private HashMap<Food, Float> rankedFoods;
 
     public User() {
     	this.id = null;
     	this.username = null;
     	this.gender = null;
-        this.rankedFoods = new HashMap(); 
+        this.rankedFoods = new HashMap<Food, Float>(); 
     }
     
     public User( String username, String gender ) {
     	this.username = username;
     	this.gender = gender;
-        this.rankedFoods = new HashMap();
+        this.rankedFoods = new HashMap<Food, Float>();
     }
     
     public Long getId() {
@@ -51,12 +51,16 @@ public class User {
         return rankedFoods;
     }
 
-    public void setRankedFoods(HashMap foodList){
+    public void setRankedFoods(HashMap<Food, Float> foodList){
         this.rankedFoods = foodList;
     }
 
     public void addRankedfood(Food food, float rank){
         rankedFoods.put(food,rank);
+    }
+
+    public float getRankForFood(Food food){
+        return rankedFoods.get(food);
     }
 
     public boolean hasNotedFood(Food food){

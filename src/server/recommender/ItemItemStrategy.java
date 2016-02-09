@@ -9,22 +9,21 @@ package recommender;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import items.Food;
 import items.User;
 import dao.UserPrefDAO;
-import java.util.HashSet;
 
 public class ItemItemStrategy extends CollaborativeStrategy {
 
-	private static final int NeighborSize = 30;			// 30 has been proven to be an effective neighborhood size for Item-Item.
+	private static final int NEIGHBORHOOD_SIZE = 30;			// 30 has been proven to be an effective neighborhood size for Item-Item.
 
-	private HashSet neighbor;
+	private Map<Double, Integer> neighbor;
 	private int dataSize;
 
 	public ItemItemStrategy(UserPrefDAO pref){
 		super(pref);
-		neighbor = new HashSet(ItemItemStrategy.NeighborSize);
 	}
 
 	@Override
@@ -34,6 +33,14 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 		currentUser = curUser;
 		dataSize = foodData.size();
 	}
+
+
+	/*
+	*** Calculate the Cosine Similarity between the ratings vector of two different Items.	
+	***
+	***
+	*/
+
 
 	private double computeSimilarityDenominator(List<Float> i_ratings, List<Float> j_ratings){
 		double denom = VectorMath.euclideanNorm(Float.class, i_ratings);
@@ -58,19 +65,44 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 		return similarity;
 	}
 
-	private void extractNearestNeighbor(Food food, int foodIndex){
+
+
+	private void extractNearestNeighbor(int foodIndex){
+		neighbor = similarityMatrix.getNearestNeighborhood(foodIndex);
+	}
+
+
+	/*
+	**	Compute the rating prediction according to a formula defined by B.M. Sarwar et al.
+	*/
+
+	private float computeRating(){
+		float denom = 0;
+		float num = 0;
+		for (Map.Entry<Double, Integer> entry : neighbor.entrySet()){
+
+			// num = Similarity between Food 1 and Food 2  *  Rating of currentUser for Food 2 (if the rating of Food 1 needs to be predicted).
+
+			num += (entry.getKey().floatValue())*currentUser.getRankForFood(foodData.get(entry.getValue()));
+			denom += (float) Math.abs(entry.getKey());
+		}
+		denom = (denom == 0) ? 1 : denom;
+		return (num/denom);
 
 	}
+
+
 
 	private void calculateRatingPredictionForFood(Food food, int foodIndex){
 		for (int i = 0; i < dataSize; i++){
 			if (foodData.get(i).getId() != food.getId() && currentUser.hasNotedFood(foodData.get(i))){
 				double similarity = computeCosineSimilarity(food, foodData.get(i));
 				similarityMatrix.put(foodIndex, i, similarity);
-				extractNearestNeighbor(food, foodIndex);
 			}
 
 		}
+		extractNearestNeighbor(foodIndex);
+		addRatingPrediction(food, computeRating());
 		
 	}
 
@@ -79,6 +111,9 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 			if (!currentUser.hasNotedFood(foodData.get(i))){
 				calculateRatingPredictionForFood(foodData.get(i), i);
 			}
+			else{
+				addRatingPrediction(foodData.get(i), currentUser.getRankForFood(foodData.get(i)));
+			}
 		}
 
 	}
@@ -86,7 +121,7 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 	@Override
 	public ArrayList<Food> recommend(){
 
-		similarityMatrix = new SimilarityMatrix(dataSize);
+		similarityMatrix = new SimilarityMatrix(dataSize, ItemItemStrategy.NEIGHBORHOOD_SIZE);
 
 		if (foodData != null && currentUser != null){
 

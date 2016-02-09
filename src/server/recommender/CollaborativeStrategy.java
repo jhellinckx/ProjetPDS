@@ -88,6 +88,10 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		}
 	}
 
+	protected void addRatingPrediction(Food f, float r){
+		ratingPredictions.add(new FoodRatingPair(f, r));
+	}
+
 	protected void extractRecommendations(){		// Extract the n recommendations in the sorted list ratingPredictions. (n = recommendationsRequired).
 		int size = ratingPredictions.size();
 
