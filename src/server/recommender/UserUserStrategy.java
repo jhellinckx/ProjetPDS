@@ -14,23 +14,22 @@ import dao.UserPrefDAO;
 public class UserUserStrategy extends CollaborativeStrategy {
 
 	private static final float neutralRank = 2.5f; //MAGIC NUMBER
-	private static final int NeighborSize = 20;	//MAGIC NUMBER - 20 has been proven to be a good starting point User-User.  ITEMLIKE
-
+	private static final int NEIGHBORHOOD_SIZE = 20;	//MAGIC NUMBER - 20 has been proven to be a good starting point User-User.  ITEMLIKE
 
 	private int dataSize; //ITEMLIKE
+	private ArrayList similarityVec = new ArrayList();
 
 
 	public UserUserStrategy(UserPrefDAO pref){
 		super(pref);
-
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){  
-
-		//userData = users;
-		//currentUser = curUser;
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){ 
+		userData = users;
+		currentUser = curUser;
 		dataSize = userData.size();
+		foodData = foods;
 	}
 
 	public double computeConstrainedPearsonCorrelation(User u, User v){
@@ -72,25 +71,58 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		return res;
 	}
 
-	/*
-	private void computeRatingPredictions(){
+
+
+	private float computeRating(Food food){
+		System.out.println("compute");
+		float meanRankCurrUser = currentUser.getMeanRank();
+		float stdDevCurrUser = currentUser.getStdDeviation();
+		float predictedRank;
+
+		float numerator = 0.0f;
+		float denominator = 1.0f;
+		for(int i = 0; i<dataSize ; i++){
+			User otherUser = userData.get(i);
+			if(otherUser.hasNotedFood(food)){
+				numerator += ((float)similarityVec.get(i)*(otherUser.getRankForFood(food)- otherUser.getMeanRank()))/otherUser.getStdDeviation();
+				denominator += (float) Math.abs((double)similarityVec.get(i));
+			}
+
+		}
+		predictedRank = currentUser.getMeanRank() + currentUser.getStdDeviation()*(numerator/denominator);
+		return predictedRank;
+
+	}
+	
+	private void calculateSimilarityMatrix(){
 		for (int i = 0; i < dataSize; i++){
-			if (!currentUser.hasNotedFood(foodData.get(i))){
-				calculateRatingPredictionForFood(foodData.get(i), i);
+			if (userData.get(i).getId() != currentUser.getId()){
+				double similarity = computeConstrainedPearsonCorrelation(currentUser, userData.get(i));  //computeCosineSimilarity(food, foodData.get(i));
+				similarityVec.add(similarity);
 			}
 		}
 	}
-	*/
+	
+	
+	private void computeRatingPredictions(){
+		for (int i = 0; i < foodData.size(); i++){
+			if (!currentUser.hasNotedFood(foodData.get(i))){
+				addRatingPrediction(foodData.get(i), computeRating(foodData.get(i)));
+			}
+		}
+	}
+	
 
 	@Override
 	public ArrayList<Food> recommend(){
-		similarityMatrix = new SimilarityMatrix(dataSize);
+		similarityMatrix = new SimilarityMatrix(dataSize, UserUserStrategy.NEIGHBORHOOD_SIZE);
 
-		if (userData != null && currentUser != null){
+		if (foodData != null && userData != null && currentUser != null){
 
-			//computeRatingPredictions();
-			//sortRatingPredictions();
-			//extractRecommendations();
+			calculateSimilarityMatrix();
+			computeRatingPredictions();
+			sortRatingPredictions();
+			extractRecommendations();
 		}
 
 		return recommendations;

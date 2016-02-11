@@ -9,8 +9,6 @@ Further changes will be made.
 
 ****/
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -41,7 +39,6 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 
 	@Override
 	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){  
-
 		foodData = foods;
 		userData = users;
 		currentUser = curUser;
