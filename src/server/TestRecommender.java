@@ -17,8 +17,12 @@ import items.Random_user_generator;
 public class TestRecommender {
 
 	public static void main(String[] args) {
+
+		DAOFactory d = DAOFactory.getInstance();
+		//DAO's
+		UserPrefDAO uprefDAO = d.getUserPrefDAO();
 		
-		RecommenderSystem recomsys = new RecommenderSystem();
+		RecommenderSystem recomsys = new RecommenderSystem(new UserUserStrategy(uprefDAO));
 
 		System.out.println("VectorMath Test");
 		testVectorMath();

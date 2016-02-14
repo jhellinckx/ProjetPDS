@@ -27,10 +27,12 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){  
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){  
 
 		foodData = foods;
 		currentUser = curUser;
+		recommendationsRequired = nbRecom;
+
 		dataSize = foodData.size();
 	}
 
@@ -122,6 +124,8 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 	public ArrayList<Food> recommend(){
 
 		similarityMatrix = new SimilarityMatrix(dataSize, ItemItemStrategy.NEIGHBORHOOD_SIZE);
+
+		if (dataSize <= recommendationsRequired) return foodData;
 
 		if (foodData != null && currentUser != null){
 

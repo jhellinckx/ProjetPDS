@@ -25,11 +25,12 @@ public class UserUserStrategy extends CollaborativeStrategy {
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){ 
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){ 
 		userData = users;
 		currentUser = curUser;
 		dataSize = userData.size();
 		foodData = foods;
+		recommendationsRequired = nbRecom;
 	}
 
 	public double computeConstrainedPearsonCorrelation(User u, User v){

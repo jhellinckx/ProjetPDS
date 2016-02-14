@@ -6,63 +6,60 @@ import items.Food;
 
 public class RecommenderSystem {
 
-	private static final FeatureAugmentationStrategy default_hybride_strat = new FeatureAugmentationStrategy();
+	private static final CascadeStrategy default_hybride_strat = new CascadeStrategy();
 	
-	private ArrayList<RecommendationStrategy> recomstrategies;
+	private RecommendationStrategy recomstrategy;
 	private HybridationStrategy hybridstrategy;
 	private int recommendationsRequired = 0;
 	
 	public RecommenderSystem(RecommendationStrategy rstrat, HybridationStrategy hstrat){
-		recomstrategies = new ArrayList<RecommendationStrategy>();
-		recomstrategies.add(rstrat);
+		recomstrategy = rstrat;
 		hybridstrategy = hstrat;
+		hybridstrategy.addRecommendationStrategy(rstrat);
 		
 	}
 	
 	public RecommenderSystem(RecommendationStrategy rstrat){
-		recomstrategies = new ArrayList<RecommendationStrategy>();
-		recomstrategies.add(rstrat);
+		recomstrategy = rstrat;
 		hybridstrategy = null;
-	}
-	
-	public RecommenderSystem(){
-		recomstrategies = new ArrayList<RecommendationStrategy>();
-	}
+	} 
 
 	public void setNumberRecommendations(int nb){
 		recommendationsRequired = nb;
 	}
 	
-	public void addRecommendationStrategy(RecommendationStrategy rstrat){
-		rstrat.setRecommendationsNumber(recommendationsRequired);
-		recomstrategies.add(rstrat);
-		if (hybridstrategy == null && recomstrategies.size() > 1){
+	public void addRecommendationStrategyToHybridStrategy(RecommendationStrategy rstrat){
+
+		if (hybridstrategy == null){
 
 			hybridstrategy = RecommenderSystem.default_hybride_strat;
 		}
+		hybridstrategy.addRecommendationStrategy(rstrat);
 	}
 	
 	public void setHybridationStrategy(HybridationStrategy hstrat){
 		hybridstrategy = hstrat;
 	}
 	
-	public void recommendAnItem(){
+	public ArrayList<Food> recommendItems(){
 		
-		if (recomstrategies.size() == 1){			// Hybridation useless for 1 recommendation system.
-			recomstrategies.get(0).recommend();
+		if (hybridstrategy == null){			// Hybridation useless for 1 recommendation system.
+			return recomstrategy.recommend();
 		}
 		else{
-			hybridstrategy.recommend(recomstrategies);
+			return hybridstrategy.recommend();
 		}
 		
 		
 	}
 
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User currentUser){
-		int size = recomstrategies.size();
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User currentUser, int nbRecom){
 
-		for (int i = 0; i < size; i++){
-			recomstrategies.get(i).updateData(foods, users, currentUser);
+		if (hybridstrategy == null){
+			recomstrategy.updateData(foods, users, currentUser, nbRecom);
+		}
+		else{
+			hybridstrategy.updateData(foods, users, currentUser, nbRecom);
 		}
 	}
 

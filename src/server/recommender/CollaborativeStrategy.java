@@ -38,14 +38,11 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser){  
+	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){  
 		foodData = foods;
 		userData = users;
 		currentUser = curUser;
-	}
-
-	public void setRecommendationsNumber(int nb){
-		recommendationsRequired = nb;
+		recommendationsRequired = nbRecom;
 	}
 
 	protected final class RatingMatrix{		// nested class used to get all notes for a food/a user.
@@ -83,6 +80,16 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		public float getRating(){
 			return rating;
 		}
+	}
+
+	@Override
+	public void setRecommendationNumber(int recm){
+		recommendationsRequired = recm;
+	}
+
+	@Override
+	public int getRecommendationNumber(){
+		return recommendationsRequired;
 	}
 
 	protected void addRatingPrediction(Food f, float r){
