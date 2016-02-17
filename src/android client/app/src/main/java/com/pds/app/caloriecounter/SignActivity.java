@@ -18,6 +18,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.client.*;
 
 public class SignActivity extends NotifiableActivity {
     @Bind(R.id.btn_signup) Button _signupButton;
@@ -47,6 +48,8 @@ public class SignActivity extends NotifiableActivity {
             @Override
             public void onClick(View v) {
                 Intent logActivity = new Intent(getApplicationContext(), LogActivity.class);
+                if(FUCK_DEFAULT_BEHAVIOUR)
+                    logActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(logActivity);
             }
         });
@@ -141,6 +144,8 @@ public class SignActivity extends NotifiableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 Intent logActivity = new Intent(SignActivity.this, LogActivity.class);
+                if(FUCK_DEFAULT_BEHAVIOUR)
+                    logActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(logActivity);
             }
         });

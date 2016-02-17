@@ -3,6 +3,7 @@ package com.pds.app.caloriecounter;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.client.*;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
@@ -52,6 +54,8 @@ public class LogActivity extends NotifiableActivity {
             @Override
             public void onClick(View v) {
                 Intent signActivity = new Intent(getApplicationContext(), SignActivity.class);
+                if(FUCK_DEFAULT_BEHAVIOUR)
+                    signActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(signActivity);
             }
         });
@@ -154,6 +158,7 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginFailed() {
+        System.out.println("LOOPER --------------------------> "+Boolean.toString(Looper.myLooper() == Looper.getMainLooper()));
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);

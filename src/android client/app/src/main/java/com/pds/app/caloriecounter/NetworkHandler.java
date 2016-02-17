@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.client.*;
 
 public class NetworkHandler {
     private final int SAME_REQUESTS_ON_HOLD_LIMIT = 5;
@@ -116,7 +117,7 @@ public class NetworkHandler {
          /* First case, no activity was specified, thus dispatch msg to front activity */
         if(classname.equals(NotifiableActivity.class)) destActivity = getFrontActivity();
         /* Else, get specified activity */
-        else destActivity = (NotifiableActivity)_callback.getActivityByName(classname.getName());
+        else destActivity = (NotifiableActivity)_callback.getLastActivityByName(classname.getName());
 
         /*  Despite its certain assignation, destActivity can be null.
          *  First case - no activity was specified :
@@ -416,9 +417,23 @@ public class NetworkHandler {
             }
         }
 
+        public Activity getLastActivityByName(String activityName){
+            synchronized (_createdActivities){
+                Activity res = null;
+                for(Activity activity : _createdActivities){
+                    if(activity.getClass().getName().equals(activityName)) {
+                        res = activity;
+                    }
+                }
+                return res;
+            }
+        }
+
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             synchronized (_createdActivities){
+                Log.d("CREATING ACTIVITY",activity.getClass().getName());
+                Log.d("ALL ACTIVITIES",_createdActivities.toString());
                 if(NotifiableActivity.class.isInstance(activity)) {
                     _createdActivities.add(activity);
                 }

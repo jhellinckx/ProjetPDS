@@ -64,6 +64,8 @@ public final class Constants {
 
 
 
+
+
 		public static String local_ip(){
 			try{
 				return InetAddress.getLocalHost().getHostAddress();
@@ -79,6 +81,11 @@ public final class Constants {
 			return obj;
 		}
 	}
+
+	public static final class client{
+		public static final boolean FUCK_DEFAULT_BEHAVIOUR = false;
+	}
+
 
 	/* Console color output, used for logging */
 	public static final class color{

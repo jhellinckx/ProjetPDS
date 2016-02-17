@@ -33,6 +33,7 @@ public abstract class NotifiableActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
+
         handleMessagesOnHold();
 
         if(connected()) setConnected();
