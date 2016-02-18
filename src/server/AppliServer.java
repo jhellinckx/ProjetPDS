@@ -12,6 +12,10 @@ import nioserver.Message;
 import items.User;
 import items.Food;
 
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppliServer extends AbstractNIOServer{
 	public AppliServer(){
 		super();
@@ -38,6 +42,9 @@ public class AppliServer extends AbstractNIOServer{
 		}
 		else if(request.equals(FOOD_CODE_REQUEST)){
 			onFoodcodeRequest(msg);
+		}
+		else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+			onRandomUnrankedFoodsRequest(msg);
 		}
 	}
 
@@ -101,7 +108,6 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public void onFoodcodeRequest(Message msg){
-		System.out.println("\nON_FOOD_CODE_REQUEST\n");
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String code = (String) data.get(FOOD_CODE);
 		JSONObject responseData = new JSONObject();
@@ -119,6 +125,26 @@ public class AppliServer extends AbstractNIOServer{
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST, responseData));
 		send(msg);
 	}
+
+	public void onRandomUnrankedFoodsRequest(Message msg){
+		int nbOfUnrankedFoodsReturned = 9;
+		JSONObject responseData = new JSONObject();
+		ArrayList<Long> foodIds = new ArrayList<Long>();
+		generateRandomFoodIds(nbOfUnrankedFoodsReturned, foodIds);//populate array foodCodes
+		List<Food> foods = _foodDatabase.findByIds(foodIds);
+	}
+
+	private void generateRandomFoodIds(int nb, ArrayList<Long> foodIds){
+		Random r = new Random();
+		int min = 1, max = 63016;
+		if(min>=nb && nb>=max){
+			throw new IllegalArgumentException("nb must be between min and max");
+		}
+		else{
+			Long id = new Long(r.nextInt((max-min)+1)+min);
+			foodIds.add(id);
+		}
+	}  
 
 	public static void main(String[] args){
 		try{

@@ -149,7 +149,7 @@ public class LogActivity extends NotifiableActivity {
     public void onLoginSuccess() {
         runOnUiThread(new Runnable() {
             public void run() {
-                Intent personalActivity = new Intent(LogActivity.this, Home.class);
+                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
                 startActivity(personalActivity);
                 finish(); // If logged in, only come back to this activity when log out called, not when user presses back
             }
@@ -158,7 +158,11 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginFailed() {
+<<<<<<< HEAD
         System.out.println("LOOPER --------------------------> "+Boolean.toString(Looper.myLooper() == Looper.getMainLooper()));
+=======
+        System.out.println(Looper.myLooper() == Looper.getMainLooper());
+>>>>>>> raphBranch
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);

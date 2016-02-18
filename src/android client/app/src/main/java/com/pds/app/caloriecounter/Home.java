@@ -32,6 +32,11 @@ public class Home extends HomeActivity implements AdapterView.OnItemClickListene
 
     }
 
+    @Override
+    public void onBackPressed(){
+
+    }
+
 
 
     @Override

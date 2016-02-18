@@ -4,9 +4,9 @@
 
         android:angle="135"
 
-        android:startColor="@color/primary"
+        android:startColor="#329f70"
         android:centerColor="@color/primary_dark"
-        android:endColor="@color/accent"
+        android:endColor="#303030"
         android:type="linear" />
     <!--android:centerColor="#4CAF50"
         android:endColor="#2E7D32"
