@@ -38,8 +38,15 @@ public class RatingActivity extends HomeActivity {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
 
+
+        ArrayList<String> urls = new ArrayList();
+        urls.add("http://static.openfoodfacts.org/images/products/356/007/076/4884/front.6.400.jpg");
+        urls.add("http://static.openfoodfacts.org/images/products/356/007/076/5034/front.6.400.jpg");
+        urls.add("http://static.openfoodfacts.org/images/products/326/288/010/2213/front.6.400.jpg");
+        urls.add("http://static.openfoodfacts.org/images/products/356/007/098/1489/front.5.400.jpg");
+
         gridView = (GridView) findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(this));
+        gridView.setAdapter(new ImageAdapter(this, urls));
         initializer();
         addListenerGridView();
 

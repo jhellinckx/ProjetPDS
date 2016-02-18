@@ -12,7 +12,7 @@ public final class Constants {
 	public static final class network {
 		/* Network config */
 		public static final int PORT = 8080;
-		public static final String HOST ="172.16.42.10";
+		public static final String HOST ="192.168.1.6";
 		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 		public static final int MAX_CLIENTS = 100;
 		public static final int BUFFER_SIZE = 1000;
