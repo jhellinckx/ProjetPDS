@@ -19,6 +19,8 @@ public interface UserPrefDAO {
 
 	List<Float> findRankForFood(Food food) throws DAOException;
 
+	List<Food> findFoodsForUserAndRank( User user, float rank ) throws DAOException;
+
 	HashMap findFoodsAndRankForUser(User user) throws DAOException;
 	
 	void delete (User user, Food food, float mark) throws DAOException;

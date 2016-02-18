@@ -62,6 +62,12 @@ public final class Constants {
 		public static final String FOOD_CODE_FAILURE = "d_foodcode_nope";
 		public static final String FOOD_CODE_NOT_FOUND = "d_foodcode_nope_null";
 
+		/*RANDOM_UNRANKED_FOODS_REQUEST */
+		public static final String RANDOM_UNRANKED_FOODS_REQUEST = "r_randfoods";
+
+
+		
+
 
 
 		public static String local_ip(){

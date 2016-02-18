@@ -3,6 +3,7 @@ package com.pds.app.caloriecounter;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -154,6 +155,7 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginFailed() {
+        System.out.println(Looper.myLooper() == Looper.getMainLooper());
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);

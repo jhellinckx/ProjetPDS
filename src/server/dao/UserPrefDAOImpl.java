@@ -111,7 +111,8 @@ public class UserPrefDAOImpl implements UserPrefDAO {
     }
     }
 	
-	private List<Food> findFoodsForUserAndRank( User user, float rank ) {
+	@Override
+	public List<Food> findFoodsForUserAndRank( User user, float rank ) throws DAOException {
 		List<Food> rankedFood = new ArrayList<Food>();
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
