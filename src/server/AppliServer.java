@@ -17,6 +17,10 @@ public class AppliServer extends AbstractNIOServer{
 		super();
 	}
 
+	public User getUser(Message msg){
+		return this._userDatabase.findByUsername(getUsername(msg));
+	}
+
 	public void handleMessage(Message msg) throws IOException{
 		JSONObject received = msg.toJSON();
 		if(!received.containsKey(REQUEST_TYPE) || !received.containsKey(DATA))

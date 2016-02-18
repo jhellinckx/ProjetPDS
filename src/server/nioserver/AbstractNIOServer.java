@@ -42,6 +42,10 @@ public abstract class AbstractNIOServer{
 		}
 	}
 
+	public String getUsername(Message msg){
+		return _clients.get(msg.socket());
+	}
+
 	public void removeClient(Message msg){
 		_clients.remove(msg.socket());
 	}
