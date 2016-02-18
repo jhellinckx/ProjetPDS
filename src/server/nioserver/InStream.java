@@ -1,5 +1,6 @@
 package nioserver;
 import org.calorycounter.shared.Constants;
+import org.json.simple.JSONObject;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
@@ -54,6 +55,10 @@ public class InStream implements Runnable{
 
 	private void _disconnect(SocketChannel clientChannel){
 		try{
+			JSONObject obj = new JSONObject();
+			obj.put(Constants.network.REQUEST_TYPE, Constants.network.LOG_OUT_REQUEST);
+			obj.put(Constants.network.DATA, "log out");
+			_controller.addIncomingMessage(new Message(clientChannel.socket(), obj));
 			clientChannel.keyFor(this._selector).cancel();
 			clientChannel.close();
 			if(Constants.SHOW_LOG){

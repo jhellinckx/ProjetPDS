@@ -269,7 +269,7 @@ public class NetworkHandler {
         private void _doConnect() throws IOException{
             synchronized (_handler._socketLock) {
                 if (!isConnected()){
-                    _handler._socket = new Socket(EMULATOR_DEVICE_ADDRESS, PORT);
+                    _handler._socket = new Socket(HOST, PORT);
                 }
                 _handler._socketLock.notify(); //notify Sender thread
             }

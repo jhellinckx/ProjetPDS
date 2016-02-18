@@ -43,7 +43,7 @@ public class ScanningActivity extends HomeActivity{
     }
 
     private void updateFragment(String image, String product, String energy){
-        ItemInfosFragment frag = (ItemInfosFragment) manager.findFragmentByTag("info");
+        ItemInfosFragment frag = (ItemInfosFragment) getSupportFragmentManager().findFragmentByTag("info");
         frag.setImage(image);
         frag.setProductName(product);
         frag.setCal(energy);
@@ -52,13 +52,13 @@ public class ScanningActivity extends HomeActivity{
 
     private void addFragment(){
         FragmentTransaction transaction = manager.beginTransaction();
+
         transaction.add(R.id.infos_layout, new ItemInfosFragment(), "info");
-        transaction.addToBackStack(null);
+        transaction.addToBackStack("info");
         transaction.commit();
     }
 
-    public void handleMessage(JSONObject msg){
-        Log.d("SCANNINGCTIVITY HANDLE MSG", msg.toString());
+    public void handleMessage(JSONObject msg) {
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(FOOD_CODE_REQUEST)){
@@ -70,6 +70,11 @@ public class ScanningActivity extends HomeActivity{
                 String energy_100g = (String) data.get(FOOD_ENERGY100G);
 
                 addFragment();
+                try{
+                    this.wait(1500);
+                } catch (java.lang.InterruptedException e){
+                    e.printStackTrace();
+                }
                 updateFragment(image_url, product_name, energy_100g);
             }
         }

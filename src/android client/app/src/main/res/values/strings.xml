@@ -30,6 +30,7 @@
     <string name="urlinfo">url for extra info:</string>
     <string name="productinfos">Product Information:</string>
 
+    <string name="rateTitle">Rate this Item</string>
     <!-- Id's -->
     <item name="btn_signup" type="id"></item>
     <item name="btn_login" type="id"></item>
@@ -38,4 +39,5 @@
     <item name="input_password_repeat" type="id"></item>
     <item name="link_signup" type="id"></item>
     <item name="link_login" type="id"></item>
- </resources>
+</resources>
+

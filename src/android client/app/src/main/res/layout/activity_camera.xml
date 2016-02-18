@@ -6,7 +6,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Let&apos;s do some scanning, shall we ?"
+        android:text="Scan an object"
         android:id="@+id/scan_button"
         android:background="@drawable/background"
         android:layout_alignParentBottom="true"

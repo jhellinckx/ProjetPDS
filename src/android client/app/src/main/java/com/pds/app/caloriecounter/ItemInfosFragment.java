@@ -10,9 +10,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by aurelien on 16/12/15.
- */
 
 public class ItemInfosFragment extends Fragment {
 
@@ -35,6 +32,7 @@ public class ItemInfosFragment extends Fragment {
     }
 
     public void setProductName(String name){
+        while(product == null);
         if (name != null){
             product.setText(name);
         }
