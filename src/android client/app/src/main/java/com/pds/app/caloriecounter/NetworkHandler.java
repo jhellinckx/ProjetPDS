@@ -3,6 +3,7 @@ package com.pds.app.caloriecounter;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,10 +12,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -43,6 +50,8 @@ public class NetworkHandler {
     protected Sender _sender;
     protected Thread _senderThread;
     protected Object _socketLock;
+    protected int _port;
+    protected String _host;
 
     private NetworkHandler(Context context) {
         _context = context;
@@ -55,7 +64,32 @@ public class NetworkHandler {
         ((Application)_context.getApplicationContext()).registerActivityLifecycleCallbacks(_callback);
         _messagesOnHold = new HashMap<>();
         _socketLock = new Object();
+        JSONObject config = loadNetworkConfig(context);
+        this._host = (String)config.get("host");
+        this._port = Integer.parseInt((String)config.get("port"));
 
+    }
+
+    private JSONObject loadNetworkConfig(Context context){
+        InputStream is = context.getResources().openRawResource(R.raw.networkconfig);
+        Writer writer = new StringWriter();
+        char[] buffer = new char[1024];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        }catch(IOException e){}
+        finally {
+            try {is.close();}catch(IOException e){}
+        }
+
+        try{
+            return (JSONObject)(new JSONParser()).parse(writer.toString());
+        }catch(org.json.simple.parser.ParseException e){
+            return null;
+        }
     }
 
     public static synchronized NetworkHandler getInstance(Context context){
@@ -269,7 +303,7 @@ public class NetworkHandler {
         private void _doConnect() throws IOException{
             synchronized (_handler._socketLock) {
                 if (!isConnected()){
-                    _handler._socket = new Socket(HOST, PORT);
+                    _handler._socket = new Socket(_host, _port);
                 }
                 _handler._socketLock.notify(); //notify Sender thread
             }

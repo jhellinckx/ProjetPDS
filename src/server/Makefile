@@ -58,7 +58,7 @@ common:
 	$(call buildEnd)
 
 
-test: Test.class doTest.class testDAO.class TestRecommender.class
+test: doTest.class testDAO.class TestRecommender.class
 
 # Pattern substitution, to build MyClass.class we need MyClass.java. 
 # To achieve that, execute the task below. $< = %.java

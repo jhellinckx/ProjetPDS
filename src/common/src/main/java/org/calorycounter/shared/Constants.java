@@ -1,19 +1,24 @@
 package org.calorycounter.shared;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
 import java.net.InetAddress;
+import java.security.ProtectionDomain;
+import java.text.ParseException;
+import java.util.HashMap;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public final class Constants {
 
 	/* Network related constants, used to normalise communication */
 	public static final class network {
 		/* Network config */
-		public static final int PORT = 8080;
-		public static final String HOST ="172.16.42.10";
-		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 		public static final int MAX_CLIENTS = 100;
 		public static final int BUFFER_SIZE = 1000;
 		public static final int INT_SIZE = 4;

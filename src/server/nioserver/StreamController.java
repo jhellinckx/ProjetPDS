@@ -17,7 +17,7 @@ public class StreamController{
 
 
 	public StreamController(AbstractNIOServer server){
-		this._inStream = new InStream(this);
+		this._inStream = new InStream(this, server.host(), server.port());
 		this._outStream = new OutStream(this);
 		this._in = new LinkedList<Message>();
 		this._out = new LinkedList<Message>();

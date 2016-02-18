@@ -21,13 +21,13 @@ public class InStream implements Runnable{
 	private StreamController _controller;
 	private Boolean _running;
 
-	public InStream(StreamController controller){
+	public InStream(StreamController controller, String host, int port){
 		try{
 			this._msgDataBuffer = ByteBuffer.allocate(Constants.network.BUFFER_SIZE);
 			this._msgSizeBuffer = ByteBuffer.allocate(Constants.network.INT_SIZE);
 			this._acceptChannel = ServerSocketChannel.open();
 			this._acceptChannel.configureBlocking(false);
-			this._acceptChannel.socket().bind(new InetSocketAddress(Constants.network.HOST, Constants.network.PORT));
+			this._acceptChannel.socket().bind(new InetSocketAddress(host, port));
 			this._selector = Selector.open();
 			this._acceptChannel.register(this._selector, SelectionKey.OP_ACCEPT);
 			this._controller = controller;
