@@ -3,6 +3,7 @@ import org.calorycounter.shared.Constants;
 import dao.DAOFactory;
 import dao.UserDAO;
 import dao.FoodDAO;
+import dao.UserPrefDAO;
 import java.util.HashMap;
 import java.util.Map;
 import java.net.Socket;
@@ -19,6 +20,7 @@ public abstract class AbstractNIOServer{
 
 	protected UserDAO _userDatabase;
 	protected FoodDAO _foodDatabase;
+	protected UserPrefDAO _userprefDatabase;
 
 	public AbstractNIOServer(){
 		_controller = new StreamController(this);
@@ -26,6 +28,7 @@ public abstract class AbstractNIOServer{
 		_daoFactory = DAOFactory.getInstance();
 		_userDatabase = _daoFactory.getUserDAO();
 		_foodDatabase = _daoFactory.getFoodDAO();
+		_userprefDatabase = _daoFactory.getUserPrefDAO();
 		_clients = new HashMap<Socket, String>();
 	}
 
