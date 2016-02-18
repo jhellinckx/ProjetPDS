@@ -1,5 +1,6 @@
 package nioserver;
 import org.calorycounter.shared.Constants;
+import static org.calorycounter.shared.Constants.network.*;
 import org.json.simple.JSONObject;
 
 import java.nio.ByteBuffer;
