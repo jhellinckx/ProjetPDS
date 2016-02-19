@@ -33,7 +33,7 @@
         android:id="@+id/update"
         android:layout_marginBottom="32dp"
         android:textColor="#ffffff"
-        android:background="@drawable/background"
+        android:background="@drawable/background_button"
         android:minWidth="120sp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />

@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Restart"
         android:id="@+id/restart_process"
-        android:background="@drawable/background"
+        android:background="@drawable/background_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

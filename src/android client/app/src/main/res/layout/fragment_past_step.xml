@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:text="@string/nextbutton"
         android:id="@+id/past_next"
-        android:background="@drawable/background"
+        android:background="@drawable/background_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp" />

@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Let&apos;s Start !"
         android:id="@+id/process_button"
-        android:background="@drawable/background"
+        android:background="@drawable/background_button"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
