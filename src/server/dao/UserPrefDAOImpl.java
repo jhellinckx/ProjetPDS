@@ -53,16 +53,13 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		create(user.getId(), food.getId(), rank);
 	}
 
-
-	
 	@Override
-	public List<Food> findUserAppreciatedFood(User user) throws DAOException {
-		return findFoodsForUserAndRank( user , 5.F );
-	}
-	
-	@Override
-	public List<Food> findUserDeppreciatedFood(User user) throws DAOException {
-		return findFoodsForUserAndRank( user , 0.F );
+	public List<Food> findFoodsForUser(User user){
+		List<Food> foods = new ArrayList<Food>();
+		for(float rank = 0.0f; rank<5.0f ; rank+= 0.5f){
+			foods.addAll(findFoodsForUserAndRank(user,rank));
+		}
+		return foods;
 	}
 	
 	@Override

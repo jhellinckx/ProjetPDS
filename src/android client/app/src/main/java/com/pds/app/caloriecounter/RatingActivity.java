@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RatingBar;
 import android.widget.Toast;
+
 import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class RatingActivity extends HomeActivity {
     private RatingBar ratingBar;
     private GridView gridView;
     private float lastRating = -1.0f;//special value to test if set
+    private ArrayList<String> urls;
 
 
     private void initializer(){
@@ -37,17 +39,10 @@ public class RatingActivity extends HomeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
-
-
-        ArrayList<String> urls = new ArrayList();
-        urls.add("http://static.openfoodfacts.org/images/products/356/007/076/4884/front.6.400.jpg");
-        urls.add("http://static.openfoodfacts.org/images/products/356/007/076/5034/front.6.400.jpg");
-        urls.add("http://static.openfoodfacts.org/images/products/326/288/010/2213/front.6.400.jpg");
-        urls.add("http://static.openfoodfacts.org/images/products/356/007/098/1489/front.5.400.jpg");
-
+        urls = new ArrayList<String>();
+        initializer();
         gridView = (GridView) findViewById(R.id.gridView);
         gridView.setAdapter(new ImageAdapter(this, urls));
-        initializer();
         addListenerGridView();
 
     }
@@ -104,28 +99,23 @@ public class RatingActivity extends HomeActivity {
         return true;
     }
 
-        /*
+
     public void handleMessage(JSONObject msg){
         Log.d("SCANNINGCTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
-        if(request.equals(FOOD_CODE_REQUEST)){
-            String response =  (String)data.get(FOOD_CODE_RESPONSE);
-            if(response.equals(FOOD_CODE_SUCCESS)){
-                String image_url = (String) data.get(FOOD_IMAGE_URL);
-
-                String product_name = (String) data.get(FOOD_NAME);
-                String energy_100g = (String) data.get(FOOD_ENERGY100G);
-
-                //addFragment();
-                //updateFragment(image_url, product_name, energy_100g);
+        if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+            String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
+            if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
+                for(int i = 0; i < data.size()-1 ; ++i){
+                    urls.add((String) data.get(FOOD_IMAGE_URL+String.valueOf(i)));
+                }
             }
         }
     }
-    */
+
 
     private ArrayList<String> getUrlsFromServer(){
-        //TODO ask 9 urls of food not ranked by current User
         JSONObject data = new JSONObject();
         try {
             send(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, data));
@@ -135,4 +125,5 @@ public class RatingActivity extends HomeActivity {
         System.out.println("------------------request for random unranked foods SENT -------------------");
         return new ArrayList<String>();
     }
+
 }

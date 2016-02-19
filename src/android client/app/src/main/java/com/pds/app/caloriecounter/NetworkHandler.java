@@ -135,6 +135,10 @@ public class NetworkHandler {
             else if(request.equals(FOOD_CODE_REQUEST)){
                 _doDispatch(msg,ScanningActivity.class);
             }
+            else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+                _doDispatch(msg,RatingActivity.class);
+            }
+
         }
         catch(IOException e){
             Log.d("Dispatcher", e.getMessage());

@@ -69,11 +69,11 @@ public final class Constants {
 
 		/*RANDOM_UNRANKED_FOODS_REQUEST */
 		public static final String RANDOM_UNRANKED_FOODS_REQUEST = "r_randfoods";
-
-
-		
-
-
+		public static final String RANDOM_UNRANKED_FOODS_RESPONSE = "d_randfoods_res";
+		public static final String RANDOM_UNRANKED_FOODS_FAILURE = "d_randfoods_nope";
+		public static final String RANDOM_UNRANKED_FOODS_NOT_FOUND = "d_randfoods_nope_empty";
+		public static final String RANDOM_UNRANKED_FOODS_SUCCESS = "d_randfoods_ok";
+		public static final String FOOD_IMAGE_URL_LIST = "d_food_imgurl_list";
 
 
 

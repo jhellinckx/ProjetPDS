@@ -11,9 +11,7 @@ public interface UserPrefDAO {
 
 	void create(Long id_user, Long id_food, float rank) throws IllegalArgumentException, DAOException;
 	
-	List<Food> findUserAppreciatedFood( User user ) throws DAOException;
-	
-	List<Food> findUserDeppreciatedFood(User user) throws DAOException;
+	List<Food> findFoodsForUser(User user);
 	
 	List<User> findUsersAppreciating( Food food ) throws DAOException;
 

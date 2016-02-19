@@ -15,6 +15,7 @@ import items.Food;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class AppliServer extends AbstractNIOServer{
 	public AppliServer(){
@@ -130,21 +131,54 @@ public class AppliServer extends AbstractNIOServer{
 		int nbOfUnrankedFoodsReturned = 9;
 		JSONObject responseData = new JSONObject();
 		ArrayList<Long> foodIds = new ArrayList<Long>();
-		generateRandomFoodIds(nbOfUnrankedFoodsReturned, foodIds);//populate array foodCodes
+		generateRandomFoodIds(nbOfUnrankedFoodsReturned, msg, foodIds);//populate array foodIds
 		List<Food> foods = _foodDatabase.findByIds(foodIds);
+		makeJSON_onRandomUnrankedFoodRequest(foods, responseData);
+		msg.setJSON(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, responseData));
+		send(msg);
 	}
 
-	private void generateRandomFoodIds(int nb, ArrayList<Long> foodIds){
+	private void generateRandomFoodIds(int nb, Message msg,  ArrayList<Long> foodIds){
 		Random r = new Random();
 		int min = 1, max = 63016;
-		if(min>=nb && nb>=max){
-			throw new IllegalArgumentException("nb must be between min and max");
+		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(getUser(msg)));
+		int[] alreadyRankedIds = new int[foods.size()];
+
+		for(int j=0 ; j<foods.size(); ++j){
+			alreadyRankedIds[j] = foods.get(j).getId().intValue();
 		}
-		else{
-			Long id = new Long(r.nextInt((max-min)+1)+min);
-			foodIds.add(id);
+		Arrays.sort(alreadyRankedIds);//Sort needed for random with excluded values
+		for(int i=0 ; i<nb ; ++i){
+			Long id = new Long(getRandomWithExclusion(r,min,max, alreadyRankedIds));
+			if(!foodIds.contains(id)){
+				foodIds.add(id);
+			}else{i-=1;}
 		}
 	}  
+
+	private int getRandomWithExclusion(Random rnd, int start, int end, int... exclude) {
+	    int random = start + rnd.nextInt(end - start + 1 - exclude.length);
+	    for (int ex : exclude) {
+	        if (random < ex) {
+	            break;
+	        }
+	        random++;
+	    }
+	    return random;
+	}
+
+	private void makeJSON_onRandomUnrankedFoodRequest(List<Food> foods, JSONObject responseData){
+		if(foods.size() == 0){
+			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_FAILURE);
+			responseData.put(REASON, RANDOM_UNRANKED_FOODS_NOT_FOUND);
+		}
+		else{
+			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
+			for(int i=0 ; i<foods.size() ; ++i){ //ajout de chaque url au JSON
+				responseData.put(FOOD_IMAGE_URL+String.valueOf(i), foods.get(i).getImageUrl());
+			}
+		}
+	}
 
 	public static void main(String[] args){
 		try{
@@ -157,4 +191,5 @@ public class AppliServer extends AbstractNIOServer{
 			e.printStackTrace();
 		}
 	}
+
 }
