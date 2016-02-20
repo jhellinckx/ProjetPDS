@@ -150,7 +150,7 @@ public class AppliServer extends AbstractNIOServer{
 		Arrays.sort(alreadyRankedIds);//Sort needed for random with excluded values
 		for(int i=0 ; i<nb ; ++i){
 			Long id = new Long(getRandomWithExclusion(r,min,max, alreadyRankedIds));
-			if(!foodIds.contains(id)){
+			if(!foodIds.contains(id) && !_foodDatabase.findById(id).getImageUrl().isEmpty()){
 				foodIds.add(id);
 			}else{i-=1;}
 		}

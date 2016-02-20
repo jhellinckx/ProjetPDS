@@ -2,11 +2,13 @@ package com.pds.app.caloriecounter;
 
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 
 import com.squareup.picasso.Picasso;
 
@@ -34,19 +36,26 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
+        View grid;
+        LayoutInflater inflater = (LayoutInflater) _Context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         if (convertView == null) {
-            // if it's not recycled, initialize some attributes
-            imageView = new ImageView(_Context);
+            grid = new View(_Context);
+            grid = inflater.inflate(R.layout.grid_singlefood, null);
+            ImageView imageView = (ImageView) grid.findViewById(R.id.grid_imageView);
+            RatingBar ratingBar = (RatingBar) grid.findViewById(R.id.grid_ratingBar);
+            Picasso.with(this._Context)
+                    .load(_urls.get(position))
+                    .resize(330,330)
+                    .into(imageView);
+
         } else {
-            imageView = (ImageView) convertView;
+
+            grid = (View) convertView;
         }
 
-        Picasso.with(this._Context)
-                .load(_urls.get(position))
-                .resize(330,330)
-                .into(imageView);
-        return imageView;
+        return grid;
     }
 }
 

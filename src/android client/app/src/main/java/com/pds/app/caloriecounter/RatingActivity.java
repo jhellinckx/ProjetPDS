@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter;
 
 
 
+
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,7 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RatingBar;
-import android.widget.Toast;
+
 
 import org.json.simple.JSONObject;
 import java.io.IOException;
@@ -29,9 +30,9 @@ public class RatingActivity extends HomeActivity {
     private ArrayList<String> urls;
 
 
+
     private void initializer(){
         ArrayList<String> urls = new ArrayList<String>(getUrlsFromServer());
-
     }
 
 
@@ -51,8 +52,15 @@ public class RatingActivity extends HomeActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Toast.makeText(RatingActivity.this, "" + position,
-                        Toast.LENGTH_SHORT).show();
+                //position defines which food in urls
+                System.out.println("-----------------START");
+                RateFoodDialogFragment frag = new RateFoodDialogFragment();
+                Bundle  bundle = new Bundle();
+                frag.setArguments(bundle);
+                frag.show(getFragmentManager(), "titletest");
+
+                System.out.println("-----------------END");
+
             }
         });
     }
@@ -113,6 +121,20 @@ public class RatingActivity extends HomeActivity {
             }
         }
     }
+
+    public void addListenerOnRatingBar() {
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating,
+                                        boolean fromUser) {
+
+                //action quand changement ratingBar
+
+            }
+        });
+    }
+
 
 
     private ArrayList<String> getUrlsFromServer(){
