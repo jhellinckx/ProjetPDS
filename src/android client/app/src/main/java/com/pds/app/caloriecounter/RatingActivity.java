@@ -27,15 +27,21 @@ import static org.calorycounter.shared.Constants.network.*;
 
 public class RatingActivity extends HomeActivity implements RateFoodDialogFragment.RateFoodDialogListener{
 
+    private static final int NB_RATINGS = 9;
+
     private RatingBar ratingBar;
     private GridView gridView;
     private float lastRating = -1.0f;//special value to test if set
     private ArrayList<String> urls;
+    private ArrayList<Float> ratings;
 
 
 
     private void initializer(){
         ArrayList<String> urls = new ArrayList<String>(getUrlsFromServer());
+        for (int i = 0; i < NB_RATINGS; i++){
+            ratings.add(null);
+        }
     }
 
 
@@ -44,6 +50,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
         urls = new ArrayList<String>();
+        ratings = new ArrayList<Float>();
         initializer();
         gridView = (GridView) findViewById(R.id.gridView);
 
@@ -69,6 +76,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
         View v = (View) gridView.getItemAtPosition(position);
         RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
         rbar.setRating(rating);
+        ratings.set(position, rating);
     }
 
     @Override
