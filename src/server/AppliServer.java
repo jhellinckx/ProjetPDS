@@ -47,6 +47,9 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
 			onRandomUnrankedFoodsRequest(msg);
 		}
+		else if(request.equals(SEND_RATINGS_REQUEST)){
+			onSendRatingRequest(msg);
+		}
 	}
 
 	public void onLoginRequest(Message msg){
@@ -178,6 +181,26 @@ public class AppliServer extends AbstractNIOServer{
 				responseData.put(FOOD_IMAGE_URL+String.valueOf(i), foods.get(i).getImageUrl());
 			}
 		}
+	}
+
+	public void onSendRatingRequest(Message msg){
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		System.out.println(data.size());
+		String currUrl;
+		double currRank; 
+		User currUser = getUser(msg);
+		for(int i = 0 ; i < data.size()/2 ; ++i){
+			currUrl = (String) data.get(FOOD_IMAGE_URL+String.valueOf(i));
+			currRank = (double) data.get(FOOD_RATING+String.valueOf(i));
+			float rank = (float) currRank;
+			System.out.println("currUrl: "+currUrl+"\ncurrRank :"+String.valueOf(currRank));
+			Food currFood = _foodDatabase.findByUrl(currUrl);
+			_userprefDatabase.create(currUser.getId(),currFood.getId(), rank);
+		}
+		//String response = (String) data.get(FOOD_CODE);
+		//JSONObject responseData = new JSONObject();
+		//Food food = _foodDatabase.findByCode(code);
+		
 	}
 
 	public static void main(String[] args){

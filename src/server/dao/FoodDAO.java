@@ -5,6 +5,8 @@ import java.util.List;
 import items.Food;
 
 public interface FoodDAO {
+	Food findByUrl ( String url ) throws DAOException;
+
 	Food findByName ( String productName ) throws DAOException;
 	
 	Food findByCode ( String code ) throws DAOException;

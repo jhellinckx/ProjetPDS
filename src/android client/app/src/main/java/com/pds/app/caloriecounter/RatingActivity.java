@@ -100,15 +100,29 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
 
 
         JSONObject data = new JSONObject();
+        JSONObject data2 = new JSONObject();
+        int index1 = 0;
+        int index2 = 0;
         for (int i = 0; i < RatingActivity.NB_RATINGS; i++){
             if (ratings.get(i) != null) {
-                data.put(FOOD_IMAGE_URL + Integer.toString(i), urls.get(i));
-                data.put(FOOD_RATING + Integer.toString(i), ratings.get(i));
+                if(i<NB_RATINGS/2){
+                    data.put(FOOD_IMAGE_URL + Integer.toString(index1), urls.get(i));
+                    data.put(FOOD_RATING + Integer.toString(index1), ratings.get(i));
+                    index1 += 1;
+                }
+                else{
+                    data2.put(FOOD_IMAGE_URL + Integer.toString(index2), urls.get(i));
+                    data2.put(FOOD_RATING + Integer.toString(index2), ratings.get(i));
+                    index2+=1;
+                }
+
             }
         }
 
         try {
             send(networkJSON(SEND_RATINGS_REQUEST, data));
+            send(networkJSON(SEND_RATINGS_REQUEST, data2));
+
         } catch (IOException e) {
             Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
             toast.show();

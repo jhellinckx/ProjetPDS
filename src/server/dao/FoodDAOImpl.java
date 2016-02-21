@@ -18,11 +18,17 @@ public class FoodDAOImpl implements FoodDAO {
 	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE product_name = ?";
 	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE code = ?";
 	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE id_food = ?";
+    private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE image_url = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food";
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
 	}
+
+    @Override
+    public Food findByUrl(String url) throws DAOException{
+        return find( SQL_SELECT_BY_URL, url);
+    }
 	
 	
 	@Override
