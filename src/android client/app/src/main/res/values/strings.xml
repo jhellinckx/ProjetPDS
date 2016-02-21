@@ -39,5 +39,8 @@
     <item name="input_password_repeat" type="id"></item>
     <item name="link_signup" type="id"></item>
     <item name="link_login" type="id"></item>
+
+    <string name="ok">Rate</string>
+    <string name="cancel">Cancel</string>
 </resources>
 

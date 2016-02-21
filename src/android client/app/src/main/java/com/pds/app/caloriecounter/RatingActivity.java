@@ -3,6 +3,7 @@ package com.pds.app.caloriecounter;
 
 
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,7 +13,9 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 
 import org.json.simple.JSONObject;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RatingActivity extends HomeActivity {
+public class RatingActivity extends HomeActivity implements RateFoodDialogFragment.RateFoodDialogListener{
 
     private RatingBar ratingBar;
     private GridView gridView;
@@ -43,8 +46,6 @@ public class RatingActivity extends HomeActivity {
         urls = new ArrayList<String>();
         initializer();
         gridView = (GridView) findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(this, urls));
-        addListenerGridView();
 
     }
 
@@ -53,16 +54,24 @@ public class RatingActivity extends HomeActivity {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 //position defines which food in urls
-                System.out.println("-----------------START");
                 RateFoodDialogFragment frag = new RateFoodDialogFragment();
                 Bundle  bundle = new Bundle();
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
-                System.out.println("-----------------END");
-
             }
         });
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog){
+        Toast toast = Toast.makeText(this, "Rate button clicked", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog){
+        // Do nothing, Simply dismiss the Dialog.
     }
 
     @Override
@@ -116,10 +125,17 @@ public class RatingActivity extends HomeActivity {
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 for(int i = 0; i < data.size()-1 ; ++i){
-                    urls.add((String) data.get(FOOD_IMAGE_URL+String.valueOf(i)));
+                    urls.add((String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
+
                 }
             }
         }
+        runOnUiThread(new Runnable() {
+            public void run() {
+                gridView.setAdapter(new ImageAdapter(RatingActivity.this, urls));
+                addListenerGridView();
+            }
+        });
     }
 
     public void addListenerOnRatingBar() {
