@@ -8,13 +8,16 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.widget.RatingBar;
 
 public class RateFoodDialogFragment extends DialogFragment {
 
-    // This interface allows event callbacks to RatingAcitivy.
+    private int _position;
+
+    // This interface allows event callbacks to RatingActivity.
 
     public interface RateFoodDialogListener{
-        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onDialogPositiveClick(DialogFragment dialog, int pos, float rating);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -35,13 +38,14 @@ public class RateFoodDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.rating_dialog,null));
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.rating_dialog, null));
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                _listener.onDialogPositiveClick(RateFoodDialogFragment.this);
+                RatingBar ratingBar = (RatingBar) ((AlertDialog) dialog).findViewById(R.id.ratingBar);
+                _listener.onDialogPositiveClick(RateFoodDialogFragment.this, _position, ratingBar.getRating());
             }
         });
 
@@ -52,6 +56,8 @@ public class RateFoodDialogFragment extends DialogFragment {
             }
 
         });
+        Bundle b = getArguments();
+        _position = b.getInt("position");
 
         Dialog dialog = builder.create();
         return dialog;

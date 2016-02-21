@@ -56,6 +56,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
                 //position defines which food in urls
                 RateFoodDialogFragment frag = new RateFoodDialogFragment();
                 Bundle  bundle = new Bundle();
+                bundle.putInt("position", position);
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
@@ -64,9 +65,10 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog){
-        Toast toast = Toast.makeText(this, "Rate button clicked", Toast.LENGTH_SHORT);
-        toast.show();
+    public void onDialogPositiveClick(DialogFragment dialog, int position, float rating){
+        View v = (View) gridView.getItemAtPosition(position);
+        RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
+        rbar.setRating(rating);
     }
 
     @Override

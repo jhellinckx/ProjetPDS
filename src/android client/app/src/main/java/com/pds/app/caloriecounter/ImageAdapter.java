@@ -17,10 +17,12 @@ import java.util.ArrayList;
 public class ImageAdapter extends BaseAdapter {
     private Context _Context;
     private ArrayList<String> _urls;
+    private ArrayList<View> _views;
 
     public ImageAdapter(Context c, ArrayList<String> urls) {
         _Context = c;
         _urls = urls;
+        _views = new ArrayList<>();
     }
 
     public int getCount() {
@@ -28,7 +30,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public Object getItem(int position) {
-        return null;
+        return _views.get(position);
     }
 
     public long getItemId(int position) {
@@ -49,6 +51,7 @@ public class ImageAdapter extends BaseAdapter {
                     .load(_urls.get(position))
                     .resize(330,330)
                     .into(imageView);
+            _views.add(grid);
 
         } else {
 
