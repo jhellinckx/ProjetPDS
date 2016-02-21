@@ -5,10 +5,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+
+import com.squareup.picasso.Picasso;
 
 public class RateFoodDialogFragment extends DialogFragment {
 
@@ -38,8 +43,20 @@ public class RateFoodDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.rating_dialog, null));
+        //final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater layoutInflater = (LayoutInflater) getActivity()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Bundle b = getArguments();
+        String url = b.getString("url");
+        //builder.setView(inflater.inflate(R.layout.rating_dialog, null));
+
+        View view = layoutInflater.inflate(R.layout.rating_dialog,null);
+        builder.setView(view);
+        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+        System.out.println(imageView == null);
+        Picasso.with(getActivity())
+                .load(url)
+                .into(imageView);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -56,7 +73,7 @@ public class RateFoodDialogFragment extends DialogFragment {
             }
 
         });
-        Bundle b = getArguments();
+        //Bundle b = getArguments();
         _position = b.getInt("position");
 
         Dialog dialog = builder.create();

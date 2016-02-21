@@ -64,6 +64,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
                 RateFoodDialogFragment frag = new RateFoodDialogFragment();
                 Bundle  bundle = new Bundle();
                 bundle.putInt("position", position);
+                bundle.putString("url",urls.get(position));
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
