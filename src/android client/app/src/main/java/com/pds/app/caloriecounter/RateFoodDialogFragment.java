@@ -43,12 +43,10 @@ public class RateFoodDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        //final LayoutInflater inflater = getActivity().getLayoutInflater();
         final LayoutInflater layoutInflater = (LayoutInflater) getActivity()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Bundle b = getArguments();
         String url = b.getString("url");
-        //builder.setView(inflater.inflate(R.layout.rating_dialog, null));
 
         View view = layoutInflater.inflate(R.layout.rating_dialog,null);
         builder.setView(view);
@@ -73,7 +71,6 @@ public class RateFoodDialogFragment extends DialogFragment {
             }
 
         });
-        //Bundle b = getArguments();
         _position = b.getInt("position");
 
         Dialog dialog = builder.create();

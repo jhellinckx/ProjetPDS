@@ -75,6 +75,10 @@ public final class Constants {
 		public static final String RANDOM_UNRANKED_FOODS_SUCCESS = "d_randfoods_ok";
 		public static final String FOOD_IMAGE_URL_LIST = "d_food_imgurl_list";
 
+		/* SEND RATINGS FOR ITEMS */
+		public static final String SEND_RATINGS_REQUEST = "r_sendranks";
+		public static final String FOOD_RATING = "d_rating";
+
 
 
 		public static String local_ip(){

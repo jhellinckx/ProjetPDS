@@ -12,4 +12,13 @@
         android:verticalSpacing="20dp"
         android:horizontalSpacing="20dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/validation"
+        android:id="@+id/rating_button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/background_button"
+        android:layout_marginBottom="2sp"/>
 </RelativeLayout>

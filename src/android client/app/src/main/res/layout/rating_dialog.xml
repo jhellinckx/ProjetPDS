@@ -4,6 +4,21 @@
     android:orientation="vertical"
     android:background="@color/primary">
 
+    <TextView
+        android:id="@+id/rateTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/rateTitle"
+        android:textAppearance="@android:style/TextAppearance.Large.Inverse"
+        android:gravity="left|center_vertical"
+        android:textStyle="bold"
+        android:shadowColor="@android:color/black"
+        android:shadowRadius="2"
+        android:background="@color/primary_dark"
+        android:drawableLeft="@android:drawable/btn_star_big_on"
+        android:drawablePadding="5dp"/>
+
 
     <ImageView
         android:layout_width="wrap_content"

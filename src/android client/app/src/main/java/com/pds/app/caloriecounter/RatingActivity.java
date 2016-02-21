@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -29,18 +29,16 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
 
     private static final int NB_RATINGS = 9;
 
-    private RatingBar ratingBar;
     private GridView gridView;
-    private float lastRating = -1.0f;//special value to test if set
+    private Button _validButton;
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
 
 
 
-    private void initializer(){
-        ArrayList<String> urls = new ArrayList<String>(getUrlsFromServer());
+    private void initializer(ArrayList<?> alist){
         for (int i = 0; i < NB_RATINGS; i++){
-            ratings.add(null);
+            alist.add(null);
         }
     }
 
@@ -49,10 +47,18 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
+        _validButton = (Button) v.findViewById(R.id.rating_button);
         urls = new ArrayList<String>();
         ratings = new ArrayList<Float>();
-        initializer();
         gridView = (GridView) findViewById(R.id.gridView);
+        initializer(ratings);
+        initializer(urls);
+        setUpUrls();
+
+    }
+
+    private void setUpUrls(){
+        getUrlsFromServer();
 
     }
 
@@ -62,14 +68,62 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
                                     int position, long id) {
                 //position defines which food in urls
                 RateFoodDialogFragment frag = new RateFoodDialogFragment();
-                Bundle  bundle = new Bundle();
+                Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
-                bundle.putString("url",urls.get(position));
+                bundle.putString("url", urls.get(position));
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
             }
         });
+    }
+
+    private void addListenerButton(){
+        _validButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendRates();
+                refreshGridView();
+
+            }
+        });
+    }
+
+    public void sendRates(){
+
+        /*
+         *  This Method sends the rates and the urls to the server. The index of a rate/an url
+         *  in the lists (urls and rates) is added to the keys in the JSONObject. This allows the
+         *  server to retrieve the correct matching between an url (i.e. a food) and its associated
+         *  rating.
+         */
+
+
+        JSONObject data = new JSONObject();
+        for (int i = 0; i < RatingActivity.NB_RATINGS; i++){
+            if (ratings.get(i) != null) {
+                data.put(FOOD_IMAGE_URL + Integer.toString(i), urls.get(i));
+                data.put(FOOD_RATING + Integer.toString(i), ratings.get(i));
+            }
+        }
+
+        try {
+            send(networkJSON(SEND_RATINGS_REQUEST, data));
+        } catch (IOException e) {
+            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
+    private void resetRatings(){
+        for (int i = 0; i < NB_RATINGS; i++){
+            ratings.set(i, null);
+        }
+    }
+
+    public void refreshGridView(){
+        resetRatings();
+        setUpUrls();
     }
 
     @Override
@@ -83,12 +137,6 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     @Override
     public void onDialogNegativeClick(DialogFragment dialog){
         // Do nothing, Simply dismiss the Dialog.
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        //TODO send rates
     }
 
     @Override
@@ -129,14 +177,14 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
 
 
     public void handleMessage(JSONObject msg){
-        Log.d("SCANNINGCTIVITY HANDLE MSG", msg.toString());
+        Log.d("RATINGACTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 for(int i = 0; i < data.size()-1 ; ++i){
-                    urls.add((String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
+                    urls.set(i, (String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
 
                 }
             }
@@ -145,19 +193,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
             public void run() {
                 gridView.setAdapter(new ImageAdapter(RatingActivity.this, urls));
                 addListenerGridView();
-            }
-        });
-    }
-
-    public void addListenerOnRatingBar() {
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating,
-                                        boolean fromUser) {
-
-                //action quand changement ratingBar
-
+                addListenerButton();
             }
         });
     }

@@ -46,7 +46,6 @@ public class ImageAdapter extends BaseAdapter {
             grid = new View(_Context);
             grid = inflater.inflate(R.layout.grid_singlefood, null);
             ImageView imageView = (ImageView) grid.findViewById(R.id.grid_imageView);
-            RatingBar ratingBar = (RatingBar) grid.findViewById(R.id.grid_ratingBar);
             Picasso.with(this._Context)
                     .load(_urls.get(position))
                     .resize(330,330)

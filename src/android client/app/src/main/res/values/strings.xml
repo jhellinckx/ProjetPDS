@@ -3,6 +3,7 @@
     <string name="id"><u>Identifiant</u></string>
     <string name="age"><u>Age Bracket</u></string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="validation">Validate</string>
 
     <string name="username">User Name</string>
 
