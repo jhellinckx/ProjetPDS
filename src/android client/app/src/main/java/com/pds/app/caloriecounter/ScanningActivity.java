@@ -67,7 +67,7 @@ public class ScanningActivity extends HomeActivity{
                 String image_url = (String) data.get(FOOD_IMAGE_URL);
 
                 String product_name = (String) data.get(FOOD_NAME);
-                String energy_100g = (String) data.get(FOOD_TOTAL_ENERGY);
+                String energy_100g = null;
 
                 addFragment();
                 try{
