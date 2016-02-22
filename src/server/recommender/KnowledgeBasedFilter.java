@@ -40,7 +40,22 @@ public class KnowledgeBasedFilter {
 		currentUser = user;
 	}
 
-	public List<Food> recommend() {
+	private void previousEatenAliments(List<Food> previousAliments) {
+
+		if (previousAliments != null) {
+			for (Food aliment : previousAliments) {
+				energyNeeded = energyNeeded - aliment.getTotalEnergy();
+				fatNeeded = fatNeeded - aliment.getTotalFat();
+				proteinsNeeded = proteinsNeeded - aliment.getTotalProteins();
+				saturatedFatNeeded = saturatedFatNeeded - aliment.getTotalSaturatedFat();
+				carbohydratesNeeded = carbohydratesNeeded - aliment.getTotalCarbohydrates();
+				sugarsNeeded = sugarsNeeded - aliment.getTotalSugars();
+				sodiumNeeded = sodiumNeeded - aliment.getTotalSodium();
+			}
+		}
+	}
+
+	private List<Food> recommendMethod(List<Food> previousAliments) {
 
 		List<Food> knowledgeBasedFilterFoods = null;
 		fatNeeded = Constants.HUMAN_DAILY_FAT;
@@ -62,14 +77,20 @@ public class KnowledgeBasedFilter {
 			energyNeeded = Constants.CHILD_DAILY_ENERGY;
 		}
 
+		previousEatenAliments(previousAliments);
 		knowledgeBasedFilterFoods = foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded);
-
-		/* To test */
-		for (Food i : knowledgeBasedFilterFoods) {
-			System.out.println(i.toString());
-		}
 		return knowledgeBasedFilterFoods;
 	}
 
+	public List<Food> recommend() {
+
+		return recommendMethod(null);
+		
+	}
+
+	public List<Food> recommend(List<Food> previousAliments) {
+
+		return recommendMethod(previousAliments);
 
 	}
+}

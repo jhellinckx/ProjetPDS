@@ -7,7 +7,13 @@ public class Food {
     private String    code;
     private String    productName;
     private String    image_url;
-    private String    energy_100g;
+    private Float    total_energy;
+    private Float    total_fat;
+    private Float    total_proteins;
+    private Float    total_saturated_fat;
+    private Float    total_carbohydrates;
+    private Float    total_sugars;
+    private Float    total_sodium;
     
     public Long getId() {
         return id;
@@ -44,11 +50,53 @@ public class Food {
         this.image_url = image_url;
     }
 
-    public String getEnergy100g() {
-        return energy_100g;
+    public Float getTotalEnergy() {
+        return total_energy;
     }
-    public void setEnergy100g( String energy_100g ) {
-        this.energy_100g = energy_100g;
+    public void setTotalEnergy( Float total_en ) {
+        this.total_energy = total_en;
+    }
+
+    public Float getTotalFat() {
+        return total_fat;
+    }
+    public void setTotalFat( Float total_fa ) {
+        this.total_fat = total_fa;
+    }
+
+    public Float getTotalProteins() {
+        return total_proteins;
+    }
+    public void setTotalProteins( Float total_pro ) {
+        this.total_proteins = total_pro;
+    }
+
+    public Float getTotalSaturatedFat() {
+        return total_saturated_fat;
+    }
+    public void setTotalSaturatedFat( Float total_sat ) {
+        this.total_saturated_fat= total_sat;
+    }
+
+    public Float getTotalCarbohydrates() {
+        return total_carbohydrates;
+    }
+    public void setTotalCarbohydrates( Float total_car ) {
+        this.total_carbohydrates = total_car;
+    }
+
+    public Float getTotalSugars() {
+        return total_sugars;
+    }
+    public void setTotalSugars( Float total_su ) {
+        this.total_sugars = total_su;
+    }
+
+    public Float getTotalSodium() {
+        return total_sodium;
+    }
+    public void setTotalSodium( Float total_so ) {
+        this.total_sodium = total_so;
     }
 
     @Override
@@ -70,7 +118,7 @@ public class Food {
         String m = "";
         m+= productName;
         m+= " - energy: ";
-        m+= energy_100g;
+        m+= Float.toString(total_energy);
         return m;
     }
 

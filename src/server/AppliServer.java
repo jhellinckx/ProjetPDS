@@ -127,7 +127,7 @@ public class AppliServer extends AbstractNIOServer{
 			responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
 			responseData.put(FOOD_NAME,food.getProductName());
 			responseData.put(FOOD_IMAGE_URL,food.getImageUrl());
-			responseData.put(FOOD_ENERGY100G,food.getEnergy100g());
+			responseData.put(FOOD_TOTAL_ENERGY,food.getTotalEnergy());
 		}
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST, responseData));
 		send(msg);

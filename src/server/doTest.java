@@ -96,9 +96,16 @@ public class doTest {
 		User u = new User("test_username2","M");
 		User u2 = new User("test_username2","F");
 		KnowledgeBasedFilter k = new KnowledgeBasedFilter(fDAO,u);
-		k.recommend();
-		KnowledgeBasedFilter k2 = new KnowledgeBasedFilter(fDAO,u2);
-		k2.recommend();
+		List<Food> testFood = new ArrayList<Food>();
+		testFood.add(fDAO.findByCode("96092521"));
+		List<Food> a=k.recommend();
+		System.out.println(Integer.toString(a.size())); //prints the number of food matching patterns
+		Food x = a.get(0);
+		System.out.println(x.toString());
+		a=k.recommend(testFood);
+		System.out.println(Integer.toString(a.size()));
+		x=a.get(0);
+		System.out.println(x.toString());
 	}
 
 }

@@ -74,13 +74,13 @@ def addOrDeleteColumnsToTable(delete): #if boolean delete is True, deletes other
 	addColumnToTableCommand = (
 		"ALTER TABLE `Food`"
 		"ADD ("
-		"`total_energy` VARCHAR(16),"
-		"`total_fat` VARCHAR(16),"
-		"`total_proteins` VARCHAR(16),"
-		"`total_saturated_fat` VARCHAR(16),"
-		"`total_carbohydrates` VARCHAR(16),"
-		"`total_sugars` VARCHAR(16),"
-		"`total_sodium` VARCHAR(16));"
+		"`total_energy` FLOAT,"
+		"`total_fat` FLOAT,"
+		"`total_proteins` FLOAT,"
+		"`total_saturated_fat` FLOAT,"
+		"`total_carbohydrates` FLOAT,"
+		"`total_sugars` FLOAT,"
+		"`total_sodium` FLOAT);"
 		)
 
 	deleteColumnsFromTableCommand = (
@@ -176,6 +176,6 @@ def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_
 
 
 if __name__ == '__main__':
-	#addOrDeleteColumnsToTable(True) #delete columns
+	addOrDeleteColumnsToTable(True) #delete columns
 	addOrDeleteColumnsToTable(False) #add columns
 	selectInfoFromDbAndAddNewInfos()
