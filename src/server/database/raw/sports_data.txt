@@ -1,0 +1,49 @@
+#Sport;KJoule(60kg);KJoule(70kg);KJoule(85kg)
+#Kjoule dépensé par minute.
+#
+#
+@ Aerobic;24.4;29.3;35.6
+@ Art Martial;34.9;48.8;59.3
+@ Aviron;34.9;41.2;50.9
+@ Badminton;20.9;24.4;27.9
+@ Baseball;20.9;24.4;30.0
+@ Basket-ball;24.4;29.3;36.3
+@ Bobsleigh;28.6;34.2;41.9
+@ Bowling;11.9;14.7;18.1
+@ Boxe;37.0;44.0;53.7
+@ Canoe;28.6;34.2;41.9
+@ Corde a sauter;41.2;48.8;60.0
+@ Course a pied;50.9;60.7;69.8
+@ Crosse;32.8;39.1;48.1
+@ Cyclisme(ext);38.4;45.4;55.8
+@ Cyclisme(int);31.4;37.7;46.1
+@ Danse;18.1;21.6;27.2
+@ Equitation;16.0;19.5;24.4
+@ Escalade;34.9;41.9;48.8
+@ Escrime;24.4;29.3;36.3
+@ Football;32.8;39.1;48.1
+@ Golf;17.4;19.5;24.4
+@ Gymnastique;16.7;19.5;24.4
+@ Halterophilie;24.4;29.3;36.3
+@ Handball;41.9;52.3;59.3
+@ Hockey;32.8;39.1;48.1
+@ Marche;17.4;20.9;24.4
+@ Musique;10.5;12.6;15.4
+@ Natation;34.9;41.9;51.6
+@ Nettoyage;17.4;20.9;24.4
+@ Patinage;28.6;34.2;41.9
+@ Peche;16.7;19.5;24.4
+@ Pelote Basque;50.2;58.6;69.8
+@ Plongee;27.9;34.9;41.9
+@ Rameur;31.4;38.4;45.4
+@ Rugby;41.9;48.8;59.3
+@ Skateboard;20.9;24.4;31.4
+@ Ski;29.3;34.9;41.9
+@ Snowboard;25.8;30.7;37.0
+@ Squash;48.8;59.3;69.8
+@ Step;60.7;69.8;83.7
+@ Tennis;27.9;34.9;41.9
+@ Tennis de table;17.4;19.5;24.4
+@ Volley-ball;14.0;24.4;30.0
+@ Water polo;41.9;48.8;59.3
+@ Zumba;34.9;41.9;52.3
