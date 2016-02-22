@@ -49,7 +49,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	private Float meanRating(ArrayList<CategoryRating> categoryRatings){
 		Float sum = 0.0f;
 		for(CategoryRating categoryRating : categoryRatings){
-			sum += categoryRating.rating()
+			sum += categoryRating.rating();
 		}
 		return sum/categoryRatings.size();
 	}
