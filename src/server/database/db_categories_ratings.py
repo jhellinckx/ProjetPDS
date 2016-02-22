@@ -64,7 +64,7 @@ def add_categories_ratings_in_db():
     	"CREATE TABLE `CategoriesRatings` ("
     	"  `id` int(11) NOT NULL AUTO_INCREMENT,"
     	"  `category_name` varchar(100) NOT NULL,"
-    	"  `rating` int(11) NULL DEFAULT NULL,"
+    	"  `rating` DECIMAL(2,1) NOT NULL,"
     	"  `n_ratings` int(11) NULL DEFAULT NULL,"
     	"  `user_id` INT UNSIGNED NOT NULL,"
     	"  PRIMARY KEY (`id`)"
