@@ -14,6 +14,9 @@ import android.view.View;
 
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
+
+import static org.calorycounter.shared.Constants.network.*;
 public abstract class HomeActivity extends NotifiableActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -90,6 +93,10 @@ public abstract class HomeActivity extends NotifiableActivity
             Intent cameractivity = new Intent(HomeActivity.this, ScanningActivity.class);
 
             startActivity(cameractivity);
+        }else if(id ==R.id.nav_home){
+            Intent homeActivity = new Intent(HomeActivity.this, Home.class);
+
+            startActivity(homeActivity);
         } else if (id == R.id.nav_data) {
             Intent dataactivity = new Intent(HomeActivity.this, PersonalDataActivity.class);
 
@@ -110,10 +117,21 @@ public abstract class HomeActivity extends NotifiableActivity
 
             startActivity(historyactivity);
 
+        } else if (id == R.id.nav_logout){
+            onLogout();
+            Intent logActivity = new Intent(HomeActivity.this, LogActivity.class);
+            startActivity(logActivity);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void onLogout(){
+        JSONObject logoutRequest = networkJSON(LOG_OUT_REQUEST,new JSONObject());
+        try{
+            this.send(logoutRequest);
+        }catch(IOException e){}
     }
 }

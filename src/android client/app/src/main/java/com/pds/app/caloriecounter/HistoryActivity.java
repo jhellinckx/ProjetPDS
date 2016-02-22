@@ -16,42 +16,4 @@ public class HistoryActivity extends HomeActivity {
 
 
     }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            Intent homeactivity = new Intent(HistoryActivity.this, Home.class);
-
-            startActivity(homeactivity);
-        } else if (id == R.id.nav_data) {
-            Intent dataactivity = new Intent(HistoryActivity.this, PersonalDataActivity.class);
-
-            startActivity(dataactivity);
-
-        } else if (id == R.id.nav_recommend) {
-            Intent recommendactivity = new Intent(HistoryActivity.this, RecommendationActivity.class);
-
-            startActivity(recommendactivity);
-
-        } else if (id == R.id.nav_rating) {
-            Intent ratingactivity = new Intent(HistoryActivity.this, RatingActivity.class);
-
-            startActivity(ratingactivity);
-
-
-        } else if (id == R.id.nav_camera) {
-
-            Intent cameractivity = new Intent(HistoryActivity.this, ScanningActivity.class);
-
-            startActivity(cameractivity);
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }

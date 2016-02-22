@@ -34,39 +34,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            Intent homeactivity = new Intent(RecommendationActivity.this, Home.class);
-
-            startActivity(homeactivity);
-        } else if (id == R.id.nav_data) {
-
-        } else if (id == R.id.nav_camera) {
-            Intent cameractivity = new Intent(RecommendationActivity.this, ScanningActivity.class);
-
-            startActivity(cameractivity);
-
-        } else if (id == R.id.nav_rating) {
-            Intent ratingactivity = new Intent(RecommendationActivity.this, RatingActivity.class);
-
-            startActivity(ratingactivity);
-
-        } else if (id == R.id.nav_history) {
-            Intent historyactivity = new Intent(RecommendationActivity.this, HistoryActivity.class);
-
-            startActivity(historyactivity);
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
     public void onStartButtonClick(){
         replaceFragment(new RecommendationTypeFragment());
     }

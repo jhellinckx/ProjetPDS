@@ -32,6 +32,12 @@
             android:icon="@drawable/ic_camera"
             android:title="Barcode Scanner"
             android:textColor="@color/fontColor"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Log out"
+            android:textColor="@color/fontColor"
+            />
     </group>
 
 </menu>
