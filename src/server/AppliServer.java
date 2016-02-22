@@ -148,7 +148,6 @@ public class AppliServer extends AbstractNIOServer{
 			responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
 			responseData.put(FOOD_NAME,food.getProductName());
 			responseData.put(FOOD_IMAGE_URL,food.getImageUrl());
-			responseData.put(FOOD_TOTAL_ENERGY,food.getTotalEnergy());
 		}
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST, responseData));
 		send(msg);
@@ -228,7 +227,21 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public void onSportsListRequest(Message msg){
-		
+		JSONObject response = new JSONObject();
+		List<String> db_names = _sportsDatabase.findSportsNames();
+
+		if(db_names.size() == 0){
+			response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_FAILURE);
+			response.put(REASON, SPORTS_LIST_EMPTY);
+		}
+		else{
+			response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_SUCCESS);
+			for (int i = 0; i < db_names.size(); i++){
+				response.put(SPORT_NAME+Integer.toString(i), db_names.get(i));
+			}
+		}
+		msg.setJSON(networkJSON(SPORTS_LIST_REQUEST, response));
+		send(msg);		
 	}
 
 	public static void main(String[] args){

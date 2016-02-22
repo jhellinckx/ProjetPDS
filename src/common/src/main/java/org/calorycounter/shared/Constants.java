@@ -80,8 +80,12 @@ public final class Constants {
 		public static final String FOOD_RATING = "d_rating";
 
 		/* Sports */
-		public static final String SPORTS_LIST_REQUEST = "r_request";
-		public static final String SPORTS_LIST = "d_sports_list";
+		public static final String SPORTS_LIST_REQUEST = "r_sportslist";
+		public static final String SPORTS_LIST_EMPTY = "d_sportslist_empty";
+		public static final String SPORTS_LIST_SUCCESS = "d_sportslist_ok";
+		public static final String SPORTS_LIST_FAILURE = "d_sportslist_nope";
+		public static final String SPORTS_LIST_RESPONSE = "d_sportslist_res";
+		public static final String SPORT_NAME = "d_sportname";
 
 
 
