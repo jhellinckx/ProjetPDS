@@ -106,4 +106,8 @@ public class DAOFactory {
     public UserPrefDAO getUserPrefDAO() {
     	return new UserPrefDAOImpl ( this );
     }
+
+    public SportsDAO getSportsDAO(){
+        return new SportsDAOImpl( this );
+    }
 }

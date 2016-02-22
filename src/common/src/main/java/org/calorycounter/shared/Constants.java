@@ -79,6 +79,10 @@ public final class Constants {
 		public static final String SEND_RATINGS_REQUEST = "r_sendranks";
 		public static final String FOOD_RATING = "d_rating";
 
+		/* Sports */
+		public static final String SPORTS_LIST_REQUEST = "r_request";
+		public static final String SPORTS_LIST = "d_sports_list";
+
 
 
 		public static String local_ip(){

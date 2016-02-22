@@ -50,6 +50,9 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(SEND_RATINGS_REQUEST)){
 			onSendRatingRequest(msg);
 		}
+		else if(request.equals(SPORTS_LIST_REQUEST)){
+			onSportsListRequest(msg);
+		}
 	}
 
 	public void onLoginRequest(Message msg){
@@ -200,6 +203,10 @@ public class AppliServer extends AbstractNIOServer{
 		//String response = (String) data.get(FOOD_CODE);
 		//JSONObject responseData = new JSONObject();
 		//Food food = _foodDatabase.findByCode(code);
+		
+	}
+
+	public void onSportsListRequest(Message msg){
 		
 	}
 
