@@ -66,4 +66,12 @@ public class Food {
         return this.getId().hashCode();
     }
 
+    public String toString() {
+        String m = "";
+        m+= productName;
+        m+= " - energy: ";
+        m+= energy_100g;
+        return m;
+    }
+
 }

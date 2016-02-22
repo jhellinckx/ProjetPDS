@@ -130,10 +130,11 @@ public class Random_user_generator
 
 		//init genre
 		String gender;
-		int random_flag = generateRandomNumberBetween(0,2);
+		int random_flag = generateRandomNumberBetween(0,3);
 		if(random_flag==0){gender = "M";}
 		else if(random_flag==1){gender = "F";}
-		else{gender = "K";}
+		else if(random_flag==2){gender = "T";}
+		else{gender = "C";}
 		
 		//user created
 		User random_user = new User(username,gender);

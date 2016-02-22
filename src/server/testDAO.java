@@ -7,8 +7,9 @@ public class testDAO {
 		//doTest.test(daoFactory);	
 		//doTest.test_user_generator(daoFactory);
 
-		doTest.test_findUsersAndRankForFood(daoFactory);
+		//doTest.test_findUsersAndRankForFood(daoFactory);
 		//doTest.test_findFoodsAndRankForUser(daoFactory);
+		doTest.test_knowledgeBased(daoFactory);
 	}
 
 }

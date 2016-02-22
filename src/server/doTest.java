@@ -12,6 +12,7 @@ import items.Random_user_generator;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.ArrayList;
+import recommender.KnowledgeBasedFilter;
 
 public class doTest {
 	
@@ -88,6 +89,16 @@ public class doTest {
 		for(Food f : s){
 			System.out.println(f.getProductName()+" , "+m.get(f)+"\n");
 		}
+	}
+
+	public static void test_knowledgeBased(DAOFactory d) {
+		FoodDAO fDAO = d.getFoodDAO();
+		User u = new User("test_username2","M");
+		User u2 = new User("test_username2","F");
+		KnowledgeBasedFilter k = new KnowledgeBasedFilter(fDAO,u);
+		k.recommend();
+		KnowledgeBasedFilter k2 = new KnowledgeBasedFilter(fDAO,u2);
+		k2.recommend();
 	}
 
 }

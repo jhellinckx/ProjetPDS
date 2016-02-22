@@ -14,6 +14,8 @@ public interface FoodDAO {
 	Food findById (Long id ) throws DAOException;
 
 	List<Food> findByIds(List<Long> ids) throws DAOException;
+
+	List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float sodium) throws DAOException;
 	
 	List<String> findAll() throws DAOException; /* retourne une simple list de tous les user pour pouvoir print, utilise pr les test */
 }

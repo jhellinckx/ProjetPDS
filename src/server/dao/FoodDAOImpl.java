@@ -20,6 +20,7 @@ public class FoodDAOImpl implements FoodDAO {
 	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE id_food = ?";
     private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food WHERE image_url = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, code, product_name, image_url, energy_100g FROM Food where total_energy BETWEEN 0 AND ? AND total_fat <= ? AND total_proteins <= ? AND total_saturated_fat <= ? AND total_carbohydrates <= ? AND total_sugars <= ? AND total_sodium <= ? ORDER BY total_energy DESC";
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -52,8 +53,30 @@ public class FoodDAOImpl implements FoodDAO {
         return find(SQL_SELECT_BY_ID, ids);
     }
 	
+    @Override
+    public List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float sodium) throws DAOException {
+        List<Food> foods = new ArrayList<Food>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, sodium);
+            resultSet = preparedStatement.executeQuery();
+            while ( resultSet.next() ) {
+                foods.add(map(resultSet));
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return foods;
+    }
+
 	@Override
-	/* Juse utilisee pr les test at the moment */
+	/* Juste utilisee pr les test at the moment */
     public List<String> findAll() throws DAOException {
     	List<String> messages = new ArrayList<String>();
     	Connection connexion = null;
