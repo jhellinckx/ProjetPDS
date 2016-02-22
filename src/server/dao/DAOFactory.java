@@ -110,4 +110,8 @@ public class DAOFactory {
     public SportsDAO getSportsDAO(){
         return new SportsDAOImpl( this );
     }
+
+    public CategoryRatingDAO getCategoryRatingDAO(){
+        return new CategoryRatingDAOImpl( this );
+    }
 }

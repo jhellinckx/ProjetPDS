@@ -6,6 +6,7 @@ import dao.UserDAO;
 import dao.FoodDAO;
 import dao.UserPrefDAO;
 import dao.SportsDAO;
+import dao.CategoryRatingDAO;
 import java.util.HashMap;
 import java.util.Map;
 import java.net.Socket;
@@ -31,6 +32,7 @@ public abstract class AbstractNIOServer{
 	protected FoodDAO _foodDatabase;
 	protected UserPrefDAO _userprefDatabase;
 	protected SportsDAO _sportsDatabase;
+	protected CategoryRatingDAO _categoryRatingDatabase;
 
 	public AbstractNIOServer(){
 		JSONObject config = loadNetworkConfig();
@@ -43,6 +45,7 @@ public abstract class AbstractNIOServer{
 		_foodDatabase = _daoFactory.getFoodDAO();
 		_userprefDatabase = _daoFactory.getUserPrefDAO();
 		_sportsDatabase = _daoFactory.getSportsDAO();
+		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 		_clients = new HashMap<Socket, String>();
 	}
 

@@ -20,6 +20,16 @@ import java.util.Arrays;
 public class AppliServer extends AbstractNIOServer{
 	public AppliServer(){
 		super();
+		/*
+		ArrayList<ArrayList<String>> all = new ArrayList<ArrayList<String>>();
+		for(long i =0;i<100;++i){
+			Food food = new Food();
+			food.setId(i);
+			ArrayList<String> categories = _categoryRatingDatabase.findCategoriesForFood(food);
+			all.add(categories);
+		}
+		System.out.println("CATEGORIES : "+all);
+	*/
 	}
 
 	public User getUser(Message msg){
