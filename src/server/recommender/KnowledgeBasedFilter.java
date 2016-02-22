@@ -57,7 +57,6 @@ public class KnowledgeBasedFilter {
 
 	private List<Food> recommendMethod(List<Food> previousAliments) {
 
-		List<Food> knowledgeBasedFilterFoods = null;
 		fatNeeded = Constants.HUMAN_DAILY_FAT;
 		proteinsNeeded = Constants.HUMAN_DAILY_PROTEINS;
 		saturatedFatNeeded = Constants.HUMAN_DAILY_SATURATED_FAT;
@@ -78,8 +77,7 @@ public class KnowledgeBasedFilter {
 		}
 
 		previousEatenAliments(previousAliments);
-		knowledgeBasedFilterFoods = foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded);
-		return knowledgeBasedFilterFoods;
+		return foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded);
 	}
 
 	public List<Food> recommend() {

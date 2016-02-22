@@ -112,7 +112,7 @@ def addOrDeleteColumnsToTable(delete): #if boolean delete is True, deletes other
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
-
+		pass
 	cnx.commit()
 	cursor.close()
 	cnx.close()
