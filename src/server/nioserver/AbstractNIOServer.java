@@ -1,12 +1,7 @@
 package nioserver;
 import org.calorycounter.shared.Constants;
 import static org.calorycounter.shared.Constants.network.*;
-import dao.DAOFactory;
-import dao.UserDAO;
-import dao.FoodDAO;
-import dao.UserPrefDAO;
-import dao.SportsDAO;
-import dao.CategoryRatingDAO;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.net.Socket;
@@ -25,14 +20,8 @@ public abstract class AbstractNIOServer{
 	private String _host;
 	private int _port;
 	private Boolean _running;
-	private DAOFactory _daoFactory;
 	private HashMap<Socket, String> _clients;
 
-	protected UserDAO _userDatabase;
-	protected FoodDAO _foodDatabase;
-	protected UserPrefDAO _userprefDatabase;
-	protected SportsDAO _sportsDatabase;
-	protected CategoryRatingDAO _categoryRatingDatabase;
 
 	public AbstractNIOServer(){
 		JSONObject config = loadNetworkConfig();
@@ -40,12 +29,6 @@ public abstract class AbstractNIOServer{
         this._port = Integer.parseInt((String)config.get("port"));
 		_controller = new StreamController(this);
 		_running = new Boolean(false);
-		_daoFactory = DAOFactory.getInstance();
-		_userDatabase = _daoFactory.getUserDAO();
-		_foodDatabase = _daoFactory.getFoodDAO();
-		_userprefDatabase = _daoFactory.getUserPrefDAO();
-		_sportsDatabase = _daoFactory.getSportsDAO();
-		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 		_clients = new HashMap<Socket, String>();
 	}
 

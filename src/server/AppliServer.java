@@ -11,6 +11,12 @@ import nioserver.Message;
 
 import items.User;
 import items.Food;
+import dao.DAOFactory;
+import dao.UserDAO;
+import dao.FoodDAO;
+import dao.UserPrefDAO;
+import dao.SportsDAO;
+import dao.CategoryRatingDAO;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -18,18 +24,23 @@ import java.util.List;
 import java.util.Arrays;
 
 public class AppliServer extends AbstractNIOServer{
+
+	/* Database fields */
+	private DAOFactory _daoFactory;
+	private UserDAO _userDatabase;
+	private FoodDAO _foodDatabase;
+	private UserPrefDAO _userprefDatabase;
+	private SportsDAO _sportsDatabase;
+	private CategoryRatingDAO _categoryRatingDatabase;
+
 	public AppliServer(){
 		super();
-		/*
-		ArrayList<ArrayList<String>> all = new ArrayList<ArrayList<String>>();
-		for(long i =0;i<100;++i){
-			Food food = new Food();
-			food.setId(i);
-			ArrayList<String> categories = _categoryRatingDatabase.findCategoriesForFood(food);
-			all.add(categories);
-		}
-		System.out.println("CATEGORIES : "+all);
-	*/
+		_daoFactory = DAOFactory.getInstance();
+		_userDatabase = _daoFactory.getUserDAO();
+		_foodDatabase = _daoFactory.getFoodDAO();
+		_userprefDatabase = _daoFactory.getUserPrefDAO();
+		_sportsDatabase = _daoFactory.getSportsDAO();
+		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 	}
 
 	public User getUser(Message msg){
