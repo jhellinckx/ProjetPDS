@@ -7,6 +7,7 @@ CREATE TABLE db_appli.User(
 	id_user INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	username VARCHAR(60) NOT NULL,
 	gender VARCHAR(1) NOT NULL,
+	weight FLOAT,
 	UNIQUE(username),
 	PRIMARY KEY(id_user)
 ) ENGINE=INNODB;

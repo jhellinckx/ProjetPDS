@@ -108,4 +108,17 @@ public class doTest {
 		System.out.println(x.toString());
 	}
 
+	public static void test_UserWithWeight(DAOFactory d) {
+		UserDAO uDAO = d.getUserDAO();
+		User u = new User("testWeight","M",87.0f);
+		User u2 = uDAO.findByUsername("omg");
+		User u3 = new User("whynot","C");
+		//uDAO.create(u);
+		//uDAO.create(u3);
+		//uDAO.updateUserWeight(u2,75.0f);
+		//uDAO.updateUserGender(u2,"K");
+		float we= u2.getWeight();
+		System.out.println(Float.toString(we));
+
+	}
 }

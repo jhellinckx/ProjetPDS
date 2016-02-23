@@ -23,10 +23,8 @@ RESET = "\033[0m"
 
 db_name = "db_appli"
 db_properties_filename = "../dao/dao.properties"
-ingredients_filename = "raw/db_ingredients.txt"
-recipes_filename = "raw/db_recipes.txt"
 
-def dbParams():
+def db_params():
 	username = None
 	password = None
 	f = open(db_properties_filename,"r")
@@ -54,8 +52,8 @@ def changeDimension(db_input):
 			res = newQuantity.magnitude
 		except pint.unit.DimensionalityError:
 			pass
-	except (pint.unit.UndefinedUnitError, AttributeError, TypeError, SyntaxError, tokenize.TokenError) as e:
-		pass
+	except (pint.unit.UndefinedUnitError, AttributeError, TypeError, SyntaxError, tokenize.TokenError, pint.compat.tokenize.TokenError) as e:
+		pass 
 	return res
 
 
@@ -101,7 +99,7 @@ def addOrDeleteColumnsToTable(delete): #if boolean delete is True, deletes other
 		printName="Deleting"
 		command=deleteColumnsFromTableCommand
 
-	(username,password) = dbParams()
+	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
 
@@ -126,7 +124,7 @@ def selectInfoFromDbAndAddNewInfos():
 		"WHERE `energy_100g` > 0;"
 		)
 
-	(username,password) = dbParams()
+	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
 	sys.stdout.write("Trying to select info from DB ..")
@@ -157,7 +155,7 @@ def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_
 		"WHERE `id_food` = %s;"
 		)
 
-	(username,password) = dbParams()
+	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
 	try:

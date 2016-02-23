@@ -19,11 +19,13 @@ import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender FROM User WHERE username = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender FROM User WHERE id_user = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender FROM User";
-	private static final String SQL_INSERT = "INSERT INTO User (username, gender) VALUES (?, ?)";
+	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight FROM User WHERE username = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight FROM User WHERE id_user = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight FROM User";
+	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight) VALUES (?, ?, ?)";
 	private static final String SQL_DELETE = "DELETE FROM User WHERE username = ?";
+    private static final String SQL_UPDATE_WEIGHT = "UPDATE User SET weight = ? WHERE id_user = ?";
+    private static final String SQL_UPDATE_GENDER = "UPDATE User SET gender = ? WHERE id_user = ?";
 	
 	UserDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -131,7 +133,7 @@ public class UserDAOImpl implements UserDAO {
         try {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender());
+            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender(), user.getWeight());
             int statut = preparedStatement.executeUpdate();
             /* Analyse du statut retourne par la requetee d'insertion */
             if ( statut == 0 ) {
@@ -209,6 +211,7 @@ public class UserDAOImpl implements UserDAO {
         user.setId( resultSet.getLong( "id_user" ) );
         user.setUsername( resultSet.getString( "username" ) );
         user.setGender( resultSet.getString( "gender" ) );
+        user.setWeight( resultSet.getFloat( "weight" ) );
         return user;
     }
 
@@ -244,6 +247,48 @@ public class UserDAOImpl implements UserDAO {
                 float rank  = r.generateRandomRank();
                 userPrefDao.create(randUserList.get(i).getId(),Ids.get(j),rank);
             }
+        }
+    }
+
+    @Override
+    public void updateUserWeight(User user, float weight) throws DAOException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_UPDATE_WEIGHT, false, weight, user.getId() );
+            int statut = preparedStatement.executeUpdate();
+            /* Analyse du statut retourne par la requetee d'insertion */
+            if ( statut == 0 ) {
+                throw new DAOException( "Failed to create a user, no new line added to the table." );
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( preparedStatement, connexion );
+        }
+    }
+
+    @Override
+    public void updateUserGender(User user, String gender) throws DAOException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_UPDATE_GENDER, false, gender, user.getId() );
+            int statut = preparedStatement.executeUpdate();
+            /* Analyse du statut retourne par la requetee d'insertion */
+            if ( statut == 0 ) {
+                throw new DAOException( "Failed to create a user, no new line added to the table." );
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( preparedStatement, connexion );
         }
     } 
 }	

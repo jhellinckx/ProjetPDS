@@ -9,7 +9,8 @@ public class testDAO {
 
 		//doTest.test_findUsersAndRankForFood(daoFactory);
 		//doTest.test_findFoodsAndRankForUser(daoFactory);
-		doTest.test_knowledgeBased(daoFactory);
+		//doTest.test_knowledgeBased(daoFactory);
+		doTest.test_UserWithWeight(daoFactory);
 	}
 
 }

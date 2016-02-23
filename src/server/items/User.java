@@ -14,19 +14,30 @@ public class User {
     private String    username;
     private String    gender;
     private HashMap<Food, Float> rankedFoods;
+    private Float weight;
 
     public User() {
     	this.id = null;
     	this.username = null;
     	this.gender = null;
+        this.weight = null;
         this.rankedFoods = new HashMap<Food, Float>(); 
     }
     
     public User( String username, String gender ) {
     	this.username = username;
     	this.gender = gender;
+        this.weight = -1f;
         this.rankedFoods = new HashMap<Food, Float>();
     }
+
+    public User( String username, String gender, Float weight ) {
+        this.username = username;
+        this.gender = gender;
+        this.weight = weight;
+        this.rankedFoods = new HashMap<Food, Float>();
+    }
+    
     
     public Long getId() {
         return id;
@@ -69,6 +80,14 @@ public class User {
 
     public boolean hasNotedFood(Food food){
         return rankedFoods.containsKey(food);
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public float getWeight() {
+        return weight;
     }
 
     public float getMeanRank(){

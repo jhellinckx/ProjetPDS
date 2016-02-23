@@ -19,4 +19,8 @@ public interface UserDAO {
 
     void quick_createRandomUsers(int quantity) throws DAOException;
 
+    void updateUserWeight(User user, float weight) throws DAOException;
+
+    void updateUserGender(User user, String gender) throws DAOException;
+
 }
