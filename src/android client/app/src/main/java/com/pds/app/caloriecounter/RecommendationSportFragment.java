@@ -10,9 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-/**
- * Created by aurelien on 15/12/15.
- */
+
 public class RecommendationSportFragment extends Fragment {
 
     private OnItemClickListener listener;
