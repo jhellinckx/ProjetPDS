@@ -138,6 +138,9 @@ public class NetworkHandler {
             else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
                 _doDispatch(msg,RatingActivity.class);
             }
+            else if(request.equals(SPORTS_LIST_REQUEST)){
+                _doDispatch(msg, RecommendationActivity.class);
+            }
 
         }
         catch(IOException e){

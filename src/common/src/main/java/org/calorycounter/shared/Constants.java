@@ -23,6 +23,7 @@ public final class Constants {
 		public static final int BUFFER_SIZE = 1000;
 		public static final int INT_SIZE = 4;
 		public static final String ENCODING = "UTF-8";
+		public static final int JSON_THRESHOLD = 15;
 
 		/* Base keys of a JSON network message */
 		public static final String REQUEST_TYPE = "requesttype";
@@ -86,6 +87,7 @@ public final class Constants {
 		public static final String SPORTS_LIST_FAILURE = "d_sportslist_nope";
 		public static final String SPORTS_LIST_RESPONSE = "d_sportslist_res";
 		public static final String SPORT_NAME = "d_sportname";
+		public static final int SPORTS_LIST_SIZE = 45;
 
 
 

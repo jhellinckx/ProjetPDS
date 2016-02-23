@@ -227,21 +227,28 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public void onSportsListRequest(Message msg){
-		JSONObject response = new JSONObject();
+		int threshold = JSON_THRESHOLD;
+		int nbPackets = (int) Math.ceil(SPORTS_LIST_SIZE/JSON_THRESHOLD);
 		List<String> db_names = _sportsDatabase.findSportsNames();
 
 		if(db_names.size() == 0){
+			JSONObject response = new JSONObject();
 			response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_FAILURE);
 			response.put(REASON, SPORTS_LIST_EMPTY);
+			msg.setJSON(networkJSON(SPORTS_LIST_REQUEST, response));
+			send(msg);
 		}
 		else{
-			response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_SUCCESS);
-			for (int i = 0; i < db_names.size(); i++){
-				response.put(SPORT_NAME+Integer.toString(i), db_names.get(i));
+			for (int j = 0; j < nbPackets; j++){
+				JSONObject response = new JSONObject();
+				response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_SUCCESS);
+				for (int i = 0; i < JSON_THRESHOLD; i++){
+					response.put(SPORT_NAME+Integer.toString(i), db_names.get(i+JSON_THRESHOLD*j));
+				}
+				msg.setJSON(networkJSON(SPORTS_LIST_REQUEST, response));
+				send(msg);		
 			}
 		}
-		msg.setJSON(networkJSON(SPORTS_LIST_REQUEST, response));
-		send(msg);		
 	}
 
 	public static void main(String[] args){

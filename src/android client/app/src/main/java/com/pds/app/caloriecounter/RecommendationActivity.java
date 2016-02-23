@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
@@ -22,6 +23,8 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         RecommendationTypeFragment.OnItemClickListener, RecommendationPastFragment.OnItemClickListener,
         RecommendationSportFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
+
+    private static ArrayList<String> _sportsname = new ArrayList<String>();
 
     private FragmentManager manager = getSupportFragmentManager();
 
@@ -50,9 +53,16 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
             String response =  (String)data.get(SPORTS_LIST_RESPONSE);
             if(response.equals(SPORTS_LIST_SUCCESS)){
                 for(int i = 0; i < data.size()-1 ; ++i){
-                    System.out.println(((String) data.get(SPORT_NAME + String.valueOf(i))));
+                    _sportsname.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }
             }
+        }
+        if (_sportsname.size() == SPORTS_LIST_SIZE) {
+            RecommendationSportFragment frag = new RecommendationSportFragment();
+            Bundle b = new Bundle();
+            b.putStringArrayList("names", _sportsname);
+            frag.setArguments(b);
+            replaceFragment(frag);
         }
     }
 
@@ -65,13 +75,17 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     }
 
     public void onNextPastClick(){
-        try {
-            send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
-        } catch (IOException e) {
-            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
+        if (_sportsname.size() == SPORTS_LIST_SIZE){
+            replaceFragment(new RecommendationSportFragment());
         }
-        replaceFragment(new RecommendationSportFragment());
+        else {
+            try {
+                send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
+            } catch (IOException e) {
+                Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
+                toast.show();
+            }
+        }
     }
 
     public void onNextSportClick(){
