@@ -3,12 +3,15 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <Spinner
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/recom_sport"
         android:layout_above="@+id/sport_duration"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="@drawable/spinner_style"
+        android:divider="@color/accent"
+        android:dividerHeight="1dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -16,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/recosport"
         android:id="@+id/textView13"
-        android:textColor="@color/primary_dark"
+        android:textColor="@color/white"
         android:layout_above="@+id/recom_sport"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -40,10 +43,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Duration (in minutes): "
         android:id="@+id/textView14"
-        android:textColor="@color/primary_dark"
+        android:textColor="@color/white"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentLeft="true" />
 
     <Button
         android:layout_width="wrap_content"

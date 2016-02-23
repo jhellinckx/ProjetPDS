@@ -10,6 +10,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 import java.util.ArrayList;
 
@@ -66,6 +68,18 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         }
     }
 
+    private void sendData(String sport, String duration){
+        JSONObject data = new JSONObject();
+        data.put(SPORT_NAME, sport);
+        data.put(SPORT_DURATION, duration);
+        try {
+            send(networkJSON(CHOSEN_SPORT_REQUEST, data));
+        } catch (IOException e) {
+            // Client not connected...
+        }
+
+    }
+
     public void onStartButtonClick(){
         replaceFragment(new RecommendationTypeFragment());
     }
@@ -88,7 +102,10 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         }
     }
 
-    public void onNextSportClick(){
+    public void onNextSportClick(Spinner sports, EditText duration){
+        if(duration.getText().toString() != ""){
+            sendData((String) sports.getSelectedItem(), duration.getText().toString());
+        }
         replaceFragment(new RecommendationConstraintsFragment());
     }
 

@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 /**
  * Created by aurelien on 15/12/15.
  */
 public class RecommendationSportFragment extends Fragment {
+
+    private Spinner _sports;
+    private EditText _duration;
 
     private OnItemClickListener listener;
 
@@ -32,17 +36,18 @@ public class RecommendationSportFragment extends Fragment {
                 nextStep();
             }
         });
-        Spinner sports = (Spinner) view.findViewById(R.id.recom_sport);
+        _sports = (Spinner) view.findViewById(R.id.recom_sport);
+        _duration = (EditText) view.findViewById(R.id.sport_duration);
 
-        ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(getActivity() ,android.R.layout.simple_spinner_item, bundle.getStringArrayList("names"));
-        ageAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sports.setAdapter(ageAdapter);
+
+        ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(getActivity() ,R.layout.spinner_item, bundle.getStringArrayList("names"));
+        _sports.setAdapter(ageAdapter);
 
         return view;
     }
 
     public interface OnItemClickListener {
-        public void onNextSportClick();
+        public void onNextSportClick(Spinner sports, EditText duration);
     }
 
     @Override
@@ -63,7 +68,7 @@ public class RecommendationSportFragment extends Fragment {
 
     public void nextStep(){
 
-        listener.onNextSportClick();
+        listener.onNextSportClick(_sports, _duration);
     }
 
 }

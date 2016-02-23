@@ -88,6 +88,8 @@ public final class Constants {
 		public static final String SPORTS_LIST_RESPONSE = "d_sportslist_res";
 		public static final String SPORT_NAME = "d_sportname";
 		public static final int SPORTS_LIST_SIZE = 45;
+		public static final String CHOSEN_SPORT_REQUEST = "r_chosensport";
+		public static final String SPORT_DURATION = "d_sportduration";
 
 
 
