@@ -98,18 +98,10 @@ public class ScanningActivity extends HomeActivity{
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
-
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
-
-            // TODO Send scanned content to server.
-
             String scanContent = scanResults.getContents();
-
             sendData(scanContent);
-
-
-
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();

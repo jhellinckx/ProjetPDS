@@ -11,9 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-/**
- * Created by aurelien on 15/12/15.
- */
+
 public class RecommendationSportFragment extends Fragment {
 
     private Spinner _sports;

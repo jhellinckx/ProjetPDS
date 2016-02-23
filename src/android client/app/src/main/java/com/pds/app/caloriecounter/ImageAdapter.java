@@ -43,7 +43,6 @@ public class ImageAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if (convertView == null) {
-            grid = new View(_Context);
             grid = inflater.inflate(R.layout.grid_singlefood, null);
             ImageView imageView = (ImageView) grid.findViewById(R.id.grid_imageView);
             Picasso.with(this._Context)
