@@ -85,7 +85,7 @@ public final class Constants {
 		public static final String RANDOM_UNRANKED_FOODS_FAILURE = "d_randfoods_nope";
 		public static final String RANDOM_UNRANKED_FOODS_NOT_FOUND = "d_randfoods_nope_empty";
 		public static final String RANDOM_UNRANKED_FOODS_SUCCESS = "d_randfoods_ok";
-		public static final String FOOD_IMAGE_URL_LIST = "d_food_imgurl_list";
+		public static final int NUMBER_RANDOM_FOODS = 9;
 
 		/* SEND RATINGS FOR ITEMS */
 		public static final String SEND_RATINGS_REQUEST = "r_sendranks";
@@ -135,6 +135,8 @@ public final class Constants {
 		public static final float WOMEN_DAILY_ENERGY = 7745.58f; //kJoule (1850 kcal)
 		public static final float TEEN_DAILY_ENERGY = 11304.36f; //kJoule (2700 kcal)
 		public static final float CHILD_DAILY_ENERGY = 9286.3224f; //kJoule (2218 kcal)
+		public static final float TOTAL_MEAL_PER_DAY = 4;
+		public static final float CAL_TO_JOULE_FACTOR = 4.1868f;
 
 
 

@@ -22,7 +22,8 @@
         android:progressDrawable="@drawable/recomprogress"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="65sp" />
+        android:layout_marginTop="65sp"
+        android:layout_alignParentStart="false" />
 
     <SeekBar
         android:layout_width="match_parent"
@@ -31,8 +32,7 @@
         android:layout_marginTop="58dp"
         android:layout_below="@+id/progressBar4"
         android:layout_alignLeft="@+id/bar_placer"
-        android:layout_alignRight="@+id/bar_placer"
-        android:progress="100" />
+        android:layout_alignRight="@+id/bar_placer" />
 
     <SeekBar
         android:layout_width="match_parent"
@@ -41,8 +41,7 @@
         android:layout_below="@+id/bar_cal"
         android:layout_alignLeft="@+id/bar_placer"
         android:layout_alignRight="@+id/bar_placer"
-        android:layout_marginTop="35dp"
-        android:progress="100" />
+        android:layout_marginTop="35dp" />
 
     <SeekBar
         android:layout_width="match_parent"
@@ -52,7 +51,6 @@
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/bar_placer"
         android:layout_alignRight="@+id/bar_placer"
-        android:progress="100"
         android:layout_marginTop="35dp" />
 
     <SeekBar
@@ -62,8 +60,7 @@
         android:layout_below="@+id/bar_prot"
         android:layout_alignLeft="@+id/bar_placer"
         android:layout_alignRight="@+id/bar_placer"
-        android:layout_marginTop="35dp"
-        android:progress="100" />
+        android:layout_marginTop="35dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -111,8 +108,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/bar_placer"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="70sp"/>
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="70dp"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -123,6 +120,7 @@
         android:id="@+id/constraints_cal"
         android:layout_above="@+id/bar_fat"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_cal" />
 
     <EditText
@@ -134,6 +132,7 @@
         android:id="@+id/constraints_fat"
         android:layout_above="@+id/bar_prot"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_fat" />
 
     <EditText
@@ -145,6 +144,7 @@
         android:id="@+id/constraints_prot"
         android:layout_above="@+id/bar_carbo"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_prot" />
 
     <EditText
@@ -156,6 +156,7 @@
         android:id="@+id/constraints_carbo"
         android:layout_alignBottom="@+id/bar_carbo"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_carbo" />
 
 </RelativeLayout>
