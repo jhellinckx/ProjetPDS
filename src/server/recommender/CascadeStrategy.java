@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import items.Food;
 import items.User;
 
+import dao.FoodDAO;
+import dao.DAOException;
+import java.util.Random;
+
 public class CascadeStrategy implements HybridationStrategy {
 
 	private ArrayList<RecommendationStrategy> strategies;
@@ -15,7 +19,9 @@ public class CascadeStrategy implements HybridationStrategy {
 
 
     public CascadeStrategy(){
+
         strategies = new ArrayList<RecommendationStrategy>();
+
     }
 
     @Override
