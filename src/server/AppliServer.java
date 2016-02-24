@@ -2,6 +2,7 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.json.simple.JSONArray;
 
 import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.Constants;
@@ -17,6 +18,10 @@ import dao.FoodDAO;
 import dao.UserPrefDAO;
 import dao.SportsDAO;
 import dao.CategoryRatingDAO;
+import dao.DAOException;
+
+import recommender.HybridationStrategy;
+import recommender.CascadeStrategy;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -33,6 +38,9 @@ public class AppliServer extends AbstractNIOServer{
 	private SportsDAO _sportsDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
 
+	/* Recommendations fields */
+	private HybridationStrategy _hybridStrategy;
+
 	public AppliServer(){
 		super();
 		_daoFactory = DAOFactory.getInstance();
@@ -41,6 +49,8 @@ public class AppliServer extends AbstractNIOServer{
 		_userprefDatabase = _daoFactory.getUserPrefDAO();
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
+
+		_hybridStrategy = new CascadeStrategy();
 	}
 
 	public User getUser(Message msg){
@@ -77,6 +87,38 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(UPDATE_DATA_REQUEST)){
 			onUpdateDataRequest(msg);
 		}
+		else if(request.equals(RECOMMEND_REQUEST)){
+			onShotgunRecommendRequest(msg);
+		}
+	}
+
+	 public ArrayList<Food> randomRecommend(FoodDAO dbFood){
+        ArrayList<Food> randomFoods = new ArrayList<>();
+        int min = 1; int max = 10000;
+        for(int i = 0; i < RECOMMENDATIONS_REQUIRED; ++i){
+            int randomNum = min + (int)(Math.random() * ((max - min) + 1));
+            Food food = new Food();
+            food.setId((new Integer(randomNum)).longValue());
+            try{
+                food = dbFood.findById((new Integer(randomNum)).longValue());
+            } catch(DAOException e){
+                System.out.println(e.getMessage());
+            }
+            if(food != null) randomFoods.add(food);
+        }
+        return randomFoods;
+    }
+
+	public void onShotgunRecommendRequest(Message msg){
+		ArrayList<Food> randomRecommend = randomRecommend(_foodDatabase);
+		JSONArray jsonFoods = new JSONArray();
+		for(Food randomFood : randomRecommend){
+			jsonFoods.add(randomFood.toJSON());
+		}
+		JSONObject data = new JSONObject();
+		data.put(RECOMMENDED_FOOD_LIST, jsonFoods);
+		msg.setJSON(networkJSON(RECOMMEND_REQUEST, data));
+		send(msg);
 	}
 
 	public void onLoginRequest(Message msg){
@@ -231,7 +273,8 @@ public class AppliServer extends AbstractNIOServer{
 
 	public void onSportsListRequest(Message msg){
 		int threshold = JSON_THRESHOLD;
-		int nbPackets = (int) Math.ceil(SPORTS_LIST_SIZE/JSON_THRESHOLD);
+		double size = (double) SPORTS_LIST_SIZE;
+		int nbPackets = (int) Math.ceil(size/JSON_THRESHOLD);
 		List<String> db_names = _sportsDatabase.findSportsNames();
 
 		if(db_names.size() == 0){
@@ -245,8 +288,8 @@ public class AppliServer extends AbstractNIOServer{
 			for (int j = 0; j < nbPackets; j++){
 				JSONObject response = new JSONObject();
 				response.put(SPORTS_LIST_RESPONSE, SPORTS_LIST_SUCCESS);
-				for (int i = 0; i < JSON_THRESHOLD; i++){
-					response.put(SPORT_NAME+Integer.toString(i), db_names.get(i+JSON_THRESHOLD*j));
+				for (int i = 0; i < Math.min(JSON_THRESHOLD,db_names.size()); i++){
+					response.put(SPORT_NAME+Integer.toString(i), db_names.get(i+Math.min(JSON_THRESHOLD,db_names.size())*j));
 				}
 				msg.setJSON(networkJSON(SPORTS_LIST_REQUEST, response));
 				send(msg);		

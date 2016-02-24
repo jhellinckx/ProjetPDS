@@ -53,6 +53,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         if(request.equals(SPORTS_LIST_REQUEST)){
             String response =  (String)data.get(SPORTS_LIST_RESPONSE);
             if(response.equals(SPORTS_LIST_SUCCESS)){
+                Log.d("SPORTS DATA LIST : ",data.toString());
                 for(int i = 0; i < data.size()-1 ; ++i){
                     _sportsname.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }

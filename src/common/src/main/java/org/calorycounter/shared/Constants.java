@@ -19,11 +19,14 @@ public final class Constants {
 	/* Network related constants, used to normalise communication */
 	public static final class network {
 		/* Network config */
+		public static final String LOCALHOST = "127.0.0.1";
+		public static final String LOCALHOST_STRING = "localhost";
+		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 		public static final int MAX_CLIENTS = 100;
-		public static final int BUFFER_SIZE = 1000;
+		public static final int BUFFER_SIZE = 100000;
 		public static final int INT_SIZE = 4;
 		public static final String ENCODING = "UTF-8";
-		public static final int JSON_THRESHOLD = 15;
+		public static final int JSON_THRESHOLD = 1000;
 
 		/* Base keys of a JSON network message */
 		public static final String REQUEST_TYPE = "requesttype";
@@ -57,10 +60,18 @@ public final class Constants {
 		public static final String SIGN_UP_ALREADY_CONNECTED = "d_signup_nope_usr_connected";
 
 		/* Food code request */
-		public static final String FOOD_CODE = "d_foodcode";
-		public static final String FOOD_NAME = "d_foodname";
-		public static final String FOOD_IMAGE_URL = "d_food_imgurl";
-		public static final String FOOD_TOTAL_ENERGY = "d_food_total_energy";
+		public static final String FOOD_ID = "f_id";
+		public static final String FOOD_URL = "f_url";
+		public static final String FOOD_CODE = "f_code";
+		public static final String FOOD_NAME = "f_p_name";
+		public static final String FOOD_IMAGE_URL = "f_image";
+		public static final String FOOD_TOTAL_ENERGY = "f_nrj";
+		public static final String FOOD_TOTAL_FAT = "f_fat";
+		public static final String FOOD_TOTAL_PROTEINS = "f_proteins";
+		public static final String FOOD_TOTAL_SATURATED_FAT = "f_s_fat";
+		public static final String FOOD_TOTAL_CARBOHYDRATES = "f_carbo";
+		public static final String FOOD_TOTAL_SUGARS = "f_sugars";
+		public static final String FOOD_TOTAL_SODIUM = "f_sodiums";
 
 		public static final String FOOD_CODE_REQUEST = "r_foodcode";
 		public static final String FOOD_CODE_RESPONSE = "d_foodcode_res";
@@ -97,7 +108,13 @@ public final class Constants {
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
 
 		/* Recommendation */
-		public static final String RECOMMEND_REQUEST = "r_recommend";
+		public static final int RECOMMENDATIONS_REQUIRED = 20;
+		public static final String RECOMMEND_REQUEST = "recom_recommend";
+		public static final String RECOMMEND_RESPONSE = "recom_response";
+		public static final String RECOMMENDED_FOOD_LIST = "recom_foodlist";
+
+		
+
 
 		/*
 		Human's daily intake requirements

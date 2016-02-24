@@ -1,4 +1,7 @@
 package items;
+import org.json.simple.JSONObject;
+
+import static org.calorycounter.shared.Constants.network.*;
 
 public class Food {
 	
@@ -120,6 +123,23 @@ public class Food {
         m+= " - energy: ";
         m+= Float.toString(total_energy);
         return m;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject repr = new JSONObject();
+        repr.put(FOOD_ID, id);
+        repr.put(FOOD_URL, url);
+        repr.put(FOOD_CODE, code);
+        repr.put(FOOD_NAME, productName);
+        repr.put(FOOD_IMAGE_URL, image_url);
+        repr.put(FOOD_TOTAL_ENERGY, total_energy);
+        repr.put(FOOD_TOTAL_FAT, total_fat);
+        repr.put(FOOD_TOTAL_PROTEINS,total_proteins);
+        repr.put(FOOD_TOTAL_SATURATED_FAT, total_saturated_fat);
+        repr.put(FOOD_TOTAL_CARBOHYDRATES, total_carbohydrates);
+        repr.put(FOOD_TOTAL_SUGARS, total_sugars);
+        repr.put(FOOD_TOTAL_SODIUM, total_sodium);
+        return repr;
     }
 
 }

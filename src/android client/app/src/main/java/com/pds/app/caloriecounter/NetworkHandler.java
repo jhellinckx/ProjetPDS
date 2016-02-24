@@ -65,8 +65,10 @@ public class NetworkHandler {
         _messagesOnHold = new HashMap<>();
         _socketLock = new Object();
         JSONObject config = loadNetworkConfig(context);
-        this._host = (String)config.get("host");
-        this._port = Integer.parseInt((String)config.get("port"));
+        _host = (String)config.get("host");
+        if (_host.equals(LOCALHOST) || _host.equals(LOCALHOST_STRING) )
+            _host = EMULATOR_DEVICE_ADDRESS;
+        _port = Integer.parseInt((String)config.get("port"));
 
     }
 
