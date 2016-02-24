@@ -123,10 +123,6 @@ def add_sports_from_file():
 
 
 
-
-
-
-
-if __name__ == '__main__':
+def execute():
 	drop_added_table_in_db()
 	add_sports_from_file()

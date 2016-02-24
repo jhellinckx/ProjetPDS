@@ -110,7 +110,6 @@ def addOrDeleteColumnsToTable(delete): #if boolean delete is True, deletes other
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
-		pass
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -169,11 +168,8 @@ def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_
 
 
 
-
-
-
-
-if __name__ == '__main__':
-	addOrDeleteColumnsToTable(True) #delete columns
+def execute(first_time):
+	if first_time:
+		addOrDeleteColumnsToTable(True) #delete columns
 	addOrDeleteColumnsToTable(False) #add columns
 	selectInfoFromDbAndAddNewInfos()

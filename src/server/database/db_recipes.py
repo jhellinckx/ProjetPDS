@@ -209,7 +209,7 @@ def add_recipes_in_db():
 	cursor.close()
 	cnx.close()
 
-if __name__ == '__main__':
+def execute():
 	drop_added_tables_in_db()
 	add_ingredients_in_db()
 	add_recipes_in_db()

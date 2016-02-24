@@ -92,7 +92,7 @@ def add_categories_ratings_in_db():
 	cnx.close()
 
 
-if __name__ == '__main__':
+def execute():
 	drop_added_tables_in_db()
 	add_categories_ratings_in_db()
 
