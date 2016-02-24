@@ -12,19 +12,20 @@
         android:id="@+id/textView2"
         android:textColor="#ffffff"
         android:textSize="26sp"
-        android:layout_marginTop="110dp"
-        android:layout_marginLeft="23dp"
+        android:layout_marginTop="70dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignLeft="@+id/textView" />
 
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/agebracket"
-        android:layout_marginTop="32dp"
         android:spinnerMode="dropdown"
         android:layout_below="@+id/textView2"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="39dp"
+        android:layout_marginLeft="24sp"
+        android:background="@drawable/spinner_style"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -37,5 +38,46 @@
         android:minWidth="120sp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView"
+        android:text="@string/height"
+        android:textSize="26sp"
+        android:layout_marginLeft="24dp"
+        android:layout_below="@+id/agebracket"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="31dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/data_height"
+        android:layout_below="@+id/textView"
+        android:layout_alignLeft="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/weight"
+        android:id="@+id/textView6"
+        android:layout_marginTop="22dp"
+        android:textSize="26sp"
+        android:layout_below="@+id/data_height"
+        android:layout_alignLeft="@+id/data_height" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/data_weight"
+        android:layout_below="@+id/textView6"
+        android:layout_alignLeft="@+id/textView6" />
 
 </RelativeLayout>

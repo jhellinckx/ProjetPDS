@@ -91,6 +91,11 @@ public final class Constants {
 		public static final String CHOSEN_SPORT_REQUEST = "r_chosensport";
 		public static final String SPORT_DURATION = "d_sportduration";
 
+		/* Personal Data */
+		public static final String UPDATE_DATA_REQUEST = "r_updatedata";
+		public static final String UPDATE_DATA_GENDER = "d_updatadata_gender";
+		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
+
 
 
 		public static String local_ip(){
