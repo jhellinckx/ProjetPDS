@@ -118,6 +118,8 @@ public final class Constants {
 		public static final float WOMEN_DAILY_ENERGY = 7745.58f; //kJoule (1850 kcal)
 		public static final float TEEN_DAILY_ENERGY = 11304.36f; //kJoule (2700 kcal)
 		public static final float CHILD_DAILY_ENERGY = 9286.3224f; //kJoule (2218 kcal)
+		public static final float TOTAL_MEAL_PER_DAY = 4;
+		public static final float CAL_TO_JOULE_FACTOR = 4.1868f;
 
 
 

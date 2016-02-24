@@ -39,9 +39,9 @@
 
     <string name="ok">Rate</string>
     <string name="cancel">Cancel</string>
-    <string name="cal">Energy</string>
-    <string name="fat">Fat</string>
-    <string name="prot">Protein</string>
-    <string name="carbo">Carbohydrates</string>
+    <string name="cal">Energy (kcal)</string>
+    <string name="fat">Fat (g)</string>
+    <string name="prot">Protein (g)</string>
+    <string name="carbo">Carbohydrates (g)</string>
 </resources>
 
