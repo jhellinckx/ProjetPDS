@@ -3,21 +3,15 @@ package com.pds.app.caloriecounter;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -26,6 +20,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
+    private static ArrayList<String> _productNames = new ArrayList<String>();
 
     private FragmentManager manager = getSupportFragmentManager();
 
@@ -40,10 +35,13 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_recommendation, frameLayout);
 
+        Bundle b = new Bundle();
+        b.putStringArrayList("productNames",_productNames);
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.fragment_layout, new RecommendationPastFragment());
+        RecommendationPastFragment pastFrag = new RecommendationPastFragment();
+        pastFrag.setArguments(b);
+        transaction.add(R.id.fragment_layout, pastFrag);
         transaction.commit();
-
     }
 
     public void handleMessage(JSONObject msg){
@@ -56,6 +54,18 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 for(int i = 0; i < data.size()-1 ; ++i){
                     _sportsname.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }
+            }
+        }
+        else if(request.equals(FOOD_CODE_REQUEST)){
+            String response =  (String)data.get(FOOD_CODE_RESPONSE);
+            if(response.equals(FOOD_CODE_SUCCESS)){
+                String product_name = (String) data.get(FOOD_NAME);
+                _productNames.add(product_name);
+                RecommendationPastFragment frag = new RecommendationPastFragment();
+                Bundle b = new Bundle();
+                b.putStringArrayList("productNames",_productNames);
+                frag.setArguments(b);
+                replaceFragment(frag);
             }
         }
         if (_sportsname.size() == SPORTS_LIST_SIZE) {
