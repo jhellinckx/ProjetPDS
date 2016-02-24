@@ -19,6 +19,9 @@ public final class Constants {
 	/* Network related constants, used to normalise communication */
 	public static final class network {
 		/* Network config */
+		public static final String LOCALHOST = "127.0.0.1";
+		public static final String LOCALHOST_STRING = "localhost";
+		public static final String EMULATOR_DEVICE_ADDRESS = "10.0.2.2";
 		public static final int MAX_CLIENTS = 100;
 		public static final int BUFFER_SIZE = 100000;
 		public static final int INT_SIZE = 4;
