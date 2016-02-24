@@ -258,10 +258,19 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String gender = (String) data.get(UPDATE_DATA_GENDER);
-		Float weight = (Float) data.get(UPDATE_DATA_WEIGHT);
+		gender = getGenderDbId(gender);
+		Float weight = Float.parseFloat( (String) data.get(UPDATE_DATA_WEIGHT));
 		_userDatabase.updateUserWeight(user, weight);
 		_userDatabase.updateUserGender(user, gender);
 
+	}
+
+	private String getGenderDbId(String gender){
+		if(gender == "Woman") {return "F";}
+		else if (gender == "Man") {return "M";}
+		else if (gender == "Teen") {return "T";}
+		else if (gender == "Child") {return "K";} //kid
+		else{return "B";} //aurélien remove baby des age bracket please
 	}
 
 	public static void main(String[] args){

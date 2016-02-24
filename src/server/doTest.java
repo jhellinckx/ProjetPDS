@@ -91,6 +91,7 @@ public class doTest {
 		}
 	}
 
+	/* old version, flemme de retirer 
 	public static void test_knowledgeBased(DAOFactory d) {
 		FoodDAO fDAO = d.getFoodDAO();
 		User u = new User("test_username2","M");
@@ -107,6 +108,7 @@ public class doTest {
 		x=a.get(0);
 		System.out.println(x.toString());
 	}
+	*/
 
 	public static void test_UserWithWeight(DAOFactory d) {
 		UserDAO uDAO = d.getUserDAO();
