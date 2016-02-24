@@ -33,6 +33,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     private Button _validButton;
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
+    private ArrayList<String> names;
 
 
 
@@ -50,9 +51,11 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
         _validButton = (Button) v.findViewById(R.id.rating_button);
         urls = new ArrayList<String>();
         ratings = new ArrayList<Float>();
+        names = new ArrayList<String>();
         gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
+        initializer(names);
         setUpUrls();
 
     }
@@ -71,6 +74,7 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putString("url", urls.get(position));
+                bundle.putString("name", names.get(position));
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
@@ -157,8 +161,9 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
         if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
-                for(int i = 0; i < data.size()-1 ; ++i){
+                for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     urls.set(i, (String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
+                    names.set(i, (String) data.get(FOOD_NAME + String.valueOf(i)));
 
                 }
             }

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -47,10 +48,13 @@ public class RateFoodDialogFragment extends DialogFragment {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Bundle b = getArguments();
         String url = b.getString("url");
+        String name = b.getString("name");
 
         View view = layoutInflater.inflate(R.layout.rating_dialog,null);
         builder.setView(view);
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+        TextView text = ((TextView) view.findViewById(R.id.rateTitle));
+        text.setText((String) text.getText() + ": " + name);
         System.out.println(imageView == null);
         Picasso.with(getActivity())
                 .load(url)

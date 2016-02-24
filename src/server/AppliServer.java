@@ -157,10 +157,9 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public void onRandomUnrankedFoodsRequest(Message msg){
-		int nbOfUnrankedFoodsReturned = 9;
 		JSONObject responseData = new JSONObject();
 		ArrayList<Long> foodIds = new ArrayList<Long>();
-		generateRandomFoodIds(nbOfUnrankedFoodsReturned, msg, foodIds);//populate array foodIds
+		generateRandomFoodIds(NUMBER_RANDOM_FOODS, msg, foodIds);//populate array foodIds
 		List<Food> foods = _foodDatabase.findByIds(foodIds);
 		makeJSON_onRandomUnrankedFoodRequest(foods, responseData);
 		msg.setJSON(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, responseData));
@@ -205,6 +204,7 @@ public class AppliServer extends AbstractNIOServer{
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
 			for(int i=0 ; i<foods.size() ; ++i){ //ajout de chaque url au JSON
 				responseData.put(FOOD_IMAGE_URL+String.valueOf(i), foods.get(i).getImageUrl());
+				responseData.put(FOOD_NAME+String.valueOf(i), foods.get(i).getProductName());
 			}
 		}
 	}
