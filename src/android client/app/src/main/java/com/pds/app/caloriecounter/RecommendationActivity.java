@@ -90,7 +90,11 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     public void onNextPastClick(){
         if (_sportsname.size() == SPORTS_LIST_SIZE){
-            replaceFragment(new RecommendationSportFragment());
+            RecommendationSportFragment frag = new RecommendationSportFragment();
+            Bundle b = new Bundle();
+            b.putStringArrayList("names", _sportsname);
+            frag.setArguments(b);
+            replaceFragment(frag);
         }
         else {
             try {

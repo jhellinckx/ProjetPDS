@@ -27,6 +27,8 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 
 	@Override
 	public ArrayList<Food> recommend(){
+		if(_foodToFilter.isEmpty())
+			_foodToFilter = new ArrayList<Food>();
 		Map<Food, Float> ratingPredictions = new HashMap<>();
 		for(Food food : _foodToFilter){
 			ratingPredictions.put(food, prediction(food));
