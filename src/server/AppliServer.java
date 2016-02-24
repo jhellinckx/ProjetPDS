@@ -77,6 +77,9 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(CHOSEN_SPORT_REQUEST)){
 			onChosenSportRequest(msg);
 		}
+		else if(request.equals(UPDATE_DATA_REQUEST)){
+			onUpdateDataRequest(msg);
+		}
 	}
 
 	public void onLoginRequest(Message msg){
@@ -257,6 +260,16 @@ public class AppliServer extends AbstractNIOServer{
 	public void onChosenSportRequest(Message msg){
 
 		// TODO Update User total_energy + Add Sport to history (may be useful for user profiles).
+	}
+
+	public void onUpdateDataRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		String gender = (String) data.get(UPDATE_DATA_GENDER);
+		Float weight = (Float) data.get(UPDATE_DATA_WEIGHT);
+		_userDatabase.updateUserWeight(user, weight);
+		_userDatabase.updateUserGender(user, gender);
+
 	}
 
 	public static void main(String[] args){
