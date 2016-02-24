@@ -1,4 +1,5 @@
 package recommender;
+import static org.calorycounter.shared.Constants.network.*;
 
 import dao.FoodDAO;
 import items.Food;
@@ -57,38 +58,20 @@ public class KnowledgeBasedFilter {
 
 	private List<Food> recommendMethod(List<Food> previousAliments) {
 
-		fatNeeded = Constants.HUMAN_DAILY_FAT;
-		proteinsNeeded = Constants.HUMAN_DAILY_PROTEINS;
-		saturatedFatNeeded = Constants.HUMAN_DAILY_SATURATED_FAT;
-		carbohydratesNeeded = Constants.HUMAN_DAILY_CARBOHYDRATES;
-		sugarsNeeded = Constants.HUMAN_DAILY_SUGARS;
-		sodiumNeeded = Constants.HUMAN_DAILY_SODIUM;
-		if(currentUser.getGender() == "M") {
-			energyNeeded = Constants.MEN_DAILY_ENERGY;
-		}
-		else if (currentUser.getGender() == "F") {
-			energyNeeded = Constants.WOMEN_DAILY_ENERGY;
-		}
-		else if (currentUser.getGender() == "T") {
-			energyNeeded = Constants.TEEN_DAILY_ENERGY;
-		}
-		else {
-			energyNeeded = Constants.CHILD_DAILY_ENERGY;
-		}
-
 		previousEatenAliments(previousAliments);
 		return foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded);
 	}
 
-	public List<Food> recommend() {
 
-		return recommendMethod(null);
-		
-	}
+	public List<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn) {
 
-	public List<Food> recommend(List<Food> previousAliments) {
-
+		energyNeeded = energySupBorn;
+		fatNeeded = fatSupBorn;
+		proteinsNeeded = proteinsSupBorn;
+		saturatedFatNeeded = HUMAN_DAILY_SATURATED_FAT;
+		carbohydratesNeeded = carbohydratesSupBorn;
+		sugarsNeeded = HUMAN_DAILY_SUGARS;
+		sodiumNeeded = HUMAN_DAILY_SODIUM;
 		return recommendMethod(previousAliments);
-
 	}
 }

@@ -17,12 +17,6 @@
     <string name="welcome">Welcome To Your Calorie Counter</string>
     <string name="infos">Here you can manage your meal in order to improve your daily health.</string>
 
-    <string name="homeitem1">You can get meal or aliment recommendations.</string>
-    <string name="homeitem2">You can update your personal data in order to improve the meal recommendations.</string>
-    <string name="homeitem3">A rating system givess you the opportunity to rate the recommendations.
-    By doing so, the further recommendations will be more accurate.</string>
-    <string name="homeitem4">A barcode scanner allows you to scan aliments code in order to get information about them.</string>
-
     <string name="recommendation">Here you can get recommendations</string>
     <string name="recotype">Select the type of recommendation</string>
     <string name="recopast">Add past meals</string>
@@ -45,5 +39,9 @@
 
     <string name="ok">Rate</string>
     <string name="cancel">Cancel</string>
+    <string name="cal">Energy</string>
+    <string name="fat">Fat</string>
+    <string name="prot">Protein</string>
+    <string name="carbo">Carbohydrates</string>
 </resources>
 

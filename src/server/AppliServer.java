@@ -84,9 +84,6 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(SPORTS_LIST_REQUEST)){
 			onSportsListRequest(msg);
 		}
-		else if(request.equals(CHOSEN_SPORT_REQUEST)){
-			onChosenSportRequest(msg);
-		}
 		else if(request.equals(UPDATE_DATA_REQUEST)){
 			onUpdateDataRequest(msg);
 		}
@@ -300,19 +297,23 @@ public class AppliServer extends AbstractNIOServer{
 		}
 	}
 
-	public void onChosenSportRequest(Message msg){
-
-		// TODO Update User total_energy + Add Sport to history (may be useful for user profiles).
-	}
-
 	public void onUpdateDataRequest(Message msg){
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String gender = (String) data.get(UPDATE_DATA_GENDER);
-		Float weight = (Float) data.get(UPDATE_DATA_WEIGHT);
+		gender = getGenderDbId(gender);
+		Float weight = Float.parseFloat( (String) data.get(UPDATE_DATA_WEIGHT));
 		_userDatabase.updateUserWeight(user, weight);
 		_userDatabase.updateUserGender(user, gender);
 
+	}
+
+	private String getGenderDbId(String gender){
+		if(gender == "Woman") {return "F";}
+		else if (gender == "Man") {return "M";}
+		else if (gender == "Teen") {return "T";}
+		else if (gender == "Child") {return "K";} //kid
+		else{return "B";} //aurélien remove baby des age bracket please
 	}
 
 	public static void main(String[] args){
