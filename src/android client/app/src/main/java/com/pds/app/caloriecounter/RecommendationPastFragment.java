@@ -69,22 +69,8 @@ public class RecommendationPastFragment extends Fragment {
     }
 
     public void startScan(){
-        String scanContent = "3038350013002";
-        ((RecommendationActivity)getActivity()).sendCode(scanContent);
-        //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        //scanIntegrator.initiateScan();
-    }
-
-
-    public void onActivityResult(int requestCode, int resultCode, Intent intent){
-        IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResults != null && scanResults.getContents() != null){
-            String scanContent = scanResults.getContents();
-            ((RecommendationActivity)getActivity()).sendCode(scanContent);
-        } else{
-            Toast toast = Toast.makeText(getActivity(), "Scan Cancelled", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        IntentIntegrator scanIntegrator = new IntentIntegrator(getActivity());
+        scanIntegrator.initiateScan();
     }
 
     public interface OnItemClickListener {

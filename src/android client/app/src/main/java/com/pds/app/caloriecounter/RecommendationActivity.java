@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter;
 
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -8,6 +9,11 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
@@ -56,6 +62,13 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                     _sportsname.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }
             }
+            if (_sportsname.size() == SPORTS_LIST_SIZE) {
+                RecommendationSportFragment frag = new RecommendationSportFragment();
+                Bundle b = new Bundle();
+                b.putStringArrayList("names", _sportsname);
+                frag.setArguments(b);
+                replaceFragment(frag);
+            }
         }
         else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
@@ -68,13 +81,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 frag.setArguments(b);
                 replaceFragment(frag);
             }
-        }
-        if (_sportsname.size() == SPORTS_LIST_SIZE) {
-            RecommendationSportFragment frag = new RecommendationSportFragment();
-            Bundle b = new Bundle();
-            b.putStringArrayList("names", _sportsname);
-            frag.setArguments(b);
-            replaceFragment(frag);
         }
     }
 
@@ -119,6 +125,19 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     public void restart(){
         replaceFragment(new RecommendationPastFragment());
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResults != null && scanResults.getContents() != null){
+            System.out.println("--------------------SO LONG SUCKER");
+            String scanContent = scanResults.getContents();
+            sendCode(scanContent);
+        } else{
+            System.out.println("--------------------TELL ME WHAT YOU WANT");
+            Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
 }
