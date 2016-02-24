@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/progressBar3"
         android:progress="75"
-        android:max="100"
+        android:max="50"
         android:progressDrawable="@drawable/recomprogress"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

@@ -74,6 +74,13 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         send(networkJSON(CHOSEN_SPORT_REQUEST, data));
     }
 
+    public void sendCode(String code) {
+        JSONObject data = new JSONObject();
+        data.put(FOOD_CODE, code);
+        send(networkJSON(FOOD_CODE_REQUEST, data));
+        System.out.println("------------------CODE SENT -------------------");
+    }
+
     public void onNextPastClick(){
         if (_sportsname.size() == SPORTS_LIST_SIZE){
             RecommendationSportFragment frag = new RecommendationSportFragment();
