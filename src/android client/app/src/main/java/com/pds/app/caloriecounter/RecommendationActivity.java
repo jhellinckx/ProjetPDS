@@ -21,8 +21,7 @@ import java.io.IOException;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RecommendationActivity extends HomeActivity implements RecommendationProcessFragment.OnItemClickListener,
-        RecommendationTypeFragment.OnItemClickListener, RecommendationPastFragment.OnItemClickListener,
+public class RecommendationActivity extends HomeActivity implements RecommendationPastFragment.OnItemClickListener,
         RecommendationSportFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
 
@@ -42,7 +41,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         v = getLayoutInflater().inflate(R.layout.activity_recommendation, frameLayout);
 
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.fragment_layout, new RecommendationProcessFragment());
+        transaction.add(R.id.fragment_layout, new RecommendationPastFragment());
         transaction.commit();
 
     }
@@ -75,14 +74,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         send(networkJSON(CHOSEN_SPORT_REQUEST, data));
     }
 
-    public void onStartButtonClick(){
-        replaceFragment(new RecommendationTypeFragment());
-    }
-
-    public void onNextTypeClick(){
-        replaceFragment(new RecommendationPastFragment());
-    }
-
     public void onNextPastClick(){
         if (_sportsname.size() == SPORTS_LIST_SIZE){
             RecommendationSportFragment frag = new RecommendationSportFragment();
@@ -109,7 +100,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     }
 
     public void restart(){
-        replaceFragment(new RecommendationProcessFragment());
+        replaceFragment(new RecommendationPastFragment());
     }
 
 }

@@ -8,13 +8,6 @@
         <item>Recommendation</item>
     </array>
 
-    <array name="homenav">
-        <item>@string/homeitem1</item>
-        <item>@string/homeitem2</item>
-        <item>@string/homeitem3</item>
-        <item>@string/homeitem4</item>
-    </array>
-
     <array name="resultsplaceholder">
         <item>First Recommendation</item>
         <item>Second Recommendation</item>
