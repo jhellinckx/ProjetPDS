@@ -22,7 +22,8 @@
         android:progressDrawable="@drawable/recomprogress"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="65sp" />
+        android:layout_marginTop="65sp"
+        android:layout_alignParentStart="false" />
 
     <SeekBar
         android:layout_width="match_parent"
