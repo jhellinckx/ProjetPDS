@@ -149,7 +149,7 @@ public class LogActivity extends NotifiableActivity {
     public void onLoginSuccess() {
         runOnUiThread(new Runnable() {
             public void run() {
-                Intent personalActivity = new Intent(LogActivity.this, Home.class);
+                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
                 startActivity(personalActivity);
                 finish(); // If logged in, only come back to this activity when log out called, not when user presses back
             }

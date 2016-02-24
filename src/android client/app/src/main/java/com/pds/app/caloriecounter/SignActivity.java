@@ -143,7 +143,7 @@ public class SignActivity extends NotifiableActivity {
     public void onSignupSuccess() {
         runOnUiThread(new Runnable() {
             public void run() {
-                Intent logActivity = new Intent(SignActivity.this, Home.class);
+                Intent logActivity = new Intent(SignActivity.this, PersonalDataActivity.class);
                 if(FUCK_DEFAULT_BEHAVIOUR)
                     logActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(logActivity);

@@ -38,7 +38,7 @@ public class PersonalDataActivity extends HomeActivity {
 
                 sendData((String) agebracket.getSelectedItem(), weight.getText().toString());
 
-                Intent homeActivity = new Intent(PersonalDataActivity.this, Home.class);
+                Intent homeActivity = new Intent(PersonalDataActivity.this,RecommendationActivity.class);
 
                 startActivity(homeActivity);
             }

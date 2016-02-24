@@ -93,10 +93,6 @@ public abstract class HomeActivity extends NotifiableActivity
             Intent cameractivity = new Intent(HomeActivity.this, ScanningActivity.class);
 
             startActivity(cameractivity);
-        }else if(id ==R.id.nav_home){
-            Intent homeActivity = new Intent(HomeActivity.this, Home.class);
-
-            startActivity(homeActivity);
         } else if (id == R.id.nav_data) {
             Intent dataactivity = new Intent(HomeActivity.this, PersonalDataActivity.class);
 

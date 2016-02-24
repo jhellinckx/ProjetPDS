@@ -26,9 +26,6 @@
             android:name=".PersonalDataActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".Home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
             android:name=".RecommendationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
