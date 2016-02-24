@@ -89,11 +89,7 @@ public class ScanningActivity extends HomeActivity{
     public void sendData(String code) {
         JSONObject data = new JSONObject();
         data.put(FOOD_CODE, code);
-        try {
-            send(networkJSON(FOOD_CODE_REQUEST, data));
-        } catch (IOException e) {
-            // Client not connected...
-        }
+        send(networkJSON(FOOD_CODE_REQUEST, data));
         System.out.println("------------------CODE SENT -------------------");
     }
 

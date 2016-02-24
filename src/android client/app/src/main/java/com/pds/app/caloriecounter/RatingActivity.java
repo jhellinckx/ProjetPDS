@@ -119,14 +119,9 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
             }
         }
 
-        try {
-            send(networkJSON(SEND_RATINGS_REQUEST, data));
-            send(networkJSON(SEND_RATINGS_REQUEST, data2));
+        send(networkJSON(SEND_RATINGS_REQUEST, data));
+        send(networkJSON(SEND_RATINGS_REQUEST, data2));
 
-        } catch (IOException e) {
-            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
-        }
     }
 
     private void resetRatings(){
@@ -181,11 +176,8 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
 
     private ArrayList<String> getUrlsFromServer(){
         JSONObject data = new JSONObject();
-        try {
-            send(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, data));
-        } catch (IOException e) {
-            // Client not connected...
-        }
+        send(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, data));
+
         System.out.println("------------------request for random unranked foods SENT -------------------");
         return new ArrayList<String>();
     }

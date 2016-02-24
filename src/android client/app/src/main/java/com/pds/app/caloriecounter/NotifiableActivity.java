@@ -63,14 +63,19 @@ public abstract class NotifiableActivity extends AppCompatActivity {
         return NetworkHandler.getInstance(getApplicationContext()).getMessagesOnHold(this.getClass());
     }
 
-    public void send(JSONObject msg) throws IOException{
+    public boolean send(JSONObject msg){
         if(!connected()){
-            throw new IOException("Connection failure");
+            Toast toast = Toast.makeText(getBaseContext(), "Connection failure", Toast.LENGTH_LONG);
+            toast.show();
+            return false;
         }
-        else NetworkHandler.getInstance(getApplicationContext()).addOutgoingMessage(msg);
+        else {
+            NetworkHandler.getInstance(getApplicationContext()).addOutgoingMessage(msg);
+            return true;
+        }
     }
 
-    public void send(JSONObject msg, boolean showProgressDialog, String dialogMessage){
+    public boolean send(JSONObject msg, boolean showProgressDialog, String dialogMessage){
         //TODO progressdialog
         /*
         _networkProgressDialog = new ProgressDialog(NotifiableActivity.this, R.style.AppTheme_Dark_Dialog);
@@ -78,7 +83,7 @@ public abstract class NotifiableActivity extends AppCompatActivity {
         _networkProgressDialog.setMessage("Authenticating...");
         _networkProgressDialog.show();
         */
-        return;
+        return false;
     }
 
     public boolean connected(){

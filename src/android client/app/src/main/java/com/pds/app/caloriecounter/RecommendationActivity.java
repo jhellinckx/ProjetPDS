@@ -72,12 +72,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         JSONObject data = new JSONObject();
         data.put(SPORT_NAME, sport);
         data.put(SPORT_DURATION, duration);
-        try {
-            send(networkJSON(CHOSEN_SPORT_REQUEST, data));
-        } catch (IOException e) {
-            // Client not connected...
-        }
-
+        send(networkJSON(CHOSEN_SPORT_REQUEST, data));
     }
 
     public void onStartButtonClick(){
@@ -97,12 +92,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
             replaceFragment(frag);
         }
         else {
-            try {
-                send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
-            } catch (IOException e) {
-                Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-                toast.show();
-            }
+            send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
         }
     }
 
@@ -114,6 +104,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     }
 
     public void onResultsClick(){
+        send(networkJSON(RECOMMEND_REQUEST, new JSONObject()));
         replaceFragment(new RecommendationResultsFragment());
     }
 

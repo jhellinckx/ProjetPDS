@@ -126,8 +126,6 @@ public abstract class HomeActivity extends NotifiableActivity
 
     public void onLogout(){
         JSONObject logoutRequest = networkJSON(LOG_OUT_REQUEST,new JSONObject());
-        try{
-            this.send(logoutRequest);
-        }catch(IOException e){}
+        send(logoutRequest);
     }
 }

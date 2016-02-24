@@ -105,13 +105,11 @@ public class SignActivity extends NotifiableActivity {
 
         JSONObject data = new JSONObject();
         data.put(USERNAME, username);
-        try {
-            send(networkJSON(SIGN_UP_REQUEST, data));
-        } catch (IOException e) {
+
+        if(! send(networkJSON(SIGN_UP_REQUEST, data))){
             _signupButton.setEnabled(true);
-            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
         }
+
     }
 
     public void onSignupResponse(JSONObject data){

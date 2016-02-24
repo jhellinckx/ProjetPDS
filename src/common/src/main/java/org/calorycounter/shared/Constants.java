@@ -96,6 +96,9 @@ public final class Constants {
 		public static final String UPDATE_DATA_GENDER = "d_updatadata_gender";
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
 
+		/* Recommendation */
+		public static final String RECOMMEND_REQUEST = "r_recommend";
+
 
 
 		public static String local_ip(){

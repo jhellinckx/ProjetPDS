@@ -111,13 +111,10 @@ public class LogActivity extends NotifiableActivity {
 
         JSONObject data = new JSONObject();
         data.put(USERNAME, username);
-        try {
-            send(networkJSON(LOG_IN_REQUEST, data));
-        } catch (IOException e) {
+        if(! send(networkJSON(LOG_IN_REQUEST, data))){
             _loginButton.setEnabled(true);
-            Toast toast = Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG);
-            toast.show();
         }
+
     }
 
     public void onLoginResponse(JSONObject data){

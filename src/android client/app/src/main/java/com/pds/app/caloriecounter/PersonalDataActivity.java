@@ -61,11 +61,8 @@ public class PersonalDataActivity extends HomeActivity {
         JSONObject data = new JSONObject();
         data.put(UPDATE_DATA_GENDER, gender);
         data.put(UPDATE_DATA_WEIGHT, weight);
-        try {
-            send(networkJSON(UPDATE_DATA_REQUEST, data));
-        } catch (IOException e) {
-            // Client not connected...
-        }
+        send(networkJSON(UPDATE_DATA_REQUEST, data));
+
     }
 
     private void initSpinner(){

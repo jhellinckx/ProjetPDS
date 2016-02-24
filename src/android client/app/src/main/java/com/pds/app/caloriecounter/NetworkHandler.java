@@ -275,7 +275,7 @@ public class NetworkHandler {
     }
 
     private class Listener implements Runnable{
-        final int RETRY_CONNECT_INTERVAL = 5000;
+        final int RETRY_CONNECT_INTERVAL = 1000;
 
         NetworkHandler _handler;
         Boolean _run;
