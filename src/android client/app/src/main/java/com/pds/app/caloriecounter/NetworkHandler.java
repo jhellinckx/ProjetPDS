@@ -135,7 +135,7 @@ public class NetworkHandler {
                 _doDispatch(msg,SignActivity.class);
             }
             else if(request.equals(FOOD_CODE_REQUEST)){
-                _doDispatch(msg,ScanningActivity.class);
+                _doDispatch(msg,RecommendationActivity.class);
             }
             else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
                 _doDispatch(msg,RatingActivity.class);
