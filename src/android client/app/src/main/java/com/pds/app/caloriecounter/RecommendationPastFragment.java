@@ -17,6 +17,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -33,7 +34,6 @@ public class RecommendationPastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
-        System.out.println(bundle.getStringArrayList("productNames"));
 
         _view = inflater.inflate(R.layout.fragment_past_step, container, false);
 
@@ -74,7 +74,7 @@ public class RecommendationPastFragment extends Fragment {
     }
 
     public interface OnItemClickListener {
-        public void onNextPastClick();
+        public void onNextPastClick(List<String> pastFoods);
     }
 
     @Override
@@ -95,6 +95,6 @@ public class RecommendationPastFragment extends Fragment {
 
     public void nextStep(){
 
-        listener.onNextPastClick();
+        listener.onNextPastClick(_foodNames);
     }
 }

@@ -104,7 +104,7 @@ public class RecommendationConstraintsFragment extends Fragment {
     }
 
     public interface OnItemClickListener {
-        public void onResultsClick();
+        public void onResultsClick(String energy, String fat, String prot, String carbo);
     }
 
     @Override
@@ -125,6 +125,7 @@ public class RecommendationConstraintsFragment extends Fragment {
 
     public void getResults(){
 
-        listener.onResultsClick();
+        listener.onResultsClick(_energy.getText().toString(), _fat.getText().toString(),
+                _prot.getText().toString(), _carbo.getText().toString());
     }
 }

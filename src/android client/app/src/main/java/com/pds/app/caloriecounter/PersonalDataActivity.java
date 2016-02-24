@@ -83,4 +83,9 @@ public class PersonalDataActivity extends HomeActivity {
         initButton();
 
     }
+
+    @Override
+    public void onBackPressed(){
+
+    }
 }

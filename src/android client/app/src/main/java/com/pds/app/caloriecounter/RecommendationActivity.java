@@ -15,6 +15,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -29,10 +30,11 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     private static ArrayList<String> _productNames = new ArrayList<String>();
 
     private FragmentManager manager = getSupportFragmentManager();
+    private JSONObject recom_data = new JSONObject();
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment, String tag){
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fragment_layout, fragment);
+        transaction.replace(R.id.fragment_layout, fragment, tag);
         transaction.commit();
     }
 
@@ -67,7 +69,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 Bundle b = new Bundle();
                 b.putStringArrayList("names", _sportsname);
                 frag.setArguments(b);
-                replaceFragment(frag);
+                replaceFragment(frag, "sport");
             }
         }
         else if(request.equals(FOOD_CODE_REQUEST)){
@@ -79,7 +81,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 Bundle b = new Bundle();
                 b.putStringArrayList("productNames",_productNames);
                 frag.setArguments(b);
-                replaceFragment(frag);
+                replaceFragment(frag,"past");
             }
         }
     }
@@ -91,20 +93,30 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         send(networkJSON(CHOSEN_SPORT_REQUEST, data));
     }
 
+    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo){
+        recom_data.put(MAX_ENERGY, energy);
+        recom_data.put(MAX_FAT, fat);
+        recom_data.put(MAX_PROT, prot);
+        recom_data.put(MAX_CARBOHYDRATES, carbo);
+    }
+
     public void sendCode(String code) {
         JSONObject data = new JSONObject();
         data.put(FOOD_CODE, code);
         send(networkJSON(FOOD_CODE_REQUEST, data));
-        System.out.println("------------------CODE SENT -------------------");
     }
 
-    public void onNextPastClick(){
+    public void onNextPastClick(List<String> foodnames){
+        if (!foodnames.isEmpty()) {
+            recom_data.put(PAST_FOODS_LIST, foodnames);
+        }
+
         if (_sportsname.size() == SPORTS_LIST_SIZE){
             RecommendationSportFragment frag = new RecommendationSportFragment();
             Bundle b = new Bundle();
             b.putStringArrayList("names", _sportsname);
             frag.setArguments(b);
-            replaceFragment(frag);
+            replaceFragment(frag, "sport");
         }
         else {
             send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
@@ -113,28 +125,28 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     public void onNextSportClick(Spinner sports, EditText duration){
         if(duration.getText().toString() != ""){
-            sendData((String) sports.getSelectedItem(), duration.getText().toString());
+            recom_data.put(SPORT_NAME, (String) sports.getSelectedItem());
+            recom_data.put(SPORT_DURATION, duration.getText().toString());
         }
-        replaceFragment(new RecommendationConstraintsFragment());
+        replaceFragment(new RecommendationConstraintsFragment(), "constraints");
     }
 
-    public void onResultsClick(){
-        send(networkJSON(RECOMMEND_REQUEST, new JSONObject()));
-        replaceFragment(new RecommendationResultsFragment());
+    public void onResultsClick(String energy, String fat, String prot, String carbo){
+        addConstraintsToJSON(energy, fat, prot, carbo);
+        send(networkJSON(RECOMMEND_REQUEST, recom_data));
+        replaceFragment(new RecommendationResultsFragment(), "results");
     }
 
     public void restart(){
-        replaceFragment(new RecommendationPastFragment());
+        replaceFragment(new RecommendationPastFragment(), "past");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
-            System.out.println("--------------------SO LONG SUCKER");
             String scanContent = scanResults.getContents();
             sendCode(scanContent);
         } else{
-            System.out.println("--------------------TELL ME WHAT YOU WANT");
             Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();
         }

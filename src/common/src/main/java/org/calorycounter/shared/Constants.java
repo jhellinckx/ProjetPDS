@@ -113,6 +113,15 @@ public final class Constants {
 		public static final String RECOMMEND_RESPONSE = "recom_response";
 		public static final String RECOMMENDED_FOOD_LIST = "recom_foodlist";
 
+		/* Past Food */
+		public static final String PAST_FOODS_LIST = "d_past_foodslist";
+
+		/* Recommendation Constraints */
+		public static final String MAX_ENERGY = "d_maxenergy";
+		public static final String MAX_FAT = "d_maxfat";
+		public static final String MAX_PROT = "d_maxprot";
+		public static final String MAX_CARBOHYDRATES = "d_maxcarbo";
+
 		
 
 
