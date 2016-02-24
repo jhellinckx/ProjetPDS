@@ -74,9 +74,6 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(SPORTS_LIST_REQUEST)){
 			onSportsListRequest(msg);
 		}
-		else if(request.equals(CHOSEN_SPORT_REQUEST)){
-			onChosenSportRequest(msg);
-		}
 		else if(request.equals(UPDATE_DATA_REQUEST)){
 			onUpdateDataRequest(msg);
 		}
@@ -255,11 +252,6 @@ public class AppliServer extends AbstractNIOServer{
 				send(msg);		
 			}
 		}
-	}
-
-	public void onChosenSportRequest(Message msg){
-
-		// TODO Update User total_energy + Add Sport to history (may be useful for user profiles).
 	}
 
 	public void onUpdateDataRequest(Message msg){
