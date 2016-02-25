@@ -39,7 +39,12 @@ public class RecommendationResultsFragment extends Fragment {
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
         recomTable = (TableLayout) v.findViewById(R.id.resultsview);
-
+        if(recommendations.isEmpty()){
+            Log.d("Recommendations : ", "-----------------------------empty");
+        }
+        else{
+            Log.d("Recommendations: ", recommendations.toString());
+        }
         for(JSONObject recommendation : recommendations){
             String url = (String)recommendation.get(FOOD_IMAGE_URL);
             String productName = (String)recommendation.get(FOOD_NAME);
@@ -70,13 +75,13 @@ public class RecommendationResultsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recom_results, container, false);
         Activity activity = getActivity();
         initRecommendationList(view, activity);
-        Button next = (Button) view.findViewById(R.id.restart_process);
+        /*Button next = (Button) view.findViewById(R.id.restart_process);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 restartProcess();
             }
-        });
+        }); */
 
         return view;
     }
