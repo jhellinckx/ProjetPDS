@@ -328,8 +328,8 @@ public class AppliServer extends AbstractNIOServer{
 	public void onRecommendRequest(Message msg){
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
-		List<String> pastFoodsNames = (List<String>) data.get(PAST_FOODS_LIST);
-		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsNames);
+		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
+		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
 		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
 		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
 		Float maxFat = Float.parseFloat( (String) data.get(MAX_FAT));
@@ -344,24 +344,23 @@ public class AppliServer extends AbstractNIOServer{
 		}
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
-		System.out.println(recommendedFoods.size());
-		ArrayList<Food> recommendedFoodsPrinting = new ArrayList<Food>(recommendedFoods.subList(0, 10));
-		for(Food f : recommendedFoodsPrinting){
-			System.out.println(f.toString());
-		}
 		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		recommendedFoods = _recommenderSystem.recommendItems();
-		System.out.println(recommendedFoods.size());
-		for(Food f : recommendedFoods){
-			System.out.println(f.toString());
+		JSONArray jsonFoods = new JSONArray();
+		for(Food food : recommendedFoods){
+			jsonFoods.add(food.toJSON());
 		}
+		JSONObject sendData = new JSONObject();
+		sendData.put(RECOMMENDED_FOOD_LIST, jsonFoods);
+		msg.setJSON(networkJSON(RECOMMEND_REQUEST, sendData));
+		send(msg);
 	}
 
-	private List<Food> changeTypeOfListToFood(List<String> pastFoodsNames){
+	private List<Food> changeTypeOfListToFood(List<String> pastFoodsCodes){
 		List<Food> pastFoods = new ArrayList<Food>();
-		if(pastFoodsNames != null){
-			for(String foodName : pastFoodsNames){
-				pastFoods.add(_foodDatabase.findByName(foodName));
+		if(pastFoodsCodes != null){
+			for(String foodCode : pastFoodsCodes){
+				pastFoods.add(_foodDatabase.findByCode(foodCode));
 			}
 		}
 		return pastFoods;
