@@ -45,13 +45,12 @@ public class RecommendationResultsFragment extends Fragment {
             Log.d("ERROR", " EMPTY RECOMMENDATIONS !!!!");
         }
         if(testObject != null) {
-            Log.d("STTING ROW"," -> TESTROW");
             TableRow testRow = new TableRow(getActivity());
             LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
             testRow.setLayoutParams(params);
             ImageView imageView = new ImageView(getActivity());
             Picasso.with(getActivity())
-                    .load((String)testObject.get(FOOD_URL))
+                    .load((String)testObject.get(FOOD_IMAGE_URL))
                     .resize(330, 330)
                     .transform(new RoundedTransformation(100, 0))
                     .into(imageView);

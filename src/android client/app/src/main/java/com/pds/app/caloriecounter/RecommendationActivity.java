@@ -31,6 +31,8 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
 
+
+
     private FragmentManager manager = getSupportFragmentManager();
     private JSONObject recom_data = new JSONObject();
 
@@ -145,15 +147,16 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     public void onRecommendResults(JSONObject data){
         JSONArray jsonFoods = (JSONArray) data.get(RECOMMENDED_FOOD_LIST);
-        ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
+        _recommendationsResults = new ArrayList<>();
         for (int i = 0; i < jsonFoods.size(); ++i) {
             _recommendationsResults.add((JSONObject) jsonFoods.get(i));
         }
+        Log.d("RECOM LIST",_recommendationsResults.toString());
         replaceFragment(new RecommendationResultsFragment(), "results");
     }
 
     public ArrayList<JSONObject> recommendationsResults(){
-        Log.d("RECOM LIST",_recommendationsResults.toString());
+        Log.d("GET RECOM LIST",_recommendationsResults.toString());
         return _recommendationsResults;
     }
 
