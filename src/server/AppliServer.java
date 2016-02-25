@@ -12,6 +12,8 @@ import nioserver.Message;
 
 import items.User;
 import items.Food;
+import items.CategoryRating;
+
 import dao.DAOFactory;
 import dao.UserDAO;
 import dao.FoodDAO;
@@ -272,6 +274,26 @@ public class AppliServer extends AbstractNIOServer{
 			System.out.println("currUrl: "+currUrl+"\ncurrRank :"+String.valueOf(currRank));
 			Food currFood = _foodDatabase.findByUrl(currUrl);
 			_userprefDatabase.create(currUser.getId(),currFood.getId(), rank);
+
+			try{
+				ArrayList<String> categories =  _categoryRatingDatabase.findCategoriesForFood(currFood);
+				for(String category : categories){
+					CategoryRating categoryRating = _categoryRatingDatabase.findRatedCategory(currUser, category);
+					float newRating; int timesRated;
+					if(categoryRating == null){
+						newRating = rank;
+						timesRated = 1;
+					}
+					else{
+						newRating = (categoryRating.rating() * categoryRating.timesRated() + rank) / (categoryRating.timesRated() + 1);
+						timesRated = categoryRating.timesRated() + 1;
+					}
+					_categoryRatingDatabase.addRatingForCategory(currUser, category, newRating, timesRated);
+				}
+			}catch(DAOException e){
+				System.out.println(Constants.errorMessage(e.getMessage(), this));
+			}
+
 		}
 		//String response = (String) data.get(FOOD_CODE);
 		//JSONObject responseData = new JSONObject();
