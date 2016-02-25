@@ -26,6 +26,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 
 	@Override
 	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){ 
+		System.out.println("User-User: " + Integer.toString(foods.size()));
 		userData = users;
 		currentUser = curUser;
 		dataSize = userData.size();
@@ -116,14 +117,13 @@ public class UserUserStrategy extends CollaborativeStrategy {
 	@Override
 	public ArrayList<Food> recommend(){
 		similarityMatrix = new SimilarityMatrix(dataSize, UserUserStrategy.NEIGHBORHOOD_SIZE);
-
 		if (foodData != null && userData != null && currentUser != null){
 
 			calculateSimilarityMatrix();
 			computeRatingPredictions();
 			sortRatingPredictions();
 			extractRecommendations();
-		}
+			}
 
 		return recommendations;
 		

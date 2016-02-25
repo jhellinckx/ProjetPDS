@@ -5,6 +5,8 @@ import items.Food;
 import items.CategoryRating;
 import items.User;
 import dao.CategoryRatingDAO;
+import static org.calorycounter.shared.Constants.network.*;
+
 
 public class NearestNeighborStrategy extends ContentBasedStrategy {
 	private ArrayList<Food> _foodToFilter;
@@ -49,11 +51,16 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	}
 
 	private Float meanRating(ArrayList<CategoryRating> categoryRatings){
-		Float sum = 0.0f;  // mettre a 2.5 a la fin.
+		Float sum = 0.0f;
 		for(CategoryRating categoryRating : categoryRatings){
 			sum += categoryRating.rating();
+		} 
+		if(categoryRatings.isEmpty()) {
+			return DEFAULT_RATING;
 		}
-		return sum/categoryRatings.size();
+		else{
+			return sum/categoryRatings.size();
+		}
 	}
 
 	public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {

@@ -345,10 +345,16 @@ public class AppliServer extends AbstractNIOServer{
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
 		System.out.println(recommendedFoods.size());
+		ArrayList<Food> recommendedFoodsPrinting = new ArrayList<Food>(recommendedFoods.subList(0, 10));
+		for(Food f : recommendedFoodsPrinting){
+			System.out.println(f.toString());
+		}
 		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
-		recommendedFoods= _recommenderSystem.recommendItems();
+		recommendedFoods = _recommenderSystem.recommendItems();
 		System.out.println(recommendedFoods.size());
-
+		for(Food f : recommendedFoods){
+			System.out.println(f.toString());
+		}
 	}
 
 	private List<Food> changeTypeOfListToFood(List<String> pastFoodsNames){
