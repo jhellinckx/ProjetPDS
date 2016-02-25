@@ -27,8 +27,8 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
-    private static ArrayList<String> _productNames = new ArrayList<String>();
-    private static ArrayList<String> _productCodes = new ArrayList<String>();
+    private ArrayList<String> _productNames = new ArrayList<String>();
+    private ArrayList<String> _productCodes = new ArrayList<String>();
 
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
@@ -95,15 +95,15 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
+        }else if(request.equals(UPDATE_DATA_REQUEST)){
+            String gender = (String) data.get(UPDATE_DATA_GENDER);
+            RecommendationConstraintsFragment frag = new RecommendationConstraintsFragment();
+            Bundle b = new Bundle();
+            b.putString("gender", gender);
+            frag.setArguments(b);
+            replaceFragment(frag, "constraints");
         }
 
-    }
-
-    private void sendData(String sport, String duration){
-        JSONObject data = new JSONObject();
-        data.put(SPORT_NAME, sport);
-        data.put(SPORT_DURATION, duration);
-        send(networkJSON(CHOSEN_SPORT_REQUEST, data));
     }
 
     private void addConstraintsToJSON(String energy, String fat, String prot, String carbo){
@@ -150,7 +150,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         else{
             recom_data.put(SPORT_NAME, null);
         }
-        replaceFragment(new RecommendationConstraintsFragment(), "constraints");
+        send(networkJSON(DATA_REQUEST, new JSONObject()));
     }
 
     public void onResultsClick(String energy, String fat, String prot, String carbo){
@@ -186,14 +186,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
             Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();
         }
-    }
-
-    @Override
-    protected void onPause(){
-
-        _productNames.clear();
-        _productCodes.clear();
-        super.onPause();
     }
 
 }

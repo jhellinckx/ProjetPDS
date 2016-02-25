@@ -112,6 +112,7 @@ public final class Constants {
 		public static final String UPDATE_DATA_REQUEST = "r_updatedata";
 		public static final String UPDATE_DATA_GENDER = "d_updatadata_gender";
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
+		public static final String DATA_REQUEST = "r_data";
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;
@@ -151,6 +152,12 @@ public final class Constants {
 
 		/* NearestNeighbor values */
 		public static final float DEFAULT_RATING = 2.5f;
+
+		/* Possible Gender */
+		public static final String MAN = "M";
+		public static final String WOMAN = "F";
+		public static final String CHILD = "C";
+		public static final String TEEN = "T";
 
 
 		public static String local_ip(){

@@ -26,6 +26,11 @@ public class PersonalDataActivity extends HomeActivity {
     private Spinner agebracket = null;
     private Button update = null;
     private EditText weight = null;
+    private EditText height = null;
+
+    private static int _height = -1;
+    private static float _weight = -1F;
+    private static int id = 0;
 
     private void initButton() {
 
@@ -35,6 +40,9 @@ public class PersonalDataActivity extends HomeActivity {
 
             @Override
             public void onClick(View v){
+                _height = Integer.parseInt(height.getText().toString());
+                _weight = Float.parseFloat(weight.getText().toString());
+                id = (int) agebracket.getSelectedItemId();
 
                 sendData((String) agebracket.getSelectedItem(), weight.getText().toString());
 
@@ -48,7 +56,6 @@ public class PersonalDataActivity extends HomeActivity {
 
     private ArrayList<String> createCategoriesList(){
         ArrayList<String> categories = new ArrayList<String>();
-        categories.add("Baby");
         categories.add("Child");
         categories.add("Teen");
         categories.add("Woman");
@@ -70,6 +77,7 @@ public class PersonalDataActivity extends HomeActivity {
 
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         agebracket.setAdapter(ageAdapter);
+        agebracket.setSelection(id);
 
     }
 
@@ -78,6 +86,13 @@ public class PersonalDataActivity extends HomeActivity {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_personal,frameLayout);
         weight = (EditText) v.findViewById(R.id.data_weight);
+        height = (EditText) v.findViewById(R.id.data_height);
+        if(_weight >= 0){
+            weight.setText(Float.toString(_weight));
+        }
+        if (_height >= 0){
+            height.setText(Integer.toString(_height));
+        }
 
         initSpinner();
         initButton();

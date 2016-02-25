@@ -70,10 +70,33 @@ public class RecommendationConstraintsFragment extends Fragment {
 
     }
 
+    private int computeMaxEnergy(){
+        Bundle b = getArguments();
+        String gender = b.getString("gender");
+        float max_energy;
+        switch (gender){
+            case MAN:
+                max_energy = MEN_DAILY_ENERGY;
+                break;
+            case WOMAN:
+                max_energy = WOMEN_DAILY_ENERGY;
+                break;
+            case TEEN:
+                max_energy = TEEN_DAILY_ENERGY;
+                break;
+            default:
+                max_energy = CHILD_DAILY_ENERGY;
+                break;
+
+        }
+        return (int) ((max_energy/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY);
+
+    }
+
     private SeekBar updateSeekBarAndText(SeekBar bar){
         EditText text = null;
         if (bar.getId() == R.id.bar_cal){
-            bar.setMax((int)( (CHILD_DAILY_ENERGY/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY));
+            bar.setMax(computeMaxEnergy());
             text = _energy;
         }
         else if (bar.getId() == R.id.bar_fat){

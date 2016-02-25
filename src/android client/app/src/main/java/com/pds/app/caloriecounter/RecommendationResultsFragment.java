@@ -75,13 +75,6 @@ public class RecommendationResultsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recom_results, container, false);
         Activity activity = getActivity();
         initRecommendationList(view, activity);
-        /*Button next = (Button) view.findViewById(R.id.restart_process);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                restartProcess();
-            }
-        }); */
 
         return view;
     }

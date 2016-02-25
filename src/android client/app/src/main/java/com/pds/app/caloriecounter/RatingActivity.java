@@ -18,6 +18,8 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 
+import com.squareup.picasso.Picasso;
+
 import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -135,6 +137,8 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     }
 
     public void refreshGridView(){
+        Picasso p = Picasso.with(RatingActivity.this);
+        p.cancelTag("tag");
         resetRatings();
         setUpUrls();
     }
