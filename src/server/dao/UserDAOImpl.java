@@ -122,6 +122,31 @@ public class UserDAOImpl implements UserDAO {
         return messages;
     }
 
+    @Override
+    public List<User> findAllUsers() throws DAOException {
+        List<User> users = new ArrayList<User>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_ALL, false);
+            resultSet = preparedStatement.executeQuery();
+            /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
+            while ( resultSet.next() ) {
+                users.add(map(resultSet));
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return users;
+    }
+
     /* Implementation de la methode create() definie dans l'interface UserDao */
     @Override
     public boolean create( User user ) throws IllegalArgumentException, DAOException {

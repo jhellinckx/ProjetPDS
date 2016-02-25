@@ -12,6 +12,8 @@ public interface UserDAO {
     User findById (Long id ) throws DAOException;
     
     List<String> findAll() throws DAOException; /* retourne une simple list de tous les user pour pouvoir print, utilise pr les test */
+
+    List<User> findAllUsers() throws DAOException;
     
     void delete( User user ) throws DAOException;
 

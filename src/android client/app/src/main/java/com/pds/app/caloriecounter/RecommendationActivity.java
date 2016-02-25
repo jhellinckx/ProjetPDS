@@ -110,6 +110,9 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         if (!foodnames.isEmpty()) {
             recom_data.put(PAST_FOODS_LIST, foodnames);
         }
+        else {
+            recom_data.put(PAST_FOODS_LIST, null);
+        }
 
         if (_sportsname.size() == SPORTS_LIST_SIZE){
             RecommendationSportFragment frag = new RecommendationSportFragment();
@@ -124,9 +127,12 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     }
 
     public void onNextSportClick(Spinner sports, EditText duration){
-        if(duration.getText().toString() != ""){
+        if(!duration.getText().toString().isEmpty()){
             recom_data.put(SPORT_NAME, (String) sports.getSelectedItem());
             recom_data.put(SPORT_DURATION, duration.getText().toString());
+        }
+        else{
+            recom_data.put(SPORT_NAME, null);
         }
         replaceFragment(new RecommendationConstraintsFragment(), "constraints");
     }

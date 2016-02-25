@@ -75,7 +75,6 @@ public class UserUserStrategy extends CollaborativeStrategy {
 
 
 	private float computeRating(Food food){
-		System.out.println("compute");
 		float meanRankCurrUser = currentUser.getMeanRank();
 		float stdDevCurrUser = currentUser.getStdDeviation();
 		float predictedRank;

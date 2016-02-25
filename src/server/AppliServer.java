@@ -20,8 +20,12 @@ import dao.SportsDAO;
 import dao.CategoryRatingDAO;
 import dao.DAOException;
 
+import recommender.RecommenderSystem;
 import recommender.HybridationStrategy;
+import recommender.NearestNeighborStrategy;
+import recommender.UserUserStrategy;
 import recommender.CascadeStrategy;
+import recommender.KnowledgeBasedFilter;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -39,7 +43,8 @@ public class AppliServer extends AbstractNIOServer{
 	private CategoryRatingDAO _categoryRatingDatabase;
 
 	/* Recommendations fields */
-	private HybridationStrategy _hybridStrategy;
+	private KnowledgeBasedFilter _knowledgeBased;
+	private RecommenderSystem _recommenderSystem;
 
 	public AppliServer(){
 		super();
@@ -50,7 +55,10 @@ public class AppliServer extends AbstractNIOServer{
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 
-		_hybridStrategy = new CascadeStrategy();
+		_recommenderSystem = new RecommenderSystem(new UserUserStrategy(_userprefDatabase));
+		//_hybridStrategy = new CascadeStrategy();
+		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase);
+
 	}
 
 	public User getUser(Message msg){
@@ -88,7 +96,7 @@ public class AppliServer extends AbstractNIOServer{
 			onUpdateDataRequest(msg);
 		}
 		else if(request.equals(RECOMMEND_REQUEST)){
-			onShotgunRecommendRequest(msg);
+			onRecommendRequest(msg);
 		}
 	}
 
@@ -315,6 +323,42 @@ public class AppliServer extends AbstractNIOServer{
 		else if (gender.equals("Teen")) {return "T";}
 		else if (gender.equals("Child")) {return "K";} //kid
 		else{return "B";} //aurélien remove baby des age bracket please
+	}
+
+	public void onRecommendRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		List<String> pastFoodsNames = (List<String>) data.get(PAST_FOODS_LIST);
+		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsNames);
+		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
+		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
+		Float maxFat = Float.parseFloat( (String) data.get(MAX_FAT));
+		Float maxProt = Float.parseFloat( (String) data.get(MAX_PROT));
+		Float maxCarbo = Float.parseFloat( (String) data.get(MAX_CARBOHYDRATES));
+		String sportName = (String) data.get(SPORT_NAME);
+		if(sportName != null){
+			String sportDurationString = (String) data.get(SPORT_DURATION);
+			Integer sportDuration = Integer.parseInt(sportDurationString);
+			Float jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight());
+			maxEnergy = maxEnergy + jouleFromSport;
+		}
+		_knowledgeBased.updateUser(user);
+		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
+		System.out.println(recommendedFoods.size());
+		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
+		recommendedFoods= _recommenderSystem.recommendItems();
+		System.out.println(recommendedFoods.size());
+
+	}
+
+	private List<Food> changeTypeOfListToFood(List<String> pastFoodsNames){
+		List<Food> pastFoods = new ArrayList<Food>();
+		if(pastFoodsNames != null){
+			for(String foodName : pastFoodsNames){
+				pastFoods.add(_foodDatabase.findByName(foodName));
+			}
+		}
+		return pastFoods;
 	}
 
 	public static void main(String[] args){

@@ -13,7 +13,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	private CategoryRatingDAO _daoCategoryRating;
 	private ArrayList<User> _otherUsers;
 
-	NearestNeighborStrategy(CategoryRatingDAO daoCategoryRating){
+	public NearestNeighborStrategy(CategoryRatingDAO daoCategoryRating){
 		_daoCategoryRating = daoCategoryRating;
 	}
 
@@ -35,7 +35,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 		}
 		Map<Food, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
 		List<Food> recommendations = new ArrayList<Food>(sortedRatingPredictions.keySet());
-		return (ArrayList<Food>)recommendations.subList(0, _recommendations);
+		return new ArrayList<Food>(recommendations.subList(0, _recommendations));
 	}
 
 	private Float prediction(Food food){
@@ -49,7 +49,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	}
 
 	private Float meanRating(ArrayList<CategoryRating> categoryRatings){
-		Float sum = 0.0f;
+		Float sum = 0.0f;  // mettre a 2.5 a la fin.
 		for(CategoryRating categoryRating : categoryRatings){
 			sum += categoryRating.rating();
 		}

@@ -9,13 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.Math;
 
 
 public class SportsDAOImpl implements SportsDAO{
 
-	private static final int LOW_WEIGHT = 60;
-	private static final int MID_WEIGHT = 70;
-	private static final int HIGH_WEIGHT = 85;
+	private static final float LOW_WEIGHT = 60;
+	private static final float MID_WEIGHT = 70;
+	private static final float HIGH_WEIGHT = 85;
 	private static final String KEY_NAME = "joule_";
 	private static final String WEIGHT_UNIT = "kg";
 
@@ -58,7 +59,7 @@ public class SportsDAOImpl implements SportsDAO{
 	*   This method takes a weight and return one of the 3 constants defined above.
 	*/
 
-	private int getClosestWeight(int weight){
+	private float getClosestWeight(float weight){
 
 		if (weight <= LOW_WEIGHT) return LOW_WEIGHT;
 		else if (weight >= HIGH_WEIGHT) return HIGH_WEIGHT;
@@ -76,14 +77,14 @@ public class SportsDAOImpl implements SportsDAO{
 		return HIGH_WEIGHT;
 	}
 
-	private String weightToKey(int weight){
+	private String weightToKey(float weight){
 		String key = KEY_NAME;
-		key += Integer.toString(weight) + WEIGHT_UNIT;
+		key += Integer.toString(Math.round(weight)) + WEIGHT_UNIT;
 		return key;
 	}
 
 	@Override
-	public Float findJouleByNameAndWeight(String name, int weight) throws DAOException{
+	public Float findJouleByNameAndWeight(String name, float weight) throws DAOException{
 		
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;

@@ -69,8 +69,10 @@ public class RecommendationPastFragment extends Fragment {
     }
 
     public void startScan(){
-        IntentIntegrator scanIntegrator = new IntentIntegrator(getActivity());
-        scanIntegrator.initiateScan();
+        String scanContent = "3038350013002";
+        ((RecommendationActivity)getActivity()).sendCode(scanContent);
+        //IntentIntegrator scanIntegrator = new IntentIntegrator(getActivity());
+        //scanIntegrator.initiateScan();
     }
 
     public interface OnItemClickListener {
