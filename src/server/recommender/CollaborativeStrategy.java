@@ -35,6 +35,7 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		ratingPredictions = new ArrayList<FoodRatingPair>();
 		ratingMatrix = new RatingMatrix(pref);
 		recommendationsRequired = 0;
+		recommendations = new ArrayList<Food>();
 	}
 
 	@Override

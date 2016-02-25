@@ -6,6 +6,7 @@ import items.Food;
 import items.User;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /* 
  * Class that filters the (for the moment) openFoodFact DB to select only items with the correct amount of needs depending on the currentUser gender
@@ -43,7 +44,7 @@ public class KnowledgeBasedFilter {
 
 	private void previousEatenAliments(List<Food> previousAliments) {
 
-		if (previousAliments != null) {
+		if (!previousAliments.isEmpty()) {
 			for (Food aliment : previousAliments) {
 				energyNeeded = energyNeeded - aliment.getTotalEnergy();
 				fatNeeded = fatNeeded - aliment.getTotalFat();
@@ -56,14 +57,14 @@ public class KnowledgeBasedFilter {
 		}
 	}
 
-	private List<Food> recommendMethod(List<Food> previousAliments) {
-
+	private ArrayList<Food> recommendMethod(List<Food> previousAliments) {
 		previousEatenAliments(previousAliments);
-		return foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded);
+		ArrayList<Food> results = new ArrayList<Food>(foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded));
+		return results;
 	}
 
 
-	public List<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn) {
+	public ArrayList<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn) {
 
 		energyNeeded = energySupBorn;
 		fatNeeded = fatSupBorn;

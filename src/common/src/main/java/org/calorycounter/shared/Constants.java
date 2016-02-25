@@ -121,9 +121,6 @@ public final class Constants {
 		public static final String MAX_PROT = "d_maxprot";
 		public static final String MAX_CARBOHYDRATES = "d_maxcarbo";
 
-		
-
-
 		/*
 		Human's daily intake requirements
 		Info's from : http://www.mydailyintake.net/daily-intake-levels/
@@ -146,6 +143,8 @@ public final class Constants {
 		public static final float TOTAL_MEAL_PER_DAY = 4;
 		public static final float CAL_TO_JOULE_FACTOR = 4.1868f;
 
+		/* NearestNeighbor values */
+		public static final float DEFAULT_RATING = 2.5f;
 
 
 		public static String local_ip(){
