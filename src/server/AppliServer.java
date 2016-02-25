@@ -100,6 +100,9 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(RECOMMEND_REQUEST)){
 			onRecommendRequest(msg);
 		}
+		else if(request.equals(DATA_REQUEST)){
+			onDataRequest(msg);
+		}
 	}
 
 	 public ArrayList<Food> randomRecommend(FoodDAO dbFood){
@@ -343,8 +346,7 @@ public class AppliServer extends AbstractNIOServer{
 		if(gender.equals("Woman")) {return "F";}
 		else if (gender.equals("Man")) {return "M";}
 		else if (gender.equals("Teen")) {return "T";}
-		else if (gender.equals("Child")) {return "K";} //kid
-		else{return "B";} //aurélien remove baby des age bracket please
+		else {return "C";}
 	}
 
 	public void onRecommendRequest(Message msg){
@@ -366,10 +368,10 @@ public class AppliServer extends AbstractNIOServer{
 		}
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
-		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
-		recommendedFoods = _recommenderSystem.recommendItems();
+		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
+		//recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
-		for(Food food : recommendedFoods){
+		for(Food food : recommendedFoods.subList(0,10)){
 			jsonFoods.add(food.toJSON());
 		}
 		JSONObject sendData = new JSONObject();
@@ -386,6 +388,16 @@ public class AppliServer extends AbstractNIOServer{
 			}
 		}
 		return pastFoods;
+	}
+
+	public void onDataRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = new JSONObject();
+		data.put(UPDATE_DATA_GENDER, user.getGender());
+		data.put(UPDATE_DATA_WEIGHT, user.getWeight());
+		msg.setJSON(networkJSON(UPDATE_DATA_REQUEST, data));
+		send(msg);
+
 	}
 
 	public static void main(String[] args){
