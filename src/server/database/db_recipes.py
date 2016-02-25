@@ -142,7 +142,7 @@ def add_recipes_in_db():
 
 	ingredient_id_foreign_key_command = (
 		"ALTER TABLE `RecipesIngredientsLists` ADD FOREIGN KEY (ingredient_id)\
-		REFERENCES `Ingredients` (`id`)")
+		REFERENCES `RecipesIngredients` (`id`)")
 
 	recipe_id_foreign_key_command = (
 		"ALTER TABLE `RecipesIngredientsLists` ADD FOREIGN KEY (recipe_id)\
@@ -210,6 +210,11 @@ def add_recipes_in_db():
 	cnx.close()
 
 def execute():
+	drop_added_tables_in_db()
+	add_ingredients_in_db()
+	add_recipes_in_db()
+
+if __name__ == "__main__":
 	drop_added_tables_in_db()
 	add_ingredients_in_db()
 	add_recipes_in_db()
