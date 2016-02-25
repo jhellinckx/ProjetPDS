@@ -32,6 +32,7 @@ import static org.calorycounter.shared.Constants.network.*;
 public class RecommendationResultsFragment extends Fragment {
 
     private OnItemClickListener listener;
+    private int id = 0;
 
     private ArrayList<JSONObject> recommendations;
     private TableLayout recomTable;
@@ -51,6 +52,8 @@ public class RecommendationResultsFragment extends Fragment {
             if(!url.isEmpty() && !productName.isEmpty()) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f);
                 TableRow recomRow = new TableRow((getActivity()));
+                setClickListener(recomRow);
+                ++id;
                 ImageView imageView = new ImageView(getActivity());
                 Picasso.with(getActivity())
                         .load(url)
@@ -59,14 +62,27 @@ public class RecommendationResultsFragment extends Fragment {
                         .into(imageView);
                 TextView name = new TextView(getActivity());
                 name.setText(productName);
-
-                /* Add views to the row then add row to table */
                 recomRow.addView(imageView);
                 recomRow.addView(name);
                 recomTable.addView(recomRow);
             }
         }
 
+    }
+
+    private void showInfoFragment(int id){
+        JSONObject info = recommendations.get(id);
+        System.out.println((String)info.get(FOOD_NAME));
+    }
+
+    private void setClickListener(TableRow row){
+        row.setId(id);
+        row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showInfoFragment(v.getId());
+            }
+        });
     }
 
     @Override
