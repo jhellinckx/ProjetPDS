@@ -45,7 +45,6 @@ public class KnowledgeBasedFilter {
 	private void previousEatenAliments(List<Food> previousAliments) {
 		if (!previousAliments.isEmpty()) {
 			for (Food aliment : previousAliments) {
-				System.out.println(aliment.getTotalEnergy());
 				energyNeeded = energyNeeded - aliment.getTotalEnergy();
 				fatNeeded = fatNeeded - aliment.getTotalFat();
 				proteinsNeeded = proteinsNeeded - aliment.getTotalProteins();
