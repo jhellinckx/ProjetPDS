@@ -147,10 +147,25 @@ def selectInfoFromDbAndAddNewInfos():
 	cnx.close()
 
 def write_to_file():
+	f = None
+	try:
+		f = open(modified_foods_file,"r")
+	except:
+		f.close()
+		f = None
+		sys.stdout.write("No file to update. Starting fresh ! (40+ min !)\n")
+	
+	modified_foods_to_update = []
+	last_food_id = 1
+	if f != None:
+		modified_foods_to_update = ast.literal_eval(f.read())
+		last_food_id = int(modified_foods_to_update[-1][0])
+		f.close()
+
 	selectInfoFromFoodCommand = (
 		"SELECT `id_food`, `quantity`, `energy_100g`, `fat_100g`, `proteins_100g`,`saturated_fat_100g`, `carbohydrates_100g`, `sugars_100g`, `sodium_100g`"
 		"FROM `Food`"
-		"WHERE `energy_100g` > 0;"
+		"WHERE `energy_100g` > 0 AND id_food > %s;"%str(last_food_id)
 		)
 
 	(username,password) = db_params()
@@ -169,7 +184,7 @@ def write_to_file():
 	cnx.close()
 
 	# Write modified foods to file
-	all_modified_foods = []
+	all_modified_foods = modified_foods_to_update
 	i=0
 	for (id_food, quantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g) in all_foods:
 		correctQuantity = changeDimension(quantity)
@@ -177,13 +192,16 @@ def write_to_file():
 			correctQuantity=correctQuantity/100 #because we have energy, fat,... for 100g/ml in db
 			all_modified_foods.append([int(id_food), float(energy_100g)*correctQuantity, float(fat_100g)*correctQuantity, float(proteins_100g)*correctQuantity, float(saturated_fat_100g)*correctQuantity, float(carbohydrates_100g)*correctQuantity, float(sugars_100g)*correctQuantity, float(sodium_100g)*correctQuantity])
 		i+=1
-		sys.stdout.write(str(id_food)+"\n")
-	f = open(modified_foods_file,"w+");
+		sys.stdout.write(str(id_food)+"/"+str(all_foods[-1][0])+"\n")
+
+	f = open(modified_foods_file,"w+")
 	f.write(str(all_modified_foods));
 	cursor.close()
 	cnx.close()
+	f.close()
 
-def read_and_update_db(f):
+def read_and_update_db():
+	f = open(modified_foods_file, "r")
 	addInfoIntoColumnCommand = (
 		"UPDATE `Food`"
 		"SET `total_energy` = %s , `total_fat` = %s , `total_proteins` = %s , `total_saturated_fat` = %s, `total_carbohydrates` = %s , `total_sugars` = %s , `total_sodium` = %s"
@@ -205,6 +223,8 @@ def read_and_update_db(f):
 	cnx.commit()
 	cursor.close()
 	cnx.close()
+
+	f.close()
 
 
 def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g):
@@ -231,20 +251,12 @@ def execute(first_time):
 	if not first_time:
 		addOrDeleteColumnsToTable(True) #delete columns
 	addOrDeleteColumnsToTable(False) #add columns
-	selectInfoFromDbAndAddNewInfos()
+	write_to_file()
+	read_and_update_db()
 
 if __name__ == "__main__":
-	f = None
-	try:
-		f = open(modified_foods_file, "r")
-	except Error as err:
-		sys.stdout.write(err+'\n')
-		f = None
-		
-	if f == None : 
-		write_to_file()
-	else :
-		read_and_update_db(f)
-		f.close()
+	addOrDeleteColumnsToTable(False)
+	write_to_file()
+	read_and_update_db()
 
 

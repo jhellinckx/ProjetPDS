@@ -1,5 +1,5 @@
 DROP DATABASE db_appli;
-CREATE DATABASE db_appli;
+CREATE DATABASE db_appli CHARACTER SET latin1;
 USE db_appli;
 
 
@@ -181,7 +181,7 @@ CREATE TABLE db_appli.Food(
 )ENGINE=INNODB;
 
 
-LOAD DATA LOCAL INFILE '/home/aurelien/Téléchargements/en.openfoodfacts.org.products.csv' #CHEMIN à modif
+LOAD DATA LOCAL INFILE '/Users/jhellinckx/Downloads/en.openfoodfacts.org.products.csv' #CHEMIN à modif
 INTO TABLE Food
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
