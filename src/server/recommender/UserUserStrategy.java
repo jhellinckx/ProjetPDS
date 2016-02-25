@@ -26,7 +26,6 @@ public class UserUserStrategy extends CollaborativeStrategy {
 
 	@Override
 	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){ 
-		System.out.println("User-User: " + Integer.toString(foods.size()));
 		userData = users;
 		currentUser = curUser;
 		dataSize = userData.size();

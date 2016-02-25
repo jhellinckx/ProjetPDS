@@ -28,6 +28,8 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
     private static ArrayList<String> _productNames = new ArrayList<String>();
+    private static ArrayList<String> _productCodes = new ArrayList<String>();
+
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
 
@@ -49,6 +51,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
         Bundle b = new Bundle();
         b.putStringArrayList("productNames",_productNames);
+        b.putStringArrayList("productCodes", _productCodes);
         FragmentTransaction transaction = manager.beginTransaction();
         RecommendationPastFragment pastFrag = new RecommendationPastFragment();
         pastFrag.setArguments(b);
@@ -88,6 +91,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 RecommendationPastFragment frag = new RecommendationPastFragment();
                 Bundle b = new Bundle();
                 b.putStringArrayList("productNames",_productNames);
+                b.putStringArrayList("productCodes", _productCodes);
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
@@ -111,17 +115,20 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     public void sendCode(String code) {
         JSONObject data = new JSONObject();
+        _productCodes.add(code);
         data.put(FOOD_CODE, code);
         send(networkJSON(FOOD_CODE_REQUEST, data));
     }
 
-    public void onNextPastClick(List<String> foodnames){
-        if (!foodnames.isEmpty()) {
-            recom_data.put(PAST_FOODS_LIST, foodnames);
+    public void onNextPastClick(List<String> foodCodes){
+
+        if (!foodCodes.isEmpty()) {
+            recom_data.put(PAST_FOODS_LIST, foodCodes);
         }
         else {
             recom_data.put(PAST_FOODS_LIST, null);
         }
+
 
         if (_sportsname.size() == SPORTS_LIST_SIZE){
             RecommendationSportFragment frag = new RecommendationSportFragment();
@@ -157,12 +164,12 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         for (int i = 0; i < jsonFoods.size(); ++i) {
             _recommendationsResults.add((JSONObject) jsonFoods.get(i));
         }
-        Log.d("RECOM LIST",_recommendationsResults.toString());
+        Log.d("RECOM LIST", _recommendationsResults.toString());
         replaceFragment(new RecommendationResultsFragment(), "results");
     }
 
     public ArrayList<JSONObject> recommendationsResults(){
-        Log.d("GET RECOM LIST",_recommendationsResults.toString());
+        Log.d("GET RECOM LIST", _recommendationsResults.toString());
         return _recommendationsResults;
     }
 
@@ -179,6 +186,14 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
             Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();
         }
+    }
+
+    @Override
+    protected void onPause(){
+
+        _productNames.clear();
+        _productCodes.clear();
+        super.onPause();
     }
 
 }
