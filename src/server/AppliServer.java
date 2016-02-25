@@ -310,10 +310,11 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	private String getGenderDbId(String gender){
-		if(gender == "Woman") {return "F";}
-		else if (gender == "Man") {return "M";}
-		else if (gender == "Teen") {return "T";}
-		else if (gender == "Child") {return "K";} //kid
+
+		if(gender.equals("Woman")) {return "F";}
+		else if (gender.equals("Man")) {return "M";}
+		else if (gender.equals("Teen")) {return "T";}
+		else if (gender.equals("Child")) {return "K";} //kid
 		else{return "B";} //aurélien remove baby des age bracket please
 	}
 

@@ -228,7 +228,7 @@ def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_
 	cnx.close()
 
 def execute(first_time):
-	if first_time:
+	if not first_time:
 		addOrDeleteColumnsToTable(True) #delete columns
 	addOrDeleteColumnsToTable(False) #add columns
 	selectInfoFromDbAndAddNewInfos()
