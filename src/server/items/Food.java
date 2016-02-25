@@ -1,8 +1,9 @@
 package items;
 import org.json.simple.JSONObject;
+import org.calorycounter.shared.Constants;
 
 import static org.calorycounter.shared.Constants.network.*;
-
+import java.io.UnsupportedEncodingException;
 public class Food {
 	
 	private Long      id;
@@ -40,7 +41,15 @@ public class Food {
     }
     
     public String getProductName() {
-        return productName;
+        String repr = productName;
+        try{
+            byte[] b_l1 = repr.getBytes("ISO-8859-1");
+            String repr_utf = new String(b_l1, "UTF-8");
+            repr = repr_utf;
+        }catch(UnsupportedEncodingException e){
+            System.out.println(Constants.errorMessage(e.getMessage(), this));
+        }
+        return repr;
     }
     public void setProductName( String productName ) {
         this.productName = productName;
@@ -130,7 +139,8 @@ public class Food {
         repr.put(FOOD_ID, id);
         repr.put(FOOD_URL, url);
         repr.put(FOOD_CODE, code);
-        repr.put(FOOD_NAME, productName);
+        
+        repr.put(FOOD_NAME, getProductName());
         repr.put(FOOD_IMAGE_URL, image_url);
         repr.put(FOOD_TOTAL_ENERGY, total_energy);
         repr.put(FOOD_TOTAL_FAT, total_fat);

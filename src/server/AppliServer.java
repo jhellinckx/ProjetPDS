@@ -10,6 +10,8 @@ import org.calorycounter.shared.Constants;
 import nioserver.AbstractNIOServer;
 import nioserver.Message;
 
+import java.io.UnsupportedEncodingException;
+
 import items.User;
 import items.Food;
 import items.CategoryRating;
@@ -73,6 +75,7 @@ public class AppliServer extends AbstractNIOServer{
 			throw new IOException("Network message has to contain a " +
 				REQUEST_TYPE +" key and a " + DATA + " key.");
 		String request = (String) received.get(REQUEST_TYPE);
+		User usr = getUser(msg);
 		if(request.equals(LOG_IN_REQUEST)){
 			onLoginRequest(msg);
 		}
@@ -82,23 +85,35 @@ public class AppliServer extends AbstractNIOServer{
 		else if(request.equals(SIGN_UP_REQUEST)){
 			onSignupRequest(msg);
 		}
-		else if(request.equals(FOOD_CODE_REQUEST)){
-			onFoodcodeRequest(msg);
-		}
-		else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
-			onRandomUnrankedFoodsRequest(msg);
-		}
-		else if(request.equals(SEND_RATINGS_REQUEST)){
-			onSendRatingRequest(msg);
-		}
-		else if(request.equals(SPORTS_LIST_REQUEST)){
-			onSportsListRequest(msg);
-		}
-		else if(request.equals(UPDATE_DATA_REQUEST)){
-			onUpdateDataRequest(msg);
-		}
-		else if(request.equals(RECOMMEND_REQUEST)){
-			onRecommendRequest(msg);
+		else if(usr != null){
+			/* On ajoute un cas particulier pour pizza-man lorsqu'il demande des
+			unranked (unrated) foods, c'est moche mais c'est un quick set-up
+			pour la présentation. On fait en soirte de lui renvoyer des foods déterminées à
+			l'avance (des pizzas en somme)  pour qu'il les note. ensuite on illustre à la démo
+			que le rating fonctionne en lançant un recommend qui devrait envoyer des trucs
+			proches de pizzas */
+			if(usr.getUsername().equals(PIZZA_MAN_USERNAME) && request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
+				onPizzamanUnrankedFood(msg);
+			}
+			else if(request.equals(FOOD_CODE_REQUEST)){
+				onFoodcodeRequest(msg);
+			}
+			else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+				onRandomUnrankedFoodsRequest(msg);
+			}
+			else if(request.equals(SEND_RATINGS_REQUEST)){
+				onSendRatingRequest(msg);
+			}
+			else if(request.equals(SPORTS_LIST_REQUEST)){
+				onSportsListRequest(msg);
+			}
+			else if(request.equals(UPDATE_DATA_REQUEST)){
+				onUpdateDataRequest(msg);
+			}
+			else if(request.equals(RECOMMEND_REQUEST)){
+				onRecommendRequest(msg);
+			}
+			
 		}
 	}
 
@@ -208,6 +223,15 @@ public class AppliServer extends AbstractNIOServer{
 		send(msg);
 	}
 
+	public void onPizzamanUnrankedFood(Message msg){
+		JSONObject responseData = new JSONObject();
+		ArrayList<Long> foodIds = new ArrayList<Long>(PIZZA_MAN_UNRANKED_FOODS);
+		List<Food> foods = _foodDatabase.findByIds(foodIds);
+		makeJSON_onRandomUnrankedFoodRequest(foods, responseData);
+		msg.setJSON(networkJSON(RANDOM_UNRANKED_FOODS_REQUEST, responseData));
+		send(msg);
+	}
+
 	public void onRandomUnrankedFoodsRequest(Message msg){
 		JSONObject responseData = new JSONObject();
 		ArrayList<Long> foodIds = new ArrayList<Long>();
@@ -271,10 +295,10 @@ public class AppliServer extends AbstractNIOServer{
 			currUrl = (String) data.get(FOOD_IMAGE_URL+String.valueOf(i));
 			currRank = (double) data.get(FOOD_RATING+String.valueOf(i));
 			float rank = (float) currRank;
-			System.out.println("currUrl: "+currUrl+"\ncurrRank :"+String.valueOf(currRank));
+			
 			Food currFood = _foodDatabase.findByUrl(currUrl);
 			_userprefDatabase.create(currUser.getId(),currFood.getId(), rank);
-
+			System.out.println("currUrl: "+currUrl+"\ncurrRank :"+String.valueOf(currRank)+"\ncurrFood:"+currFood.getProductName());
 			try{
 				ArrayList<String> categories =  _categoryRatingDatabase.findCategoriesForFood(currFood);
 				for(String category : categories){

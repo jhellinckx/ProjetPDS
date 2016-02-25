@@ -8,6 +8,9 @@ import java.security.ProtectionDomain;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -18,6 +21,9 @@ public final class Constants {
 
 	/* Network related constants, used to normalise communication */
 	public static final class network {
+		/* PIZZA MAN CONFIG YO */
+		public static final String PIZZA_MAN_USERNAME = "pizza_man";
+		public static final List<Long> PIZZA_MAN_UNRANKED_FOODS = Arrays.asList(new Long(71L), new Long(784L), new Long(1343L),new Long(6708L), new Long(6722L), new Long(7626), new Long(7299L), new Long(7280L), new Long(5940L)); 
 		/* Network config */
 		public static final String LOCALHOST = "127.0.0.1";
 		public static final String LOCALHOST_STRING = "localhost";
