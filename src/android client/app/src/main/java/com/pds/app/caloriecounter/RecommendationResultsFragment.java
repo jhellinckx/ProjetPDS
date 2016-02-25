@@ -5,16 +5,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -37,26 +40,28 @@ public class RecommendationResultsFragment extends Fragment {
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
         recomTable = (TableLayout) v.findViewById(R.id.resultsview);
 
-        JSONObject testObject = null;
-        if(! recommendations.isEmpty()) {
-            testObject = recommendations.get(0);
+        for(JSONObject recommendation : recommendations){
+            String url = (String)recommendation.get(FOOD_IMAGE_URL);
+            String productName = (String)recommendation.get(FOOD_NAME);
+            if(!url.isEmpty() && !productName.isEmpty()) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f);
+                TableRow recomRow = new TableRow((getActivity()));
+                ImageView imageView = new ImageView(getActivity());
+                Picasso.with(getActivity())
+                        .load(url)
+                        .resize(230, 230)
+                        .transform(new RoundedTransformation(100, 0))
+                        .into(imageView);
+                TextView name = new TextView(getActivity());
+                name.setText(productName);
+
+                /* Add views to the row then add row to table */
+                recomRow.addView(imageView);
+                recomRow.addView(name);
+                recomTable.addView(recomRow);
+            }
         }
-        else{
-            Log.d("ERROR", " EMPTY RECOMMENDATIONS !!!!");
-        }
-        if(testObject != null) {
-            TableRow testRow = new TableRow(getActivity());
-            LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-            testRow.setLayoutParams(params);
-            ImageView imageView = new ImageView(getActivity());
-            Picasso.with(getActivity())
-                    .load((String)testObject.get(FOOD_IMAGE_URL))
-                    .resize(330, 330)
-                    .transform(new RoundedTransformation(100, 0))
-                    .into(imageView);
-            testRow.addView(imageView);
-            recomTable.addView(testRow);
-        }
+
     }
 
     @Override
