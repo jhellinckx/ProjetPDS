@@ -32,6 +32,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		dataSize = userData.size();
 		foodData = foods;
 		recommendationsRequired = nbRecom;
+		resetData();
 	}
 
 	public double computeConstrainedPearsonCorrelation(User u, User v){
