@@ -114,7 +114,6 @@ public class AppliServer extends AbstractNIOServer{
             }
             if(food != null) randomFoods.add(food);
         }
-        System.out.println(randomFoods.toString());
         return randomFoods;
     }
 

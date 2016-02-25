@@ -17,10 +17,8 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -30,6 +28,10 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
     private static ArrayList<String> _productNames = new ArrayList<String>();
+
+    private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
+
+
 
     private FragmentManager manager = getSupportFragmentManager();
     private JSONObject recom_data = new JSONObject();
@@ -71,26 +73,14 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 Bundle b = new Bundle();
                 b.putStringArrayList("names", _sportsname);
                 frag.setArguments(b);
-<<<<<<< HEAD
-                replaceFragment(frag);
+                replaceFragment(frag, "sports");
             }
         }
-        else if(request.equals(RECOMMEND_REQUEST)){
-            JSONArray jsonFoods = (JSONArray)data.get(RECOMMENDED_FOOD_LIST);
-            ArrayList<JSONObject> recommendedFoods = new ArrayList<>();
-            for(int i = 0; i < jsonFoods.length();++i){
-                try{
-                    recommendedFoods.add((JSONObject) jsonFoods.get(i));
-                }catch(JSONException e){
-                    Log.d("RECOMMEND FOOD LIST : ",e.getMessage());
-                }
-            }
+        else if(request.equals(RECOMMEND_REQUEST)) {
+           onRecommendResults(data);
 
-=======
-                replaceFragment(frag, "sport");
-            }
-        }
-        else if(request.equals(FOOD_CODE_REQUEST)){
+
+        }else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
                 String product_name = (String) data.get(FOOD_NAME);
@@ -101,7 +91,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
->>>>>>> e27acd877a9d9c6c24c1a19f321fc0bd2ef83c71
         }
 
     }
@@ -160,7 +149,21 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     public void onResultsClick(String energy, String fat, String prot, String carbo){
         addConstraintsToJSON(energy, fat, prot, carbo);
         send(networkJSON(RECOMMEND_REQUEST, recom_data));
+    }
+
+    public void onRecommendResults(JSONObject data){
+        JSONArray jsonFoods = (JSONArray) data.get(RECOMMENDED_FOOD_LIST);
+        _recommendationsResults = new ArrayList<>();
+        for (int i = 0; i < jsonFoods.size(); ++i) {
+            _recommendationsResults.add((JSONObject) jsonFoods.get(i));
+        }
+        Log.d("RECOM LIST",_recommendationsResults.toString());
         replaceFragment(new RecommendationResultsFragment(), "results");
+    }
+
+    public ArrayList<JSONObject> recommendationsResults(){
+        Log.d("GET RECOM LIST",_recommendationsResults.toString());
+        return _recommendationsResults;
     }
 
     public void restart(){
