@@ -15,6 +15,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
@@ -58,14 +60,27 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                     _sportsname.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }
             }
+            if (_sportsname.size() == SPORTS_LIST_SIZE) {
+                RecommendationSportFragment frag = new RecommendationSportFragment();
+                Bundle b = new Bundle();
+                b.putStringArrayList("names", _sportsname);
+                frag.setArguments(b);
+                replaceFragment(frag);
+            }
         }
-        if (_sportsname.size() == SPORTS_LIST_SIZE) {
-            RecommendationSportFragment frag = new RecommendationSportFragment();
-            Bundle b = new Bundle();
-            b.putStringArrayList("names", _sportsname);
-            frag.setArguments(b);
-            replaceFragment(frag);
+        else if(request.equals(RECOMMEND_REQUEST)){
+            JSONArray jsonFoods = (JSONArray)data.get(RECOMMENDED_FOOD_LIST);
+            ArrayList<JSONObject> recommendedFoods = new ArrayList<>();
+            for(int i = 0; i < jsonFoods.length();++i){
+                try{
+                    recommendedFoods.add((JSONObject) jsonFoods.get(i));
+                }catch(JSONException e){
+                    Log.d("RECOMMEND FOOD LIST : ",e.getMessage());
+                }
+            }
+
         }
+
     }
 
     private void sendData(String sport, String duration){

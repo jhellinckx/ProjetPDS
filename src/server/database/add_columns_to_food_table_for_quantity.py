@@ -5,6 +5,7 @@ import sys
 import tokenize
 import pint
 from pint import UnitRegistry
+import ast
 
 try:
 	import mysql.connector
@@ -23,6 +24,8 @@ RESET = "\033[0m"
 
 db_name = "db_appli"
 db_properties_filename = "../dao/dao.properties"
+
+modified_foods_file = "tmp_db_modified_foods.txt"
 
 def db_params():
 	username = None
@@ -143,7 +146,65 @@ def selectInfoFromDbAndAddNewInfos():
 	cursor.close()
 	cnx.close()
 
+def write_to_file():
+	selectInfoFromFoodCommand = (
+		"SELECT `id_food`, `quantity`, `energy_100g`, `fat_100g`, `proteins_100g`,`saturated_fat_100g`, `carbohydrates_100g`, `sugars_100g`, `sodium_100g`"
+		"FROM `Food`"
+		"WHERE `energy_100g` > 0;"
+		)
 
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	sys.stdout.write("Selecting info from DB...")
+	all_foods = []
+	try:
+		cursor.execute(selectInfoFromFoodCommand)
+		for (id_food, quantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g) in cursor:
+			all_foods.append([id_food, quantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g])
+		sys.stdout.write("All foods fetched !\n")
+	except mysql.connector.Error as err:
+		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+	cursor.close()
+	cnx.close()
+
+	# Write modified foods to file
+	all_modified_foods = []
+	i=0
+	for (id_food, quantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g) in all_foods:
+		correctQuantity = changeDimension(quantity)
+		if correctQuantity != -1 and checkIfHaveAllInfos([energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g]): #only add info in columns if the quantity was correctly changed to g/ml
+			correctQuantity=correctQuantity/100 #because we have energy, fat,... for 100g/ml in db
+			all_modified_foods.append([int(id_food), float(energy_100g)*correctQuantity, float(fat_100g)*correctQuantity, float(proteins_100g)*correctQuantity, float(saturated_fat_100g)*correctQuantity, float(carbohydrates_100g)*correctQuantity, float(sugars_100g)*correctQuantity, float(sodium_100g)*correctQuantity])
+		i+=1
+		sys.stdout.write(str(id_food)+"\n")
+	f = open(modified_foods_file,"w+");
+	f.write(str(all_modified_foods));
+	cursor.close()
+	cnx.close()
+
+def read_and_update_db(f):
+	addInfoIntoColumnCommand = (
+		"UPDATE `Food`"
+		"SET `total_energy` = %s , `total_fat` = %s , `total_proteins` = %s , `total_saturated_fat` = %s, `total_carbohydrates` = %s , `total_sugars` = %s , `total_sodium` = %s"
+		"WHERE `id_food` = %s;"
+		)
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	
+	data = f.read()
+	modified_foods = ast.literal_eval(data)
+
+	for (id_food, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium) in modified_foods:
+		try:
+			cursor.execute(addInfoIntoColumnCommand, (float(total_energy), float(total_fat), float(total_proteins), float(total_saturated_fat), float(total_carbohydrates), float(total_sugars), float(total_sodium), id_food)) 
+		except mysql.connector.Error as err:
+			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+
+	cnx.commit()
+	cursor.close()
+	cnx.close()
 
 
 def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, sodium_100g):
@@ -166,10 +227,24 @@ def addInfoIntoColumn(id_food, correctQuantity, energy_100g, fat_100g, proteins_
 	cursor.close()
 	cnx.close()
 
-
-
 def execute(first_time):
 	if first_time:
 		addOrDeleteColumnsToTable(True) #delete columns
 	addOrDeleteColumnsToTable(False) #add columns
 	selectInfoFromDbAndAddNewInfos()
+
+if __name__ == "__main__":
+	f = None
+	try:
+		f = open(modified_foods_file, "r")
+	except Error as err:
+		sys.stdout.write(err+'\n')
+		f = None
+		
+	if f == None : 
+		write_to_file()
+	else :
+		read_and_update_db(f)
+		f.close()
+
+

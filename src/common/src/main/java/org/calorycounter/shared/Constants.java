@@ -109,8 +109,7 @@ public final class Constants {
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;
-		public static final String RECOMMEND_REQUEST = "recom_recommend";
-		public static final String RECOMMEND_RESPONSE = "recom_response";
+		public static final String RECOMMEND_REQUEST = "recom_request";
 		public static final String RECOMMENDED_FOOD_LIST = "recom_foodlist";
 
 		

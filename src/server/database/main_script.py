@@ -26,7 +26,7 @@ def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quan
 		#sys.stdout.write("SPORTS" + GREEN + "-> DONE!")
 	if add_columns_for_quantity:
 		#sys.stdout.write("Taking care of the Food table update for" + MAGENTA + "quantity" + RESET + " (takes overs 35 mins)\n")
-		add_columns_to_food_for_quantity.execute(first_time)
+		add_columns_to_food_table_for_quantity.execute(first_time)
 		#sys.stdout.write("FOOD UPDATE FOR QUANTITY" + GREEN + "-> DONE!")
 
 def getWhichScriptsNeedToBeExecuted():
