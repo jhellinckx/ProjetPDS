@@ -47,6 +47,7 @@ public class ImageAdapter extends BaseAdapter {
             ImageView imageView = (ImageView) grid.findViewById(R.id.grid_imageView);
             Picasso.with(this._Context)
                     .load(_urls.get(position))
+                    .tag("tag")
                     .resize(330,330)
                     .transform(new RoundedTransformation(100, 0))
                     .into(imageView);
