@@ -46,6 +46,11 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		recommendationsRequired = nbRecom;
 	}
 
+	protected void resetData(){
+		recommendations = new ArrayList<Food>();
+		ratingPredictions = new ArrayList<FoodRatingPair>();
+	}
+
 	protected final class RatingMatrix{		// nested class used to get all notes for a food/a user.
 
 		private UserPrefDAO preferences;
