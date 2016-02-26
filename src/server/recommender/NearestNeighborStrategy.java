@@ -73,16 +73,22 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	private Prediction prediction(Food food){
 		ArrayList<String> categories = _daoCategoryRating.findCategoriesForFood(food);
 		ArrayList<CategoryRating> ratedCategories = new ArrayList<>();
+		boolean atLeastOneRated = false;
 		for(String category : categories){
 			CategoryRating result = _daoCategoryRating.findRatedCategory(_user, category);
-			if(result != null) ratedCategories.add(result);
+			if(result != null) {
+				ratedCategories.add(result);
+				atLeastOneRated = true;
+			}
 			else ratedCategories.add(new CategoryRating(category, 2.5f, 1, _user.getId()));
 		}
-		Float mean = meanRating(ratedCategories);
+		Float mean = meanRating(ratedCategories, atLeastOneRated);
 		return new Prediction(mean, ratedCategories.size());
 		}
 
-	private Float meanRating(ArrayList<CategoryRating> categoryRatings){
+	private Float meanRating(ArrayList<CategoryRating> categoryRatings, boolean oneRated){
+		if(! oneRated)
+			return 2.5f;
 		Float sum = 0.0f;
 		for(CategoryRating categoryRating : categoryRatings){
 			sum += categoryRating.rating();
