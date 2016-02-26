@@ -23,7 +23,7 @@ public final class Constants {
 	public static final class network {
 		/* PIZZA MAN CONFIG YO */
 		public static final String PIZZA_MAN_USERNAME = "pizza_man";
-		public static final List<Long> PIZZA_MAN_UNRANKED_FOODS = Arrays.asList(new Long(71L), new Long(784L), new Long(1343L),new Long(6708L), new Long(6722L), new Long(7626), new Long(7299L), new Long(7280L), new Long(5940L)); 
+		public static final List<Long> PIZZA_MAN_UNRANKED_FOODS = Arrays.asList(new Long(58595L), new Long(58401L), new Long(58400L),new Long(38790L), new Long(35350L), new Long(40413L), new Long(29348L), new Long(20575L), new Long(7351L)); 
 		/* Network config */
 		public static final String LOCALHOST = "127.0.0.1";
 		public static final String LOCALHOST_STRING = "localhost";

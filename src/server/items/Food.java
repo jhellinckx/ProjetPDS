@@ -127,11 +127,7 @@ public class Food {
     }
 
     public String toString() {
-        String m = "";
-        m+= productName;
-        m+= " - energy: ";
-        m+= Float.toString(total_energy);
-        return m;
+        return getProductName();
     }
 
     public JSONObject toJSON() {

@@ -59,7 +59,7 @@ public class AppliServer extends AbstractNIOServer{
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 
-		_recommenderSystem = new RecommenderSystem(new UserUserStrategy(_userprefDatabase));
+		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		//_hybridStrategy = new CascadeStrategy();
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase);
 
@@ -113,11 +113,11 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(RECOMMEND_REQUEST)){
 				onRecommendRequest(msg);
 			}
-			
+			else if(request.equals(DATA_REQUEST)){
+				onDataRequest(msg);
+			}
 		}
-		else if(request.equals(DATA_REQUEST)){
-			onDataRequest(msg);
-		}
+		
 	}
 
 	 public ArrayList<Food> randomRecommend(FoodDAO dbFood){
@@ -392,8 +392,8 @@ public class AppliServer extends AbstractNIOServer{
 		}
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
-		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
-		//recommendedFoods = _recommenderSystem.recommendItems();
+		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
+		recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
 		for(Food food : recommendedFoods.subList(0,10)){
 			jsonFoods.add(food.toJSON());

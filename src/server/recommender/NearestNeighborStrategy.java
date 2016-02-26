@@ -9,6 +9,16 @@ import static org.calorycounter.shared.Constants.network.*;
 
 
 public class NearestNeighborStrategy extends ContentBasedStrategy {
+	private class Prediction{
+		private Float _mean;
+		private int _n_categories;
+		public Prediction(Float m, int n){
+			_mean = m;
+			_n_categories = n;
+		}
+		public Float mean() { return _mean; }
+		public int categories() { return _n_categories; }
+	}
 	private ArrayList<Food> _foodToFilter;
 	private User _user;
 	private int _recommendations;
@@ -23,7 +33,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	public void updateData(ArrayList<Food> toFilter, ArrayList<User> users, User user, int recoms){  
 		_foodToFilter = toFilter;
 		_user = user;
-		_recommendations = recoms;
+		_recommendations = 30;
 		_otherUsers = users;
 	}
 
@@ -32,23 +42,45 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 		if(_foodToFilter.isEmpty())
 			_foodToFilter = new ArrayList<Food>();	
 		Map<Food, Float> ratingPredictions = new HashMap<>();
+		Map<Long, Integer> categoriesNumberForID = new HashMap<>();
 		for(Food food : _foodToFilter){
-			ratingPredictions.put(food, prediction(food));
+			Prediction pred = prediction(food);
+			ratingPredictions.put(food, pred.mean());
+			categoriesNumberForID.put(food.getId(), pred.categories());
 		}
 		Map<Food, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
 		List<Food> recommendations = new ArrayList<Food>(sortedRatingPredictions.keySet());
-		return new ArrayList<Food>(recommendations.subList(0, _recommendations));
+		ArrayList<Food> resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
+		
+		Map<Food, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
+		for(Food recom : resizedRecoms)
+			resizedRecomsWithCategoriesNumber.put(recom, categoriesNumberForID.get(recom.getId()));
+
+		Map<Food, Integer> sortedResizedRecoms = sortByValue(resizedRecomsWithCategoriesNumber);
+		ArrayList<Food> sortedResizedRecomsList = new ArrayList<Food>(sortedResizedRecoms.keySet());
+		System.out.println(sortedResizedRecomsList.toString());
+		System.out.println("TAKE ONLY RECOM : "+Integer.toString(_recommendations));
+
+		ArrayList<Food> sortedInOrder = new ArrayList<Food>(sortedResizedRecomsList);
+		int i = sortedResizedRecomsList.size()-1;
+		for(Food food : sortedResizedRecomsList){
+			sortedInOrder.set(i, food);
+			i--;
+		}
+		return sortedInOrder;
 	}
 
-	private Float prediction(Food food){
+	private Prediction prediction(Food food){
 		ArrayList<String> categories = _daoCategoryRating.findCategoriesForFood(food);
 		ArrayList<CategoryRating> ratedCategories = new ArrayList<>();
 		for(String category : categories){
 			CategoryRating result = _daoCategoryRating.findRatedCategory(_user, category);
 			if(result != null) ratedCategories.add(result);
+			else ratedCategories.add(new CategoryRating(category, 2.5f, 1, _user.getId()));
 		}
-		return meanRating(ratedCategories);
-	}
+		Float mean = meanRating(ratedCategories);
+		return new Prediction(mean, ratedCategories.size());
+		}
 
 	private Float meanRating(ArrayList<CategoryRating> categoryRatings){
 		Float sum = 0.0f;
