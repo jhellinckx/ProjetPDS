@@ -15,12 +15,12 @@ import items.User;
 
 public class FoodDAOImpl implements FoodDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE product_name = ?";
-	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE code = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE id_food = ?";
-    private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE image_url = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food";
-    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food where total_energy BETWEEN 0 AND ? AND total_fat <= ? AND total_proteins <= ? AND total_saturated_fat <= ? AND total_carbohydrates <= ? AND total_sugars <= ? AND total_sodium <= ? ORDER BY total_energy DESC";
+	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE product_name = ?";
+	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE code = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE id_food = ?";
+    private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food WHERE image_url = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, quantity, code, product_name, image_url, total_energy, total_fat, total_proteins, total_saturated_fat, total_carbohydrates, total_sugars, total_sodium FROM Food where total_energy BETWEEN 0 AND ? AND total_fat <= ? AND total_proteins <= ? AND total_saturated_fat <= ? AND total_carbohydrates <= ? AND total_sugars <= ? AND total_sodium <= ? ORDER BY total_energy DESC";
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -185,6 +185,7 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalCarbohydrates(resultSet.getFloat( "total_carbohydrates" ) );
         food.setTotalSugars(resultSet.getFloat( "total_sugars" ) );
         food.setTotalSodium(resultSet.getFloat( "total_sodium" ) );
+        food.setQuantity(resultSet.getString( "quantity" ));
 
         return food;
     }

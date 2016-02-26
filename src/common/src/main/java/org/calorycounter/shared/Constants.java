@@ -78,6 +78,7 @@ public final class Constants {
 		public static final String FOOD_TOTAL_CARBOHYDRATES = "f_carbo";
 		public static final String FOOD_TOTAL_SUGARS = "f_sugars";
 		public static final String FOOD_TOTAL_SODIUM = "f_sodiums";
+		public static final String FOOD_QUANTITY = "f_quantity";
 
 		public static final String FOOD_CODE_REQUEST = "r_foodcode";
 		public static final String FOOD_CODE_RESPONSE = "d_foodcode_res";

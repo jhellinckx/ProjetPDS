@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import static org.calorycounter.shared.Constants.network.*;
+
 import com.squareup.picasso.Picasso;
 
 /**
@@ -24,13 +26,10 @@ public class ItemInfoDialog extends DialogFragment {
         final LayoutInflater layoutInflater = (LayoutInflater) getActivity()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Bundle b = getArguments();
-        String url = b.getString("url");
-        String name = b.getString("name");
 
-        View view = layoutInflater.inflate(R.layout.rating_dialog,null);
+        View view = layoutInflater.inflate(R.layout.info_dialog, null);
         builder.setView(view);
-        TextView text = ((TextView) view.findViewById(R.id.rateTitle));
-        text.setText((String) text.getText() + ": " + name);
+        initTextViews(b, view);
 
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener(){
             @Override
@@ -41,6 +40,34 @@ public class ItemInfoDialog extends DialogFragment {
 
         Dialog dialog = builder.create();
         return dialog;
+
+    }
+
+    private void initTextView(TextView tv, double num_value){
+        tv.setText(Double.toString(num_value));
+    }
+
+    private void initMinorTextView(Bundle b, View v){
+        initTextView((TextView) v.findViewById(R.id.info_insatfat), b.getDouble(FOOD_TOTAL_SATURATED_FAT));
+        initTextView((TextView) v.findViewById(R.id.info_sodium), b.getDouble(FOOD_TOTAL_SODIUM));
+        initTextView((TextView) v.findViewById(R.id.info_sugar), b.getDouble(FOOD_TOTAL_SUGARS));
+
+    }
+
+    private void initMainTextView(Bundle b, View v){
+        ((TextView) v.findViewById(R.id.info_name)).setText(b.getString(FOOD_NAME));
+        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
+        int energy = (int) (float) ((b.getDouble(FOOD_TOTAL_ENERGY))/CAL_TO_JOULE_FACTOR);
+        initTextView((TextView) v.findViewById(R.id.info_cal), energy);
+        initTextView((TextView) v.findViewById(R.id.info_prot), b.getDouble(FOOD_TOTAL_PROTEINS));
+        initTextView((TextView) v.findViewById(R.id.info_fat), b.getDouble(FOOD_TOTAL_FAT));
+        initTextView((TextView) v.findViewById(R.id.info_carbo), b.getDouble(FOOD_TOTAL_CARBOHYDRATES));
+
+    }
+
+    private void initTextViews(Bundle b, View v){
+        initMainTextView(b,v);
+        initMinorTextView(b, v);
 
     }
 }

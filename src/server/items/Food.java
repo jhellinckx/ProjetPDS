@@ -18,6 +18,7 @@ public class Food {
     private Float    total_carbohydrates;
     private Float    total_sugars;
     private Float    total_sodium;
+    private String   quantity;
     
     public Long getId() {
         return id;
@@ -111,6 +112,14 @@ public class Food {
         this.total_sodium = total_so;
     }
 
+    public String getQuantity(){
+        return quantity;
+    }
+
+    public void setQuantity(String quant){
+        this.quantity = quant;
+    }
+
     @Override
     public boolean equals(Object other){
         if(this == other) return true;
@@ -149,6 +158,7 @@ public class Food {
         repr.put(FOOD_TOTAL_CARBOHYDRATES, total_carbohydrates);
         repr.put(FOOD_TOTAL_SUGARS, total_sugars);
         repr.put(FOOD_TOTAL_SODIUM, total_sodium);
+        repr.put(FOOD_QUANTITY, quantity);
         return repr;
     }
 

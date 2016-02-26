@@ -114,9 +114,9 @@ public class AppliServer extends AbstractNIOServer{
 				onRecommendRequest(msg);
 			}
 			
-		}
-		else if(request.equals(DATA_REQUEST)){
-			onDataRequest(msg);
+			else if(request.equals(DATA_REQUEST)){
+				onDataRequest(msg);
+			}
 		}
 	}
 

@@ -69,10 +69,23 @@ public class RecommendationResultsFragment extends Fragment {
         }
 
     }
-
     private void showInfoFragment(int id){
         JSONObject info = recommendations.get(id);
-        System.out.println((String)info.get(FOOD_NAME));
+        Bundle b = new Bundle();
+        b.putString(FOOD_NAME, (String) info.get(FOOD_NAME));
+        b.putString(FOOD_QUANTITY, (String) info.get(FOOD_QUANTITY));
+        b.putDouble(FOOD_TOTAL_ENERGY, (double) info.get(FOOD_TOTAL_ENERGY));
+        b.putDouble(FOOD_TOTAL_PROTEINS, (double) info.get(FOOD_TOTAL_PROTEINS));
+        b.putDouble(FOOD_TOTAL_FAT, (double) info.get(FOOD_TOTAL_FAT));
+        b.putDouble(FOOD_TOTAL_CARBOHYDRATES, (double) info.get(FOOD_TOTAL_CARBOHYDRATES));
+        b.putDouble(FOOD_TOTAL_SATURATED_FAT, (double) info.get(FOOD_TOTAL_SATURATED_FAT));
+        b.putDouble(FOOD_TOTAL_SODIUM, (double) info.get(FOOD_TOTAL_SODIUM));
+        b.putDouble(FOOD_TOTAL_SUGARS, (double) info.get(FOOD_TOTAL_SUGARS));
+        ItemInfoDialog frag = new ItemInfoDialog();
+        frag.setArguments(b);
+        frag.show(getActivity().getFragmentManager(), "item info");
+
+
     }
 
     private void setClickListener(TableRow row){
