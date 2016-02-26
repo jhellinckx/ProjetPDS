@@ -32,6 +32,7 @@ import static org.calorycounter.shared.Constants.network.*;
 public class RecommendationResultsFragment extends Fragment {
 
     private OnItemClickListener listener;
+    private int id = 0;
 
     private ArrayList<JSONObject> recommendations;
     private TableLayout recomTable;
@@ -51,6 +52,8 @@ public class RecommendationResultsFragment extends Fragment {
             if(!url.isEmpty() && !productName.isEmpty()) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f);
                 TableRow recomRow = new TableRow((getActivity()));
+                setClickListener(recomRow);
+                ++id;
                 ImageView imageView = new ImageView(getActivity());
                 Picasso.with(getActivity())
                         .load(url)
@@ -59,14 +62,40 @@ public class RecommendationResultsFragment extends Fragment {
                         .into(imageView);
                 TextView name = new TextView(getActivity());
                 name.setText(productName);
-
-                /* Add views to the row then add row to table */
                 recomRow.addView(imageView);
                 recomRow.addView(name);
                 recomTable.addView(recomRow);
             }
         }
 
+    }
+    private void showInfoFragment(int id){
+        JSONObject info = recommendations.get(id);
+        Bundle b = new Bundle();
+        b.putString(FOOD_NAME, (String) info.get(FOOD_NAME));
+        b.putString(FOOD_QUANTITY, (String) info.get(FOOD_QUANTITY));
+        b.putDouble(FOOD_TOTAL_ENERGY, (double) info.get(FOOD_TOTAL_ENERGY));
+        b.putDouble(FOOD_TOTAL_PROTEINS, (double) info.get(FOOD_TOTAL_PROTEINS));
+        b.putDouble(FOOD_TOTAL_FAT, (double) info.get(FOOD_TOTAL_FAT));
+        b.putDouble(FOOD_TOTAL_CARBOHYDRATES, (double) info.get(FOOD_TOTAL_CARBOHYDRATES));
+        b.putDouble(FOOD_TOTAL_SATURATED_FAT, (double) info.get(FOOD_TOTAL_SATURATED_FAT));
+        b.putDouble(FOOD_TOTAL_SODIUM, (double) info.get(FOOD_TOTAL_SODIUM));
+        b.putDouble(FOOD_TOTAL_SUGARS, (double) info.get(FOOD_TOTAL_SUGARS));
+        ItemInfoDialog frag = new ItemInfoDialog();
+        frag.setArguments(b);
+        frag.show(getActivity().getFragmentManager(), "item info");
+
+
+    }
+
+    private void setClickListener(TableRow row){
+        row.setId(id);
+        row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showInfoFragment(v.getId());
+            }
+        });
     }
 
     @Override

@@ -43,19 +43,11 @@ public class ScanningActivity extends HomeActivity{
     }
 
     private void updateFragment(String image, String product, String energy){
-        ItemInfosFragment frag = (ItemInfosFragment) getSupportFragmentManager().findFragmentByTag("info");
-        frag.setImage(image);
-        frag.setProductName(product);
-        frag.setCal(energy);
 
     }
 
     private void addFragment(){
         FragmentTransaction transaction = manager.beginTransaction();
-
-        transaction.add(R.id.infos_layout, new ItemInfosFragment(), "info");
-        transaction.addToBackStack("info");
-        transaction.commit();
     }
 
     public void handleMessage(JSONObject msg) {
