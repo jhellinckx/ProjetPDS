@@ -69,7 +69,7 @@ public class HistoryActivity extends HomeActivity {
         if(isName) {
             rowView.setPadding(50, 0, 0, 0);
         } else{
-            rowView.setPadding(500,0,0,50);}
+            rowView.setPadding(100,0,0,50);}
         row.addView(rowView);
     }
 

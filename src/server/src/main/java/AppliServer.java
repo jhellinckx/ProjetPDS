@@ -435,6 +435,7 @@ public class AppliServer extends AbstractNIOServer{
 		//get foodNames & date
 		List<String> foodNames = new ArrayList<String>();
 		List<String> dates = new ArrayList<String>();
+
 		//Make JSON response
 		if(foodNames.size() == dates.size()){
 			JSONArray foodsDatesRepr = new JSONArray();
