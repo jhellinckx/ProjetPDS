@@ -1,7 +1,8 @@
-.PHONY: all client server clean run% info
+.PHONY: all client server clean run% info testClient runClient
 
 SERVERDIR = "server"
 CLIENTDIR = "android client"
+TESTCLIENTDIR = "testClient"
 
 all: server client
 
@@ -18,8 +19,14 @@ infoEmulate:
 client: infoClientBuild
 	cd ${CLIENTDIR}; gradle build;
 
+testClient:
+	cd ${TESTCLIENTDIR}; gradle build;
+
 server:
 	make -C ${SERVERDIR}
+
+runClient:
+	java -jar ${TESTCLIENTDIR}/build/libs/client-1.0-SNAPSHOT.jar
 
 run%:
 	make -C ${SERVERDIR} $@
@@ -27,6 +34,8 @@ run%:
 clean:
 	make -C ${SERVERDIR} clean;
 	cd ${CLIENTDIR}; gradle clean;
+	cd ..;
+	cd ${TESTCLIENTDIR}; gradle clean;
 
 startEmulator: infoEmulate
 	${ANDROID_HOME}/sdk/tools/android avd &

@@ -1,0 +1,5 @@
+rootProject.name = 'client'
+
+include ':common'
+
+project(":common").projectDir = new File(rootProject.projectDir, "../common")

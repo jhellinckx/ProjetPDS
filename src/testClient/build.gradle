@@ -1,0 +1,32 @@
+group 'client'
+version '1.0-SNAPSHOT'
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.5'
+  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Client'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile project(":common")
+    def commonDir = "../common"
+    def commonExternLibsDir = "$commonDir/libs"
+    def commonLocalLibsDir = "$commonDir/build/libs"
+    compile fileTree(dir: "$commonLocalLibsDir", include: ['*.jar'])
+    compile fileTree(dir: "$commonExternLibsDir", include: ['*.jar'])
+}
