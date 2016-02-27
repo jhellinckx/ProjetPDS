@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import static org.calorycounter.shared.Constants.network.*;
 
 /**
  * Created by aurelien on 27/02/16.
@@ -24,6 +27,7 @@ public class MainWindow extends JFrame implements Observer {
     public MainWindow(RequestControler control){
         initWindow();
         initPanel();
+        initBoxItems();
         addClearListener();
         addSpecificListener();
         request_messages.setBackground(Color.LIGHT_GRAY);
@@ -65,8 +69,16 @@ public class MainWindow extends JFrame implements Observer {
         });
     }
 
-    @Override
-    public void update(){
+    private void initBoxItems(){
+        request.addItem(null);
+        ArrayList<String> request_names = RequestNameContainer.getRequestNames();
+        for (String name : request_names){
+            request.addItem(name);
+        }
+    }
 
+    @Override
+    public void update(String msg){
+        request_messages.append(msg + "\n");
     }
 }

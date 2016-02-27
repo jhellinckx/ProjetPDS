@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RequestDialog extends JDialog {
@@ -84,9 +85,18 @@ public class RequestDialog extends JDialog {
 
     }
 
+    private void initBoxItems(){
+        request.addItem(null);
+        ArrayList<String> request_names = RequestNameContainer.getRequestNames();
+        for (String name : request_names){
+            request.addItem(name);
+        }
+    }
+
     private void initUIComponents(){
         initPanel();
         initDataMap();
+        initBoxItems();
         divider_pane.setDividerLocation(288);           // TODO Replace this by a (getWidth()-margin-dividersize)/2.
 
     }
