@@ -16,10 +16,10 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_appli"
-db_properties_filename = "../dao/dao.properties"
+db_properties_filename = "../../dao/dao.properties"
 ingredients_filename = "raw/db_ingredients.txt"
 recipes_filename = "raw/db_recipes.txt"
-def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quantity,first_time,addWeight):
+def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quantity,first_time,addWeight,addHistory):
 	if recipies:
 		#sys.stdout.write("Taking care of the " + MAGENTA + "recipies" + RESET + " table \n")
 		db_recipes.execute()
@@ -38,6 +38,9 @@ def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quan
 		#sys.stdout.write("FOOD UPDATE FOR QUANTITY" + GREEN + "-> DONE!")
 	if addWeight:
 		addWeightColumn()
+
+	if addHistory:
+		addHistoryTable()
 
 def db_params():
 	username = None
@@ -70,6 +73,31 @@ def addWeightColumn():
 	cursor.close()
 	cnx.close()
 
+def addHistoryTable():
+	history_table_command = (
+		"CREATE TABLE `Users_history` ("
+		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		"idUser INT UNSIGNED NOT NULL,"
+		"idFood INT UNSIGNEDBADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	commands = [history_table_command,history_fk_user_command,history_fk_food_command]
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	sys.stdout.write("Creating " + MAGENTA + "Users_history" + RESET + " table + setting foreing keys (needs 3 ok)... ")
+	for command in commands:
+		try:
+			cursor.execute(command)
+			sys.stdout.write(GREEN + "OK! " + RESET)
+
+		except mysql.connector.Error as err:
+			sys.stdout.write(RED + "FAILED : %s"%err + RESET)
+	sys.stdout.write("\n")
+	cnx.commit()
+	cursor.close()
+	cnx.close()
 
 def getWhichScriptsNeedToBeExecuted():
 	recipies = (raw_input("Add the recipies talbe (Y/N): ").upper() == "Y")
@@ -80,8 +108,9 @@ def getWhichScriptsNeedToBeExecuted():
 	if add_columns_for_quantity:
 		first_time = (raw_input("Is it the first time that you do this update? (Y/N): ").upper() == "Y")
 	addWeight = (raw_input("Add weight column for User ? (Y/N): ").upper() == "Y")
+	addHistory = (raw_input("Add history table to db? (Y/N): ").upper() == "Y")
 
-	executePythonScripts(recipies, categories_ratings, sports, add_columns_for_quantity, first_time,addWeight)
+	executePythonScripts(recipies, categories_ratings, sports, add_columns_for_quantity, first_time,addWeight, addHistory)
 
 
 if __name__ == "__main__":
