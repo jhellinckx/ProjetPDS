@@ -122,6 +122,9 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(DATA_REQUEST)){
 				onDataRequest(msg);
 			}
+			else if(request.equals(HISTORY_REQUEST)){
+				onHistoryRequest(msg);
+			}
 		}
 		
 	}
@@ -328,10 +331,7 @@ public class AppliServer extends AbstractNIOServer{
 			}
 
 		}
-		//String response = (String) data.get(FOOD_CODE);
-		//JSONObject responseData = new JSONObject();
-		//Food food = _foodDatabase.findByCode(code);
-		
+	
 	}
 
 	public void onSportsListRequest(Message msg){
@@ -427,6 +427,33 @@ public class AppliServer extends AbstractNIOServer{
 		data.put(UPDATE_DATA_WEIGHT, user.getWeight());
 		msg.setJSON(networkJSON(UPDATE_DATA_REQUEST, data));
 		send(msg);
+	}
+
+	public void onHistoryRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = new JSONObject();
+		//get foodNames & date
+		List<String> foodNames = new ArrayList<String>();
+		List<String> dates = new ArrayList<String>();
+		//Make JSON response
+		if(foodNames.size() == dates.size()){
+			JSONArray foodsDatesRepr = new JSONArray();
+			for(int i = 0 ; i< foodNames.size(); ++i){
+				JSONObject foodDateRepr = new JSONObject();
+				System.out.println( dates.get(i));
+				System.out.println( foodNames.get(i));
+				foodDateRepr.put(HISTORY_DATE, dates.get(i));
+				foodDateRepr.put(HISTORY_NAME, foodNames.get(i));
+				foodsDatesRepr.add(foodDateRepr);
+				
+			}
+			data.put(HISTORY_NAMES_DATES, foodsDatesRepr);
+			msg.setJSON(networkJSON(HISTORY_REQUEST, data));
+			send(msg);
+		}
+		else{
+			System.out.println("Foods list and dates list in history don't match in size");
+		}
 
 	}
 

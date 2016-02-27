@@ -115,6 +115,12 @@ public final class Constants {
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
 		public static final String DATA_REQUEST = "r_data";
 
+		/* History */ 
+		public static final String HISTORY_REQUEST = "r_history";
+		public static final String HISTORY_NAME = "d_history_name";
+		public static final String HISTORY_DATE = "d_history_date";
+		public static final String HISTORY_NAMES_DATES = "d_history_dates";
+
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;
 		public static final String RECOMMEND_REQUEST = "recom_request";
