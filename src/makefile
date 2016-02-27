@@ -23,16 +23,27 @@ testClient:
 	cd ${TESTCLIENTDIR}; gradle build;
 
 server:
-	make -C ${SERVERDIR}
+	cd ${SERVERDIR}; gradle build;
 
-runClient:
+runclient:
 	java -jar ${TESTCLIENTDIR}/build/libs/client-1.0-SNAPSHOT.jar
 
-run%:
-	make -C ${SERVERDIR} $@
+runserver:
+	java -jar ${SERVERDIR}/build/libs/server-1.0-SNAPSHOT.jar         
+
+# TODO Add tests in default directory. Tests are not working ATM.
+runtestDAO:
+	@echo "\033[1;31mTests do not work. Need to move them in default gradle directory. (src/test)\033[0m";
+
+runservertest:
+	@echo "\033[1;31mTests do not work. Need to move them in default gradle directory. (src/test)\033[0m";
+
+runtestrecom:
+	@echo "\033[1;31mTests do not work. Need to move them in default gradle directory. (src/test)\033[0m";
 
 clean:
-	make -C ${SERVERDIR} clean;
+	cd ${SERVERDIR}; gradle clean;
+	cd ..;
 	cd ${CLIENTDIR}; gradle clean;
 	cd ..;
 	cd ${TESTCLIENTDIR}; gradle clean;

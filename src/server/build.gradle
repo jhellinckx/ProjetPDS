@@ -1,4 +1,4 @@
-group 'client'
+group 'server'
 version '1.0-SNAPSHOT'
 
 task wrapper(type: Wrapper) {
@@ -7,17 +7,30 @@ task wrapper(type: Wrapper) {
 }
 
 apply plugin: 'java'
+apply plugin: 'application'
+mainClassName = "AppliServer"
 
 sourceCompatibility = 7
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'Client'
+repositories {
+    mavenCentral()
+}
+
+sourceSets{
+    main{
+        resources{
+            srcDir 'src/main/resources/'
+        }
     }
 }
 
-repositories {
-    mavenCentral()
+jar{
+    manifest{
+        attributes 'Main-Class' : 'AppliServer'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 dependencies {
@@ -29,4 +42,5 @@ dependencies {
     def commonLocalLibsDir = "$commonDir/build/libs"
     compile fileTree(dir: "$commonLocalLibsDir", include: ['*.jar'])
     compile fileTree(dir: "$commonExternLibsDir", include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }

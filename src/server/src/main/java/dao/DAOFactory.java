@@ -3,6 +3,8 @@ package dao;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,10 +12,13 @@ import java.util.Properties;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+import org.calorycounter.shared.Constants;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class DAOFactory {
 
-    private static final String FILE_PROPERTIES          = "dao/dao.properties";
+    private static String FILE_PROPERTIES          = "";
     private static final String PROPERTY_URL             = "url";
     private static final String PROPERTY_DRIVER          = "driver";
     private static final String PROPERTY_USERNAME        = "username";
@@ -25,6 +30,14 @@ public class DAOFactory {
         this.connectionPool = connectionPool;
     }
 
+
+    public static void getPropertiesFile(){
+        FILE_PROPERTIES = "dao.properties";
+        //String path =  System.getProperty("user.dir");
+        //FILE_PROPERTIES = path.substring(0, path.indexOf("src")) + "src/server/src/main/java/dao/dao.properties";
+
+
+    }
     /*
      * Methode chargee de recuperer les informations de connexion a la base de
      * donnees, charger le driver JDBC et retourner une instance de la Factory
@@ -36,6 +49,9 @@ public class DAOFactory {
         String userName;
         String passWord;
         BoneCP connectionPool = null;
+
+        if(FILE_PROPERTIES.isEmpty())
+            getPropertiesFile();
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream fichierProperties = classLoader.getResourceAsStream( FILE_PROPERTIES );
