@@ -78,6 +78,7 @@ def all_items_from_branch(branch_index):
 		# Prod infos
 		articles_infos_wrap = article.find("a", attrs={"class":"prodInfo"})
 		if(articles_infos_wrap != None):
+			if("href" in articles_infos_wrap.attrs) : details_url = domain + articles_infos_wrap.attrs["href"]
 			# Weird name
 			weird_name_tag = articles_infos_wrap.find("span", attrs={"name"})
 			if weird_name_tag != None : weird_name = weird_name_tag.string
@@ -87,10 +88,8 @@ def all_items_from_branch(branch_index):
 			# Full description
 			full_description_tag = articles_infos_wrap.find("p", attrs={"fullDescription"})
 			if full_description_tag != None : full_description = full_description_tag.string
-			
-		print weird_name 
-		print short_description
-		print full_description
+
+		print details_url
 		# Price 
 		article_price_div = article.find("div", attrs={"class":"price"})
 		if article_price_div != None:
@@ -98,16 +97,21 @@ def all_items_from_branch(branch_index):
 			if article_price_unit != None:
 				script_tag = article_price_unit.find("script")
 				if script_tag != None:
-					print base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
+					try :
+						price_unit = float(base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'")))
+					except Error as err:
+						print err
 				
 
 			article_price_kg = article_price_div.find("p", attrs={"class":"unit"})
 			if article_price_kg != None:
 				script_tag = article_price_kg.find("script")
 				if script_tag != None:
-					print base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
-				
-		print("-"*5)
+					try :
+						price_kg = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
+					except Error as err:
+						print err
+		article_repr = Article()
 	with open(last_cookies_filename,"w+") as f:
 		f.write(str(cookies))
 
