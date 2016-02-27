@@ -55,6 +55,7 @@ def all_items_from_branch(branch_index):
 
 	# All attributes
 	image_url = None; price_unit = None; price_kg = None; details_url = None; categories=[];
+	weird_name = None; short_description = None; full_description = None;
 
 	# Find categories
 	script_container = structured_response.body.script.string
@@ -65,13 +66,31 @@ def all_items_from_branch(branch_index):
 		for elem in script_dict.split(","):
 			if "page_cat" in elem:
 				categories.append(elem.split(":")[1].strip(" ").strip("'"))
-	# Find rest
+
+	# Iterate on each article/product
 	for article in structured_response.find("div",attrs={"id":"articles"}).children:
 		# Image url
 		article_image_wrap = article.find("div",attrs={"class":"imageWrap"})
 		if(article_image_wrap != None):
 			image_url = domain + str(article_image_wrap.find("img").attrs["src"]) 
 
+
+		# Prod infos
+		articles_infos_wrap = article.find("a", attrs={"class":"prodInfo"})
+		if(articles_infos_wrap != None):
+			# Weird name
+			weird_name_tag = articles_infos_wrap.find("span", attrs={"name"})
+			if weird_name_tag != None : weird_name = weird_name_tag.string
+			# Short description
+			short_description_tag = articles_infos_wrap.find("span", attrs={"description"})
+			if short_description_tag != None : short_description = short_description_tag.string
+			# Full description
+			full_description_tag = articles_infos_wrap.find("p", attrs={"fullDescription"})
+			if full_description_tag != None : full_description = full_description_tag.string
+			
+		print weird_name 
+		print short_description
+		print full_description
 		# Price 
 		article_price_div = article.find("div", attrs={"class":"price"})
 		if article_price_div != None:
