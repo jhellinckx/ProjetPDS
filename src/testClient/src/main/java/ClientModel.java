@@ -37,18 +37,19 @@ public class ClientModel  implements Observable{
 
     public void sendToNetwork(JSONObject msg){
         try{
+            notifyObserver(">>> Client request: " + msg.toJSONString());
             channel.write(msg);
         } catch (IOException e){
             System.err.println("Sending Error: " + e.getMessage());
         }
     }
 
-    public String getFromNetwork(){
+    public void getFromNetwork(){
         try{
-            return channel.read();
+            String msg = channel.read();
+            notifyObserver("<<< Server response: " + msg);
         } catch (IOException e){
             System.err.println("Getting Error: " + e.getMessage());
-            return null;
         }
     }
 }

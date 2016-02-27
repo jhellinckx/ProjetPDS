@@ -13,17 +13,20 @@ public class ClientSocket implements NetworkChannel{
     private static final int port = 8080;
     private static final String hostaddress = "10.0.1.29";
     private Socket socketClient;
+    private DataOutputStream outstream;
+    private DataInputStream instream;
 
     @Override
     public void initiateConnection() throws IOException{
         System.out.println("Connection to " + hostaddress+":"+port);
         socketClient = new Socket(hostaddress, port);
         System.out.println("Connection Established");
+        instream = new DataInputStream(socketClient.getInputStream());
+        outstream = new DataOutputStream(socketClient.getOutputStream());
     }
 
     @Override
     public String read() throws IOException{
-        DataInputStream instream = new DataInputStream(socketClient.getInputStream());
         try{
             int msgLength = instream.readInt();
             byte[] rawMsg = new byte[msgLength];
@@ -41,9 +44,9 @@ public class ClientSocket implements NetworkChannel{
 
     @Override
     public void write(JSONObject msg) throws IOException{
-        DataOutputStream outstream = new DataOutputStream(socketClient.getOutputStream());
         try{
             byte[] rawMsg = msg.toString().getBytes(ENCODING);
+            System.out.println(rawMsg.length);
             outstream.writeInt(rawMsg.length);
             outstream.write(rawMsg, 0, rawMsg.length);
         }

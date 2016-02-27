@@ -1,8 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.List;
 
 public class RequestDialog extends JDialog {
     private static final String KEY_PREFIX = "key";
@@ -18,12 +18,14 @@ public class RequestDialog extends JDialog {
     private JSplitPane divider_pane;
     private HashMap<Integer, JTextField> map_keys;
     private HashMap<Integer, JTextField> map_values;
+    private RequestDialogSendListener listener;
 
-    public RequestDialog() {
+    public RequestDialog(MainWindow window) {
         setResizable(false);
         setContentPane(contentPane);
         contentPane.setBackground(new Color(60,63,65));
         initUIComponents();
+        listener = window;
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
@@ -53,6 +55,10 @@ public class RequestDialog extends JDialog {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    public interface RequestDialogSendListener{
+        public void onDialogSendAction(String name, List<String> keys, List<String> values);
     }
 
     private void initMap(HashMap<Integer,JTextField> map, JPanel pan ) {
@@ -101,8 +107,64 @@ public class RequestDialog extends JDialog {
 
     }
 
+    private String getRequestName(){
+        return (String) request.getSelectedItem();
+    }
+
+    private List<String> getDataFromMap(HashMap<Integer, JTextField> map){
+        ArrayList<String> data = new ArrayList<>();
+        JTextField field;
+        String text;
+        for (int i = 0; i < NUMBER_DATA_FIELDS; i++){
+            field = map.get(i);
+            text = field.getText();
+            if(!text.isEmpty()){
+                data.add(text);
+            }
+        }
+        return data;
+    }
+
+    private List<String> getValues(){
+        return getDataFromMap(map_values);
+    }
+
+    private List<String> getKeys(){
+        return getDataFromMap(map_keys);
+    }
+
+    private void clearFields(){
+        request.setSelectedIndex(0);
+        for (int i = 0; i < NUMBER_DATA_FIELDS; i++){
+            map_keys.get(i).setText(null);
+            map_values.get(i).setText(null);
+        }
+    }
+
+    private boolean dataAreCorrect(String name, List<String> key_s, List<String> value_s){
+        if (name == null){
+            return false;
+        }
+        if (key_s.isEmpty()){
+            return false;
+        }
+        if (value_s.isEmpty()){
+            return false;
+        }
+        if (key_s.size() != value_s.size()){
+            return false;
+        }
+        return true;
+    }
+
     private void onOK() {
-// add your code here
+        String request_name = getRequestName();
+        List<String> key_s = getKeys();
+        List<String> value_s = getValues();
+        clearFields();
+        if (dataAreCorrect(request_name, key_s, value_s)) {
+            listener.onDialogSendAction(request_name, key_s, value_s);
+        }
         dispose();
     }
 
