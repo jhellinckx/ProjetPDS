@@ -14,6 +14,9 @@ jar {
     manifest {
         attributes 'Main-Class': 'Client'
     }
+     from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 repositories {
