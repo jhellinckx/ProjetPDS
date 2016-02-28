@@ -83,7 +83,8 @@ public class HistoryActivity extends HomeActivity {
         for (int i = 0; i < response.size(); ++i) {
             namesDatesResults.add((JSONObject) response.get(i));
         }
-        for(JSONObject nameDateRepr : namesDatesResults){
+        for(int i = namesDatesResults.size()-1; i>=0; i--){
+            JSONObject nameDateRepr = namesDatesResults.get(i);
             String name = (String) nameDateRepr.get(HISTORY_NAME);
             String date = (String) nameDateRepr.get(HISTORY_DATE);
             addRowInTable(name, date);
@@ -93,7 +94,7 @@ public class HistoryActivity extends HomeActivity {
     private void handleCodeRequest(JSONObject data){
         String foodName = (String) data.get(FOOD_NAME);
         Date date = new Date();
-        String myDate = new SimpleDateFormat("dd/MM - HH:mm").format(date);
+        String myDate = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(date);
         addRowInTable(foodName, myDate);
     }
 

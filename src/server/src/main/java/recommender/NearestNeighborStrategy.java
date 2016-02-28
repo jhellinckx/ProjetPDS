@@ -53,9 +53,9 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 		List<Food> recommendations = new ArrayList<Food>(sortedRatingPredictions.keySet());
 
 		ArrayList<Food> resizedRecoms = new ArrayList<Food>();
-		for(int i=0;i<Math.min(recommendations.size(),_recommendations);i++) {
-			resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
-		}
+ 		if(recommendations.size()>_recommendations) {
+ 			resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
+ 		}
 		Map<Food, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
 		for(Food recom : resizedRecoms)
 			resizedRecomsWithCategoriesNumber.put(recom, categoriesNumberForID.get(recom.getId()));
