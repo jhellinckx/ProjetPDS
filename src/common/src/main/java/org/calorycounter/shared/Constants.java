@@ -129,6 +129,7 @@ public final class Constants {
 
 		/* Past Food */
 		public static final String PAST_FOODS_LIST = "d_past_foodslist";
+		public static final String PAST_FOODS_DATES = "d_past_foodsdates";
 
 		/* Recommendation Constraints */
 		public static final String MAX_ENERGY = "d_maxenergy";

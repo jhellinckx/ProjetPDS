@@ -14,8 +14,12 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,9 +33,12 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     private static ArrayList<String> _sportsname = new ArrayList<String>();
     private ArrayList<String> _productNames = new ArrayList<String>();
     private ArrayList<String> _productCodes = new ArrayList<String>();
+    private ArrayList<String> _productDates = new ArrayList<String>();
 
 
+    private static SimpleDateFormat _sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
+    private static Calendar calendar = Calendar.getInstance();
 
 
 
@@ -92,6 +99,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 Bundle b = new Bundle();
                 b.putStringArrayList("productNames",_productNames);
                 b.putStringArrayList("productCodes", _productCodes);
+                b.putStringArrayList("productDates", _productDates);
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
@@ -113,9 +121,10 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         recom_data.put(MAX_CARBOHYDRATES, carbo);
     }
 
-    public void sendCode(String code) {
+    public void sendCode(String code, String date) {
         JSONObject data = new JSONObject();
         _productCodes.add(code);
+        _productDates.add(date); //je l'ai mis ici cmme ca pr test sur emulateur on peut simplement ajouter la date en argument a la methode sendCode()
         data.put(FOOD_CODE, code);
         send(networkJSON(FOOD_CODE_REQUEST, data));
     }
@@ -124,9 +133,11 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
         if (!foodCodes.isEmpty()) {
             recom_data.put(PAST_FOODS_LIST, foodCodes);
+            recom_data.put(PAST_FOODS_DATES, _productDates);
         }
         else {
             recom_data.put(PAST_FOODS_LIST, null);
+            recom_data.put(PAST_FOODS_DATES, null);
         }
 
 
@@ -181,7 +192,8 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
-            sendCode(scanContent);
+            Date date = calendar.getTime();
+            sendCode(scanContent, _sdf.format(date));
         } else{
             Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();

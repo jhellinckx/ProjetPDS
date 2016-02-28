@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.lang.Math;
 
 public class AppliServer extends AbstractNIOServer{
 
@@ -384,6 +385,7 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
+		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
 		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
 		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
 		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
@@ -397,13 +399,18 @@ public class AppliServer extends AbstractNIOServer{
 			Float jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight());
 			maxEnergy = maxEnergy + jouleFromSport;
 		}
+		if(pastFoodsDates!=null && pastFoodsDates.size() == pastFoods.size()){
+			for (int i=0; i<pastFoodsDates.size();i++){
+				_userHistoryDatabase.addToHistory(user, pastFoods.get(i),pastFoodsDates.get(i));
+			}
+		}
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
 		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
-		for(Food food : recommendedFoods.subList(0,10)){
-			jsonFoods.add(food.toJSON());
+		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
+			jsonFoods.add(recommendedFoods.get(i).toJSON());
 		}
 		JSONObject sendData = new JSONObject();
 		sendData.put(RECOMMENDED_FOOD_LIST, jsonFoods);

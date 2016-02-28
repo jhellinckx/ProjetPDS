@@ -79,7 +79,7 @@ def addHistoryTable():
 		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		"idUser INT UNSIGNED NOT NULL,"
 		"idFood INT UNSIGNED NOT NULL,"
-		"date VARCHAR(16) NOT NULL,"
+		"date TEXT NOT NULL,"
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
 
