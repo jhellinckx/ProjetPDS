@@ -26,7 +26,7 @@ init_branch_index = 2
 total_threads = 5
 
 
-class Article:
+class BaseArticle:
 	BRANCH_INDEX_KEY = "branch_index"
 	IMAGE_KEY = "image_url"
 	PRICE_UNIT_KEY = "price_unit"
@@ -37,44 +37,59 @@ class Article:
 	SHORT_DESCRIPTION_KEY = "short_description"
 	FULL_DESCRIPTION_KEY = "full_description"
 
-	def __init__(self, branch, image, price_u, price_kg, details_url, categories, name, short, full):
-		self.branch_index = branch
-		self.image_url = image
-		self.price_unit = price_u
-		self.price_kg = price_kg
-		self.details_url = details_url
-		self.categories = categories
-		self.name = name
-		self.short_description = short
-		self.full_description = full
+	KEYS = 	[
+				BRANCH_INDEX_KEY,\
+				IMAGE_KEY,\
+				PRICE_UNIT_KEY,\
+				PRICE_KG_KEY,\
+				DETAILS_KEY,\
+				CATEGORIES_KEY,\
+				WEIRD_NAME_KEY,\
+				SHORT_DESCRIPTION_KEY,\
+				FULL_DESCRIPTION_KEY
+			]
+
+	def __init__(self):
+		self.infos = {}
+		for key in BaseArticle.KEYS:
+			self.infos[key] = None
+		self.infos[CATEGORIES_KEY] = []
 
 	def __repr__(self):
-		return self.toDict().__repr__()
+		return self.infos.__repr__()
 
-	def toDict(self):
-		return {
-			Article.BRANCH_INDEX_KEY : self.branch_index,
-			Article.IMAGE_KEY : self.image_url,
-			Article.PRICE_UNIT_KEY : self.price_unit,
-			Article.PRICE_KG_KEY : self.price_kg,
-			Article.DETAILS_KEY : self.details_url,
-			Article.CATEGORIES_KEY : self.categories,
-			Article.WEIRD_NAME_KEY : self.name,
-			Article.SHORT_DESCRIPTION_KEY : self.short_description,
-			Article.FULL_DESCRIPTION_KEY : self.full_description
+class DetailedArticle(BaseArticle):
+	PORTION_ENERGY_KJ_KEY = "portion_energy_kj"
+	PORTION_ENERGY_KCAL_KEY = "portion_energy_kcal"
+	PORTION_TOTAL_FAT_KEY = "portion_total_fat"
+	PORTION_SATURATED_FAT_KEY = "portion_saturated_fat"
+	PORTION_TOTAL_CARBOHYDRATES_KEY = "portion_total_carbohydrates"
+	PORTION_TOTAL_PROTEINS_KEY = "portion_proteins"
+	PORTION_FIBERS_KEY = "portion_fibers"
+	PORTION_SALT_KEY = "portion_salt"
+	PORTIONS_NUMBER_KEY = "portions_number"
 
-		}
+	PER_100G_ENERGY_KJ_KEY = "100g_energy_kj"
+	PER_100G_ENERGY_KCAL_KEY = "100g_energy_kcal"
+	PER_100G_TOTAL_FAT_KEY = "100g_total_fat"
+	PER_100G_SATURATED_FAT_KEY = "100g_saturated_fat"
+	PER_100G_TOTAL_CARBOHYDRATES_KEY = "100g_total_carbohydrates"
+	PER_100G_TOTAL_PROTEINS_KEY = "100g_proteins"
+	PER_100G_FIBERS_KEY = "100g_fibers"
+	PER_100G_SALT_KEY = "100g_salt"
 
-	@classmethod
-	def fromDict(cls, data_dict):
-		return cls(data_dict[BRANCH_INDEX_KEY], data_dict[Article.IMAGE_KEY], \
-			data_dict[Article.PRICE_UNIT_KEY], \
-			data_dict[Article.PRICE_KG_KEY], data_dict[Article.DETAILS_KEY], \
-			data_dict[Article.CATEGORIES_KEY], data_dict[Article.WEIRD_NAME_KEY], \
-			data_dict[Article.SHORT_DESCRIPTION_KEY], data_dict[Article.FULL_DESCRIPTION_KEY])
+	TOTAL_QUANTITY_KEY = "total_quantity"
+	INGREDIENTS_TEXT_KEY = "ingredients_text"
+	BAR_CODE_KEY = "bar_code"
+	ALLERGENS_KEY = "allergens"
+
+	def __init__(self, base_article):
+		BaseArticle.__init__(self)
 
 
-class ParserWorker(threading.Thread):
+
+
+class BranchParserWorker(threading.Thread):
 	index_lock = threading.Lock()
 	file_lock = threading.Lock()
 	branch_status_lock = threading.Lock()
@@ -92,42 +107,42 @@ class ParserWorker(threading.Thread):
 
 	@staticmethod
 	def nextBranchIndex():
-		ParserWorker.index_lock.acquire()
-		acquired_index = ParserWorker.branch_index
-		ParserWorker.branch_index += 1
-		ParserWorker.index_lock.release()
+		BranchParserWorker.index_lock.acquire()
+		acquired_index = BranchParserWorker.branch_index
+		BranchParserWorker.branch_index += 1
+		BranchParserWorker.index_lock.release()
 		return acquired_index
 
 	@staticmethod
 	def branchIndex():
-		ParserWorker.index_lock.acquire()
-		index = ParserWorker.branch_index
-		ParserWorker.index_lock.release()
+		BranchParserWorker.index_lock.acquire()
+		index = BranchParserWorker.branch_index
+		BranchParserWorker.index_lock.release()
 		return index
 
 	@staticmethod
 	def setBranchIndex(new_index):
-		ParserWorker.index_lock.acquire()
+		BranchParserWorker.index_lock.acquire()
 		try:
-			ParserWorker.branch_index = new_index
+			BranchParserWorker.branch_index = new_index
 		except Exception as e:
 			raise e
 		finally:
-			ParserWorker.index_lock.release()
+			BranchParserWorker.index_lock.release()
 
 	@staticmethod
 	def addBranchStatus(index, status_code):
-		ParserWorker.branch_status_lock.acquire()
+		BranchParserWorker.branch_status_lock.acquire()
 		try:
-			ParserWorker.branch_status[status_code].append(index)
+			BranchParserWorker.branch_status[status_code].append(index)
 		except Exception as e:
 			raise e
 		finally:
-			ParserWorker.branch_status_lock.release()
+			BranchParserWorker.branch_status_lock.release()
 
 	@staticmethod
-	def saveBranchArticles(articles):
-		ParserWorker.file_lock.acquire()
+	def saveBranchBaseArticles(articles):
+		BranchParserWorker.file_lock.acquire()
 		try:
 			with open(results_filename,"a") as f:
 				for article in articles:
@@ -136,11 +151,11 @@ class ParserWorker(threading.Thread):
 		except Exception as e:
 			raise e
 		finally:
-			ParserWorker.file_lock.release()
+			BranchParserWorker.file_lock.release()
 
 	@staticmethod
 	def writeError(e, branch):
-		ParserWorker.error_write_lock.acquire()
+		BranchParserWorker.error_write_lock.acquire()
 		try :
 			with open(error_messages_filename,"a") as f:
 				f.write(\
@@ -153,16 +168,16 @@ class ParserWorker(threading.Thread):
 		except Exception as e:
 			raise e 
 		finally:
-			ParserWorker.error_write_lock.release()
+			BranchParserWorker.error_write_lock.release()
 
 	def run(self):
 		self.running = True
 		while(self.running):
-			branch_index = ParserWorker.nextBranchIndex()
+			branch_index = BranchParserWorker.nextBranchIndex()
 			try:
 				self.parse_all_articles_from_branch(branch_index)
 			except Exception as e:
-				ParserWorker.writeError(e, branch_index)
+				BranchParserWorker.writeError(e, branch_index)
 
 	def stop(self):
 		self.running = False
@@ -174,14 +189,13 @@ class ParserWorker(threading.Thread):
 
 		# Check first if response is not empty
 		if "Pas de produits" in structured_response.get_text() :
-			ParserWorker.addBranchStatus(branch_index, ParserWorker.status_FAIL)
+			BranchParserWorker.addBranchStatus(branch_index, BranchParserWorker.status_FAIL)
 			return 
-		ParserWorker.addBranchStatus(branch_index, ParserWorker.status_OK)
+		BranchParserWorker.addBranchStatus(branch_index, BranchParserWorker.status_OK)
 		articles = []
 
-		# All attributes
-		image_url = None; price_unit = None; price_kg = None; details_url = None; categories=[];
-		weird_name = None; short_description = None; full_description = None;
+		# Init parsed product
+		parsed_article = BaseArticle()
 
 		# Find categories
 		script_container = structured_response.body.script.string
@@ -191,29 +205,30 @@ class ParserWorker(threading.Thread):
 			script_dict = script_container[open_bracket_index:close_bracket_index+1]
 			for elem in script_dict.split(","):
 				if "page_cat" in elem:
-					categories.append(elem.split(":")[1].strip(" ").strip("'"))
+					parsed_article.infos[BaseArticle.CATEGORIES_KEY].append(elem.split(":")[1].strip(" ").strip("'"))
 
 		# Iterate on each article/product
 		for article in structured_response.find("div",attrs={"id":"articles"}).children:
 			# Image url
 			article_image_wrap = article.find("div",attrs={"class":"imageWrap"})
 			if(article_image_wrap != None):
-				image_url = domain + str(article_image_wrap.find("img").attrs["src"]) 
+				parsed_article.infos[BaseArticle.IMAGE_KEY] = domain + str(article_image_wrap.find("img").attrs["src"]) 
 
 
 			# Prod infos
 			articles_infos_wrap = article.find("a", attrs={"class":"prodInfo"})
 			if(articles_infos_wrap != None):
-				if("href" in articles_infos_wrap.attrs) : details_url = domain + articles_infos_wrap.attrs["href"]
+				if("href" in articles_infos_wrap.attrs) : 
+					parsed_article.infos[BaseArticle.DETAILS_KEY] = domain + articles_infos_wrap.attrs["href"]
 				# Weird name
 				weird_name_tag = articles_infos_wrap.find("span", attrs={"name"})
-				if weird_name_tag != None : weird_name = weird_name_tag.string
+				if weird_name_tag != None : parsed_article.infos[BaseArticle.WEIRD_NAME_KEY] = weird_name_tag.string
 				# Short description
 				short_description_tag = articles_infos_wrap.find("span", attrs={"description"})
-				if short_description_tag != None : short_description = short_description_tag.string
+				if short_description_tag != None : parsed_article.infos[BaseArticle.SHORT_DESCRIPTION_KEY] = short_description_tag.string
 				# Full description
 				full_description_tag = articles_infos_wrap.find("p", attrs={"fullDescription"})
-				if full_description_tag != None : full_description = full_description_tag.string
+				if full_description_tag != None : parsed_article.infos[BaseArticle.FULL_DESCRIPTION_KEY] = full_description_tag.string
 
 			# Price 
 			article_price_div = article.find("div", attrs={"class":"price"})
@@ -223,7 +238,7 @@ class ParserWorker(threading.Thread):
 					script_tag = article_price_unit.find("script")
 					if script_tag != None:
 						try :
-							price_unit = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
+							parsed_article.infos[BaseArticle.PRICE_UNIT_KEY] = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
 						except :
 							sys.stdout.write("Price Unit not parsed\n")
 					
@@ -233,13 +248,13 @@ class ParserWorker(threading.Thread):
 					script_tag = article_price_kg.find("script")
 					if script_tag != None:
 						try :
-							price_kg = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
+							parsed_article.infos[BaseArticle.PRICE_KG_KEY] = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
 						except :
 							sys.stdout.write("Price kg not parsed\n")
-			parsed_article = Article(branch_index, image_url, price_unit, price_kg, details_url, categories, weird_name, short_description, full_description)
+			parsed_article = BaseArticle(branch_index, image_url, price_unit, price_kg, details_url, categories, weird_name, short_description, full_description)
 			articles.append(parsed_article)
 
-		ParserWorker.saveBranchArticles(articles)
+		BranchParserWorker.saveBranchBaseArticles(articles)
 
 def stopWorkers(workers):
 	# Stop threads
@@ -250,7 +265,7 @@ def stopWorkers(workers):
 def saveBranchStatus():
 	# Save used branch index
 	with open(branch_status_filename, "w+") as f:
-		f.write(str(ParserWorker.branch_status)+"\n")
+		f.write(str(BranchParserWorker.branch_status)+"\n")
 
 def branch_prompt():
 	def print_help():
@@ -262,15 +277,15 @@ def branch_prompt():
 	try:
 		with open(branch_status_filename,"r") as f:
 			all_branch_status = ast.literal_eval(f.read())
-			ParserWorker.branch_status = all_branch_status
-			size_OK = len(all_branch_status[ParserWorker.status_OK])
-			size_FAIL = len(all_branch_status[ParserWorker.status_FAIL])
+			BranchParserWorker.branch_status = all_branch_status
+			size_OK = len(all_branch_status[BranchParserWorker.status_OK])
+			size_FAIL = len(all_branch_status[BranchParserWorker.status_FAIL])
 			if size_OK == 0 and size_FAIL != 0 :
-				last_branch_index = all_branch_status[ParserWorker.status_FAIL][-1]
+				last_branch_index = all_branch_status[BranchParserWorker.status_FAIL][-1]
 			elif size_OK != 0 and size_FAIL == 0 :
-				last_branch_index = all_branch_status[ParserWorker.status_OK][-1]
+				last_branch_index = all_branch_status[BranchParserWorker.status_OK][-1]
 			elif size_OK != 0 and size_FAIL != 0 :
-				last_branch_index = max([all_branch_status[ParserWorker.status_OK][-1], all_branch_status[ParserWorker.status_FAIL][-1]])
+				last_branch_index = max([all_branch_status[BranchParserWorker.status_OK][-1], all_branch_status[BranchParserWorker.status_FAIL][-1]])
 			sys.stdout.write("Last checked branch index was "+str(last_branch_index)+".\nDo you want to continue with this index ? (y/n)")
 			user_input = raw_input().lower()
 			if user_input == "n" :
@@ -282,8 +297,8 @@ def branch_prompt():
 	except IOError:
 		pass
 
-	ParserWorker.branch_index = last_branch_index + 1
-	workers = [ParserWorker() for i in range(total_threads)]
+	BranchParserWorker.branch_index = last_branch_index + 1
+	workers = [BranchParserWorker() for i in range(total_threads)]
 	try:
 		for worker in workers :
 			worker.start()
@@ -297,12 +312,12 @@ def branch_prompt():
 			if user_input == "stop" or user_input == "exit":
 				stop = True
 			elif user_input == "index" :
-				sys.stdout.write("Current branch index : " + str(ParserWorker.branchIndex()) + "\n")
+				sys.stdout.write("Current branch index : " + str(BranchParserWorker.branchIndex()) + "\n")
 			elif user_input == "set" :
 				sys.stdout.write("Set new branch index : ")
 				new_branch = raw_input()
 				if(new_branch.isdigit()):
-					previous = ParserWorker.setBranchIndex(int(new_branch))
+					previous = BranchParserWorker.setBranchIndex(int(new_branch))
 					sys.stdout.write(str(previous) + " -> " + new_branch + "\n")
 				else:
 					sys.stdout.write(new_branch + " is not a digit.\n")
@@ -318,6 +333,7 @@ def branch_prompt():
 		saveBranchStatus()
 
 def details_prompt():
+
 	sys.stdout.write("Entering details !\n")
 
 if __name__ == "__main__" :
