@@ -58,7 +58,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
 
         Bundle b = new Bundle();
         b.putStringArrayList("productNames",_productNames);
-        b.putStringArrayList("productCodes", _productCodes);
         FragmentTransaction transaction = manager.beginTransaction();
         RecommendationPastFragment pastFrag = new RecommendationPastFragment();
         pastFrag.setArguments(b);
@@ -98,8 +97,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
                 RecommendationPastFragment frag = new RecommendationPastFragment();
                 Bundle b = new Bundle();
                 b.putStringArrayList("productNames",_productNames);
-                b.putStringArrayList("productCodes", _productCodes);
-                b.putStringArrayList("productDates", _productDates);
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
@@ -129,10 +126,10 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         send(networkJSON(FOOD_CODE_REQUEST, data));
     }
 
-    public void onNextPastClick(List<String> foodCodes){
+    public void onNextPastClick(){
 
-        if (!foodCodes.isEmpty()) {
-            recom_data.put(PAST_FOODS_LIST, foodCodes);
+        if (!_productCodes.isEmpty()) {
+            recom_data.put(PAST_FOODS_LIST, _productCodes);
             recom_data.put(PAST_FOODS_DATES, _productDates);
         }
         else {
