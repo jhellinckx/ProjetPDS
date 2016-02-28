@@ -116,12 +116,6 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(DATA_REQUEST)){
 				onDataRequest(msg);
 			}
-			else if(request.equals(DATA_REQUEST)){
-				onDataRequest(msg);
-			}
-			else if(request.equals(DATA_REQUEST)){
-				onDataRequest(msg);
-			}
 		}
 		
 	}

@@ -2,15 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-/**
- * Created by aurelien on 27/02/16.
- */
+
 public class MainWindow extends JFrame implements Observer, RequestDialog.RequestDialogSendListener {
     private static final Color BACKGROUND = new Color(60,63,65);
 
@@ -45,12 +45,12 @@ public class MainWindow extends JFrame implements Observer, RequestDialog.Reques
         this.setSize(1024,720);
         this.setResizable(false);
         this.setContentPane(contentPane);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
 
     }
 
     private void addListeners(){
+        addMainListener();
         addClearListener();
         addSpecificListener();
         addSendListener();
@@ -61,6 +61,17 @@ public class MainWindow extends JFrame implements Observer, RequestDialog.Reques
     private void initPanel(){
         button_panel.setBackground(BACKGROUND);
         request_panel.setBackground(BACKGROUND);
+    }
+
+    private void addMainListener(){
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                controler.terminateModel();
+                e.getWindow().dispose();
+            }
+        });
+
     }
 
     private void addClearListener(){

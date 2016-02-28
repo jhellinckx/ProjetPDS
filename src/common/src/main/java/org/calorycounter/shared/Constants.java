@@ -169,7 +169,7 @@ public final class Constants {
 			}
 		}
 
-		public static JSONObject networkJSON(String request, JSONObject data){
+		public static JSONObject networkJSON(String request, JSONObject data) {
 			JSONObject obj = new JSONObject();
 			obj.put(REQUEST_TYPE, request);
 			obj.put(DATA, data);

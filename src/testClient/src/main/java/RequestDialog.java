@@ -16,7 +16,7 @@ public class RequestDialog extends JDialog {
     private JPanel keys;
     private JPanel values;
     private JSplitPane divider_pane;
-    private HashMap<Integer, JTextField> map_keys;
+    private HashMap<Integer, JComboBox> map_keys;
     private HashMap<Integer, JTextField> map_values;
     private RequestDialogSendListener listener;
 
@@ -61,20 +61,38 @@ public class RequestDialog extends JDialog {
         public void onDialogSendAction(String name, List<String> keys, List<String> values);
     }
 
-    private void initMap(HashMap<Integer,JTextField> map, JPanel pan ) {
-        for (int i = 0; i < NUMBER_DATA_FIELDS; i++) {
-            JTextField text = new JTextField();
-            pan.add(text);
-            map.put(i, text);
+    private JComboBox initBox(List<String> key_s) {
+        JComboBox box = new JComboBox();
+        box.addItem(null);
+        for (String key : key_s){
+            box.addItem(key);
         }
+        return box;
 
     }
 
+    private void initKeys(){
+        List<String> key_s = RequestKeysContainer.getKeys();
+        for (int i = 0; i < NUMBER_DATA_FIELDS; i++) {
+            JComboBox box = initBox(key_s);
+            keys.add(box);
+            map_keys.put(i, box);
+        }
+    }
+
+    private void initValues(){
+        for (int i = 0; i < NUMBER_DATA_FIELDS; i++) {
+            JTextField text = new JTextField();
+            values.add(text);
+            map_values.put(i, text);
+        }
+    }
+
     private void initDataMap(){
-        map_keys = new HashMap<Integer, JTextField>();
-        map_values = new HashMap<Integer, JTextField>();
-        initMap(map_keys, keys);
-        initMap(map_values, values);
+        map_keys = new HashMap<>();
+        map_values = new HashMap<>();
+        initKeys();
+        initValues();
 
     }
 
@@ -111,32 +129,47 @@ public class RequestDialog extends JDialog {
         return (String) request.getSelectedItem();
     }
 
-    private List<String> getDataFromMap(HashMap<Integer, JTextField> map){
+    private List<String> getDataFromMapValues(){
         ArrayList<String> data = new ArrayList<>();
         JTextField field;
-        String text;
+        String value;
         for (int i = 0; i < NUMBER_DATA_FIELDS; i++){
-            field = map.get(i);
-            text = field.getText();
-            if(!text.isEmpty()){
-                data.add(text);
+            field = map_values.get(i);
+            value = field.getText();
+            if(!value.isEmpty()){
+                data.add(value);
             }
         }
         return data;
     }
 
+    private List<String> getDataFromMapKeys(){
+        ArrayList<String> data = new ArrayList<>();
+        JComboBox box;
+        String key;
+        for (int i = 0; i < NUMBER_DATA_FIELDS; i++){
+            box = map_keys.get(i);
+            key = (String) box.getSelectedItem();
+            if (key != null){
+                data.add(key);
+            }
+        }
+        return data;
+
+    }
+
     private List<String> getValues(){
-        return getDataFromMap(map_values);
+        return getDataFromMapValues();
     }
 
     private List<String> getKeys(){
-        return getDataFromMap(map_keys);
+        return getDataFromMapKeys();
     }
 
     private void clearFields(){
         request.setSelectedIndex(0);
         for (int i = 0; i < NUMBER_DATA_FIELDS; i++){
-            map_keys.get(i).setText(null);
+            map_keys.get(i).setSelectedIndex(0);
             map_values.get(i).setText(null);
         }
     }

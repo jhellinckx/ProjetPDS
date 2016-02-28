@@ -52,4 +52,12 @@ public class ClientModel  implements Observable{
             System.err.println("Getting Error: " + e.getMessage());
         }
     }
+
+    public void closeChannel(){
+        try {
+            channel.terminateConnection();
+        } catch (IOException e){
+            System.err.println("Socket Closing Error: " + e.getMessage());
+        }
+    }
 }

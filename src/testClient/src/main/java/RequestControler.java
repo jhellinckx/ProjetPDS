@@ -24,4 +24,8 @@ public class RequestControler {
     public void getResponse(){
         model.getFromNetwork();
     }
+
+    public void terminateModel(){
+        model.closeChannel();
+    }
 }

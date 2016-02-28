@@ -46,7 +46,6 @@ public class ClientSocket implements NetworkChannel{
     public void write(JSONObject msg) throws IOException{
         try{
             byte[] rawMsg = msg.toString().getBytes(ENCODING);
-            System.out.println(rawMsg.length);
             outstream.writeInt(rawMsg.length);
             outstream.write(rawMsg, 0, rawMsg.length);
         }
@@ -54,6 +53,11 @@ public class ClientSocket implements NetworkChannel{
             System.err.println("Encoding Error: " + e.getMessage());
         }
 
+    }
+
+    @Override
+    public void terminateConnection() throws IOException{
+        socketClient.close();
     }
 
 }
