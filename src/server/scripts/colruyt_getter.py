@@ -19,9 +19,14 @@ cookie_setup_url = domain + "/cogo/homepage"
 search_by_branch_url = domain + "/cogo/fr/branch/"
 
 last_cookies_filename = "last_cookies.txt"
-results_filename = "results_branch_articles.txt"
+
+branch_results_filename = "results_branch_articles.txt"
 branch_status_filename = "branch_status.txt"
-error_messages_filename = "errors.txt"
+branch_error_messages_filename = "branch_errors.txt"
+
+details_results_filename = "results_details_articles.txt"
+details_status_filename = "details_status.txt"
+details_error_messages_filename = "details_errors.txt"
 
 init_branch_index = 2
 total_threads = 5
@@ -183,7 +188,7 @@ class BranchParserWorker(threading.Thread):
 	def saveBranchBaseArticles(articles):
 		BranchParserWorker.file_lock.acquire()
 		try:
-			with open(results_filename,"a") as f:
+			with open(branch_results_filename,"a") as f:
 				for article in articles:
 					f.write(repr(article))
 					f.write("\n")
@@ -196,7 +201,7 @@ class BranchParserWorker(threading.Thread):
 	def writeError(e, branch):
 		BranchParserWorker.error_write_lock.acquire()
 		try :
-			with open(error_messages_filename,"a") as f:
+			with open(branch_error_messages_filename,"a") as f:
 				f.write(\
 					"-" * 40 \
 					+ "\n" + str(type(e)) + " : " + str(e) + \
@@ -211,17 +216,17 @@ class BranchParserWorker(threading.Thread):
 
 	def run(self):
 		self.running = True
-		while(self.running):
+		while self.running :
 			branch_index = BranchParserWorker.nextBranchIndex()
 			try:
-				self.parse_all_articles_from_branch(branch_index)
+				self.parseArticlesFromBranch(branch_index)
 			except Exception as e:
 				BranchParserWorker.writeError(e, branch_index)
 
 	def stop(self):
 		self.running = False
 
-	def parse_all_articles_from_branch(self, branch_index):
+	def parseArticlesFromBranch(self, branch_index):
 		# HTTP GET and use BeautifulSoup to structure HTML tree
 		raw_response = requests.get(search_by_branch_url + str(branch_index), cookies=self.cookies)
 		structured_response = BeautifulSoup(raw_response.content, "lxml")
@@ -297,20 +302,76 @@ class BranchParserWorker(threading.Thread):
 
 class DetailsParserWorker(threading.Thread):
 	articles = []
-	articlesLock = threading.Lock()
+
+	articles_lock = threading.Lock()
+	file_lock = threading.Lock()
+	error_write_lock = threading.Lock()
+
+	def __init__(self):
+		threading.Thread.__init__(self)
+		# Need cookies else Colruyt sends a 'Service Unavailable' reponse
+		self.cookies = requests.get(cookie_setup_url).cookies 
 
 	@staticmethod 
 	def nextArticle():
 		next_article = None
-		DetailsParserWorker.articlesLock.acquire()
+		DetailsParserWorker.articles_lock.acquire()
 		try:
 			if not len(articles) == 0:
 				next_article = articles.pop(-1)
 		except Exception as e:
 			raise e
 		finally:
-			DetailsParserWorker.articlesLock.release()
+			DetailsParserWorker.articles_lock.release()
 		return next_article
+
+	@staticmethod
+	def remaining():
+		length = None
+		DetailsParserWorker.articles_lock.acquire()
+		try:
+			length = len(articles)
+		except Exception as e:
+			raise e
+		finally:
+			DetailsParserWorker.articles_lock.release()
+		return length
+
+	@staticmethod
+	def writeError(e, url):
+		BranchParserWorker.error_write_lock.acquire()
+		try :
+			with open(details_error_messages_filename,"a") as f:
+				f.write(\
+					"-" * 40 \
+					+ "\n" + str(type(e)) + " : " + str(e) + \
+					"\nFOR URL -> " + str(url)+"\n")
+				f.write(">>> FORMAT <<<\n")
+				traceback.print_exc(file=f)
+				f.write(">>> END FORMAT <<<\n" + "-" *40)
+		except Exception as e:
+			raise e 
+		finally:
+			BranchParserWorker.error_write_lock.release()
+
+
+	def run(self):
+		self.running = True
+		while self.running :
+			next_article = DetailsParserWorker.nextArticle()
+			if next_article == None:
+				self.stop()
+			else:
+				self.parseArticleDetails(next_article)
+
+	def stop(self):
+		self.running = False
+
+
+
+	def parseArticleDetails(self, article):
+		pass
+
 
 def stopWorkers(workers):
 	# Stop threads
@@ -322,6 +383,15 @@ def saveBranchStatus():
 	# Save used branch index
 	with open(branch_status_filename, "w+") as f:
 		f.write(str(BranchParserWorker.branch_status)+"\n")
+
+def saveDetailsStatus():
+	pass
+
+def saveRemainingArticles():
+	with open(branch_results_filename,"w+") as f:
+		for article in DetailsParserWorker.articles :
+			f.write(repr(article))
+			f.write("\n")
 
 def branch_prompt():
 	def print_help():
@@ -389,16 +459,47 @@ def branch_prompt():
 		saveBranchStatus()
 
 def details_prompt():
+	def print_help():
+		sys.stdout.write("exit/stop : terminate all workers\n")
+		sys.stdout.write("status    : get remaining articles to parse\n")
 	try:
-		with open(results_filename,"r") as f:
+		with open(branch_results_filename,"r") as f:
+			for line in f:
+				DetailsParserWorker.articles.append(BaseArticle(ast.literal_eval(line.rstrip("\n"))))
 	except IOError as e:
-		sys.stdout.write("Failed to start details script :\nError : file with branch article (" + results_filename + ") not found (start branch script first) !\n")
+		sys.stdout.write("Failed to start details script :\nError : file with branch article (" + branch_results_filename + ") not found (start branch script first) !\n")
+	if not len(DetailsParserWorker.articles) == 0:
+		workers = [DetailsParserWorker() for i in range(total_threads)]
+		try:
+			for worker in workers:
+				worker.start()
+			stop = False
+			print_help()
+			while not stop:
+				sys.stdout.write("[Branch prompt] Type help for a list of commands.\n")
+				sys.stdout.write(">> ")
+				user_input = raw_input().lower()
+				if user_input == "stop" or user_input == "exit":
+					stop = True
+				elif user_input == "status":
+					sys.stdout.write("Remaining : " + str(DetailsParserWorker.remaining())+"\n")
+				elif user_input == "help" :
+					print_help()
+				else:
+					sys.stdout.write("Command unknown.\n")
+		except:
+			sys.stdout.write("Unexpected error : " + str(sys.exc_info()[0]))
+			
+		finally:
+			stopWorkers(workers)
+			saveRemainingArticles()
+			saveDetailsStatus()
 
 if __name__ == "__main__" :
 	def print_help():
 		sys.stdout.write("exit/stop  : leave prompt and terminate process\n")
 		sys.stdout.write("branch     : start Colruyt branch parsing\n")
-		sys.stdout.write("details    : use " + results_filename + " to parse Colruyt products details\n")
+		sys.stdout.write("details    : use " + branch_results_filename + " to parse Colruyt products details\n")
 	print_help()
 	exit = False
 	while not exit:
