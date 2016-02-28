@@ -120,6 +120,7 @@ public final class Constants {
 		public static final String HISTORY_NAME = "d_history_name";
 		public static final String HISTORY_DATE = "d_history_date";
 		public static final String HISTORY_NAMES_DATES = "d_history_dates";
+		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;

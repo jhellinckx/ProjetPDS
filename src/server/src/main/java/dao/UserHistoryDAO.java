@@ -17,4 +17,6 @@ public interface UserHistoryDAO {
 
 	List<String> getHistoryDates(User user) throws DAOException;
 
+	String getHistoryDate(User user, Food food) throws DAOException ;
+
 }

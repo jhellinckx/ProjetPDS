@@ -16,7 +16,7 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_appli"
-db_properties_filename = "../../dao/dao.properties"
+db_properties_filename = "../../src/main/resources/dao.properties"
 ingredients_filename = "raw/db_ingredients.txt"
 recipes_filename = "raw/db_recipes.txt"
 def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quantity,first_time,addWeight,addHistory):
@@ -78,7 +78,17 @@ def addHistoryTable():
 		"CREATE TABLE `Users_history` ("
 		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		"idUser INT UNSIGNED NOT NULL,"
-		"idFood INT UNSIGNEDBADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
+		"idFood INT UNSIGNED NOT NULL,"
+		"date VARCHAR(16) NOT NULL,"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+	history_fk_food_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	history_fk_user_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idUser_id_user FOREIGN KEY (idUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE"
 		)
 
 	commands = [history_table_command,history_fk_user_command,history_fk_food_command]

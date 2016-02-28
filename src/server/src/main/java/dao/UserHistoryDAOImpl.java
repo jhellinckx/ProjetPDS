@@ -17,6 +17,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_INSERT = "INSERT INTO Users_history (idUser,idFood,date) VALUES (?, ?, ?)";
 	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ?";
+	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ?";
+
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -103,5 +105,27 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
 		return historyDates;
+	}
+
+	@Override
+	public String getHistoryDate(User user, Food food) throws DAOException {
+		String historyDate = new String();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_HISTORY_DATE_FOR_FOOD, false, user.getId(), food.getId() );
+			resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				historyDate = resultSet.getString("date");
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return historyDate;
 	}
 }
