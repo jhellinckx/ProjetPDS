@@ -22,6 +22,7 @@ import dao.FoodDAO;
 import dao.UserPrefDAO;
 import dao.SportsDAO;
 import dao.CategoryRatingDAO;
+import dao.UserHistoryDAO;
 import dao.DAOException;
 
 import recommender.RecommenderSystem;
@@ -45,6 +46,7 @@ public class AppliServer extends AbstractNIOServer{
 	private UserPrefDAO _userprefDatabase;
 	private SportsDAO _sportsDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
+	private UserHistoryDAO _userHistoryDatabase;
 
 	/* Recommendations fields */
 	private KnowledgeBasedFilter _knowledgeBased;
@@ -58,6 +60,7 @@ public class AppliServer extends AbstractNIOServer{
 		_userprefDatabase = _daoFactory.getUserPrefDAO();
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
+		_userHistoryDatabase = _daoFactory.getUserHistoryDAO();
 
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		//_hybridStrategy = new CascadeStrategy();
@@ -433,8 +436,8 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = new JSONObject();
 		//get foodNames & date
-		List<String> foodNames = new ArrayList<String>();
-		List<String> dates = new ArrayList<String>();
+		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNames(user);
+		List<String> dates = _userHistoryDatabase.getHistoryDates(user);
 
 		//Make JSON response
 		if(foodNames.size() == dates.size()){
