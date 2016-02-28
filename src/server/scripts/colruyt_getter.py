@@ -56,14 +56,14 @@ class BaseArticle:
 			self.infos[key] = None
 			self.infos[BaseArticle.CATEGORIES_KEY] = []
 		if isinstance(article, dict):
-			self.from_dict(article)
+			self.fromDict(article)
 		elif isinstance(article, BaseArticle):
-			self.from_dict(article.infos)
+			self.fromDict(article.infos)
 
 	def __repr__(self):
 		return self.infos.__repr__()
 
-	def from_dict(self, infos_dict):
+	def fromDict(self, infos_dict):
 		if isinstance(infos_dict, dict):
 			for key in infos_dict:
 				if key in BaseArticle.KEYS :
@@ -295,6 +295,23 @@ class BranchParserWorker(threading.Thread):
 
 		BranchParserWorker.saveBranchBaseArticles(articles)
 
+class DetailsParserWorker(threading.Thread):
+	articles = []
+	articlesLock = threading.Lock()
+
+	@staticmethod 
+	def nextArticle():
+		next_article = None
+		DetailsParserWorker.articlesLock.acquire()
+		try:
+			if not len(articles) == 0:
+				next_article = articles.pop(-1)
+		except Exception as e:
+			raise e
+		finally:
+			DetailsParserWorker.articlesLock.release()
+		return next_article
+
 def stopWorkers(workers):
 	# Stop threads
 	for worker in workers:
@@ -372,8 +389,10 @@ def branch_prompt():
 		saveBranchStatus()
 
 def details_prompt():
-
-	sys.stdout.write("Entering details !\n")
+	try:
+		with open(results_filename,"r") as f:
+	except IOError as e:
+		sys.stdout.write("Failed to start details script :\nError : file with branch article (" + results_filename + ") not found (start branch script first) !\n")
 
 if __name__ == "__main__" :
 	def print_help():
