@@ -23,7 +23,7 @@ branch_status_filename = "branch_status.txt"
 error_messages_filename = "errors.txt"
 
 init_branch_index = 2
-total_threads = 1
+total_threads = 5
 
 
 class Article:
@@ -158,9 +158,7 @@ class ParserWorker(threading.Thread):
 	def run(self):
 		self.running = True
 		while(self.running):
-			
 			branch_index = ParserWorker.nextBranchIndex()
-			print "Trying -> " + str(branch_index)
 			try:
 				self.parse_all_articles_from_branch(branch_index)
 			except Exception as e:
@@ -175,7 +173,7 @@ class ParserWorker(threading.Thread):
 		structured_response = BeautifulSoup(raw_response.content, "lxml")
 
 		# Check first if response is not empty
-		if structured_response.find("Pas de produits"):
+		if "Pas de produits" in structured_response.get_text() :
 			ParserWorker.addBranchStatus(branch_index, ParserWorker.status_FAIL)
 			return 
 		ParserWorker.addBranchStatus(branch_index, ParserWorker.status_OK)
@@ -243,19 +241,23 @@ class ParserWorker(threading.Thread):
 
 		ParserWorker.saveBranchArticles(articles)
 
-def onExit(workers):
+def stopWorkers(workers):
 	# Stop threads
-	print "stopping workers"
 	for worker in workers:
 		worker.stop()
 		worker.join()
-	print "stopped workers"
 
+def saveBranchStatus():
 	# Save used branch index
 	with open(branch_status_filename, "w+") as f:
 		f.write(str(ParserWorker.branch_status)+"\n")
 
-if __name__ == "__main__" :
+def branch_prompt():
+	def print_help():
+		sys.stdout.write("exit/stop : terminate all workers\n")
+		sys.stdout.write("index     : get current branch index\n")
+		sys.stdout.write("set       : set new branch index\n")
+
 	last_branch_index = 1
 	try:
 		with open(branch_status_filename,"r") as f:
@@ -287,13 +289,13 @@ if __name__ == "__main__" :
 			worker.start()
 
 		stop = False
+		print_help()
 		while not stop :
-			sys.stdout.write("Type help for a list of command.\n")
+			sys.stdout.write("[Branch prompt] Type help for a list of commands.\n")
 			sys.stdout.write(">> ")
 			user_input = raw_input().lower()
 			if user_input == "stop" or user_input == "exit":
 				stop = True
-				onExit(workers)
 			elif user_input == "index" :
 				sys.stdout.write("Current branch index : " + str(ParserWorker.branchIndex()) + "\n")
 			elif user_input == "set" :
@@ -305,12 +307,40 @@ if __name__ == "__main__" :
 				else:
 					sys.stdout.write(new_branch + " is not a digit.\n")
 			elif user_input == "help" :
-				sys.stdout.write("exit/stop : terminate all workers and exit\n")
-				sys.stdout.write("index     : get current branch index\n")
-				sys.stdout.write("set       : set new branch index\n")
+				print_help()
+			else:
+				sys.stdout.write("Command unknown.\n")
 	except:
 		sys.stdout.write("Unexpected error : " + str(sys.exc_info()[0]))
-		onExit(workers)
+		
+	finally:
+		stopWorkers(workers)
+		saveBranchStatus()
+
+def details_prompt():
+	sys.stdout.write("Entering details !\n")
+
+if __name__ == "__main__" :
+	def print_help():
+		sys.stdout.write("exit/stop  : leave prompt and terminate process\n")
+		sys.stdout.write("branch     : start Colruyt branch parsing\n")
+		sys.stdout.write("details    : use " + results_filename + " to parse Colruyt products details\n")
+	print_help()
+	exit = False
+	while not exit:
+		user_input = raw_input("[Main prompt] Type help for a list of commands.\n>> ").lower()
+		if user_input == "help":
+			print_help()
+		elif user_input == "exit" or user_input == "stop":
+			exit = True
+		elif user_input == "branch":
+			branch_prompt()
+		elif user_input == "details":
+			details_prompt()
+		else :
+			sys.stdout.write("Command unknown.\n")
+
+
 
 
 
