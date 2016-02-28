@@ -10,6 +10,7 @@ import base64
 import threading
 from time import sleep
 import traceback
+from copy import deepcopy
 
 from bs4 import BeautifulSoup
 
@@ -49,14 +50,28 @@ class BaseArticle:
 				FULL_DESCRIPTION_KEY
 			]
 
-	def __init__(self):
+	def __init__(self, article = None):
 		self.infos = {}
 		for key in BaseArticle.KEYS:
-			self.infos[key] = None
-		self.infos[CATEGORIES_KEY] = []
+				self.infos[key] = None
+			self.infos[CATEGORIES_KEY] = []
+		if isinstance(article, dict):
+			self.from_dict(article)
+		elif isinstance(article, BaseArticle):
+			self.from_dict(article.infos)
 
 	def __repr__(self):
 		return self.infos.__repr__()
+
+	def from_dict(self, infos_dict):
+		if isinstance(infos_dict, dict):
+			for key in infos_dict:
+				if key in BaseArticle.KEYS :
+					if key == BaseArticle.CATEGORIES_KEY :
+						self.infos[key] = deepcopy(infos_dict[key])
+					else : 
+						self.infos[key] = infos_dict[key]
+
 
 class DetailedArticle(BaseArticle):
 	PORTION_ENERGY_KJ_KEY = "portion_energy_kj"
@@ -84,7 +99,7 @@ class DetailedArticle(BaseArticle):
 	ALLERGENS_KEY = "allergens"
 
 	def __init__(self, base_article):
-		BaseArticle.__init__(self)
+		BaseArticle.__init__(self, base_article)
 
 
 
@@ -251,7 +266,6 @@ class BranchParserWorker(threading.Thread):
 							parsed_article.infos[BaseArticle.PRICE_KG_KEY] = base64.b64decode(script_tag.string.split(",")[0].split("(")[1].strip("'"))
 						except :
 							sys.stdout.write("Price kg not parsed\n")
-			parsed_article = BaseArticle(branch_index, image_url, price_unit, price_kg, details_url, categories, weird_name, short_description, full_description)
 			articles.append(parsed_article)
 
 		BranchParserWorker.saveBranchBaseArticles(articles)
