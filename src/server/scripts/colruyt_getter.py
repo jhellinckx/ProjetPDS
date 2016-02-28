@@ -53,8 +53,8 @@ class BaseArticle:
 	def __init__(self, article = None):
 		self.infos = {}
 		for key in BaseArticle.KEYS:
-				self.infos[key] = None
-			self.infos[CATEGORIES_KEY] = []
+			self.infos[key] = None
+			self.infos[BaseArticle.CATEGORIES_KEY] = []
 		if isinstance(article, dict):
 			self.from_dict(article)
 		elif isinstance(article, BaseArticle):
@@ -97,6 +97,30 @@ class DetailedArticle(BaseArticle):
 	INGREDIENTS_TEXT_KEY = "ingredients_text"
 	BAR_CODE_KEY = "bar_code"
 	ALLERGENS_KEY = "allergens"
+
+	KEYS = 	[
+				PORTION_ENERGY_KJ_KEY,\
+				PORTION_ENERGY_KCAL_KEY,\
+				PORTION_TOTAL_FAT_KEY,\
+				PORTION_SATURATED_FAT_KEY,\
+				PORTION_TOTAL_CARBOHYDRATES_KEY,\
+				PORTION_TOTAL_PROTEINS_KEY,\
+				PORTION_FIBERS_KEY,\
+				PORTION_SALT_KEY,\
+				PORTIONS_NUMBER_KEY,\
+				PER_100G_ENERGY_KJ_KEY,\
+				PER_100G_ENERGY_KCAL_KEY,\
+				PER_100G_TOTAL_FAT_KEY,\
+				PER_100G_SATURATED_FAT_KEY,\
+				PER_100G_TOTAL_CARBOHYDRATES_KEY,\
+				PER_100G_TOTAL_PROTEINS_KEY,\
+				PER_100G_FIBERS_KEY,\
+				PER_100G_SALT_KEY,\
+				TOTAL_QUANTITY_KEY,\
+				INGREDIENTS_TEXT_KEY,\
+				BAR_CODE_KEY,\
+				ALLERGENS_KEY
+			]
 
 	def __init__(self, base_article):
 		BaseArticle.__init__(self, base_article)
@@ -211,6 +235,7 @@ class BranchParserWorker(threading.Thread):
 
 		# Init parsed product
 		parsed_article = BaseArticle()
+		parsed_article.infos[BaseArticle.BRANCH_INDEX_KEY] = branch_index
 
 		# Find categories
 		script_container = structured_response.body.script.string
