@@ -11,8 +11,8 @@ import threading
 from time import sleep
 import traceback
 from copy import deepcopy
-
 from bs4 import BeautifulSoup
+
 domain = "https://colruyt.collectandgo.be"
 cookie_setup_url = domain + "/cogo/homepage"
 search_by_branch_url = domain + "/cogo/fr/branch/"
@@ -28,7 +28,7 @@ details_status_filename = "details_status.txt"
 details_error_messages_filename = "details_errors.txt"
 
 init_branch_index = 2
-total_threads = 5
+total_threads = 1
 
 
 class BaseArticle:
@@ -447,12 +447,12 @@ class DetailsParserWorker(threading.Thread):
 					for prep_tag in all_prep_tags :
 						prep_tag_h3 = prep_tag.find("h3")
 						if prep_tag_h3 != None:
-							if "Pas préparé" == prep_tag_h3.string:
+							if "Pas préparé".decode("unicode-escape") == prep_tag_h3.string:
 								subtitles_tags = prep_tag.find_all("p",attrs={"class":"subtitle"})
 								for subtitle_tag in subtitles_tags:
 									if "100g" in subtitle_tag.string :
 										# Per 100g nutrition values
-										nutr_container = subtitle_tag.parent.find("div",attrs={"row value-container"})
+										nutr_container = subtitle_tag.parent.find("div",attrs={"class":"row value-container"})
 										if nutr_container != None:
 											for nutr_attr in nutr_container.children:
 												span_name = nutr_attr.find("span",attrs={"class":"val-name"})
@@ -460,29 +460,29 @@ class DetailsParserWorker(threading.Thread):
 												if span_name != None and span_nbr != None : 
 													span_name_string = span_name.string
 													span_nbr_string = span_nbr.string
-													if span_name_string == "Énergie kcal":
-														detailed_article.infos[PER_100G_ENERGY_KCAL_KEY] = span_nbr_string
-													elif span_name_string == "Énergie kJ":
-														detailed_article.infos[PER_100G_ENERGY_KJ_KEY] = span_nbr_string
+													if span_name_string == "Énergie kcal".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PER_100G_ENERGY_KCAL_KEY] = span_nbr_string
+													elif span_name_string == "Énergie kJ".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PER_100G_ENERGY_KJ_KEY] = span_nbr_string
 													elif span_name_string == "Total graisses":
-														detailed_article.infos[PER_100G_TOTAL_FAT_KEY] = span_nbr_string
-													elif span_name_string == "Graisses saturées":
-														detailed_article.infos[PER_100G_SATURATED_FAT_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PER_100G_TOTAL_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Graisses saturées".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PER_100G_SATURATED_FAT_KEY] = span_nbr_string
 													elif span_name_string == "Total glucides":
-														detailed_article.infos[PER_100G_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PER_100G_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
 													elif span_name_string == "Sucres":
-														detailed_article.infos[PER_100G_SUGARS_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PER_100G_SUGARS_KEY] = span_nbr_string
 													elif span_name_string == "Fibres alimentaires":
-														detailed_article.infos[PER_100G_FIBERS_KEY] = span_nbr_string
-													elif span_name_string == "Protéines":
-														detailed_article.infos[PER_100G_TOTAL_PROTEINS_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PER_100G_FIBERS_KEY] = span_nbr_string
+													elif span_name_string == "Protéines".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PER_100G_TOTAL_PROTEINS_KEY] = span_nbr_string
 													elif span_name_string == "Sel":
-														detailed_article.infos[PER_100G_SALT_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PER_100G_SALT_KEY] = span_nbr_string
 									elif "portion" in subtitle_tag.string :
 										# Per portion nutrition values
 										if "(" in subtitle_tag.string and ")" in subtitle_tag.string :
-											detailed_article.infos[PORTION_INFO_KEY] = subtitle_tag.string[subtitle_tag.string.find("(")+1:subtitle_tag.string.find(")")]
-										nutr_container = subtitle_tag.parent.find("div",attrs={"row value-container"})
+											detailed_article.infos[DetailedArticle.PORTION_INFO_KEY] = subtitle_tag.string[subtitle_tag.string.find("(")+1:subtitle_tag.string.find(")")]
+										nutr_container = subtitle_tag.parent.find("div",attrs={"class":"row value-container"})
 										if nutr_container != None:
 											for nutr_attr in nutr_container.children:
 												span_name = nutr_attr.find("span",attrs={"class":"val-name"})
@@ -490,24 +490,24 @@ class DetailsParserWorker(threading.Thread):
 												if span_name != None and span_nbr != None : 
 													span_name_string = span_name.string
 													span_nbr_string = span_nbr.string
-													if span_name_string == "Énergie kcal":
-														detailed_article.infos[PORTION_ENERGY_KCAL_KEY] = span_nbr_string
-													elif span_name_string == "Énergie kJ":
-														detailed_article.infos[PORTION_ENERGY_KJ_KEY] = span_nbr_string
+													if span_name_string == "Énergie kcal".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PORTION_ENERGY_KCAL_KEY] = span_nbr_string
+													elif span_name_string == "Énergie kJ".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PORTION_ENERGY_KJ_KEY] = span_nbr_string
 													elif span_name_string == "Total graisses":
-														detailed_article.infos[PORTION_TOTAL_FAT_KEY] = span_nbr_string
-													elif span_name_string == "Graisses saturées":
-														detailed_article.infos[PORTION_SATURATED_FAT_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PORTION_TOTAL_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Graisses saturées".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PORTION_SATURATED_FAT_KEY] = span_nbr_string
 													elif span_name_string == "Total glucides":
-														detailed_article.infos[PORTION_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PORTION_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
 													elif span_name_string == "Sucres":
-														detailed_article.infos[PORTION_SUGARS_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PORTION_SUGARS_KEY] = span_nbr_string
 													elif span_name_string == "Fibres alimentaires":
-														detailed_article.infos[PORTION_FIBERS_KEY] = span_nbr_string
-													elif span_name_string == "Protéines":
-														detailed_article.infos[PORTION_TOTAL_PROTEINS_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PORTION_FIBERS_KEY] = span_nbr_string
+													elif span_name_string == "Protéines".decode("unicode-escape"):
+														detailed_article.infos[DetailedArticle.PORTION_TOTAL_PROTEINS_KEY] = span_nbr_string
 													elif span_name_string == "Sel":
-														detailed_article.infos[PORTION_SALT_KEY] = span_nbr_string
+														detailed_article.infos[DetailedArticle.PORTION_SALT_KEY] = span_nbr_string
 			# Allergens
 			allergen_tag = prod_details_div.find("div",attrs={"id":"allergenen"})
 			if allergen_tag != None:
@@ -518,6 +518,8 @@ class DetailsParserWorker(threading.Thread):
 					elif "traces" in title_tag.string:
 						for sibling in title_tag.next_siblings:
 							detailed_article.infos[DetailedArticle.ALLERGENS_TRACE_OF_KEY].append(sibling.text)
+
+		DetailsParserWorker.saveDetailedArticle(detailed_article)
 
 
 def stopWorkers(workers):
@@ -623,7 +625,7 @@ def details_prompt():
 			stop = False
 			print_help()
 			while not stop:
-				sys.stdout.write("[Branch prompt] Type help for a list of commands.\n")
+				sys.stdout.write("[Details prompt] Type help for a list of commands.\n")
 				sys.stdout.write(">> ")
 				user_input = raw_input().lower()
 				if user_input == "stop" or user_input == "exit":
