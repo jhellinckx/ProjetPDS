@@ -58,7 +58,7 @@ class BaseArticle:
 		self.infos = {}
 		for key in BaseArticle.KEYS:
 			self.infos[key] = None
-			self.infos[BaseArticle.CATEGORIES_KEY] = []
+		self.infos[BaseArticle.CATEGORIES_KEY] = []
 		if isinstance(article, dict):
 			self.fromDict(article)
 		elif isinstance(article, BaseArticle):
@@ -85,16 +85,18 @@ class DetailedArticle(BaseArticle):
 	PORTION_TOTAL_FAT_KEY = "portion_total_fat"
 	PORTION_SATURATED_FAT_KEY = "portion_saturated_fat"
 	PORTION_TOTAL_CARBOHYDRATES_KEY = "portion_total_carbohydrates"
+	PORTION_SUGARS_KEY = "portion_sugars"
 	PORTION_TOTAL_PROTEINS_KEY = "portion_proteins"
 	PORTION_FIBERS_KEY = "portion_fibers"
 	PORTION_SALT_KEY = "portion_salt"
-	PORTIONS_NUMBER_KEY = "portions_number"
+	PORTION_INFO_KEY = "portion_info"
 
 	PER_100G_ENERGY_KJ_KEY = "100g_energy_kj"
 	PER_100G_ENERGY_KCAL_KEY = "100g_energy_kcal"
 	PER_100G_TOTAL_FAT_KEY = "100g_total_fat"
 	PER_100G_SATURATED_FAT_KEY = "100g_saturated_fat"
 	PER_100G_TOTAL_CARBOHYDRATES_KEY = "100g_total_carbohydrates"
+	PER_100G_SUGARS_KEY = "100g_sugars"
 	PER_100G_TOTAL_PROTEINS_KEY = "100g_proteins"
 	PER_100G_FIBERS_KEY = "100g_fibers"
 	PER_100G_SALT_KEY = "100g_salt"
@@ -102,7 +104,9 @@ class DetailedArticle(BaseArticle):
 	TOTAL_QUANTITY_KEY = "total_quantity"
 	INGREDIENTS_TEXT_KEY = "ingredients_text"
 	BAR_CODE_KEY = "bar_code"
-	ALLERGENS_KEY = "allergens"
+
+	ALLERGENS_CONTAINS_KEY = "allergens_contains"
+	ALLERGENS_TRACE_OF_KEY = "allergens_trace"
 
 	KEYS = 	[
 				REAL_DETAILS_URL_KEY,\
@@ -111,26 +115,33 @@ class DetailedArticle(BaseArticle):
 				PORTION_TOTAL_FAT_KEY,\
 				PORTION_SATURATED_FAT_KEY,\
 				PORTION_TOTAL_CARBOHYDRATES_KEY,\
+				PORTION_SUGARS_KEY,\
 				PORTION_TOTAL_PROTEINS_KEY,\
 				PORTION_FIBERS_KEY,\
 				PORTION_SALT_KEY,\
-				PORTIONS_NUMBER_KEY,\
+				PORTION_INFO_KEY,\
 				PER_100G_ENERGY_KJ_KEY,\
 				PER_100G_ENERGY_KCAL_KEY,\
 				PER_100G_TOTAL_FAT_KEY,\
 				PER_100G_SATURATED_FAT_KEY,\
 				PER_100G_TOTAL_CARBOHYDRATES_KEY,\
+				PER_100G_SUGARS_KEY,\
 				PER_100G_TOTAL_PROTEINS_KEY,\
 				PER_100G_FIBERS_KEY,\
 				PER_100G_SALT_KEY,\
 				TOTAL_QUANTITY_KEY,\
 				INGREDIENTS_TEXT_KEY,\
 				BAR_CODE_KEY,\
-				ALLERGENS_KEY
+				ALLERGENS_CONTAINS_KEY,\
+				ALLERGENS_TRACE_OF_KEY
 			]
 
 	def __init__(self, base_article):
 		BaseArticle.__init__(self, base_article)
+		for key in DetailedArticle.KEYS :
+			self.infos[key] = None
+		self.infos[DetailedArticle.ALLERGENS_CONTAINS_KEY] = []
+		self.infos[DetailedArticle.ALLERGENS_TRACE_OF_KEY] = []
 
 
 
@@ -428,9 +439,85 @@ class DetailsParserWorker(threading.Thread):
 					if sib.string != None:
 						detailed_article.infos[DetailedArticle.INGREDIENTS_TEXT_KEY] = sib.string
 
-			# Per portion
-
-			# Per 100g
+			
+			nutr_tag = prod_details_div.find("div",attrs={"id":"voedingswaarden"})
+			if nutr_tag != None:
+				all_prep_tags = nutr_tag.find_all("div",attrs={"class":"preperation nutrition"})
+				if all_prep_tags != None:
+					for prep_tag in all_prep_tags :
+						prep_tag_h3 = prep_tag.find("h3")
+						if prep_tag_h3 != None:
+							if "Pas préparé" == prep_tag_h3.string:
+								subtitles_tags = prep_tag.find_all("p",attrs={"class":"subtitle"})
+								for subtitle_tag in subtitles_tags:
+									if "100g" in subtitle_tag.string :
+										# Per 100g nutrition values
+										nutr_container = subtitle_tag.parent.find("div",attrs={"row value-container"})
+										if nutr_container != None:
+											for nutr_attr in nutr_container.children:
+												span_name = nutr_attr.find("span",attrs={"class":"val-name"})
+												span_nbr = nutr_attr.find("span",attrs={"class":"val-nbr"})
+												if span_name != None and span_nbr != None : 
+													span_name_string = span_name.string
+													span_nbr_string = span_nbr.string
+													if span_name_string == "Énergie kcal":
+														detailed_article.infos[PER_100G_ENERGY_KCAL_KEY] = span_nbr_string
+													elif span_name_string == "Énergie kJ":
+														detailed_article.infos[PER_100G_ENERGY_KJ_KEY] = span_nbr_string
+													elif span_name_string == "Total graisses":
+														detailed_article.infos[PER_100G_TOTAL_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Graisses saturées":
+														detailed_article.infos[PER_100G_SATURATED_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Total glucides":
+														detailed_article.infos[PER_100G_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
+													elif span_name_string == "Sucres":
+														detailed_article.infos[PER_100G_SUGARS_KEY] = span_nbr_string
+													elif span_name_string == "Fibres alimentaires":
+														detailed_article.infos[PER_100G_FIBERS_KEY] = span_nbr_string
+													elif span_name_string == "Protéines":
+														detailed_article.infos[PER_100G_TOTAL_PROTEINS_KEY] = span_nbr_string
+													elif span_name_string == "Sel":
+														detailed_article.infos[PER_100G_SALT_KEY] = span_nbr_string
+									elif "portion" in subtitle_tag.string :
+										# Per portion nutrition values
+										if "(" in subtitle_tag.string and ")" in subtitle_tag.string :
+											detailed_article.infos[PORTION_INFO_KEY] = subtitle_tag.string[subtitle_tag.string.find("(")+1:subtitle_tag.string.find(")")]
+										nutr_container = subtitle_tag.parent.find("div",attrs={"row value-container"})
+										if nutr_container != None:
+											for nutr_attr in nutr_container.children:
+												span_name = nutr_attr.find("span",attrs={"class":"val-name"})
+												span_nbr = nutr_attr.find("span",attrs={"class":"val-nbr"})
+												if span_name != None and span_nbr != None : 
+													span_name_string = span_name.string
+													span_nbr_string = span_nbr.string
+													if span_name_string == "Énergie kcal":
+														detailed_article.infos[PORTION_ENERGY_KCAL_KEY] = span_nbr_string
+													elif span_name_string == "Énergie kJ":
+														detailed_article.infos[PORTION_ENERGY_KJ_KEY] = span_nbr_string
+													elif span_name_string == "Total graisses":
+														detailed_article.infos[PORTION_TOTAL_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Graisses saturées":
+														detailed_article.infos[PORTION_SATURATED_FAT_KEY] = span_nbr_string
+													elif span_name_string == "Total glucides":
+														detailed_article.infos[PORTION_TOTAL_CARBOHYDRATES_KEY] = span_nbr_string
+													elif span_name_string == "Sucres":
+														detailed_article.infos[PORTION_SUGARS_KEY] = span_nbr_string
+													elif span_name_string == "Fibres alimentaires":
+														detailed_article.infos[PORTION_FIBERS_KEY] = span_nbr_string
+													elif span_name_string == "Protéines":
+														detailed_article.infos[PORTION_TOTAL_PROTEINS_KEY] = span_nbr_string
+													elif span_name_string == "Sel":
+														detailed_article.infos[PORTION_SALT_KEY] = span_nbr_string
+			# Allergens
+			allergen_tag = prod_details_div.find("div",attrs={"id":"allergenen"})
+			if allergen_tag != None:
+				for title_tag in allergen_tag.find_all("span",attrs={"class":"title"}):
+					if "contient" in title_tag.string:
+						for sibling in title_tag.next_siblings:
+							detailed_article.infos[DetailedArticle.ALLERGENS_CONTAINS_KEY].append(sibling.text)
+					elif "traces" in title_tag.string:
+						for sibling in title_tag.next_siblings:
+							detailed_article.infos[DetailedArticle.ALLERGENS_TRACE_OF_KEY].append(sibling.text)
 
 
 def stopWorkers(workers):
