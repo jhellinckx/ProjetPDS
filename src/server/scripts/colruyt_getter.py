@@ -13,7 +13,6 @@ import traceback
 from copy import deepcopy
 
 from bs4 import BeautifulSoup
-
 domain = "https://colruyt.collectandgo.be"
 cookie_setup_url = domain + "/cogo/homepage"
 search_by_branch_url = domain + "/cogo/fr/branch/"
@@ -37,7 +36,7 @@ class BaseArticle:
 	IMAGE_KEY = "image_url"
 	PRICE_UNIT_KEY = "price_unit"
 	PRICE_KG_KEY = "price_kg"
-	DETAILS_KEY = "details_url"
+	DETAILS_URL_KEY = "details_url"
 	CATEGORIES_KEY = "categories"
 	WEIRD_NAME_KEY = "weird_name"
 	SHORT_DESCRIPTION_KEY = "short_description"
@@ -48,7 +47,7 @@ class BaseArticle:
 				IMAGE_KEY,\
 				PRICE_UNIT_KEY,\
 				PRICE_KG_KEY,\
-				DETAILS_KEY,\
+				DETAILS_URL_KEY,\
 				CATEGORIES_KEY,\
 				WEIRD_NAME_KEY,\
 				SHORT_DESCRIPTION_KEY,\
@@ -79,6 +78,8 @@ class BaseArticle:
 
 
 class DetailedArticle(BaseArticle):
+	REAL_DETAILS_URL_KEY = "real_details_url"
+
 	PORTION_ENERGY_KJ_KEY = "portion_energy_kj"
 	PORTION_ENERGY_KCAL_KEY = "portion_energy_kcal"
 	PORTION_TOTAL_FAT_KEY = "portion_total_fat"
@@ -104,6 +105,7 @@ class DetailedArticle(BaseArticle):
 	ALLERGENS_KEY = "allergens"
 
 	KEYS = 	[
+				REAL_DETAILS_URL_KEY,\
 				PORTION_ENERGY_KJ_KEY,\
 				PORTION_ENERGY_KCAL_KEY,\
 				PORTION_TOTAL_FAT_KEY,\
@@ -264,7 +266,7 @@ class BranchParserWorker(threading.Thread):
 			articles_infos_wrap = article.find("a", attrs={"class":"prodInfo"})
 			if(articles_infos_wrap != None):
 				if("href" in articles_infos_wrap.attrs) : 
-					parsed_article.infos[BaseArticle.DETAILS_KEY] = domain + articles_infos_wrap.attrs["href"]
+					parsed_article.infos[BaseArticle.DETAILS_URL_KEY] = domain + articles_infos_wrap.attrs["href"]
 				# Weird name
 				weird_name_tag = articles_infos_wrap.find("span", attrs={"name"})
 				if weird_name_tag != None : parsed_article.infos[BaseArticle.WEIRD_NAME_KEY] = weird_name_tag.string
@@ -317,8 +319,8 @@ class DetailsParserWorker(threading.Thread):
 		next_article = None
 		DetailsParserWorker.articles_lock.acquire()
 		try:
-			if not len(articles) == 0:
-				next_article = articles.pop(-1)
+			if not len(DetailsParserWorker.articles) == 0:
+				next_article = DetailsParserWorker.articles.pop(-1)
 		except Exception as e:
 			raise e
 		finally:
@@ -330,7 +332,7 @@ class DetailsParserWorker(threading.Thread):
 		length = None
 		DetailsParserWorker.articles_lock.acquire()
 		try:
-			length = len(articles)
+			length = len(DetailsParserWorker.articles)
 		except Exception as e:
 			raise e
 		finally:
@@ -338,14 +340,14 @@ class DetailsParserWorker(threading.Thread):
 		return length
 
 	@staticmethod
-	def writeError(e, url):
+	def writeError(e, detailed_article):
 		BranchParserWorker.error_write_lock.acquire()
 		try :
 			with open(details_error_messages_filename,"a") as f:
 				f.write(\
 					"-" * 40 \
 					+ "\n" + str(type(e)) + " : " + str(e) + \
-					"\nFOR URL -> " + str(url)+"\n")
+					"\nFOR ARTICLE -> " + repr(detailed_article)+"\n")
 				f.write(">>> FORMAT <<<\n")
 				traceback.print_exc(file=f)
 				f.write(">>> END FORMAT <<<\n" + "-" *40)
@@ -353,6 +355,18 @@ class DetailsParserWorker(threading.Thread):
 			raise e 
 		finally:
 			BranchParserWorker.error_write_lock.release()
+
+	@staticmethod
+	def saveDetailedArticle(article):
+		DetailsParserWorker.file_lock.acquire()
+		try:
+			with open(details_results_filename,"a") as f:
+				f.write(repr(article))
+				f.write("\n")
+		except Exception as e:
+			raise e
+		finally:
+			DetailsParserWorker.file_lock.release()
 
 
 	def run(self):
@@ -362,15 +376,61 @@ class DetailsParserWorker(threading.Thread):
 			if next_article == None:
 				self.stop()
 			else:
-				self.parseArticleDetails(next_article)
+				detailed_article = self.setRealDetailsURL(next_article)
+				try:
+					self.parseArticleDetails(detailed_article)
+				except Exception as e:
+					DetailsParserWorker.writeError(e, detailed_article)
+
 
 	def stop(self):
 		self.running = False
 
+	def setRealDetailsURL(self, article):
+		# Current detail URL in article is a transition URL, need to find the "real" details URL
+		detailed_article = DetailedArticle(article)
+		to_details_url = article.infos[BaseArticle.DETAILS_URL_KEY]
+		if to_details_url != None:
+			raw_response = requests.get(to_details_url, cookies=self.cookies)
+			structured_response = BeautifulSoup(raw_response.content, "lxml")
+			prod_infos_tag = structured_response.find("a",attrs={"class":"moreProdInfo"})
+			if prod_infos_tag != None and "href" in prod_infos_tag.attrs : 
+				detailed_article.infos[DetailedArticle.REAL_DETAILS_URL_KEY] = prod_infos_tag.attrs["href"]
+		return detailed_article
 
+	def parseArticleDetails(self, detailed_article):
+		real_details_url = detailed_article.infos[DetailedArticle.REAL_DETAILS_URL_KEY]
+		if real_details_url == None:
+			raise ValueError("Article has no " + DetailedArticle.REAL_DETAILS_URL_KEY + " key ! ")
+		raw_response = requests.get(real_details_url, cookies=self.cookies)
+		structured_response = BeautifulSoup(raw_response.content, "lxml")
 
-	def parseArticleDetails(self, article):
-		pass
+		# Bar code
+		bar_code_tag = structured_response.find("span", attrs={"id":"current_gtin"})
+		if bar_code_tag != None:
+			detailed_article.infos[DetailedArticle.BAR_CODE_KEY] = bar_code_tag.string
+
+		prod_details_div = structured_response.find("div", attrs={"id":"prodDetails"})
+		if prod_details_div != None:
+			
+			# Quantity
+			quantity_tag = prod_details_div.find("p", attrs={"class":"brutto"})
+			if quantity_tag != None : 
+				detailed_article.infos[DetailedArticle.TOTAL_QUANTITY_KEY] = quantity_tag.string
+
+			# Ingredients
+			ingr_tag = None
+			for tag in prod_details_div.find_all("span",attrs={"class":"caption"}):
+				if tag.string == "Ingrédients".decode("unicode-escape"):
+					ingr_tag = tag
+			if ingr_tag != None:
+				for sib in ingr_tag.next_siblings:
+					if sib.string != None:
+						detailed_article.infos[DetailedArticle.INGREDIENTS_TEXT_KEY] = sib.string
+
+			# Per portion
+
+			# Per 100g
 
 
 def stopWorkers(workers):
