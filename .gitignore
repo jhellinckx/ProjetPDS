@@ -13,3 +13,5 @@
 # Ignore Compiled files
 *.class
 *.pyc
+
+.DS_Store
