@@ -146,6 +146,8 @@ public class NetworkHandler {
                 _doDispatch(msg, RecommendationActivity.class);
             }else if(request.equals(UPDATE_DATA_REQUEST)){
                 _doDispatch(msg, RecommendationActivity.class);
+            }else{
+                throw new UnsupportedOperationException("Unknown request : "+request.toString());
             }
 
         }
