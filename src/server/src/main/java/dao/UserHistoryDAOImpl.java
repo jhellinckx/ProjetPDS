@@ -18,6 +18,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ?";
+	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood FROM Users_history WHERE idUser = ? AND date = ?";
 
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
@@ -82,6 +83,32 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			historyFoodNames.add(food.getProductName());
 		}
 		return historyFoodNames;
+	}
+
+	@Override
+	public List<String> getHistoryFoodNamesForDate(User user, String date){
+		List<String> foodNames = new ArrayList<>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		FoodDAO foodDAO = null;
+
+		try{
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_FOODS_FOR_DATE, false, user.getId(), date);
+			resultSet = preparedStatement.executeQuery();
+			foodDAO = this.daoFactory.getFoodDAO();
+			while (resultSet.next()){
+				Long idFood = (long) resultSet.getInt("idFood");
+				Food food = foodDAO.findById(idFood);
+				foodNames.add(food.getProductName());
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally{
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return foodNames;
 	}
 
 	@Override

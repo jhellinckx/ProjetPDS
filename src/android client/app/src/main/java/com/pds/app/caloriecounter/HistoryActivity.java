@@ -28,13 +28,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.date.*;
 
 public class HistoryActivity extends HomeActivity {
 
     private TableLayout historyTable;
     private LinearLayout.LayoutParams _params;
     private Button addFoodButton = null;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
     @Override
@@ -144,7 +144,7 @@ public class HistoryActivity extends HomeActivity {
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
-            sendCode(scanContent, sdf.format(Calendar.getInstance().getTime()));
+            sendCode(scanContent, SDFORMAT.format(Calendar.getInstance().getTime()));
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();

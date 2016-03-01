@@ -126,6 +126,9 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
 				onCodeHistoryRequest(msg);
 			}
+			else if(request.equals(HISTORY_FOR_DATE_REQUEST)){
+				onHistoryForDateRequest(msg);
+			}
 		}
 		
 	}
@@ -484,6 +487,21 @@ public class AppliServer extends AbstractNIOServer{
 		}
 
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST_HISTORY, responseData));
+		send(msg);
+	}
+
+	public void onHistoryForDateRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		String date = (String) data.get(HISTORY_DATE);
+		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNamesForDate(user, date);
+		JSONArray foodNamesData = new JSONArray();
+		for (int i = 0; i < foodNames.size(); i++){
+			JSONObject foodName = new JSONObject();
+			foodName.put(FOOD_NAME, foodNames.get(i));
+		}
+		data.put(FOOD_NAMES, foodNamesData);
+		msg.setJSON(networkJSON(HISTORY_FOR_DATE_REQUEST, data));
 		send(msg);
 	}
 

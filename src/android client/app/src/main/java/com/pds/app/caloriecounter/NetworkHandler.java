@@ -145,7 +145,9 @@ public class NetworkHandler {
                 _doDispatch(msg, HistoryActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)) {
                 _doDispatch(msg, HistoryActivity.class);
-            } else {
+            } else if (request.equals(HISTORY_FOR_DATE_REQUEST)){
+                _doDispatch(msg, CalendarActivity.class);
+            } else{
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
 
             }
