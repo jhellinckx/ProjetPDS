@@ -34,7 +34,6 @@ public class HistoryActivity extends HomeActivity {
     private TableLayout historyTable;
     private LinearLayout.LayoutParams _params;
     private Button addFoodButton = null;
-    private Calendar calendar = Calendar.getInstance();
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
@@ -127,10 +126,10 @@ public class HistoryActivity extends HomeActivity {
     }
 
     public void startScan(){
-        String scanContent = "96092521";
-        sendCode(scanContent, sdf.format(calendar.getTime()));
-        //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        //scanIntegrator.initiateScan();
+        //String scanContent = "96092521";
+        //sendCode(scanContent, sdf.format(Calendar.getInstance().getTime()));
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        scanIntegrator.initiateScan();
     }
 
     public void sendCode(String code, String date) {
@@ -145,8 +144,7 @@ public class HistoryActivity extends HomeActivity {
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
-            Date date = calendar.getTime();
-            sendCode(scanContent, sdf.format(date));
+            sendCode(scanContent, sdf.format(Calendar.getInstance().getTime()));
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();
