@@ -14,17 +14,26 @@
         android:background="@drawable/background_button"
         android:minWidth="120sp"
         android:gravity="center" />
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scrollbars="none"
+        android:layout_weight="1">
+        <TableLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/histTable"
+            android:layout_marginTop="20dp"
+            android:nestedScrollingEnabled="true">
 
-    <TableLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/histTable"
-        android:layout_marginTop="20dp"
-        android:nestedScrollingEnabled="true">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    </TableLayout>
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
 </LinearLayout>
-

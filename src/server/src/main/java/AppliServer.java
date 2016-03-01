@@ -469,6 +469,7 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String code = (String) data.get(FOOD_CODE);
+		String date = (String) data.get(HISTORY_DATE);
 		JSONObject responseData = new JSONObject();
 		Food food = _foodDatabase.findByCode(code);
 		if(food == null){
@@ -476,8 +477,10 @@ public class AppliServer extends AbstractNIOServer{
 			responseData.put(REASON, FOOD_CODE_NOT_FOUND);
 		}
 		else{
+			_userHistoryDatabase.addToHistory(user, food, date);
 			responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
 			responseData.put(FOOD_NAME,food.getProductName());
+			responseData.put(HISTORY_DATE, date);
 		}
 
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST_HISTORY, responseData));

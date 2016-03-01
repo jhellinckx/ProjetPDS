@@ -24,6 +24,7 @@ import org.json.simple.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.calorycounter.shared.Constants.network.*;
@@ -33,6 +34,8 @@ public class HistoryActivity extends HomeActivity {
     private TableLayout historyTable;
     private LinearLayout.LayoutParams _params;
     private Button addFoodButton = null;
+    private Calendar calendar = Calendar.getInstance();
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
     @Override
@@ -65,7 +68,11 @@ public class HistoryActivity extends HomeActivity {
         final JSONObject data = (JSONObject)msg.get(DATA);
         _params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         if(request.equals(HISTORY_REQUEST)){
-            handleHistoryRequest(data);
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    handleHistoryRequest(data);
+                }
+            });
         }
         else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
 
@@ -83,7 +90,7 @@ public class HistoryActivity extends HomeActivity {
         for (int i = 0; i < response.size(); ++i) {
             namesDatesResults.add((JSONObject) response.get(i));
         }
-        for(int i = namesDatesResults.size()-1; i>=0; i--){
+        for(int i = 0; i<namesDatesResults.size(); i++){
             JSONObject nameDateRepr = namesDatesResults.get(i);
             String name = (String) nameDateRepr.get(HISTORY_NAME);
             String date = (String) nameDateRepr.get(HISTORY_DATE);
@@ -93,9 +100,8 @@ public class HistoryActivity extends HomeActivity {
 
     private void handleCodeRequest(JSONObject data){
         String foodName = (String) data.get(FOOD_NAME);
-        Date date = new Date();
-        String myDate = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(date);
-        addRowInTable(foodName, myDate);
+        String date = (String) data.get(HISTORY_DATE);
+        addRowInTable(foodName, date);
     }
 
     private void addRowInTable(String name, String date){
@@ -107,7 +113,7 @@ public class HistoryActivity extends HomeActivity {
 
 
             historyRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            historyTable.addView(historyRow);
+            historyTable.addView(historyRow,0);
 
         }
     }
@@ -121,15 +127,16 @@ public class HistoryActivity extends HomeActivity {
     }
 
     public void startScan(){
-        //String scanContent = "96092521";
-        //sendCode(scanContent);
-        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        scanIntegrator.initiateScan();
+        String scanContent = "96092521";
+        sendCode(scanContent, sdf.format(calendar.getTime()));
+        //IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        //scanIntegrator.initiateScan();
     }
 
-    public void sendCode(String code) {
+    public void sendCode(String code, String date) {
         JSONObject data = new JSONObject();
         data.put(FOOD_CODE, code);
+        data.put(HISTORY_DATE, date);
         send(networkJSON(FOOD_CODE_REQUEST_HISTORY, data));
         System.out.println("------------------CODE SENT -------------------");
     }
@@ -138,7 +145,8 @@ public class HistoryActivity extends HomeActivity {
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
-            sendCode(scanContent);
+            Date date = calendar.getTime();
+            sendCode(scanContent, sdf.format(date));
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();
