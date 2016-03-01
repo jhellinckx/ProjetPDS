@@ -11,7 +11,7 @@ import static org.calorycounter.shared.Constants.network.ENCODING;
 
 public class ClientSocket implements NetworkChannel{
     private static final int port = 8080;
-    private static final String hostaddress = "10.0.1.29";
+    private static final String hostaddress = "192.168.1.13";
     private Socket socketClient;
     private DataOutputStream outstream;
     private DataInputStream instream;

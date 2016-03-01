@@ -115,6 +115,13 @@ public final class Constants {
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
 		public static final String DATA_REQUEST = "r_data";
 
+		/* History */ 
+		public static final String HISTORY_REQUEST = "r_history";
+		public static final String HISTORY_NAME = "d_history_name";
+		public static final String HISTORY_DATE = "d_history_date";
+		public static final String HISTORY_NAMES_DATES = "d_history_dates";
+		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
+
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;
 		public static final String RECOMMEND_REQUEST = "recom_request";
@@ -122,6 +129,7 @@ public final class Constants {
 
 		/* Past Food */
 		public static final String PAST_FOODS_LIST = "d_past_foodslist";
+		public static final String PAST_FOODS_DATES = "d_past_foodsdates";
 
 		/* Recommendation Constraints */
 		public static final String MAX_ENERGY = "d_maxenergy";

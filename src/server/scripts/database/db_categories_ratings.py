@@ -21,7 +21,7 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_appli"
-db_properties_filename = "../dao/dao.properties"
+db_properties_filename = "../../dao/dao.properties"
 
 def db_params():
 	username = None

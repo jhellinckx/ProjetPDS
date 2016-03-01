@@ -16,8 +16,10 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 
 /*
@@ -28,8 +30,9 @@ public class RecommendationPastFragment extends Fragment {
 
     private OnItemClickListener listener;
     private ArrayList<String> _foodNames;
-    private ArrayList<String> _foodCodes;
     private ArrayAdapter<String> _adapter;
+    private Calendar calendar = Calendar.getInstance();
+    private static SimpleDateFormat _sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     private View _view;
 
     @Override
@@ -46,8 +49,6 @@ public class RecommendationPastFragment extends Fragment {
             }
         });
 
-        _foodCodes = new ArrayList<String>();
-        _foodCodes = bundle.getStringArrayList("productCodes");
         _foodNames = new ArrayList<String>();
         _foodNames = bundle.getStringArrayList("productNames");
 
@@ -72,14 +73,15 @@ public class RecommendationPastFragment extends Fragment {
     }
 
     public void startScan(){
-        //String scanContent = "96092521";
-        //((RecommendationActivity)getActivity()).sendCode(scanContent);
-        IntentIntegrator scanIntegrator = new IntentIntegrator(getActivity());
-        scanIntegrator.initiateScan();
+        String scanContent = "96092521";
+        //String scanContent = "20163839";
+        ((RecommendationActivity)getActivity()).sendCode(scanContent, _sdf.format(calendar.getTime()));
+        //IntentIntegrator scanIntegrator = new IntentIntegrator(getActivity());
+        //scanIntegrator.initiateScan();
     }
 
     public interface OnItemClickListener {
-        public void onNextPastClick(List<String> pastFoods);
+        public void onNextPastClick();
     }
 
     @Override
@@ -100,6 +102,6 @@ public class RecommendationPastFragment extends Fragment {
 
     public void nextStep(){
 
-        listener.onNextPastClick(_foodCodes);
+        listener.onNextPastClick();
     }
 }

@@ -130,4 +130,8 @@ public class DAOFactory {
     public CategoryRatingDAO getCategoryRatingDAO(){
         return new CategoryRatingDAOImpl( this );
     }
+
+    public UserHistoryDAO getUserHistoryDAO() {
+        return new UserHistoryDAOImpl( this );
+    }
 }
