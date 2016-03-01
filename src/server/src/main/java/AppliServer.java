@@ -120,15 +120,12 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(DATA_REQUEST)){
 				onDataRequest(msg);
 			}
-<<<<<<< HEAD
-=======
 			else if(request.equals(HISTORY_REQUEST)){
 				onHistoryRequest(msg);
 			}
 			else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
 				onCodeHistoryRequest(msg);
 			}
->>>>>>> History
 		}
 		
 	}
