@@ -115,41 +115,41 @@ public class NetworkHandler {
     }
 
     private void dispatch(JSONObject msg){
-        try{
+        try {
             /* Assert message validity */
-            if(!msg.containsKey(REQUEST_TYPE) || !msg.containsKey(DATA))
+            if (!msg.containsKey(REQUEST_TYPE) || !msg.containsKey(DATA))
                 throw new IOException("Network message has to contain a " +
-                        REQUEST_TYPE +" key and a " + DATA + " key.");
+                        REQUEST_TYPE + " key and a " + DATA + " key.");
 
             String request = (String) msg.get(REQUEST_TYPE);
 
             /* When no activity is specified in _doDispatch, the message is dispatched to
             * the current front activity */
-            if(request.equals(CONNECTION_NOTIFIER)){
+            if (request.equals(CONNECTION_NOTIFIER)) {
                 _doDispatch(msg);
-            } else if(request.equals(LOG_IN_REQUEST)){
+            } else if (request.equals(LOG_IN_REQUEST)) {
                 _doDispatch(msg, LogActivity.class);
-            } else if(request.equals(SIGN_UP_REQUEST)){
-                _doDispatch(msg,SignActivity.class);
-            } else if(request.equals(FOOD_CODE_REQUEST)){
-                _doDispatch(msg,RecommendationActivity.class);
-            } else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
-                _doDispatch(msg,RatingActivity.class);
-            } else if(request.equals(SPORTS_LIST_REQUEST)){
+            } else if (request.equals(SIGN_UP_REQUEST)) {
+                _doDispatch(msg, SignActivity.class);
+            } else if (request.equals(FOOD_CODE_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
-            }else if(request.equals(RECOMMEND_REQUEST)){
+            } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
+                _doDispatch(msg, RatingActivity.class);
+            } else if (request.equals(SPORTS_LIST_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
-            }else if(request.equals(UPDATE_DATA_REQUEST)){
+            } else if (request.equals(RECOMMEND_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
-            }else if(request.equals(HISTORY_REQUEST)){
+            } else if (request.equals(UPDATE_DATA_REQUEST)) {
+                _doDispatch(msg, RecommendationActivity.class);
+            } else if (request.equals(HISTORY_REQUEST)) {
                 _doDispatch(msg, HistoryActivity.class);
-            }else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
+            } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)) {
                 _doDispatch(msg, HistoryActivity.class);
-            }else{
-                throw new UnsupportedOperationException("Unknown request : "+request.toString());
+            } else {
+                throw new UnsupportedOperationException("Unknown request : " + request.toString());
 
-        }
-        catch(IOException e){
+            }
+        }catch(IOException e){
             Log.d("Dispatcher", e.getMessage());
         }
     }
