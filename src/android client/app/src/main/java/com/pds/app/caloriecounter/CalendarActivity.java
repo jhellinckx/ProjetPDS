@@ -10,7 +10,14 @@ import android.widget.CalendarView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class CalendarActivity extends HomeActivity implements DayFragment.BackListener {
+
+    private final static SimpleDateFormat _sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     private CalendarView calendar;
     private FragmentManager manager;
@@ -32,14 +39,19 @@ public class CalendarActivity extends HomeActivity implements DayFragment.BackLi
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 DayFragment frag = new DayFragment();
                 Bundle b = new Bundle();
-                b.putString("day", Integer.toString(dayOfMonth)+"/"+Integer.toString(month)+"/"
-                +Integer.toString(year));
+                b.putString("day", getFormattedDateFromIntegers(year, month, dayOfMonth));
                 frag.setArguments(b);
                 switchCalendarAndFrameVisibility();
                 replaceFragment(frag, "day");
             }
         });
 
+    }
+
+    private String getFormattedDateFromIntegers(int year, int month, int dayOfMonth){
+        Calendar cal = new GregorianCalendar(year, month, dayOfMonth);
+        Date date = cal.getTime();
+        return _sdf.format(date);
     }
 
     private void replaceFragment(Fragment fragment, String tag){
