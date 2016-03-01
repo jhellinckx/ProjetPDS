@@ -10,7 +10,7 @@ import android.widget.CalendarView;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-public class CalendarActivity extends HomeActivity {
+public class CalendarActivity extends HomeActivity implements DayFragment.BackListener {
 
     private CalendarView calendar;
     private FragmentManager manager;
@@ -24,9 +24,6 @@ public class CalendarActivity extends HomeActivity {
         frag_layout = (FrameLayout) v.findViewById(R.id.day_frame);
         manager = getSupportFragmentManager();
         addDateListener();
-
-
-
     }
 
     private void addDateListener(){
@@ -38,8 +35,7 @@ public class CalendarActivity extends HomeActivity {
                 b.putString("day", Integer.toString(dayOfMonth)+"/"+Integer.toString(month)+"/"
                 +Integer.toString(year));
                 frag.setArguments(b);
-                calendar.setVisibility(View.GONE);
-                frag_layout.setVisibility(View.VISIBLE);
+                switchCalendarAndFrameVisibility();
                 replaceFragment(frag, "day");
             }
         });
@@ -49,6 +45,14 @@ public class CalendarActivity extends HomeActivity {
     private void replaceFragment(Fragment fragment, String tag){
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.day_frame, fragment, tag);
+        transaction.addToBackStack(tag);
         transaction.commit();
+    }
+
+    @Override
+    public void switchCalendarAndFrameVisibility(){
+        int visibility = calendar.getVisibility();
+        calendar.setVisibility(frag_layout.getVisibility());
+        frag_layout.setVisibility(visibility);
     }
 }
