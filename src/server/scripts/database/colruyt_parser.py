@@ -17,7 +17,7 @@ domain = "https://colruyt.collectandgo.be"
 cookie_setup_url = domain + "/cogo/homepage"
 search_by_branch_url = domain + "/cogo/fr/branch/"
 
-data_dir = "raw/"
+data_dir = "raw_data/"
 
 last_cookies_filename = data_dir + "last_cookies.txt"
 
