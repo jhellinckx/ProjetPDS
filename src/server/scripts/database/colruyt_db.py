@@ -169,6 +169,34 @@ def add_items_in_food():
 	cursor.close()
 	cnx.close()
 
+def create_user_table():
+	create_user_table_command = \
+	"CREATE TABLE User\
+	(id_user INT UNSIGNED NOT NULL AUTO_INCREMENT,\
+	username VARCHAR(60) NOT NULL,\
+	gender VARCHAR(1) NOT NULL,\
+	weight FLOAT,\
+	UNIQUE(username),\
+	PRIMARY KEY(id_user)\
+	) ENGINE=INNODB;"
+
+	add_index_command = \
+	"ALTER TABLE User\
+	ADD INDEX ind_username (username);"
+
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, password=password,database=db_name)
+	cursor = cnx.cursor()
+	cursor.execute(create_user_table_command)
+	cursor.execute(add_index_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+
+def create_user_preferences_table():
+	pass
+
 
 
 if __name__ == "__main__" :
@@ -196,6 +224,16 @@ if __name__ == "__main__" :
 			sys.stdout.write("Inserting items in " + MAGENTA + "Food" + RESET + "... ")
 			sys.stdout.flush()
 			add_items_in_food()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+			sys.stdout.write("Creating " + MAGENTA + "User" + RESET + " table... ")
+			sys.stdout.flush()
+			create_user_table()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+			sys.stdout.write("Creating " + MAGENTA + "UserPreferences" + RESET + " table... ")
+			sys.stdout.flush()
+			create_user_preferences_table()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
 	except mysql.connector.Error as err:
