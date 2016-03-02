@@ -111,6 +111,7 @@ public class LogActivity extends NotifiableActivity {
 
         JSONObject data = new JSONObject();
         data.put(USERNAME, username);
+        data.put(PASSWORD, password);
         if(! send(networkJSON(LOG_IN_REQUEST, data))){
             _loginButton.setEnabled(true);
         }
@@ -136,6 +137,13 @@ public class LogActivity extends NotifiableActivity {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         _usernameText.setError("Username not found");
+                    }
+                });
+            }
+            else if(reason.equals(LOG_IN_WRONG_PASSWORD)){
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        _usernameText.setError("Wrong Password");
                     }
                 });
             }

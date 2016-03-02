@@ -23,7 +23,7 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_appli"
-db_properties_filename = "../../dao/dao.properties"
+db_properties_filename = "../../src/main/resources/dao.properties"
 
 modified_foods_file = "tmp_db_modified_foods.txt"
 

@@ -19,7 +19,7 @@ db_name = "db_appli"
 db_properties_filename = "../../src/main/resources/dao.properties"
 ingredients_filename = "raw/db_ingredients.txt"
 recipes_filename = "raw/db_recipes.txt"
-def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quantity,first_time,addWeight,addHistory):
+def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quantity,first_time,addWeight,addHistory, addPassword):
 	if recipies:
 		#sys.stdout.write("Taking care of the " + MAGENTA + "recipies" + RESET + " table \n")
 		db_recipes.execute()
@@ -41,6 +41,8 @@ def executePythonScripts(recipies,categories_ratings,sports,add_columns_for_quan
 
 	if addHistory:
 		addHistoryTable()
+	if addPassword:
+		addPasswordColumn()
 
 def db_params():
 	username = None
@@ -63,6 +65,24 @@ def addWeightColumn():
 	command = "ALTER TABLE `User` ADD weight FLOAT"
 	
 	sys.stdout.write("Creating " + MAGENTA + "weight column" + RESET + " for User... ")
+	try:
+		cursor.execute(command)
+		sys.stdout.write(GREEN + "OK" + RESET + "\n")
+
+	except mysql.connector.Error as err:
+		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def addPasswordColumn():
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	command = "ALTER TABLE `User` ADD password VARCHAR(255) NOT NULL"
+	
+	sys.stdout.write("Creating " + MAGENTA + "password column" + RESET + " for User... ")
 	try:
 		cursor.execute(command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -118,9 +138,10 @@ def getWhichScriptsNeedToBeExecuted():
 	if add_columns_for_quantity:
 		first_time = (raw_input("Is it the first time that you do this update? (Y/N): ").upper() == "Y")
 	addWeight = (raw_input("Add weight column for User ? (Y/N): ").upper() == "Y")
+	addPassword = (raw_input("Add password column for User ? (Y/N): ").upper() == "Y")
 	addHistory = (raw_input("Add history table to db? (Y/N): ").upper() == "Y")
 
-	executePythonScripts(recipies, categories_ratings, sports, add_columns_for_quantity, first_time,addWeight, addHistory)
+	executePythonScripts(recipies, categories_ratings, sports, add_columns_for_quantity, first_time,addWeight, addHistory, addPassword)
 
 
 if __name__ == "__main__":
