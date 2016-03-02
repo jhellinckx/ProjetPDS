@@ -134,10 +134,22 @@ def create_food_table():
 		food_table_command +=  "`" + articles_names_correction[db_entry] + "`" + " " + articles_details_sql_types[db_entry] + ", " 
 	food_table_command += "PRIMARY KEY (`id_food`)) ENGINE=InnoDB"
 
+	index_commands = \
+		[
+			"ALTER TABLE Food "
+			"ADD INDEX ind_code(code);",\
+			"ALTER TABLE Food "
+			"ADD INDEX ind_url(url);",\
+			"ALTER TABLE Food "
+			"ADD INDEX ind_product_name(product_name);"\
+		]
+
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, password=password, database=db_name)
 	cursor = cnx.cursor()
 	cursor.execute(food_table_command)
+	for index_command in index_commands:
+		cursor.execute(index_command)
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -170,7 +182,7 @@ def add_items_in_food():
 	cnx.close()
 
 def create_user_table():
-	create_user_table_command = \
+	user_table_command = \
 	"CREATE TABLE User\
 	(id_user INT UNSIGNED NOT NULL AUTO_INCREMENT,\
 	username VARCHAR(60) NOT NULL,\
@@ -187,7 +199,7 @@ def create_user_table():
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, password=password,database=db_name)
 	cursor = cnx.cursor()
-	cursor.execute(create_user_table_command)
+	cursor.execute(user_table_command)
 	cursor.execute(add_index_command)
 	cnx.commit()
 	cursor.close()
