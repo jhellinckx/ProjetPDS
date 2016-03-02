@@ -32,7 +32,7 @@ import static org.calorycounter.shared.Constants.date.*;
 
 public class HistoryActivity extends HomeActivity {
 
-    private TableLayout historyTable;
+    private LinearLayout historyTable;
     private LinearLayout.LayoutParams _params;
     private Button addFoodButton = null;
 
@@ -52,7 +52,7 @@ public class HistoryActivity extends HomeActivity {
         });
 
 
-        historyTable = (TableLayout) v.findViewById(R.id.histTable);
+        historyTable = (LinearLayout) v.findViewById(R.id.histTable);
         serverRequestHistory();
     }
 
@@ -93,8 +93,15 @@ public class HistoryActivity extends HomeActivity {
             JSONObject nameDateRepr = namesDatesResults.get(i);
             String name = (String) nameDateRepr.get(HISTORY_NAME);
             String date = (String) nameDateRepr.get(HISTORY_DATE);
-            addRowInTable(name, date);
+            String url = (String) nameDateRepr.get(FOOD_IMAGE_URL);
+            //addRowInTable(name, date);
+            addItemStickerInLayout(date, url);
         }
+    }
+
+    private void addItemStickerInLayout(String date, String url){
+        ItemSticker sticker = new ItemSticker(this, url, date);
+        historyTable.addView(sticker);
     }
 
     private void handleCodeRequest(JSONObject data){

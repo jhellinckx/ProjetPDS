@@ -16,5 +16,6 @@
         android:layout_height="match_parent"
         android:id="@+id/calendar"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25sp" />
+        android:layout_marginTop="50sp"
+        android:showWeekNumber="false" />
 </LinearLayout>
