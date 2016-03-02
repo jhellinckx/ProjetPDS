@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RatingBar;
 
-import com.squareup.picasso.Picasso;
-
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
 

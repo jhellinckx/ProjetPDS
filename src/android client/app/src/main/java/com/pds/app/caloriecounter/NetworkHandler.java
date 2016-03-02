@@ -114,7 +114,7 @@ public class NetworkHandler {
         }
     }
 
-    private void dispatch(JSONObject msg) {
+    private void dispatch(JSONObject msg){
         try {
             /* Assert message validity */
             if (!msg.containsKey(REQUEST_TYPE) || !msg.containsKey(DATA))
@@ -132,6 +132,16 @@ public class NetworkHandler {
             } else if (request.equals(SIGN_UP_REQUEST)) {
                 _doDispatch(msg, SignActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST)) {
+
+                _doDispatch(msg, RecommendationActivity.class);
+            } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
+                _doDispatch(msg, RatingActivity.class);
+            } else if (request.equals(SPORTS_LIST_REQUEST)) {
+                _doDispatch(msg, RecommendationActivity.class);
+            } else if (request.equals(RECOMMEND_REQUEST)) {
+                _doDispatch(msg, RecommendationActivity.class);
+            } else if (request.equals(UPDATE_DATA_REQUEST)) {
+                _doDispatch(msg, RecommendationActivity.class);
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
                 _doDispatch(msg, RatingActivity.class);
@@ -145,12 +155,14 @@ public class NetworkHandler {
                 _doDispatch(msg, HistoryActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)) {
                 _doDispatch(msg, HistoryActivity.class);
-            } else {
+            } else if (request.equals(HISTORY_FOR_DATE_REQUEST)){
+                _doDispatch(msg, CalendarActivity.class);
+            } else{
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
 
             }
+        }catch(IOException e){
 
-        } catch (IOException e) {
             Log.d("Dispatcher", e.getMessage());
         }
     }

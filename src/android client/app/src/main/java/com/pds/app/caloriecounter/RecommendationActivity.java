@@ -25,6 +25,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.date.*;
 
 public class RecommendationActivity extends HomeActivity implements RecommendationPastFragment.OnItemClickListener,
         RecommendationSportFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
@@ -35,8 +36,6 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
     private ArrayList<String> _productCodes = new ArrayList<String>();
     private ArrayList<String> _productDates = new ArrayList<String>();
 
-
-    private static SimpleDateFormat _sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
 
@@ -190,7 +189,7 @@ public class RecommendationActivity extends HomeActivity implements Recommendati
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
             Date date = calendar.getTime();
-            sendCode(scanContent, _sdf.format(date));
+            sendCode(scanContent, SDFORMAT.format(date));
         } else{
             Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();

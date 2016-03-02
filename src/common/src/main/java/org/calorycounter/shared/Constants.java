@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.net.InetAddress;
 import java.security.ProtectionDomain;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import java.util.Arrays;
@@ -70,6 +71,7 @@ public final class Constants {
 		public static final String FOOD_URL = "f_url";
 		public static final String FOOD_CODE = "f_code";
 		public static final String FOOD_NAME = "f_p_name";
+		public static final String FOOD_NAMES = "f_p_names";
 		public static final String FOOD_IMAGE_URL = "f_image";
 		public static final String FOOD_TOTAL_ENERGY = "f_nrj";
 		public static final String FOOD_TOTAL_FAT = "f_fat";
@@ -121,6 +123,7 @@ public final class Constants {
 		public static final String HISTORY_DATE = "d_history_date";
 		public static final String HISTORY_NAMES_DATES = "d_history_dates";
 		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
+		public static final String HISTORY_FOR_DATE_REQUEST = "r_history_for_date";
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;
@@ -187,6 +190,10 @@ public final class Constants {
 
 	public static final class client{
 		public static final boolean FUCK_DEFAULT_BEHAVIOUR = false;
+	}
+
+	public static final class date{
+		public static final SimpleDateFormat SDFORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	}
 
 
