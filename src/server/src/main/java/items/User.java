@@ -14,7 +14,8 @@ public class User {
     private String    username;
     private String    gender;
     private HashMap<Food, Float> rankedFoods;
-    private Float weight;
+    private Float     weight;
+    private String    password;
 
     public User() {
     	this.id = null;
@@ -22,6 +23,7 @@ public class User {
     	this.gender = null;
         this.weight = null;
         this.rankedFoods = new HashMap<Food, Float>(); 
+        this.password = null;
     }
     
     public User( String username, String gender ) {
@@ -29,6 +31,15 @@ public class User {
     	this.gender = gender;
         this.weight = -1f;
         this.rankedFoods = new HashMap<Food, Float>();
+        this.password = "";
+    }
+
+    public User( String username, String gender, String password ) {
+        this.username = username;
+        this.gender = gender;
+        this.weight = -1f;
+        this.rankedFoods = new HashMap<Food, Float>();
+        this.password = password;
     }
 
     public User( String username, String gender, Float weight ) {
@@ -36,6 +47,15 @@ public class User {
         this.gender = gender;
         this.weight = weight;
         this.rankedFoods = new HashMap<Food, Float>();
+        this.password = "";
+    }
+
+    public User( String username, String gender, Float weight, String password ) {
+        this.username = username;
+        this.gender = gender;
+        this.weight = weight;
+        this.rankedFoods = new HashMap<Food, Float>();
+        this.password = password;
     }
     
     
@@ -60,8 +80,14 @@ public class User {
     public void setGender( String gender ) {
         this.gender = gender;
     }
-    
 
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword( String password ) {
+        this.password = password;
+    }
+    
     public HashMap getRankedFoods(){
         return rankedFoods;
     }

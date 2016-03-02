@@ -105,6 +105,7 @@ public class SignActivity extends NotifiableActivity {
 
         JSONObject data = new JSONObject();
         data.put(USERNAME, username);
+        data.put(PASSWORD, password);
 
         if(! send(networkJSON(SIGN_UP_REQUEST, data))){
             _signupButton.setEnabled(true);

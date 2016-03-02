@@ -165,6 +165,7 @@ public class AppliServer extends AbstractNIOServer{
 	public void onLoginRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String username = (String) data.get(USERNAME);
+		String password = (String) data.get(PASSWORD);
 		JSONObject responseData = new JSONObject();
 		User usr = this._userDatabase.findByUsername(username);
 		if(usr == null){
@@ -179,14 +180,25 @@ public class AppliServer extends AbstractNIOServer{
 				responseData.put(USERNAME, username);
 			}
 			else{
-				addClient(username, msg);
-				responseData.put(LOG_IN_RESPONSE, LOG_IN_SUCCESS);
-				responseData.put(USERNAME, username);
+				if(validatePassword(usr, password)){
+					addClient(username, msg);
+					responseData.put(LOG_IN_RESPONSE, LOG_IN_SUCCESS);
+					responseData.put(USERNAME, username);
+				}
+				else{
+					responseData.put(LOG_IN_RESPONSE, LOG_IN_FAILURE);
+					responseData.put(REASON, LOG_IN_WRONG_PASSWORD);
+					responseData.put(USERNAME, username);
+				}
 			}
 		}
 		/* Adjust message with json response. networkJSON is defined in Constants.network */
 		msg.setJSON(networkJSON(LOG_IN_REQUEST, responseData));
 		send(msg);
+	}
+
+	private Boolean validatePassword(User usr, String password){
+		return usr.getPassword().equals(password);
 	}
 
 	/* No response is sent on logout request */
@@ -197,8 +209,9 @@ public class AppliServer extends AbstractNIOServer{
 	public void onSignupRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String username = (String) data.get(USERNAME);
+		String password = (String) data.get(PASSWORD);
 		JSONObject responseData = new JSONObject();
-		User usr = new User(username,"M"); //TODO : demander le genre
+		User usr = new User(username,"M", password); //TODO : demander le genre
 		if(!(this._userDatabase.create(usr))){
 			if(userConnected(usr.getUsername())){
 				responseData.put(SIGN_UP_RESPONSE, SIGN_UP_FAILURE);

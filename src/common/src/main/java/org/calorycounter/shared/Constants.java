@@ -56,6 +56,7 @@ public final class Constants {
 		public static final String LOG_IN_FAILURE = "d_login_nope";
 		public static final String LOG_IN_USERNAME_NOT_FOUND = "d_login_nope_null";
 		public static final String LOG_IN_ALREADY_CONNECTED = "d_login_nope_usr_connected";
+		public static final String LOG_IN_WRONG_PASSWORD = "d_login_nope_wrong_pw";
 
 		public static final String LOG_OUT_REQUEST = "r_logout";
 

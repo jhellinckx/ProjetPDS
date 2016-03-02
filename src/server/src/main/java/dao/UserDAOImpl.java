@@ -19,10 +19,10 @@ import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight FROM User WHERE username = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight FROM User WHERE id_user = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight FROM User";
-	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight) VALUES (?, ?, ?)";
+	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight, password FROM User WHERE username = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight, password FROM User WHERE id_user = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight, password FROM User";
+	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight, password) VALUES (?, ?, ?, ?)";
 	private static final String SQL_DELETE = "DELETE FROM User WHERE username = ?";
     private static final String SQL_UPDATE_WEIGHT = "UPDATE User SET weight = ? WHERE id_user = ?";
     private static final String SQL_UPDATE_GENDER = "UPDATE User SET gender = ? WHERE id_user = ?";
@@ -158,7 +158,7 @@ public class UserDAOImpl implements UserDAO {
         try {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender(), user.getWeight());
+            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender(), user.getWeight(), user.getPassword());
             int statut = preparedStatement.executeUpdate();
             /* Analyse du statut retourne par la requetee d'insertion */
             if ( statut == 0 ) {
@@ -237,6 +237,7 @@ public class UserDAOImpl implements UserDAO {
         user.setUsername( resultSet.getString( "username" ) );
         user.setGender( resultSet.getString( "gender" ) );
         user.setWeight( resultSet.getFloat( "weight" ) );
+        user.setPassword( resultSet.getString( "password" ) );
         return user;
     }
 

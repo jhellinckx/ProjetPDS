@@ -8,6 +8,7 @@ CREATE TABLE db_appli.User(
 	username VARCHAR(60) NOT NULL,
 	gender VARCHAR(1) NOT NULL,
 	weight FLOAT,
+	password VARCHAR(255) NOT NULL,
 	UNIQUE(username),
 	PRIMARY KEY(id_user)
 ) ENGINE=INNODB;
