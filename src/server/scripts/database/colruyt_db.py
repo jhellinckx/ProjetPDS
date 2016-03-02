@@ -207,9 +207,32 @@ def create_user_table():
 
 
 def create_user_preferences_table():
-	pass
+	user_pref_table_command = (
+	"CREATE TABLE User_preferences("
+	"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+	"numUser INT UNSIGNED NOT NULL,"
+	"numFood INT UNSIGNED NOT NULL,"
+	"rank DECIMAL(2,1) NOT NULL,"
+	"PRIMARY KEY (id)"
+	")ENGINE=INNODB;")
+	
+	user_id_foreign_key_command = (
+	"ALTER TABLE User_preferences "
+	"ADD CONSTRAINT fk_numUser_idUser FOREIGN KEY (numUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE;")
 
+	food_id_foreign_key_command = (
+	"ALTER TABLE User_preferences "
+	"ADD CONSTRAINT fk_numFood_idFood FOREIGN KEY (numFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE;")
 
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, password=password,database=db_name)
+	cursor = cnx.cursor()
+	cursor.execute(user_pref_table_command)
+	cursor.execute(user_id_foreign_key_command)
+	cursor.execute(food_id_foreign_key_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
 
 if __name__ == "__main__" :
 	try:
