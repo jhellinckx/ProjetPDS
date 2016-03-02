@@ -94,7 +94,6 @@ public class HistoryActivity extends HomeActivity {
             String name = (String) nameDateRepr.get(HISTORY_NAME);
             String date = (String) nameDateRepr.get(HISTORY_DATE);
             String url = (String) nameDateRepr.get(FOOD_IMAGE_URL);
-            //addRowInTable(name, date);
             addItemStickerInLayout(date, url);
         }
     }
@@ -107,29 +106,6 @@ public class HistoryActivity extends HomeActivity {
     private void handleCodeRequest(JSONObject data){
         String foodName = (String) data.get(FOOD_NAME);
         String date = (String) data.get(HISTORY_DATE);
-        addRowInTable(foodName, date);
-    }
-
-    private void addRowInTable(String name, String date){
-        if(!name.isEmpty() && !date.isEmpty()){
-            TableRow historyRow = new TableRow(this);
-            //setClickListener(historyRow);
-            makeTableRow(name,historyRow);
-            makeTableRow(date,historyRow);
-
-
-            historyRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            historyTable.addView(historyRow,0);
-
-        }
-    }
-
-    private void makeTableRow(String text, TableRow row){
-        TextView rowView = new TextView(this);
-        rowView.setText(text);
-        rowView.setLayoutParams(_params);
-        rowView.setPadding(70, 50, 0, 0);
-        row.addView(rowView);
     }
 
     public void startScan(){

@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by aurelien on 1/03/16.
- */
 public class DayFragment extends Fragment {
 
     private BackListener listener;

@@ -5,41 +5,28 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
 import static org.calorycounter.shared.Constants.network.*;
-/**
- * Created by aurelien on 15/12/15.
- */
+
 public class RecommendationResultsFragment extends Fragment {
 
     private OnItemClickListener listener;
     private int id = 0;
 
     private ArrayList<JSONObject> recommendations;
-    private TableLayout recomTable;
+    private LinearLayout recomList;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
-        recomTable = (TableLayout) v.findViewById(R.id.resultsview);
+        recomList = (LinearLayout) v.findViewById(R.id.resultsview);
         if(recommendations.isEmpty()){
             Log.d("Recommendations : ", "-----------------------------empty");
         }
@@ -50,21 +37,7 @@ public class RecommendationResultsFragment extends Fragment {
             String url = (String)recommendation.get(FOOD_IMAGE_URL);
             String productName = (String)recommendation.get(FOOD_NAME);
             if(!url.isEmpty() && !productName.isEmpty()) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f);
-                TableRow recomRow = new TableRow((getActivity()));
-                setClickListener(recomRow);
-                ++id;
-                ImageView imageView = new ImageView(getActivity());
-                Picasso.with(getActivity())
-                        .load(url)
-                        .resize(230, 230)
-                        .transform(new RoundedTransformation(100, 0))
-                        .into(imageView);
-                TextView name = new TextView(getActivity());
-                name.setText(productName);
-                recomRow.addView(imageView);
-                recomRow.addView(name);
-                recomTable.addView(recomRow);
+                recomList.addView(new ItemSticker(getContext(), url, productName));
             }
         }
 
@@ -88,7 +61,7 @@ public class RecommendationResultsFragment extends Fragment {
 
     }
 
-    private void setClickListener(TableRow row){
+    /*private void setClickListener(TableRow row){
         row.setId(id);
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +69,7 @@ public class RecommendationResultsFragment extends Fragment {
                 showInfoFragment(v.getId());
             }
         });
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
