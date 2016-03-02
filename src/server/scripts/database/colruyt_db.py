@@ -5,7 +5,7 @@ import sys
 import ast
 import mysql.connector
 from mysql.connector import errorcode
-from colruyt_parser import BaseArticle,DetailedArticle,details_results_filename
+from colruyt_models import *
 
 
 YELLOW = "\033[33m"
