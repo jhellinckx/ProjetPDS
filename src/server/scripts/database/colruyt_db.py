@@ -315,6 +315,36 @@ def insert_items_in_sport():
 	cursor.close()
 	cnx.close() 
 
+
+def create_history_table():
+	history_table_command = (
+		"CREATE TABLE `Users_history` ("
+		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		"idUser INT UNSIGNED NOT NULL,"
+		"idFood INT UNSIGNED NOT NULL,"
+		"date TEXT NOT NULL,"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+	history_fk_food_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	history_fk_user_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idUser_id_user FOREIGN KEY (idUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	commands = [history_table_command,history_fk_user_command,history_fk_food_command]
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	for command in commands:
+			cursor.execute(command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
 if __name__ == "__main__" :
 	try:
 		try:
@@ -372,6 +402,12 @@ if __name__ == "__main__" :
 			sys.stdout.write("Inserting items in " + MAGENTA + "Sports" + RESET + "... ")
 			sys.stdout.flush()
 			insert_items_in_sport()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+
+			sys.stdout.write("Creating " + MAGENTA + "History" + RESET + " table... ")
+			sys.stdout.flush()
+			create_history_table()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
 
