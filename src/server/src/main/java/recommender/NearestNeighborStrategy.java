@@ -1,6 +1,7 @@
 package recommender;
 
 import java.util.*;
+import java.lang.Math;
 import items.Food;
 import items.CategoryRating;
 import items.User;
@@ -50,8 +51,11 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 		}
 		Map<Food, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
 		List<Food> recommendations = new ArrayList<Food>(sortedRatingPredictions.keySet());
-		ArrayList<Food> resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
-		
+
+		ArrayList<Food> resizedRecoms = new ArrayList<Food>();
+ 		if(recommendations.size()>_recommendations) {
+ 			resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
+ 		}
 		Map<Food, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
 		for(Food recom : resizedRecoms)
 			resizedRecomsWithCategoriesNumber.put(recom, categoriesNumberForID.get(recom.getId()));

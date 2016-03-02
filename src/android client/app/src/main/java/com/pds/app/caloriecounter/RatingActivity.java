@@ -5,23 +5,16 @@ package com.pds.app.caloriecounter;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.MenuItem;
-import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RatingBar;
-import android.widget.Toast;
-
 
 import com.squareup.picasso.Picasso;
 
 import org.json.simple.JSONObject;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -58,11 +51,6 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
         initializer(ratings);
         initializer(urls);
         initializer(names);
-        setUpUrls();
-
-    }
-
-    private void setUpUrls(){
         getUrlsFromServer();
 
     }
@@ -104,30 +92,18 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
          *  rating.
          */
 
-
         JSONObject data = new JSONObject();
-        JSONObject data2 = new JSONObject();
-        int index1 = 0;
-        int index2 = 0;
+        int index = 0;
         for (int i = 0; i < RatingActivity.NB_RATINGS; i++){
             if (ratings.get(i) != null) {
-                if(i<NB_RATINGS/2){
-                    data.put(FOOD_IMAGE_URL + Integer.toString(index1), urls.get(i));
-                    data.put(FOOD_RATING + Integer.toString(index1), ratings.get(i));
-                    index1 += 1;
-                }
-                else{
-                    data2.put(FOOD_IMAGE_URL + Integer.toString(index2), urls.get(i));
-                    data2.put(FOOD_RATING + Integer.toString(index2), ratings.get(i));
-                    index2+=1;
-                }
+
+                data.put(FOOD_IMAGE_URL + Integer.toString(index), urls.get(i));
+                data.put(FOOD_RATING + Integer.toString(index), ratings.get(i));
+                index += 1;
 
             }
         }
-
         send(networkJSON(SEND_RATINGS_REQUEST, data));
-        send(networkJSON(SEND_RATINGS_REQUEST, data2));
-
     }
 
     private void resetRatings(){
@@ -137,10 +113,10 @@ public class RatingActivity extends HomeActivity implements RateFoodDialogFragme
     }
 
     public void refreshGridView(){
-        Picasso p = Picasso.with(RatingActivity.this);
-        p.cancelTag("tag");
+        //Picasso p = Picasso.with(RatingActivity.this);
+        //p.cancelTag("tag");
         resetRatings();
-        setUpUrls();
+        getUrlsFromServer();
     }
 
     @Override

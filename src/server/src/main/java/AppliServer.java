@@ -22,6 +22,7 @@ import dao.FoodDAO;
 import dao.UserPrefDAO;
 import dao.SportsDAO;
 import dao.CategoryRatingDAO;
+import dao.UserHistoryDAO;
 import dao.DAOException;
 
 import recommender.RecommenderSystem;
@@ -35,6 +36,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.lang.Math;
 
 public class AppliServer extends AbstractNIOServer{
 
@@ -45,6 +47,7 @@ public class AppliServer extends AbstractNIOServer{
 	private UserPrefDAO _userprefDatabase;
 	private SportsDAO _sportsDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
+	private UserHistoryDAO _userHistoryDatabase;
 
 	/* Recommendations fields */
 	private KnowledgeBasedFilter _knowledgeBased;
@@ -58,6 +61,7 @@ public class AppliServer extends AbstractNIOServer{
 		_userprefDatabase = _daoFactory.getUserPrefDAO();
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
+		_userHistoryDatabase = _daoFactory.getUserHistoryDAO();
 
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		//_hybridStrategy = new CascadeStrategy();
@@ -95,7 +99,7 @@ public class AppliServer extends AbstractNIOServer{
 			if(usr.getUsername().equals(PIZZA_MAN_USERNAME) && request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
 				onPizzamanUnrankedFood(msg);
 			}
-			else if(request.equals(FOOD_CODE_REQUEST)){
+			else if(request.equals(FOOD_CODE_REQUEST) ){
 				onFoodcodeRequest(msg);
 			}
 			else if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
@@ -115,6 +119,12 @@ public class AppliServer extends AbstractNIOServer{
 			}	
 			else if(request.equals(DATA_REQUEST)){
 				onDataRequest(msg);
+			}
+			else if(request.equals(HISTORY_REQUEST)){
+				onHistoryRequest(msg);
+			}
+			else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
+				onCodeHistoryRequest(msg);
 			}
 		}
 		
@@ -222,6 +232,7 @@ public class AppliServer extends AbstractNIOServer{
 			responseData.put(FOOD_NAME,food.getProductName());
 			responseData.put(FOOD_IMAGE_URL,food.getImageUrl());
 		}
+
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST, responseData));
 		send(msg);
 	}
@@ -322,10 +333,7 @@ public class AppliServer extends AbstractNIOServer{
 			}
 
 		}
-		//String response = (String) data.get(FOOD_CODE);
-		//JSONObject responseData = new JSONObject();
-		//Food food = _foodDatabase.findByCode(code);
-		
+	
 	}
 
 	public void onSportsListRequest(Message msg){
@@ -377,6 +385,7 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
+		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
 		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
 		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
 		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
@@ -390,13 +399,18 @@ public class AppliServer extends AbstractNIOServer{
 			Float jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight());
 			maxEnergy = maxEnergy + jouleFromSport;
 		}
+		if(pastFoodsDates!=null && pastFoodsDates.size() == pastFoods.size()){
+			for (int i=0; i<pastFoodsDates.size();i++){
+				_userHistoryDatabase.addToHistory(user, pastFoods.get(i),pastFoodsDates.get(i));
+			}
+		}
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
 		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
-		for(Food food : recommendedFoods.subList(0,10)){
-			jsonFoods.add(food.toJSON());
+		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
+			jsonFoods.add(recommendedFoods.get(i).toJSON());
 		}
 		JSONObject sendData = new JSONObject();
 		sendData.put(RECOMMENDED_FOOD_LIST, jsonFoods);
@@ -421,7 +435,56 @@ public class AppliServer extends AbstractNIOServer{
 		data.put(UPDATE_DATA_WEIGHT, user.getWeight());
 		msg.setJSON(networkJSON(UPDATE_DATA_REQUEST, data));
 		send(msg);
+	}
 
+	public void onHistoryRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = new JSONObject();
+		//get foodNames & date
+		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNames(user);
+		List<String> dates = _userHistoryDatabase.getHistoryDates(user);
+
+		//Make JSON response
+		if(foodNames.size() == dates.size()){
+			JSONArray foodsDatesRepr = new JSONArray();
+			for(int i = 0 ; i< foodNames.size(); ++i){
+				JSONObject foodDateRepr = new JSONObject();
+				System.out.println( dates.get(i));
+				System.out.println( foodNames.get(i));
+				foodDateRepr.put(HISTORY_DATE, dates.get(i));
+				foodDateRepr.put(HISTORY_NAME, foodNames.get(i));
+				foodsDatesRepr.add(foodDateRepr);
+				
+			}
+			data.put(HISTORY_NAMES_DATES, foodsDatesRepr);
+			msg.setJSON(networkJSON(HISTORY_REQUEST, data));
+			send(msg);
+		}
+		else{
+			System.out.println("Foods list and dates list in history don't match in size");
+		}
+	}
+
+	public void onCodeHistoryRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		String code = (String) data.get(FOOD_CODE);
+		String date = (String) data.get(HISTORY_DATE);
+		JSONObject responseData = new JSONObject();
+		Food food = _foodDatabase.findByCode(code);
+		if(food == null){
+			responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_FAILURE);
+			responseData.put(REASON, FOOD_CODE_NOT_FOUND);
+		}
+		else{
+			_userHistoryDatabase.addToHistory(user, food, date);
+			responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
+			responseData.put(FOOD_NAME,food.getProductName());
+			responseData.put(HISTORY_DATE, date);
+		}
+
+		msg.setJSON(networkJSON(FOOD_CODE_REQUEST_HISTORY, responseData));
+		send(msg);
 	}
 
 	public static void main(String[] args){

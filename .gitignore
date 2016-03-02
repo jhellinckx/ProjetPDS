@@ -14,4 +14,7 @@
 *.class
 *.pyc
 
+# Ignore Gedit Files
+*~
+
 .DS_Store
