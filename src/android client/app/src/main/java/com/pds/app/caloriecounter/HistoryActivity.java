@@ -28,13 +28,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.date.*;
 
 public class HistoryActivity extends HomeActivity {
 
-    private TableLayout historyTable;
-    private LinearLayout.LayoutParams _params;
+    private LinearLayout historyTable;
     private Button addFoodButton = null;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
     @Override
@@ -52,7 +51,7 @@ public class HistoryActivity extends HomeActivity {
         });
 
 
-        historyTable = (TableLayout) v.findViewById(R.id.histTable);
+        historyTable = (LinearLayout) v.findViewById(R.id.histTable);
         serverRequestHistory();
     }
 
@@ -65,7 +64,6 @@ public class HistoryActivity extends HomeActivity {
         Log.d("HISTORYACTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         final JSONObject data = (JSONObject)msg.get(DATA);
-        _params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         if(request.equals(HISTORY_REQUEST)){
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -93,36 +91,19 @@ public class HistoryActivity extends HomeActivity {
             JSONObject nameDateRepr = namesDatesResults.get(i);
             String name = (String) nameDateRepr.get(HISTORY_NAME);
             String date = (String) nameDateRepr.get(HISTORY_DATE);
-            addRowInTable(name, date);
+            String url = (String) nameDateRepr.get(FOOD_IMAGE_URL);
+            addItemStickerInLayout(date, url);
         }
     }
 
-    private void handleCodeRequest(JSONObject data){
+    private void addItemStickerInLayout(String date, String url){
+        ItemSticker sticker = new ItemSticker(this, url, date);
+        historyTable.addView(sticker);
+    }
+
+    private void handleCodeRequest(JSONObject data){        // TODO ADAPT THIS TO ITEMSTICKER.
         String foodName = (String) data.get(FOOD_NAME);
         String date = (String) data.get(HISTORY_DATE);
-        addRowInTable(foodName, date);
-    }
-
-    private void addRowInTable(String name, String date){
-        if(!name.isEmpty() && !date.isEmpty()){
-            TableRow historyRow = new TableRow(this);
-            //setClickListener(historyRow);
-            makeTableRow(name,historyRow);
-            makeTableRow(date,historyRow);
-
-
-            historyRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            historyTable.addView(historyRow,0);
-
-        }
-    }
-
-    private void makeTableRow(String text, TableRow row){
-        TextView rowView = new TextView(this);
-        rowView.setText(text);
-        rowView.setLayoutParams(_params);
-        rowView.setPadding(70, 50, 0, 0);
-        row.addView(rowView);
     }
 
     public void startScan(){
@@ -144,7 +125,7 @@ public class HistoryActivity extends HomeActivity {
         IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResults != null && scanResults.getContents() != null){
             String scanContent = scanResults.getContents();
-            sendCode(scanContent, sdf.format(Calendar.getInstance().getTime()));
+            sendCode(scanContent, SDFORMAT.format(Calendar.getInstance().getTime()));
         } else{
             Toast toast = Toast.makeText(getApplicationContext(), "Scan Cancelled", Toast.LENGTH_SHORT);
             toast.show();

@@ -28,6 +28,12 @@
             android:title="Barcode Scanner"
             android:textColor="@color/fontColor"/>
         <item
+            android:id="@+id/nav_calendar"
+            android:icon="@drawable/ic_calendar"
+            android:title="Calendar"
+            android:textColor="@color/fontColor"
+            />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="Log out"

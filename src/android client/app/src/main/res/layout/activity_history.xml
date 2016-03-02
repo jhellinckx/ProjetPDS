@@ -19,21 +19,11 @@
         android:layout_height="fill_parent"
         android:scrollbars="none"
         android:layout_weight="1">
-        <TableLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:id="@+id/histTable"
-            android:layout_marginTop="20dp"
-            android:nestedScrollingEnabled="true">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </TableRow>
-        </TableLayout>
+            android:id="@+id/histTable"></LinearLayout>
     </ScrollView>
 </LinearLayout>

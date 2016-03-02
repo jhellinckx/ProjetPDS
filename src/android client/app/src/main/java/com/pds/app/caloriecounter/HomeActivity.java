@@ -117,6 +117,9 @@ public abstract class HomeActivity extends NotifiableActivity
             onLogout();
             Intent logActivity = new Intent(HomeActivity.this, LogActivity.class);
             startActivity(logActivity);
+        } else if (id == R.id.nav_calendar){
+            Intent calendarActivity = new Intent(HomeActivity.this, CalendarActivity.class);
+            startActivity(calendarActivity);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

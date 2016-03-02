@@ -7,7 +7,7 @@ import static org.calorycounter.shared.Constants.network.*;
 public class RequestKeysContainer {
     private static final ArrayList<String> keys = new ArrayList<>(Arrays.asList(USERNAME, PASSWORD, FOOD_CODE, FOOD_IMAGE_URL,
             FOOD_RATING, UPDATE_DATA_GENDER, UPDATE_DATA_WEIGHT, PAST_FOODS_LIST, MAX_ENERGY, MAX_CARBOHYDRATES,MAX_FAT,
-            MAX_PROT, SPORT_NAME, SPORT_DURATION, HISTORY_DATE));
+            MAX_PROT, SPORT_NAME, SPORT_DURATION, HISTORY_DATE, FOOD_NAMES));
 
     public static List<String> getKeys(){
         return keys;

@@ -126,6 +126,9 @@ public class AppliServer extends AbstractNIOServer{
 			else if(request.equals(FOOD_CODE_REQUEST_HISTORY)){
 				onCodeHistoryRequest(msg);
 			}
+			else if(request.equals(HISTORY_FOR_DATE_REQUEST)){
+				onHistoryForDateRequest(msg);
+			}
 		}
 		
 	}
@@ -301,7 +304,6 @@ public class AppliServer extends AbstractNIOServer{
 
 	public void onSendRatingRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
-		System.out.println(data.size());
 		String currUrl;
 		double currRank; 
 		User currUser = getUser(msg);
@@ -312,7 +314,6 @@ public class AppliServer extends AbstractNIOServer{
 			
 			Food currFood = _foodDatabase.findByUrl(currUrl);
 			_userprefDatabase.create(currUser.getId(),currFood.getId(), rank);
-			System.out.println("currUrl: "+currUrl+"\ncurrRank :"+String.valueOf(currRank)+"\ncurrFood:"+currFood.getProductName());
 			try{
 				ArrayList<String> categories =  _categoryRatingDatabase.findCategoriesForFood(currFood);
 				for(String category : categories){
@@ -441,18 +442,18 @@ public class AppliServer extends AbstractNIOServer{
 		User user = getUser(msg);
 		JSONObject data = new JSONObject();
 		//get foodNames & date
-		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNames(user);
+		//List<String> foodNames = _userHistoryDatabase.getHistoryFoodNames(user);
+		List<Food> foods = _userHistoryDatabase.getHistoryFoods(user);
 		List<String> dates = _userHistoryDatabase.getHistoryDates(user);
 
 		//Make JSON response
-		if(foodNames.size() == dates.size()){
+		if(foods.size() == dates.size()){
 			JSONArray foodsDatesRepr = new JSONArray();
-			for(int i = 0 ; i< foodNames.size(); ++i){
+			for(int i = 0 ; i< foods.size(); ++i){
 				JSONObject foodDateRepr = new JSONObject();
-				System.out.println( dates.get(i));
-				System.out.println( foodNames.get(i));
 				foodDateRepr.put(HISTORY_DATE, dates.get(i));
-				foodDateRepr.put(HISTORY_NAME, foodNames.get(i));
+				foodDateRepr.put(HISTORY_NAME, foods.get(i).getProductName());
+				foodDateRepr.put(FOOD_IMAGE_URL, foods.get(i).getImageUrl());
 				foodsDatesRepr.add(foodDateRepr);
 				
 			}
@@ -484,6 +485,21 @@ public class AppliServer extends AbstractNIOServer{
 		}
 
 		msg.setJSON(networkJSON(FOOD_CODE_REQUEST_HISTORY, responseData));
+		send(msg);
+	}
+
+	public void onHistoryForDateRequest(Message msg){
+		User user = getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		String date = (String) data.get(HISTORY_DATE);
+		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNamesForDate(user, date);
+		JSONArray foodNamesData = new JSONArray();
+		for (int i = 0; i < foodNames.size(); i++){
+			JSONObject foodName = new JSONObject();
+			foodName.put(FOOD_NAME, foodNames.get(i));
+		}
+		data.put(FOOD_NAMES, foodNamesData);
+		msg.setJSON(networkJSON(HISTORY_FOR_DATE_REQUEST, data));
 		send(msg);
 	}
 
