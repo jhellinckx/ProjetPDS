@@ -18,6 +18,11 @@ db_name = "db_colruyt"
 db_encoding = "utf8"
 db_properties_filename = "../../src/main/resources/dao.properties"
 
+sports_filename = "raw/sports_data.txt"
+data_char = "@"
+data_start = 2
+delimiter = ";"
+
 articles_names_correction = \
 			{
 				BaseArticle.BRANCH_INDEX_KEY 						: BaseArticle.BRANCH_INDEX_KEY,\
@@ -154,7 +159,7 @@ def create_food_table():
 	cursor.close()
 	cnx.close()
 
-def add_items_in_food():
+def insert_items_in_food():
 	article_insert_command = "INSERT INTO Food "
 	db_names = "("
 	values = "VALUES ("
@@ -234,6 +239,82 @@ def create_user_preferences_table():
 	cursor.close()
 	cnx.close()
 
+def create_categories_ratings_table():
+	categories_ratings_tabe_command = (
+    	"CREATE TABLE `CategoriesRatings` ("
+    	"  `id` int(11) NOT NULL AUTO_INCREMENT,"
+    	"  `category_name` varchar(100) NOT NULL,"
+    	"  `rating` DECIMAL(2,1) NOT NULL,"
+    	"  `n_ratings` int(11) NULL DEFAULT NULL,"
+    	"  `user_id` INT UNSIGNED NOT NULL,"
+    	"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+	user_id_foreign_key_command = (
+		"ALTER TABLE `CategoriesRatings` ADD FOREIGN KEY (user_id)\
+		REFERENCES `User` (`id_user`)")
+
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(categories_ratings_tabe_command)
+	cursor.execute(user_id_foreign_key_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+
+def read_sports_data_from_file():
+	sports_data = []
+	with open(sports_filename, 'r') as f:
+		for i in f:
+			line = i.strip()
+			if (line[0] == data_char):
+				line = line[data_start:]
+				sports_data.append(line.split(delimiter))
+	return sports_data
+	
+def create_sport_table():
+	sports_table_command = (
+		"CREATE TABLE `Sports` ("
+    	"  `name` varchar(100) NOT NULL,"
+    	"  `joule_60kg` varchar(25) NOT NULL,"
+    	"  `joule_70kg` varchar(25) NOT NULL,"
+    	"  `joule_85kg` varchar(25) NOT NULL,"
+    	"  PRIMARY KEY (`name`)"
+    	") ENGINE=InnoDB")
+
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(sports_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close() 
+
+def insert_items_in_sport():
+	sport_insert_command = (
+		"INSERT INTO Sports "
+		"(name, joule_60kg, joule_70kg, joule_85kg) "
+		"VALUES (%(name)s, %(joule_60kg)s, %(joule_70kg)s, %(joule_85kg)s)")
+	
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	# Insert sports from file
+	sports_data = read_sports_data_from_file()
+	i = 1
+	for data_list in sports_data:
+		#index_format = "%" + str(len(str(len(sports_data)))) + "d"
+		#indicator = "["+index_format+"/"+index_format+"]"
+		#sys.stdout.write(indicator%(i, len(sports_data)) + " Inserting " + YELLOW + str(data_list) + RESET + " into " + MAGENTA + "Sports" + RESET + "... ")
+		sport_data = {'name': data_list[0], 'joule_60kg': data_list[1], 'joule_70kg': data_list[2],'joule_85kg': data_list[3],}
+		cursor.execute(sport_insert_command, sport_data)
+		i += 1
+	cnx.commit()
+	cursor.close()
+	cnx.close() 
+
 if __name__ == "__main__" :
 	try:
 		try:
@@ -251,26 +332,49 @@ if __name__ == "__main__" :
 			create_db()
 			sys.stdout.write(GREEN + "OK " + RESET + "\n")
 			sys.stdout.flush()
+
 			sys.stdout.write("Creating " + MAGENTA + "Food" + RESET + " table... ")
 			sys.stdout.flush()
 			create_food_table()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
+
 			sys.stdout.write("Inserting items in " + MAGENTA + "Food" + RESET + "... ")
 			sys.stdout.flush()
-			add_items_in_food()
+			insert_items_in_food()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
+
 			sys.stdout.write("Creating " + MAGENTA + "User" + RESET + " table... ")
 			sys.stdout.flush()
 			create_user_table()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
+
 			sys.stdout.write("Creating " + MAGENTA + "UserPreferences" + RESET + " table... ")
 			sys.stdout.flush()
 			create_user_preferences_table()
 			sys.stdout.write(GREEN + "OK" + RESET + "\n")
 			sys.stdout.flush()
+
+			sys.stdout.write("Creating " + MAGENTA + "CategoriesRatings" + RESET + " table... ")
+			sys.stdout.flush()
+			create_categories_ratings_table()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+
+			sys.stdout.write("Creating " + MAGENTA + "Sports" + RESET + " table... ")
+			sys.stdout.flush()
+			create_sport_table()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+
+			sys.stdout.write("Inserting items in " + MAGENTA + "Sports" + RESET + "... ")
+			sys.stdout.flush()
+			insert_items_in_sport()
+			sys.stdout.write(GREEN + "OK" + RESET + "\n")
+			sys.stdout.flush()
+
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 		sys.stdout.flush()
