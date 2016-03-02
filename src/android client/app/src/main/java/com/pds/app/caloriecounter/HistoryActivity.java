@@ -33,7 +33,6 @@ import static org.calorycounter.shared.Constants.date.*;
 public class HistoryActivity extends HomeActivity {
 
     private LinearLayout historyTable;
-    private LinearLayout.LayoutParams _params;
     private Button addFoodButton = null;
 
 
@@ -65,7 +64,6 @@ public class HistoryActivity extends HomeActivity {
         Log.d("HISTORYACTIVITY HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         final JSONObject data = (JSONObject)msg.get(DATA);
-        _params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         if(request.equals(HISTORY_REQUEST)){
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -103,7 +101,7 @@ public class HistoryActivity extends HomeActivity {
         historyTable.addView(sticker);
     }
 
-    private void handleCodeRequest(JSONObject data){
+    private void handleCodeRequest(JSONObject data){        // TODO ADAPT THIS TO ITEMSTICKER.
         String foodName = (String) data.get(FOOD_NAME);
         String date = (String) data.get(HISTORY_DATE);
     }

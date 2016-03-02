@@ -37,13 +37,22 @@ public class RecommendationResultsFragment extends Fragment {
             String url = (String)recommendation.get(FOOD_IMAGE_URL);
             String productName = (String)recommendation.get(FOOD_NAME);
             if(!url.isEmpty() && !productName.isEmpty()) {
-                recomList.addView(new ItemSticker(getContext(), url, productName));
+                ItemSticker sticker = new ItemSticker(getContext(), url, productName);
+                sticker.setId(id);
+                sticker.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showInfoFragment(v.getId());
+                    }
+                });
+                recomList.addView(sticker);
+                id++;
             }
         }
 
     }
-    private void showInfoFragment(int id){
-        JSONObject info = recommendations.get(id);
+    private void showInfoFragment(int pos){
+        JSONObject info = recommendations.get(pos);
         Bundle b = new Bundle();
         b.putString(FOOD_NAME, (String) info.get(FOOD_NAME));
         b.putString(FOOD_QUANTITY, (String) info.get(FOOD_QUANTITY));
@@ -57,19 +66,7 @@ public class RecommendationResultsFragment extends Fragment {
         ItemInfoDialog frag = new ItemInfoDialog();
         frag.setArguments(b);
         frag.show(getActivity().getFragmentManager(), "item info");
-
-
     }
-
-    /*private void setClickListener(TableRow row){
-        row.setId(id);
-        row.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showInfoFragment(v.getId());
-            }
-        });
-    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

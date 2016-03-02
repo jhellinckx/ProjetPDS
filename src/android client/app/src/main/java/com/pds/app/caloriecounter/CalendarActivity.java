@@ -105,5 +105,6 @@ public class CalendarActivity extends HomeActivity implements DayFragment.BackLi
         int visibility = calendar.getVisibility();
         calendar.setVisibility(frag_layout.getVisibility());
         frag_layout.setVisibility(visibility);
+        frag_args = new Bundle();
     }
 }

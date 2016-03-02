@@ -37,8 +37,6 @@ public class RoundedTransformation implements Transformation{
 
         Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
-        //canvas.drawCircle((source.getWidth()-margin)/2, (source.getHeight()-margin)/2, (radius-BORDER_WIDTH)*RADIUS_FACTOR, paint);
-        //canvas.drawCircle((source.getWidth()-margin)/2, (source.getHeight()-margin)/2, (radius-BORDER_WIDTH)*RADIUS_FACTOR, border);
         canvas.drawRoundRect(new RectF(margin, margin, source.getWidth()-margin,
                 source.getHeight()-margin), radius-mBorder, radius-mBorder, paint);
         canvas.drawRoundRect(new RectF(margin, margin, source.getWidth()-margin,

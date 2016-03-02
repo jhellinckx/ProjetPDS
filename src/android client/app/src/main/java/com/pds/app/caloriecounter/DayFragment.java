@@ -31,10 +31,7 @@ public class DayFragment extends Fragment {
 
     private void addFoodsToLayout(List<String> foodnames){
         for (String foodname : foodnames){
-            TextView text = new TextView(getContext());
-            text.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
-            text.setText(foodname);
-            food_layout.addView(text);
+            food_layout.addView(new ItemSticker(getContext(), new String(), foodname));
         }
 
     }
