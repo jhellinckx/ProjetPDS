@@ -116,6 +116,8 @@ public final class Constants {
 		public static final String UPDATE_DATA_GENDER = "d_updatadata_gender";
 		public static final String UPDATE_DATA_WEIGHT = "d_updatedata_weight";
 		public static final String DATA_REQUEST = "r_data";
+		public static final String GENDER = "d_gender";
+		public static final String WEIGHT = "d_weight";
 
 		/* History */ 
 		public static final String HISTORY_REQUEST = "r_history";
