@@ -60,38 +60,59 @@ articles_names_correction = \
 				DetailedArticle.ALLERGENS_CONTAINS_KEY 				: "allergens",\
 				DetailedArticle.ALLERGENS_TRACE_OF_KEY 				: "traces",\
 			}
+RDAs = \
+		[
+			DetailedArticle.PORTION_ENERGY_KJ_KEY 			,\
+			DetailedArticle.PORTION_ENERGY_KCAL_KEY 		,\
+			DetailedArticle.PORTION_TOTAL_FAT_KEY 			,\
+			DetailedArticle.PORTION_SATURATED_FAT_KEY 		,\
+			DetailedArticle.PORTION_TOTAL_CARBOHYDRATES_KEY ,\
+			DetailedArticle.PORTION_SUGARS_KEY 				,\
+			DetailedArticle.PORTION_TOTAL_PROTEINS_KEY 		,\
+			DetailedArticle.PORTION_FIBERS_KEY 				,\
+			DetailedArticle.PORTION_SALT_KEY 				,\
+			DetailedArticle.PER_100G_ENERGY_KJ_KEY 			,\
+			DetailedArticle.PER_100G_ENERGY_KCAL_KEY 		,\
+			DetailedArticle.PER_100G_TOTAL_FAT_KEY 			,\
+			DetailedArticle.PER_100G_SATURATED_FAT_KEY 		,\
+			DetailedArticle.PER_100G_TOTAL_CARBOHYDRATES_KEY ,\
+			DetailedArticle.PER_100G_SUGARS_KEY 			,\
+			DetailedArticle.PER_100G_TOTAL_PROTEINS_KEY 	,\
+			DetailedArticle.PER_100G_FIBERS_KEY 			,\
+			DetailedArticle.PER_100G_SALT_KEY				,\
+		]
 
 articles_details_sql_types = \
 			{
 				BaseArticle.BRANCH_INDEX_KEY 						: "INT UNSIGNED",\
 				BaseArticle.IMAGE_KEY 								: "VARCHAR(255)",\
-				BaseArticle.PRICE_UNIT_KEY 							: "VARCHAR(10)",\
-				BaseArticle.PRICE_KG_KEY 							: "VARCHAR(10)",\
+				BaseArticle.PRICE_UNIT_KEY 							: "FLOAT",\
+				BaseArticle.PRICE_KG_KEY 							: "FLOAT",\
 				BaseArticle.DETAILS_URL_KEY 						: "VARCHAR(255)",\
 				BaseArticle.CATEGORIES_KEY 							: "TEXT",\
 				BaseArticle.WEIRD_NAME_KEY 							: "VARCHAR(255)",\
 				BaseArticle.SHORT_DESCRIPTION_KEY					: "VARCHAR(255)",\
 				BaseArticle.FULL_DESCRIPTION_KEY 					: "TEXT",\
 				DetailedArticle.REAL_DETAILS_URL_KEY 				: "VARCHAR(255)",\
-				DetailedArticle.PORTION_ENERGY_KJ_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PORTION_ENERGY_KCAL_KEY 			: "VARCHAR(16)",\
-				DetailedArticle.PORTION_TOTAL_FAT_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PORTION_SATURATED_FAT_KEY 			: "VARCHAR(16)",\
-				DetailedArticle.PORTION_TOTAL_CARBOHYDRATES_KEY 	: "VARCHAR(16)",\
-				DetailedArticle.PORTION_SUGARS_KEY 					: "VARCHAR(16)",\
-				DetailedArticle.PORTION_TOTAL_PROTEINS_KEY 			: "VARCHAR(16)",\
-				DetailedArticle.PORTION_FIBERS_KEY 					: "VARCHAR(16)",\
-				DetailedArticle.PORTION_SALT_KEY 					: "VARCHAR(16)",\
+				DetailedArticle.PORTION_ENERGY_KJ_KEY 				: "FLOAT",\
+				DetailedArticle.PORTION_ENERGY_KCAL_KEY 			: "FLOAT",\
+				DetailedArticle.PORTION_TOTAL_FAT_KEY 				: "FLOAT",\
+				DetailedArticle.PORTION_SATURATED_FAT_KEY 			: "FLOAT",\
+				DetailedArticle.PORTION_TOTAL_CARBOHYDRATES_KEY 	: "FLOAT",\
+				DetailedArticle.PORTION_SUGARS_KEY 					: "FLOAT",\
+				DetailedArticle.PORTION_TOTAL_PROTEINS_KEY 			: "FLOAT",\
+				DetailedArticle.PORTION_FIBERS_KEY 					: "FLOAT",\
+				DetailedArticle.PORTION_SALT_KEY 					: "FLOAT",\
 				DetailedArticle.PORTION_INFO_KEY 					: "VARCHAR(255)",\
-				DetailedArticle.PER_100G_ENERGY_KJ_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_ENERGY_KCAL_KEY 			: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_TOTAL_FAT_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_SATURATED_FAT_KEY 			: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_TOTAL_CARBOHYDRATES_KEY 	: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_SUGARS_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_TOTAL_PROTEINS_KEY 		: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_FIBERS_KEY 				: "VARCHAR(16)",\
-				DetailedArticle.PER_100G_SALT_KEY					: "VARCHAR(16)",\
+				DetailedArticle.PER_100G_ENERGY_KJ_KEY 				: "FLOAT",\
+				DetailedArticle.PER_100G_ENERGY_KCAL_KEY 			: "FLOAT",\
+				DetailedArticle.PER_100G_TOTAL_FAT_KEY 				: "FLOAT",\
+				DetailedArticle.PER_100G_SATURATED_FAT_KEY 			: "FLOAT",\
+				DetailedArticle.PER_100G_TOTAL_CARBOHYDRATES_KEY 	: "FLOAT",\
+				DetailedArticle.PER_100G_SUGARS_KEY 				: "FLOAT",\
+				DetailedArticle.PER_100G_TOTAL_PROTEINS_KEY 		: "FLOAT",\
+				DetailedArticle.PER_100G_FIBERS_KEY 				: "FLOAT",\
+				DetailedArticle.PER_100G_SALT_KEY					: "FLOAT",\
 				DetailedArticle.TOTAL_QUANTITY_KEY 					: "VARCHAR(255)",\
 				DetailedArticle.INGREDIENTS_TEXT_KEY 				: "TEXT",\
 				DetailedArticle.BAR_CODE_KEY 						: "VARCHAR(255)",\
@@ -180,6 +201,15 @@ def insert_items_in_food():
 				if isinstance(article[key], list):
 					article[key] = str(article[key])[1:-1] # Get rid of [ and ] of list string
 					if len(article[key]) == 0:
+						article[key] = None
+				elif article[key] != None and (key == BaseArticle.PRICE_KG_KEY or key == BaseArticle.PRICE_UNIT_KEY) :
+					article[key] = float(article[key].replace(',','.'))
+				elif article[key] != None and key in RDAs:
+					unit = article[key].split(" ")[-1]
+					maybe_float = article[key].split(unit)[0].rstrip(' ')
+					try:
+						article[key] = float(maybe_float.replace(',','.'))
+					except ValueError:
 						article[key] = None
 			cursor.execute(article_insert_command, article)
 	cnx.commit()
