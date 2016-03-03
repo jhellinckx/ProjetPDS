@@ -1,7 +1,6 @@
 import java.io.IOException;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.json.simple.JSONArray;
 
 import static org.calorycounter.shared.Constants.network.*;
@@ -10,10 +9,8 @@ import org.calorycounter.shared.Constants;
 import nioserver.AbstractNIOServer;
 import nioserver.Message;
 
-import java.io.UnsupportedEncodingException;
-
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 import items.CategoryRating;
 
 import dao.DAOFactory;
@@ -26,10 +23,7 @@ import dao.UserHistoryDAO;
 import dao.DAOException;
 
 import recommender.RecommenderSystem;
-import recommender.HybridationStrategy;
 import recommender.NearestNeighborStrategy;
-import recommender.UserUserStrategy;
-import recommender.CascadeStrategy;
 import recommender.KnowledgeBasedFilter;
 
 import java.util.Random;
@@ -198,6 +192,7 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	private Boolean validatePassword(User usr, String password){
+		System.out.println("IN DB :" +usr.getPassword() + " ENTERED :" +  password);
 		return usr.getPassword().equals(password);
 	}
 
@@ -211,7 +206,7 @@ public class AppliServer extends AbstractNIOServer{
 		String username = (String) data.get(USERNAME);
 		String password = (String) data.get(PASSWORD);
 		JSONObject responseData = new JSONObject();
-		User usr = new User(username,"M", password); //TODO : demander le genre
+		User usr = new User(username,password, "M"); //TODO : demander le genre
 		if(!(this._userDatabase.create(usr))){
 			if(userConnected(usr.getUsername())){
 				responseData.put(SIGN_UP_RESPONSE, SIGN_UP_FAILURE);

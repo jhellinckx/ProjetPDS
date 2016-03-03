@@ -3,7 +3,7 @@ package org.calorycounter.shared.models;
 import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class Food extends EdibleItem{
+public class Food extends EdibleItem {
 
     @Override
     public boolean equals(Object other){
@@ -26,7 +26,7 @@ public class Food extends EdibleItem{
         repr.put(FOOD_ID, id);
         repr.put(FOOD_URL, url);
         repr.put(FOOD_CODE, code);
-        
+
         repr.put(FOOD_NAME, getProductName());
         repr.put(FOOD_IMAGE_URL, image_url);
         repr.put(FOOD_TOTAL_ENERGY, total_energy);

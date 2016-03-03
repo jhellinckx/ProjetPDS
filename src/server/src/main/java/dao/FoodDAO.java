@@ -2,7 +2,7 @@ package dao;
 
 import java.util.List;
 
-import items.Food;
+import org.calorycounter.shared.models.Food;
 
 public interface FoodDAO {
 	Food findByUrl ( String url ) throws DAOException;

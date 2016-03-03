@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.calorycounter.shared.models.EdibleItem;
+import org.calorycounter.shared.models.JSONSerializable;
 import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class User implements JSONSerializable{
+public class User implements JSONSerializable {
 
     private Long      id;
     private String    username;
@@ -21,17 +23,17 @@ public class User implements JSONSerializable{
     private Float weight;
 
     public User() {
-    	this.id = null;
-    	this.username = null;
-    	this.gender = null;
+        this.id = null;
+        this.username = null;
+        this.gender = null;
         this.weight = null;
-        this.rankedEdibleItems = new HashMap<EdibleItem, Float>(); 
+        this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
-    
+
     public User( String username, String pw, String gender ) {
-    	this.username = username;
-    	this.password = pw;
-    	this.gender = gender;
+        this.username = username;
+        this.password = pw;
+        this.gender = gender;
         this.weight = -1f;
         this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
@@ -43,38 +45,38 @@ public class User implements JSONSerializable{
         this.weight = weight;
         this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
-    
-    
+
+
     public Long getId() {
         return id;
     }
     public void setId( Long id ) {
-        this.id = id; 
+        this.id = id;
     }
 
     public String getUsername() {
         return username;
     }
-     public void setUsername( String username ) {
+    public void setUsername( String username ) {
         this.username = username;
     }
 
     public String getPassword(){
-    	return password;
+        return password;
     }
 
     public void setPassword( String pw ){
-    	this.password = pw;
+        this.password = pw;
     }
-   
+
 
     public String getGender() {
-    	return gender;
+        return gender;
     }
     public void setGender( String gender ) {
         this.gender = gender;
     }
-    
+
 
     public HashMap getRankedEdibleItems(){
         return rankedEdibleItems;
@@ -128,7 +130,7 @@ public class User implements JSONSerializable{
         if(it.hasNext()){
             while(it.hasNext()){
                 count++;
-                float rank = (float)it.next(); 
+                float rank = (float)it.next();
                 tmp += (mean - rank)*(mean-rank);
             }
             return tmp/count;
@@ -142,19 +144,19 @@ public class User implements JSONSerializable{
 
     @Override
     public JSONObject toJSON(){
-    	JSONObject repr = new JSONObject();
-    	repr.put(USERNAME, this.username);
-    	repr.put(PASSWORD, this.password);
-    	repr.put(GENDER, this.gender);
-    	repr.put(WEIGHT, this.weight);
-    	return repr;
+        JSONObject repr = new JSONObject();
+        repr.put(USERNAME, this.username);
+        repr.put(PASSWORD, this.password);
+        repr.put(GENDER, this.gender);
+        repr.put(WEIGHT, this.weight);
+        return repr;
     }
 
     @Override
     public void initFromJSON(JSONObject obj){
-    	this.setUsername((String) obj.get(USERNAME));
-    	this.setPassword((String) obj.get(PASSWORD));
-    	this.setGender((String) obj.get(GENDER));
-    	this.setWeight((float) obj.get(WEIGHT));
+        this.setUsername((String) obj.get(USERNAME));
+        this.setPassword((String) obj.get(PASSWORD));
+        this.setGender((String) obj.get(GENDER));
+        this.setWeight((float) obj.get(WEIGHT));
     }
 }

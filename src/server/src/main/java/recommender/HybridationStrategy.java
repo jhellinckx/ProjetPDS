@@ -1,8 +1,8 @@
 package recommender;
 
 import java.util.ArrayList;
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 
 public interface HybridationStrategy {
 

@@ -1,12 +1,8 @@
 package recommender;
 
 import java.util.ArrayList;
-import items.Food;
-import items.User;
-
-import dao.FoodDAO;
-import dao.DAOException;
-import java.util.Random;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 
 public class CascadeStrategy implements HybridationStrategy {
 

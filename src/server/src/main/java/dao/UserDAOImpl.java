@@ -13,8 +13,8 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 import java.util.Iterator;
 import java.util.Map;
 
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
@@ -50,7 +50,7 @@ public class UserDAOImpl implements UserDAO {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
 
-                user.setRankedFoods(userPrefDao.findFoodsAndRankForUser(user));
+                user.setRankedEdibleItems(userPrefDao.findFoodsAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -79,7 +79,7 @@ public class UserDAOImpl implements UserDAO {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
 
-                user.setRankedFoods(userPrefDao.findFoodsAndRankForUser(user));
+                user.setRankedEdibleItems(userPrefDao.findFoodsAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -215,7 +215,7 @@ public class UserDAOImpl implements UserDAO {
     
     private void addUserPrefsInTable(UserPrefDAO userPrefDao, User user ) { 
     	try {
-            Iterator it = user.getRankedFoods().entrySet().iterator();
+            Iterator it = user.getRankedEdibleItems().entrySet().iterator();
             while(it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
                 userPrefDao.create(user, (Food)entry.getKey(), (float)entry.getValue());

@@ -7,8 +7,11 @@ package items;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
-import dao.DAOFactory;
+
 import dao.FoodDAO;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
+
 import java.util.HashMap;
 
 
@@ -119,7 +122,7 @@ public class Random_user_generator
 			float rank = generateRandomRank();
 			rankedFoods.put(foodList.get(i), rank);
 		}
-		random_user.setRankedFoods(rankedFoods);
+		random_user.setRankedEdibleItems(rankedFoods);
 		return random_user;
 	}
 
@@ -137,7 +140,7 @@ public class Random_user_generator
 		else{gender = "C";}
 		
 		//user created
-		User random_user = new User(username,gender);
+		User random_user = new User(username,"a",gender);
 		return random_user;
 	}
 

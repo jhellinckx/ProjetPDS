@@ -1,8 +1,8 @@
 package recommender;
 import java.util.ArrayList;
 
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 
 public class RecommenderSystem {
 

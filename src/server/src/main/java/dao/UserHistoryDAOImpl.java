@@ -9,8 +9,8 @@ import java.util.List;
 import static dao.DAOUtilitaire.*;
 
 
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 
 public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private DAOFactory daoFactory;
