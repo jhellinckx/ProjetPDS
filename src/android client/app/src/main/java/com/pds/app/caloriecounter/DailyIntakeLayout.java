@@ -12,11 +12,12 @@ public class DailyIntakeLayout extends LinearLayout {
     private Context context;
     private TextView intakeType;
     private IntakeProgress intakeProgress;
-    private int intakeStatus;
 
 
-    public DailyIntakeLayout(Context context, String intakeType, int progress, int max, String unit) {
+
+    public DailyIntakeLayout(Context context, String intakeType, float progress, float max, String unit) {
         super(context);
+        if(progress > max) progress = max;
         this.context = context;
         this.setOrientation(LinearLayout.VERTICAL);
         this.setBackgroundColor(getResources().getColor(R.color.primary));
@@ -34,25 +35,25 @@ public class DailyIntakeLayout extends LinearLayout {
         this.addView(this.intakeType);
     }
 
-    private void initIntakeProgress(int progress, int max, String unit) {
-        this.intakeProgress = new IntakeProgress(context, progress, max, unit);
+    private void initIntakeProgress(float barProgress, float barMax, String unit) {
+        this.intakeProgress = new IntakeProgress(context, barProgress, barMax, unit);
         this.intakeProgress.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         this.addView(this.intakeProgress);
     }
 
-    public void setMax(int max){
-        this.intakeProgress.setMax(max);
+    public void setMax(float max){
+        this.intakeProgress.setIntakeMax(max);
     }
 
-    public int getMax(){
-        return intakeProgress.getMax();
+    public float getMax(){
+        return intakeProgress.getIntakeMax();
     }
 
-    public int getProgress(){
-        return intakeProgress.getProgress();
+    public float getProgress(){
+        return intakeProgress.getIntakeProgress();
     }
 
-    public void setProgress(int progress){
-        intakeProgress.setProgress(progress);
+    public void setProgress(float progress){
+        intakeProgress.setIntakeProgress(progress);
     }
 }

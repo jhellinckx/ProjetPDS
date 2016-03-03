@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.ViewGroup;
 
 
@@ -22,8 +23,25 @@ public class IntakeProgress extends DonutProgress {
     private float defaultBottomTextSize = Utils.dp2px(getResources(), 10);
     private int defaultBottomTextColor = Color.LTGRAY;
 
-    public IntakeProgress(Context context, int currentProgress, int max, String unit){
+    private static int BAR_MAX = 100;
+
+    private float intakeProgress;
+    private float intakeMax;
+
+    private int floatProgressToInt(){
+        return (int)Math.ceil((intakeProgress / intakeMax)*BAR_MAX);
+
+    }
+
+    public IntakeProgress(Context context, float intakeProgress, float intakeMax, String unit){
         super(context);
+        this.intakeProgress = intakeProgress;
+        this.intakeMax = intakeMax;
+        this.setIntakeProgress(intakeProgress);
+        this.setIntakeMax(intakeMax);
+
+        this.setMax(BAR_MAX);
+
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         this.setStartingDegree(270);
@@ -34,18 +52,38 @@ public class IntakeProgress extends DonutProgress {
         this.setUnfinishedStrokeColor(defaultUnfinishedColor);
         this.setFinishedStrokeColor(defaultFinishedColor);
 
-        this.setProgress(currentProgress);
-        this.setMax(max);
+
 
         this.setTextSize(defaultCenterTextSize);
         this.setTextColor(defaultCenterTextColor);
         this.setSuffixText(" " + unit);
-        this.setInnerBottomText("/"+Integer.toString(getMax()));
+        this.setInnerBottomText("/" + Integer.toString(getMax()));
         this.setInnerBottomTextColor(defaultBottomTextColor);
         this.setInnerBottomTextSize(defaultBottomTextSize);
 
-        this.setText("lol");
+        this.setText("");
     }
 
+    public void setIntakeMax(float max){
+        if(max > 0) {
+            intakeMax = max;
+            setProgress(floatProgressToInt());
+        }
+    }
+
+    public float getIntakeMax(){
+        return intakeMax;
+    }
+
+    public void setIntakeProgress(float progress){
+        if(progress > 0) {
+            intakeProgress = progress;
+            setProgress(floatProgressToInt());
+        }
+    }
+
+    public float getIntakeProgress(){
+        return intakeProgress;
+    }
 
 }
