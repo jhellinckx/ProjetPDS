@@ -7,12 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -21,16 +17,13 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
 
-public class HistoryActivity extends HomeActivity {
+public class HistoryActivity extends MenuNavigableActivity {
 
     private LinearLayout historyTable;
     private Button addFoodButton = null;

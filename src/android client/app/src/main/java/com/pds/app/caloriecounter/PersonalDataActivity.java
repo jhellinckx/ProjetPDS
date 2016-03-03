@@ -1,16 +1,10 @@
 package com.pds.app.caloriecounter;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -21,7 +15,7 @@ import org.json.simple.JSONObject;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-public class PersonalDataActivity extends HomeActivity {
+public class PersonalDataActivity extends MenuNavigableActivity {
 
     private Spinner agebracket = null;
     private Button update = null;
