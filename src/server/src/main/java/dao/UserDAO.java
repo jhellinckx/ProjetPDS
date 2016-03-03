@@ -2,7 +2,7 @@ package dao;
 
 import java.util.List;
 
-import items.User;
+import org.calorycounter.shared.models.User;
 
 public interface UserDAO {
 	boolean create( User user ) throws DAOException;

@@ -10,8 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
 
 public class FoodDAOImpl implements FoodDAO {
 	private DAOFactory daoFactory;

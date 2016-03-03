@@ -2,8 +2,8 @@ package dao;
 
 import java.util.List;
 import java.util.HashMap;
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 
 public interface UserPrefDAO {
 	

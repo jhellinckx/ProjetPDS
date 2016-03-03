@@ -1,11 +1,10 @@
 package dao;
 
 import items.CategoryRating;
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public interface CategoryRatingDAO {

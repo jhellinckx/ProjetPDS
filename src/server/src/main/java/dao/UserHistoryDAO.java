@@ -1,8 +1,8 @@
 package dao;
 
 import java.util.List;
-import items.User;
-import items.Food;
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Food;
 
 
 public interface UserHistoryDAO {

@@ -6,13 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Arrays;
 import static dao.DAOUtilitaire.*;
 
 
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 import items.CategoryRating;
 
 public class CategoryRatingDAOImpl implements CategoryRatingDAO{

@@ -1,10 +1,10 @@
 package recommender;
 
 import java.util.*;
-import java.lang.Math;
-import items.Food;
+
+import org.calorycounter.shared.models.Food;
 import items.CategoryRating;
-import items.User;
+import org.calorycounter.shared.models.User;
 import dao.CategoryRatingDAO;
 import static org.calorycounter.shared.Constants.network.*;
 

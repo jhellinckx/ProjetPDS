@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 import dao.UserPrefDAO;
 
 public class ItemItemStrategy extends CollaborativeStrategy {
@@ -85,7 +85,7 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 
 			// num = Similarity between Food 1 and Food 2  *  Rating of currentUser for Food 2 (if the rating of Food 1 needs to be predicted).
 
-			num += (entry.getKey().floatValue())*currentUser.getRankForFood(foodData.get(entry.getValue()));
+			num += (entry.getKey().floatValue())*currentUser.getRankForEdibleItem(foodData.get(entry.getValue()));
 			denom += (float) Math.abs(entry.getKey());
 		}
 		denom = (denom == 0) ? 1 : denom;
@@ -97,7 +97,7 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 
 	private void calculateRatingPredictionForFood(Food food, int foodIndex){
 		for (int i = 0; i < dataSize; i++){
-			if (foodData.get(i).getId() != food.getId() && currentUser.hasNotedFood(foodData.get(i))){
+			if (foodData.get(i).getId() != food.getId() && currentUser.hasNotedEdibleItem(foodData.get(i))){
 				double similarity = computeCosineSimilarity(food, foodData.get(i));
 				similarityMatrix.put(foodIndex, i, similarity);
 			}
@@ -110,11 +110,11 @@ public class ItemItemStrategy extends CollaborativeStrategy {
 
 	private void computeRatingPredictions(){
 		for (int i = 0; i < dataSize; i++){
-			if (!currentUser.hasNotedFood(foodData.get(i))){
+			if (!currentUser.hasNotedEdibleItem(foodData.get(i))){
 				calculateRatingPredictionForFood(foodData.get(i), i);
 			}
 			else{
-				addRatingPrediction(foodData.get(i), currentUser.getRankForFood(foodData.get(i)));
+				addRatingPrediction(foodData.get(i), currentUser.getRankForEdibleItem(foodData.get(i)));
 			}
 		}
 

@@ -2,8 +2,8 @@ package recommender;
 import static org.calorycounter.shared.Constants.network.*;
 
 import dao.FoodDAO;
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 
 import java.util.List;
 import java.util.ArrayList;

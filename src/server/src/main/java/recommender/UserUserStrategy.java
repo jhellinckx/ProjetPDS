@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
 import java.util.Iterator;
-import items.Food;
-import items.User;
+import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.User;
 import dao.UserPrefDAO;
 
 public class UserUserStrategy extends CollaborativeStrategy {
@@ -84,8 +83,8 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		float denominator = 1.0f;
 		for(int i = 0; i<dataSize ; i++){
 			User otherUser = userData.get(i);
-			if(otherUser.hasNotedFood(food)){
-				numerator += ((float)similarityVec.get(i)*(otherUser.getRankForFood(food)- otherUser.getMeanRank()))/otherUser.getStdDeviation();
+			if(otherUser.hasNotedEdibleItem(food)){
+				numerator += ((float)similarityVec.get(i)*(otherUser.getRankForEdibleItem(food)- otherUser.getMeanRank()))/otherUser.getStdDeviation();
 				denominator += (float) Math.abs((double)similarityVec.get(i));
 			}
 
@@ -107,7 +106,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 	
 	private void computeRatingPredictions(){
 		for (int i = 0; i < foodData.size(); i++){
-			if (!currentUser.hasNotedFood(foodData.get(i))){
+			if (!currentUser.hasNotedEdibleItem(foodData.get(i))){
 				addRatingPrediction(foodData.get(i), computeRating(foodData.get(i)));
 			}
 		}
