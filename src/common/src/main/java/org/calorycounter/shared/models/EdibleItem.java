@@ -2,13 +2,13 @@ package org.calorycounter.shared.models;
 
 import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.Constants;
+import org.json.simple.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 
 public abstract class EdibleItem implements JSONSerializable{
 	protected Long      id;
     protected String    url;
-    protected String    code;
     protected String    productName;
     protected String    image_url;
     protected Float    total_energy;
@@ -32,13 +32,6 @@ public abstract class EdibleItem implements JSONSerializable{
     }
     public void setUrl( String url ) {
         this.url = url;
-    }
-    
-    public String getCode() {
-        return code;
-    }
-    public void setCode( String code ) {
-        this.code = code;
     }
     
     public String getProductName() {
@@ -122,5 +115,40 @@ public abstract class EdibleItem implements JSONSerializable{
 
     public String toString() {
         return getProductName();
+    }
+
+    @Override
+    public JSONObject toJSON(){
+        JSONObject repr = new JSONObject();
+        repr.put(FOOD_ID, id);
+        repr.put(FOOD_URL, url);
+        
+        repr.put(FOOD_NAME, getProductName());
+        repr.put(FOOD_IMAGE_URL, image_url);
+        repr.put(FOOD_TOTAL_ENERGY, total_energy);
+        repr.put(FOOD_TOTAL_FAT, total_fat);
+        repr.put(FOOD_TOTAL_PROTEINS,total_proteins);
+        repr.put(FOOD_TOTAL_SATURATED_FAT, total_saturated_fat);
+        repr.put(FOOD_TOTAL_CARBOHYDRATES, total_carbohydrates);
+        repr.put(FOOD_TOTAL_SUGARS, total_sugars);
+        repr.put(FOOD_TOTAL_SODIUM, total_sodium);
+        repr.put(FOOD_QUANTITY, quantity);
+        return repr;
+    }
+
+    @Override
+    public void initFromJSON(JSONObject obj){
+        this.id = (Long) obj.get(FOOD_ID);
+        this.url = (String) obj.get(FOOD_URL);
+        this.productName = (String) obj.get(FOOD_NAME);
+        this.image_url = (String) obj.get(FOOD_IMAGE_URL);
+        this.total_energy = (Float) obj.get(FOOD_TOTAL_ENERGY);
+        this.total_fat = (Float) obj.get(FOOD_TOTAL_FAT);
+        this.total_proteins = (Float) obj.get(FOOD_TOTAL_PROTEINS);
+        this.total_saturated_fat = (Float) obj.get(FOOD_TOTAL_SATURATED_FAT);
+        this.total_carbohydrates = (Float) obj.get(FOOD_TOTAL_CARBOHYDRATES);
+        this.total_sugars = (Float) obj.get(FOOD_TOTAL_SUGARS);
+        this.total_sodium = (Float) obj.get(FOOD_TOTAL_SODIUM);
+        this.quantity = (String) obj.get(FOOD_QUANTITY);
     }
 }

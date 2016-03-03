@@ -143,6 +143,9 @@ public final class Constants {
 		public static final String MAX_PROT = "d_maxprot";
 		public static final String MAX_CARBOHYDRATES = "d_maxcarbo";
 
+		/* Recipe */
+		public static final String INGREDIENTS_LIST = "d_ingredients_list";
+
 		/*
 		Human's daily intake requirements
 		Info's from : http://www.mydailyintake.net/daily-intake-levels/
