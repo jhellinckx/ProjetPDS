@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RatingActivity extends HomeActivity implements RateFoodDialogFragment.RateFoodDialogListener{
+public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener{
 
     private static final int NB_RATINGS = 9;
 

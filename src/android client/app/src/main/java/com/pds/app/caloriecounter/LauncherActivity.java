@@ -30,7 +30,7 @@ public class LauncherActivity extends Activity {
         login = (Button) findViewById(R.id.launch_login);
 
 
-        //TODO Si on connait ses identifiants grâce au savedState, directement aller vers HomeActivity
+        //TODO Si on connait ses identifiants grâce au savedState, directement aller vers MenuNavigableActivity
 
         initButtonListener();
         NetworkHandler.getInstance(getApplicationContext()).launchThreads();

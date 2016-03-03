@@ -2,12 +2,9 @@ package com.pds.app.caloriecounter;
 
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -17,11 +14,9 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-
 import static org.calorycounter.shared.Constants.network.*;
 
-public class ScanningActivity extends HomeActivity{
+public class ScanningActivity extends MenuNavigableActivity {
 
     private Button scan;
     private FragmentManager manager = getSupportFragmentManager();
