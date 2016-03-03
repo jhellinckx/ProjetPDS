@@ -14,11 +14,9 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 
 import org.json.simple.JSONArray;
@@ -27,7 +25,7 @@ import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
 
-public class RecommendationActivity extends HomeActivity implements RecommendationPastFragment.OnItemClickListener,
+public class RecommendationActivity extends MenuNavigableActivity implements RecommendationPastFragment.OnItemClickListener,
         RecommendationSportFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
 

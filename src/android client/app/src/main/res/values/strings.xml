@@ -48,5 +48,6 @@
     <string name="carbo">Carbohydrates (g)</string>
     <string name="sodium">Sodium (g)</string>
     <string name="sugar">Sugar (g)</string>
+    <string name="title_activity_day_recording">Activity</string>
 </resources>
 

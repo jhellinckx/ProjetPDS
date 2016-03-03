@@ -20,7 +20,7 @@ import java.util.GregorianCalendar;
 import static org.calorycounter.shared.Constants.date.*;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class CalendarActivity extends HomeActivity implements DayFragment.BackListener {
+public class CalendarActivity extends MenuNavigableActivity implements DayFragment.BackListener {
 
     private CalendarView calendar;
     private FragmentManager manager;

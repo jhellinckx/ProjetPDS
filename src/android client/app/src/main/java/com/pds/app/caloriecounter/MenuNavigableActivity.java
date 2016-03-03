@@ -14,10 +14,9 @@ import android.view.View;
 
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-
 import static org.calorycounter.shared.Constants.network.*;
-public abstract class HomeActivity extends NotifiableActivity
+
+public abstract class MenuNavigableActivity extends NotifiableActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected FrameLayout frameLayout;
@@ -90,36 +89,39 @@ public abstract class HomeActivity extends NotifiableActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Intent cameractivity = new Intent(HomeActivity.this, ScanningActivity.class);
+            Intent cameractivity = new Intent(MenuNavigableActivity.this, ScanningActivity.class);
 
             startActivity(cameractivity);
         } else if (id == R.id.nav_data) {
-            Intent dataactivity = new Intent(HomeActivity.this, PersonalDataActivity.class);
+            Intent dataactivity = new Intent(MenuNavigableActivity.this, PersonalDataActivity.class);
 
             startActivity(dataactivity);
 
         } else if (id == R.id.nav_recommend) {
-            Intent recommendactivity = new Intent(HomeActivity.this, RecommendationActivity.class);
+            Intent recommendactivity = new Intent(MenuNavigableActivity.this, RecommendationActivity.class);
 
             startActivity(recommendactivity);
 
         } else if (id == R.id.nav_rating) {
-            Intent ratingactivity = new Intent(HomeActivity.this, RatingActivity.class);
+            Intent ratingactivity = new Intent(MenuNavigableActivity.this, RatingActivity.class);
 
             startActivity(ratingactivity);
 
         } else if (id == R.id.nav_history) {
-            Intent historyactivity = new Intent(HomeActivity.this, HistoryActivity.class);
+            Intent historyactivity = new Intent(MenuNavigableActivity.this, HistoryActivity.class);
 
             startActivity(historyactivity);
 
         } else if (id == R.id.nav_logout){
             onLogout();
-            Intent logActivity = new Intent(HomeActivity.this, LogActivity.class);
+            Intent logActivity = new Intent(MenuNavigableActivity.this, LogActivity.class);
             startActivity(logActivity);
         } else if (id == R.id.nav_calendar){
-            Intent calendarActivity = new Intent(HomeActivity.this, CalendarActivity.class);
+            Intent calendarActivity = new Intent(MenuNavigableActivity.this, CalendarActivity.class);
             startActivity(calendarActivity);
+        } else if(id == R.id.nav_day_recording){
+            Intent dayRecordingActivity = new Intent(MenuNavigableActivity.this, DayRecordingActivity.class);
+            startActivity(dayRecordingActivity);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

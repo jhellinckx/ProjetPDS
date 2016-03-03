@@ -3,9 +3,15 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_day_recording"
+            android:icon="@drawable/ic_home"
+            android:title="Résumé du jour"
+            android:textColor="@color/fontColor"
+            />
+        <item
             android:id="@+id/nav_data"
             android:icon="@drawable/ic_data"
-            android:title="Personal Data"
+            android:title="Profil"
             android:textColor="@color/fontColor"/>
         <item
             android:id="@+id/nav_recommend"
@@ -15,30 +21,31 @@
         <item
             android:id="@+id/nav_rating"
             android:icon="@drawable/ic_rating"
-            android:title="Ratings"
+            android:title="Notes"
             android:textColor="@color/fontColor"/>
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
-            android:title="History"
+            android:title="Historique"
             android:textColor="@color/fontColor"/>
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_camera"
-            android:title="Barcode Scanner"
+            android:title="Scanner code barre"
             android:textColor="@color/fontColor"/>
         <item
             android:id="@+id/nav_calendar"
             android:icon="@drawable/ic_calendar"
-            android:title="Calendar"
+            android:title="Calendrier"
             android:textColor="@color/fontColor"
             />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
-            android:title="Log out"
+            android:title="Se déconnecter"
             android:textColor="@color/fontColor"
             />
+
     </group>
 
 </menu>
