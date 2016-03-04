@@ -97,7 +97,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
-        }else if(request.equals(UPDATE_DATA_REQUEST)){
+        }else if(request.equals(UPDATE_DATA_REQUEST) || request.equals(DATA_REQUEST)){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             RecommendationConstraintsFragment frag = new RecommendationConstraintsFragment();
             Bundle b = new Bundle();
@@ -108,11 +108,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
     }
 
-    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo){
+    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo, String recipeOrFood){
         recom_data.put(MAX_ENERGY, energy);
         recom_data.put(MAX_FAT, fat);
         recom_data.put(MAX_PROT, prot);
         recom_data.put(MAX_CARBOHYDRATES, carbo);
+        recom_data.put(RECIPE_OR_FOOD, recipeOrFood);
     }
 
     public void sendCode(String code, String date) {
@@ -158,8 +159,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         send(networkJSON(DATA_REQUEST, new JSONObject()));
     }
 
-    public void onResultsClick(String energy, String fat, String prot, String carbo){
-        addConstraintsToJSON(energy, fat, prot, carbo);
+    public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood){
+        addConstraintsToJSON(energy, fat, prot, carbo, recipeOrFood);
         send(networkJSON(RECOMMEND_REQUEST, recom_data));
     }
 

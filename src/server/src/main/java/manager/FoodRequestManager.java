@@ -67,7 +67,7 @@ public class FoodRequestManager implements RequestManager{
 
 	private void generateRandomFoodIds(int nb, Message msg,  ArrayList<Long> foodIds){
 		Random r = new Random();
-		int min = 1, max = 63016;
+		int min = 1, max = TOTAL_FOODS_IN_DB;
 		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
 

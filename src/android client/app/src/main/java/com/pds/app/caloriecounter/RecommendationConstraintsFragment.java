@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -20,11 +22,16 @@ public class RecommendationConstraintsFragment extends Fragment {
     private EditText _fat;
     private EditText _prot;
     private EditText _carbo;
+    private RadioButton _recipe;
+    private RadioButton _food;
+    private RadioGroup _radioGroup;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_constraints_step, container, false);
+        _radioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+        _recipe = (RadioButton) view.findViewById(R.id.recipeButton);
         initEditTexts(view);
         addListenersToSeekBars(view);
 
@@ -126,8 +133,17 @@ public class RecommendationConstraintsFragment extends Fragment {
         addListenerToSeekBar(updateSeekBarAndText((SeekBar) v.findViewById(R.id.bar_carbo)), _carbo);
     }
 
+    private String getRadioButtonName(int id){
+        if( id == _recipe.getId()){
+            return "recipe";
+        }
+        else{
+            return "food";
+        }
+    }
+
     public interface OnItemClickListener {
-        public void onResultsClick(String energy, String fat, String prot, String carbo);
+        public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood);
     }
 
     @Override
@@ -149,6 +165,6 @@ public class RecommendationConstraintsFragment extends Fragment {
     public void getResults(){
 
         listener.onResultsClick(_energy.getText().toString(), _fat.getText().toString(),
-                _prot.getText().toString(), _carbo.getText().toString());
+                _prot.getText().toString(), _carbo.getText().toString(), getRadioButtonName(_radioGroup.getCheckedRadioButtonId()));
     }
 }

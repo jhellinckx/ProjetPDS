@@ -142,6 +142,7 @@ public final class Constants {
 		public static final String MAX_FAT = "d_maxfat";
 		public static final String MAX_PROT = "d_maxprot";
 		public static final String MAX_CARBOHYDRATES = "d_maxcarbo";
+		public static final String RECIPE_OR_FOOD = "d_recipe_or_food";
 
 		/* Recipe */
 		public static final String INGREDIENTS_LIST = "d_ingredients_list";

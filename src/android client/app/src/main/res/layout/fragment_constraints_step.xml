@@ -163,4 +163,32 @@
         android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_carbo" />
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_below="@+id/progressBar4"
+        android:layout_alignLeft="@+id/textView15"
+        android:id="@+id/radio_group">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recette"
+            android:id="@+id/recipeButton"
+            android:layout_below="@+id/progressBar4"
+            android:layout_toRightOf="@+id/textView20"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:checked="true" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aliment"
+            android:id="@+id/radioButton2"
+            android:layout_below="@+id/progressBar4"
+            android:layout_alignLeft="@+id/textView15"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RadioGroup>
+
 </RelativeLayout>

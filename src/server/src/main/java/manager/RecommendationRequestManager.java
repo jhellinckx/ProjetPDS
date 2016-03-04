@@ -81,7 +81,7 @@ public class RecommendationRequestManager implements RequestManager{
 		if(sportName != null){
 			String sportDurationString = (String) data.get(SPORT_DURATION);
 			Integer sportDuration = Integer.parseInt(sportDurationString);
-			jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight());
+			jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight()) * sportDuration;
 		}
 		return jouleFromSport;
 	}
