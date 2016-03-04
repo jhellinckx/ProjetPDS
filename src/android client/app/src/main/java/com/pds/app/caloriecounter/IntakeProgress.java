@@ -16,19 +16,23 @@ import java.util.Arrays;
  * Created by jhellinckx on 03/03/16.
  */
 public class IntakeProgress extends DonutProgress {
-    private int defaultFinishedColor = getResources().getColor(R.color.smalt);
+    /* Strokes parameters */
+    private int defaultFinishedColor = getResources().getColor(R.color.snowy_mint);
     private int defaultUnfinishedColor = Color.WHITE;
     private float defaultUnfinishedWidth = Utils.dp2px(getResources(), 1);
     private float defaultFinishedWidth = Utils.dp2px(getResources(), 8);
 
+    /* Center text parameters */
     private float defaultCenterTextSize = Utils.sp2px(getResources(), 15);
     private int defaultCenterTextColor = Color.WHITE;
 
+    /* Bottom text parameters */
     private float defaultBottomTextSize = Utils.dp2px(getResources(), 10);
     private int defaultBottomTextColor = Color.LTGRAY;
 
-    private static int BAR_MAX = 100;
+    private int startingDegree = 270;
 
+    private static int BAR_MAX = 100;
     private float intakeProgress;
     private float intakeMax;
 
@@ -43,21 +47,13 @@ public class IntakeProgress extends DonutProgress {
         this.intakeMax = intakeMax;
         this.setIntakeProgress(intakeProgress);
         this.setIntakeMax(intakeMax);
-
         this.setMax(BAR_MAX);
-
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        this.setStartingDegree(270);
-
+        this.setStartingDegree(startingDegree);
         this.setUnfinishedStrokeWidth(defaultUnfinishedWidth);
         this.setFinishedStrokeWidth(defaultFinishedWidth);
-
         this.setUnfinishedStrokeColor(defaultUnfinishedColor);
         this.setFinishedStrokeColor(defaultFinishedColor);
-
-
-
         this.setTextSize(defaultCenterTextSize);
         this.setTextColor(defaultCenterTextColor);
         this.setText(intakeString(intakeProgress) + " " + unit);

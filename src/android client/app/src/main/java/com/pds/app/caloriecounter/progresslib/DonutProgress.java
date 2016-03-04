@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextPaint;
@@ -19,6 +20,8 @@ import com.pds.app.caloriecounter.R;
  * Created by bruce on 14-10-30.
  */
 public class DonutProgress extends View {
+    private static Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
+
     private Paint finishedPaint;
     private Paint unfinishedPaint;
     private Paint innerCirclePaint;
@@ -105,11 +108,13 @@ public class DonutProgress extends View {
         textPaint.setColor(textColor);
         textPaint.setTextSize(textSize);
         textPaint.setAntiAlias(true);
+        if(typeFace != null) textPaint.setTypeface(typeFace);
 
         innerBottomTextPaint = new TextPaint();
         innerBottomTextPaint.setColor(innerBottomTextColor);
         innerBottomTextPaint.setTextSize(innerBottomTextSize);
         innerBottomTextPaint.setAntiAlias(true);
+        if(typeFace != null) innerBottomTextPaint.setTypeface(typeFace);
 
         finishedPaint = new Paint();
         finishedPaint.setColor(finishedStrokeColor);
