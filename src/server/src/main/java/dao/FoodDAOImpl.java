@@ -53,14 +53,14 @@ public class FoodDAOImpl implements FoodDAO {
     }
 	
     @Override
-    public List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float sodium) throws DAOException {
+    public List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float salt) throws DAOException {
         List<Food> foods = new ArrayList<Food>();
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, sodium);
+            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt);
             resultSet = preparedStatement.executeQuery();
             while ( resultSet.next() ) {
                 foods.add(map(resultSet));
@@ -183,7 +183,7 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSaturatedFat(resultSet.getFloat( "saturated_fat_100g" ) ) ;
         food.setTotalCarbohydrates(resultSet.getFloat( "carbohydrates_100g" )  );
         food.setTotalSugars(resultSet.getFloat( "sugars_100g" )  );
-        food.setTotalSodium(resultSet.getFloat( "salt_100g" )  );
+        food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
 
         return food;
