@@ -1,12 +1,16 @@
 package com.pds.app.caloriecounter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Space;
+import android.widget.TextView;
 
 import org.json.simple.JSONObject;
 
@@ -30,6 +34,50 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
             this.setLayoutParams(new LinearLayout.LayoutParams(width, height, 1));
         }
     }
+    private class DayRecordingContainer extends LinearLayout {
+        private TextView title = null;
+        private LinearLayout content = null;
+
+        public DayRecordingContainer(Context context, String title, LinearLayout content){
+            super(context);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            int marginLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+            int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+            int marginRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+            int marginBot = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+            params.setMargins(marginLeft, marginTop, marginRight, marginBot);
+            this.setLayoutParams(params);
+            this.setBackgroundColor(getResources().getColor(R.color.snowy_mint));
+            setTitle(title);
+            setContent(content);
+        }
+
+        public void setTitle(String title){
+            boolean added = false;
+            if(this.title == null) {
+                added = true;
+                this.title = new TextView(getContext());
+            }
+            this.title.setText(title);
+            this.title.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Small);
+            this.title.setTextColor(Color.LTGRAY);
+            this.title.setGravity(Gravity.LEFT);
+            int marginLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            int marginRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            int marginBot = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(marginLeft, marginTop, marginRight, marginBot);
+            this.title.setLayoutParams(layoutParams);
+            if(added) this.addView(this.title);
+        }
+
+        public void setContent(LinearLayout content){
+            this.content = content;
+            this.addView(content);
+        }
+    }
+
     private static String TITLE_CALORIES = "Calories";
     private static String TITLE_PROTEINS = "Protéines";
     private static String TITLE_CARBO = "Glucides";
@@ -56,6 +104,7 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
 
         topLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
 
+
         // Add horizontal layout to draw the daily intakes
         intakesLayoutWrapper = new LinearLayout(this);
         intakesLayoutWrapper.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -79,7 +128,8 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
         }
         intakesLayoutWrapper.addView(new SpaceView(this));
 
-        topLayout.addView(intakesLayoutWrapper);
+        DayRecordingContainer intakesContainer = new DayRecordingContainer(this, "APPORTS JOURNALIERS", intakesLayoutWrapper);
+        topLayout.addView(intakesContainer);
 
 
     }

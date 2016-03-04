@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.content.Intent;
 import android.widget.FrameLayout;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import org.json.simple.JSONObject;
 
@@ -19,7 +20,7 @@ import static org.calorycounter.shared.Constants.network.*;
 public abstract class MenuNavigableActivity extends NotifiableActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    protected FrameLayout frameLayout;
+    protected LinearLayout frameLayout;
     protected View v;
 
     protected void init(){
@@ -46,7 +47,7 @@ public abstract class MenuNavigableActivity extends NotifiableActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
         init();
-        frameLayout = (FrameLayout)findViewById(R.id.content_layout);
+        frameLayout = (LinearLayout)findViewById(R.id.content_layout);
 
     }
 
