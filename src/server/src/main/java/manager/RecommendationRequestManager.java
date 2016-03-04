@@ -5,6 +5,7 @@ import static org.calorycounter.shared.Constants.network.*;
 import java.util.List;
 import java.util.ArrayList;
 import nioserver.Message;
+import nioserver.AbstractNIOServer;
 
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
@@ -24,6 +25,7 @@ import dao.UserHistoryDAO;
 public class RecommendationRequestManager implements RequestManager{
 
 	private User user;
+	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
 	private SportsDAO _sportsDatabase;
 	private RecommenderSystem _recommenderSystem;
@@ -31,8 +33,8 @@ public class RecommendationRequestManager implements RequestManager{
 	private UserDAO _userDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 
-	public RecommendationRequestManager(User u, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb){
-		user = u;
+	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb){
+		_server = srv;
 		_foodDatabase = fdb;
 		_sportsDatabase = sdb;
 		_recommenderSystem = rs;
@@ -87,6 +89,7 @@ public class RecommendationRequestManager implements RequestManager{
 	@Override
 	public JSONObject manageRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		user = _server.getUser(msg);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
 		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
 		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);

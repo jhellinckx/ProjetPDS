@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import nioserver.Message;
+import nioserver.AbstractNIOServer;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -17,11 +18,12 @@ import dao.UserHistoryDAO;
 public class HistoryRequestManager implements RequestManager{
 
 	private User user;
+	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 
-	public HistoryRequestManager(User usr, FoodDAO fdb, UserHistoryDAO uhdb){
-		user = usr;
+	public HistoryRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserHistoryDAO uhdb){
+		_server = srv;
 		_foodDatabase = fdb;
 		_userHistoryDatabase = uhdb;
 	}
@@ -100,6 +102,7 @@ public class HistoryRequestManager implements RequestManager{
 		JSONObject received = msg.toJSON();
 		String request = (String) received.get(REQUEST_TYPE);
 		JSONObject responseData = null;
+		user = _server.getUser(msg);
 		if (request.equals(HISTORY_REQUEST)){
 			responseData = onHistoryRequest(msg);
 		}

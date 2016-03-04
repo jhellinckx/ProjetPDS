@@ -34,7 +34,7 @@ public class SportRequestManager implements RequestManager{
 
 	@Override
 	public JSONObject manageRequest(Message msg){
-		int nbPackets = (int) Math.ceil(SPORTS_LIST_SIZE/JSON_THRESHOLD);
+		int nbPackets = (int) Math.ceil((double)SPORTS_LIST_SIZE/JSON_THRESHOLD);
 		List<String> db_names = _sportsDatabase.findSportsNames();
 		JSONObject response = new JSONObject();
 		if(db_names.size() == 0){

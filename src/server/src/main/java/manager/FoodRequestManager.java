@@ -4,6 +4,7 @@ package manager;
 import dao.FoodDAO;
 import dao.UserPrefDAO;
 import nioserver.Message;
+import nioserver.AbstractNIOServer;
 
 import org.json.simple.JSONObject;
 import org.calorycounter.shared.models.Food;
@@ -21,12 +22,12 @@ public class FoodRequestManager implements RequestManager{
 
 	private FoodDAO _foodDatabase;
 	private UserPrefDAO _userprefDatabase;
-	private User usr;
+	private AbstractNIOServer _server;
 
-	public FoodRequestManager(FoodDAO fdb, User u, UserPrefDAO uprfdao ){
+	public FoodRequestManager(FoodDAO fdb, AbstractNIOServer srv, UserPrefDAO uprfdao ){
 		_foodDatabase = fdb;
 		_userprefDatabase = uprfdao;
-		usr = u;
+		_server = srv;
 	}
 
 	private void manageFailure(JSONObject responseData){
@@ -67,7 +68,7 @@ public class FoodRequestManager implements RequestManager{
 	private void generateRandomFoodIds(int nb, Message msg,  ArrayList<Long> foodIds){
 		Random r = new Random();
 		int min = 1, max = 63016;
-		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(usr));
+		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
 
 		for(int j=0 ; j<foods.size(); ++j){

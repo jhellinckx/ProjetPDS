@@ -1,6 +1,7 @@
 package manager;
 
 import nioserver.Message;
+import nioserver.AbstractNIOServer;
 
 import org.calorycounter.shared.models.User;
 import dao.UserDAO;
@@ -10,11 +11,12 @@ import static org.calorycounter.shared.Constants.network.*;
 
 public class DataRequestManager implements RequestManager{
 
-	private User user;
+	private AbstractNIOServer _server;
 	private UserDAO _userDatabase;
+	private User user;
 
-	public DataRequestManager(User usr, UserDAO udb){
-		user = usr;
+	public DataRequestManager(AbstractNIOServer srv, UserDAO udb){
+		_server = srv;
 		_userDatabase = udb;
 	}
 
@@ -49,6 +51,7 @@ public class DataRequestManager implements RequestManager{
 		JSONObject received = msg.toJSON();
 		String request = (String) received.get(REQUEST_TYPE);
 		JSONObject responseData = null;
+		user = _server.getUser(msg);
 		if (request.equals(UPDATE_DATA_REQUEST)){
 			responseData = onUpdateDataRequest(msg);
 		}
