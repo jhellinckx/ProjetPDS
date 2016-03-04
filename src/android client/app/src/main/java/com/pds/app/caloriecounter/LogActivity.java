@@ -154,8 +154,8 @@ public class LogActivity extends NotifiableActivity {
     public void onLoginSuccess() {
         runOnUiThread(new Runnable() {
             public void run() {
-                Intent personalActivity = new Intent(LogActivity.this, PersonalDataActivity.class);
-                startActivity(personalActivity);
+                Intent dayRecordingActivity = new Intent(LogActivity.this, DayRecordingActivity.class);
+                startActivity(dayRecordingActivity);
                 finish(); // If logged in, only come back to this activity when log out called, not when user presses back
             }
         });
@@ -163,7 +163,6 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginFailed() {
-        System.out.println("LOOPER --------------------------> "+Boolean.toString(Looper.myLooper() == Looper.getMainLooper()));
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);

@@ -1,11 +1,15 @@
 <resources>
     <string name="app_name">Calorie Counter</string>
     <string name="id"><u>Identifiant</u></string>
-    <string name="age"><u>Age Bracket</u></string>
-    <string name="weight"><u>Weight (in kg)</u></string>
-    <string name="height"><u>Height (in cm)</u></string>
+    <string name="age">Personal Informations</string>
+    <string name="weight">Weight (in kg)</string>
+    <string name="height">Height (in cm)</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="validation">Validate</string>
+    <string name="kid">Kid</string>
+    <string name="teen">Teen</string>
+    <string name="man">Man</string>
+    <string name="woman">Woman</string>
 
     <string name="username">User Name</string>
 
