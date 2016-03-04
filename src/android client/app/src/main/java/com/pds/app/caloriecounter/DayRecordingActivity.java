@@ -11,10 +11,15 @@ import android.widget.Space;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
 public class DayRecordingActivity extends MenuNavigableActivity  {
     private class SpaceView extends View{ // Needed to horizontally fill gaps between other views
@@ -47,6 +52,8 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
 
+
+
         topLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
 
         // Add horizontal layout to draw the daily intakes
@@ -73,6 +80,8 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
         intakesLayoutWrapper.addView(new SpaceView(this));
 
         topLayout.addView(intakesLayoutWrapper);
+
+
     }
 
     public void handleMessage(JSONObject msg){

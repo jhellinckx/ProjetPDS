@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -42,6 +43,8 @@ public class CalendarActivity extends MenuNavigableActivity implements DayFragme
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                Intent dayRecordingIntent = new Intent(CalendarActivity.this, DayRecordingActivity.class);
+                // TODO ajouter un bundle
                 frag_args.putString("day", getFormattedDateFromIntegers(year, month, dayOfMonth));
                 sendHistoryRequest(getFormattedDateFromIntegers(year, month, dayOfMonth));
             }

@@ -60,7 +60,6 @@ public class IntakeProgress extends DonutProgress {
         this.setInnerBottomText("/" + intakeString(intakeMax));
         this.setInnerBottomTextColor(defaultBottomTextColor);
         this.setInnerBottomTextSize(defaultBottomTextSize);
-
     }
 
     private String intakeString(Float intake){
