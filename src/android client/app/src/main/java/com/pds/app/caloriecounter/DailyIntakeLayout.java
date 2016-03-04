@@ -17,7 +17,6 @@ public class DailyIntakeLayout extends LinearLayout {
 
     public DailyIntakeLayout(Context context, String intakeType, float progress, float max, String unit) {
         super(context);
-        if(progress > max) progress = max;
         this.context = context;
         this.setOrientation(LinearLayout.VERTICAL);
         this.setBackgroundColor(getResources().getColor(R.color.primary));

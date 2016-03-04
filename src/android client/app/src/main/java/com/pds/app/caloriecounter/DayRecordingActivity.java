@@ -30,11 +30,14 @@ public class DayRecordingActivity extends MenuNavigableActivity  {
         intakesLayout.setOrientation(LinearLayout.HORIZONTAL);
         topLayout.addView(intakesLayout);
 
-        DailyIntakeLayout calorieIntake = new DailyIntakeLayout(this, "Calories", 50, 100, "kcal");
+        DailyIntakeLayout calorieIntake = new DailyIntakeLayout(this, "Calories", 250, 2000, "kcal");
         intakesLayout.addView(calorieIntake);
 
-        DailyIntakeLayout proteinIntake = new DailyIntakeLayout(this, "Protéines", 0, 1000, "g");
+        DailyIntakeLayout proteinIntake = new DailyIntakeLayout(this, "Protéines", 3.5f, 40, "g");
         intakesLayout.addView(proteinIntake);
+
+        DailyIntakeLayout carboIntake = new DailyIntakeLayout(this, "Glucides", 150, 300, "g");
+        intakesLayout.addView(carboIntake);
     }
 
     public void handleMessage(JSONObject msg){
