@@ -8,18 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.pds.app.caloriecounter.dayrecording.GraphicsConstants;
+
 public class LauncherActivity extends Activity {
     private Button login = null;
-
-    private void initButtonListener() {
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent logActivity = new Intent(LauncherActivity.this, LogActivity.class);
-                startActivity(logActivity);
-            }
-        });
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +19,8 @@ public class LauncherActivity extends Activity {
 
         setContentView(R.layout.activity_launch);
 
-        login = (Button) findViewById(R.id.launch_login);
-
-
-        //TODO Si on connait ses identifiants grâce au savedState, directement aller vers MenuNavigableActivity
-
-        initButtonListener();
         NetworkHandler.getInstance(getApplicationContext()).launchThreads();
+        GraphicsConstants.setContext(getApplicationContext());
 
         Intent logActivity = new Intent(LauncherActivity.this, LogActivity.class);
         startActivity(logActivity);

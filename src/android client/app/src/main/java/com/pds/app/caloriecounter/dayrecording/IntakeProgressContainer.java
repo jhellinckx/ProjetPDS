@@ -1,25 +1,23 @@
-package com.pds.app.caloriecounter;
+package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.os.Handler;
-import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class DailyIntakeLayout extends LinearLayout {
+import com.pds.app.caloriecounter.R;
+import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.ProgressContainer.*;
+public class IntakeProgressContainer extends LinearLayout {
     private Context context;
     private TextView intakeType;
     private IntakeProgress intakeProgress;
 
-    public DailyIntakeLayout(Context context, String intakeType, float progress, float max, String unit) {
+    public IntakeProgressContainer(Context context, String intakeType, float progress, float max, String unit) {
         super(context);
         this.context = context;
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(getResources().getColor(R.color.primary));
+        this.setBackgroundColor(BACKGROUND_COLOR);
+        this.setPadding(0, 0, 0, 0);
         this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         initIntakeText(intakeType);
         initIntakeProgress(progress, max, unit);
@@ -28,12 +26,12 @@ public class DailyIntakeLayout extends LinearLayout {
     private void initIntakeText(String intakeType) {
         this.intakeType = new TextView(context);
         this.intakeType.setText(intakeType);
-        this.intakeType.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Large);
-        this.intakeType.setTextColor(context.getResources().getColor(R.color.white));
+        this.intakeType.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Medium);
+        this.intakeType.setTextColor(TEXT_COLOR);
         this.intakeType.setGravity(Gravity.CENTER_HORIZONTAL);
-        this.intakeType.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        this.intakeType.setTextSize(TEXT_SIZE);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(2, 2, 2, 30);
+        layoutParams.setMargins(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
         this.intakeType.setBackgroundColor(getResources().getColor(R.color.primary_dark));
         this.intakeType.setLayoutParams(layoutParams);
         this.addView(this.intakeType);
@@ -41,9 +39,6 @@ public class DailyIntakeLayout extends LinearLayout {
 
     private void initIntakeProgress(float barProgress, float barMax, String unit) {
         this.intakeProgress = new IntakeProgress(context, barProgress, barMax, unit);
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-        this.intakeProgress.setLayoutParams(new ViewGroup.LayoutParams(width,height ));
         this.addView(this.intakeProgress);
     }
 

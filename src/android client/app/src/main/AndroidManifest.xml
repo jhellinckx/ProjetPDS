@@ -46,7 +46,7 @@
             android:name=".CalendarActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DayRecordingActivity"
+            android:name=".dayrecording.DayRecordingActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

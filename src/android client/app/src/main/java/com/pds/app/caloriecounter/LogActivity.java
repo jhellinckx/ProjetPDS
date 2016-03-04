@@ -1,10 +1,6 @@
 package com.pds.app.caloriecounter;
 
-import android.app.ProgressDialog;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
@@ -12,10 +8,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.simple.JSONObject;
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import org.json.simple.JSONObject;
 
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.client.*;

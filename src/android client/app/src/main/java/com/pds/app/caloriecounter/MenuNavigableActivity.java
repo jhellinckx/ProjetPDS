@@ -9,9 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
-import android.widget.FrameLayout;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 
 import org.json.simple.JSONObject;
 

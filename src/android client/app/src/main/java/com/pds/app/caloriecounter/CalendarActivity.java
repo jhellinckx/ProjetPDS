@@ -10,6 +10,8 @@ import android.util.Log;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
 
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
