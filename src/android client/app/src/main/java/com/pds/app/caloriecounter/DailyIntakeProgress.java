@@ -34,7 +34,7 @@ public class DailyIntakeProgress extends LinearLayout {
     }
 
     private void initIntakeProgress(int maxValue){
-        this.intakeProgress = new ProgressBar();
+        this.intakeProgress = new ProgressBar(context);
     }
 
     public void setTypeOfIntake(String intakeType){

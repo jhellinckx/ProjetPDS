@@ -177,6 +177,9 @@ public final class Constants {
 		public static final String CHILD = "C";
 		public static final String TEEN = "T";
 
+		/* Food DB infos */
+		public static final int TOTAL_FOODS_IN_DB = 6573;
+
 
 		public static String local_ip(){
 			try{
