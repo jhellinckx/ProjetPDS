@@ -61,11 +61,11 @@ public class RecommendationRequestManager implements RequestManager{
 		}
 	}
 
-	private JSONObject recommendItems(List<Food> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo){
+	private JSONObject recommendItems(List<Food> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
-		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo);
-		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
-		recommendedFoods = _recommenderSystem.recommendItems();
+		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
+		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
+		//recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
 			jsonFoods.add(recommendedFoods.get(i).toJSON());
@@ -90,6 +90,7 @@ public class RecommendationRequestManager implements RequestManager{
 	public JSONObject manageRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		user = _server.getUser(msg);
+		String category = (String) data.get(FOOD_CATEGORY);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
 		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
 		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
@@ -102,7 +103,7 @@ public class RecommendationRequestManager implements RequestManager{
 		maxEnergy = maxEnergy + computeJouleFromSport(data);
 		
 		addFoodsToHistory(pastFoods, pastFoodsDates);
-		data = recommendItems(pastFoods, maxEnergy, maxFat, maxProt, maxCarbo);
+		data = recommendItems(pastFoods, maxEnergy, maxFat, maxProt, maxCarbo, category);
 		return data;
 	}
 }

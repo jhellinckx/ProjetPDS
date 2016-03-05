@@ -20,6 +20,9 @@ public class FoodDAOImpl implements FoodDAO {
     private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, quantity, code, product_name, image_url, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE image_url = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_food, url, quantity, code, product_name, image_url, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food";
     private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, quantity, code, product_name, image_url, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? ORDER BY energy_100g DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? AND categories LIKE ? ORDER BY energy_100g DESC";
+    private static final String SQL_SELECT_ALL_BY_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where categories like ?";
+
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -53,14 +56,18 @@ public class FoodDAOImpl implements FoodDAO {
     }
 	
     @Override
-    public List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float salt) throws DAOException {
+    public List<Food> findFoodWithLessThanLevels(float energy, float fat, float proteins, float saturatedFat, float carbohydrates, float sugars, float salt, String category) throws DAOException {
         List<Food> foods = new ArrayList<Food>();
         Connection connexion = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt);
+            if(category.equals("None")){
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt);
+            }else{
+                category=category+'%';
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt, category);            }
             resultSet = preparedStatement.executeQuery();
             while ( resultSet.next() ) {
                 foods.add(map(resultSet));
@@ -101,7 +108,6 @@ public class FoodDAOImpl implements FoodDAO {
         } finally {
             silentClosures( resultSet, preparedStatement, connexion );
         }
-
         return messages;
     }
 

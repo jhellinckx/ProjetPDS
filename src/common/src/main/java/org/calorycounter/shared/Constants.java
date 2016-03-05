@@ -181,6 +181,13 @@ public final class Constants {
 		/* Food DB infos */
 		public static final int TOTAL_FOODS_IN_DB = 6573;
 
+		/* Food categories */
+		public static final String FOOD_CATEGORIES_REQUEST = "r_food_categories";
+		public static final String RECIPE_CATEGORIES_REQUEST = "r_recipe_categories";
+		public static final String FOOD_CATEGORY = "d_food_category_selected";
+		public static final String CATEGORY_NAME = "d_category_name";
+		public static final int FOOD_CATEGORIES_SIZE = 16;
+
 
 		public static String local_ip(){
 			try{

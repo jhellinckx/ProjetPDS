@@ -134,4 +134,8 @@ public class DAOFactory {
     public UserHistoryDAO getUserHistoryDAO() {
         return new UserHistoryDAOImpl( this );
     }
+
+    public AllCategoriesDAO getAllCategoriesDAO() {
+        return new AllCategoriesDAOImpl( this );
+    }
 }

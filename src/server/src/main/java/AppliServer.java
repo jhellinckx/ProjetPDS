@@ -23,6 +23,7 @@ import dao.SportsDAO;
 import dao.CategoryRatingDAO;
 import dao.UserHistoryDAO;
 import dao.DAOException;
+import dao.AllCategoriesDAO;
 
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
@@ -46,6 +47,7 @@ public class AppliServer extends AbstractNIOServer{
 	private SportsDAO _sportsDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
+	private AllCategoriesDAO _categoriesDatabase;
 
 	/* Recommendations fields */
 	private KnowledgeBasedFilter _knowledgeBased;
@@ -64,6 +66,7 @@ public class AppliServer extends AbstractNIOServer{
 		_sportsDatabase = _daoFactory.getSportsDAO();
 		_categoryRatingDatabase = _daoFactory.getCategoryRatingDAO();
 		_userHistoryDatabase = _daoFactory.getUserHistoryDAO();
+		_categoriesDatabase = _daoFactory.getAllCategoriesDAO();
 
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase);
@@ -81,12 +84,13 @@ public class AppliServer extends AbstractNIOServer{
 		SportRequestManager srm = new SportRequestManager(_sportsDatabase);
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
 			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase);
+		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
 
-		initMap(arm, frm, rrm, drm, hrm, srm, rerm);
+		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm);
 	}
 
 	private void initMap(AuthenticationRequestManager arm, FoodRequestManager frm, RatingRequestManager rrm, DataRequestManager drm, 
-		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm){
+		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm, CategoriesRequestManager crm){
 
 		_managers.put(LOG_IN_REQUEST, arm);
 		_managers.put(SIGN_UP_REQUEST, arm);
@@ -100,6 +104,8 @@ public class AppliServer extends AbstractNIOServer{
 		_managers.put(FOOD_CODE_REQUEST_HISTORY, hrm);
 		_managers.put(HISTORY_FOR_DATE_REQUEST, hrm);
 		_managers.put(RECOMMEND_REQUEST, rerm);
+		_managers.put(FOOD_CATEGORIES_REQUEST, crm);
+		_managers.put(RECIPE_CATEGORIES_REQUEST, crm);
 	}
 
 	public User getUser(Message msg){
