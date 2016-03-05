@@ -35,15 +35,7 @@ public abstract class EdibleItem implements JSONSerializable{
     }
     
     public String getProductName() {
-        String repr = productName;
-        try{
-            byte[] b_l1 = repr.getBytes("ISO-8859-1");
-            String repr_utf = new String(b_l1, "UTF-8");
-            repr = repr_utf;
-        }catch(UnsupportedEncodingException e){
-            System.out.println(Constants.errorMessage(e.getMessage(), this));
-        }
-        return repr;
+        return productName;
     }
     public void setProductName( String productName ) {
         this.productName = productName;

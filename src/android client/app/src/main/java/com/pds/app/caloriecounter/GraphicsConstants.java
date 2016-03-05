@@ -82,9 +82,9 @@ public final class GraphicsConstants {
         public static final int IMAGE_BORDER_COLOR = context.getResources().getColor(R.color.smalt);
         public static final int IMAGE_BORDER_WIDTH = Converter.dp(context, 1);
         public static final int SPACE_BETWEEN_IMAGE_AND_TEXT = Converter.dp(context, 16);
-        public static final int MAIN_TEXT_SIZE = Converter.dp(context, 10);
+        public static final int MAIN_TEXT_SIZE = Converter.dp(context, 8);
         public static final int MAIN_TEXT_COLOR = Color.GRAY;
-        public static final int SECONDARY_TEXT_SIZE = Converter.dp(context, 8);
+        public static final int SECONDARY_TEXT_SIZE = Converter.dp(context, 6);
         public static final int SECONDARY_TEXT_COLOR = Color.LTGRAY;
     }
 

@@ -1,8 +1,9 @@
-package com.pds.app.caloriecounter;
+package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ public class EdibleItemSticker extends CardView {
     private EdibleItem item;
     private LinearLayout cardLayout;
 
-    EdibleItemSticker(Context context, EdibleItem item){
+    public EdibleItemSticker(Context context, EdibleItem item){
         super(context);
         this.item = item;
         initCard();
@@ -70,6 +71,9 @@ public class EdibleItemSticker extends CardView {
         mainText.setTextSize(MAIN_TEXT_SIZE);
         mainText.setTextColor(MAIN_TEXT_COLOR);
         mainText.setText(item.getProductName());
+        mainText.setMaxLines(1);
+        mainText.canScrollHorizontally(LinearLayout.HORIZONTAL);
+        mainText.setEllipsize(TextUtils.TruncateAt.END);
         textCont.addView(mainText);
 
         String nutrInfos = getNutrInfos();
@@ -80,6 +84,9 @@ public class EdibleItemSticker extends CardView {
             secondaryText.setTextSize(SECONDARY_TEXT_SIZE);
             secondaryText.setTextColor(SECONDARY_TEXT_COLOR);
             secondaryText.setText(nutrInfos);
+            secondaryText.setMaxLines(2);
+            secondaryText.canScrollHorizontally(LinearLayout.HORIZONTAL);
+            secondaryText.setEllipsize(TextUtils.TruncateAt.END);
             textCont.addView(secondaryText);
         }
         cardLayout.addView(textCont);

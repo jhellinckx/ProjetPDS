@@ -5,8 +5,10 @@ import android.widget.LinearLayout;
 
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
+import com.pds.app.caloriecounter.itemview.EdibleItemSticker;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
 
+import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONObject;
 
@@ -56,8 +58,19 @@ public class DayRecordingActivity extends MenuNavigableActivity {
     public void initFoodsRecordingContainer(){
         dailyFoods = new ArrayList<>();
 
+        EdibleItem foodWithNutrInfos = new Food();
+        foodWithNutrInfos.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
+        foodWithNutrInfos.setProductName("nappage au chocolat 290 ml slt sa vaa a" +
+                "");
+        foodWithNutrInfos.setTotalCarbohydrates(119.4f);
+        foodWithNutrInfos.setTotalEnergy(8100f);
+        foodWithNutrInfos.setTotalProteins(31f);
+        EdibleItemSticker card1 = new EdibleItemSticker(this, foodWithNutrInfos);
 
-
+        EdibleItem foodWithoutNutrInfos = new Food();
+        foodWithoutNutrInfos.setProductName("Kellogg's Frosties 600g");
+        foodWithoutNutrInfos.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/14/17/asset-741417.jpg");
+        EdibleItemSticker card2 = new EdibleItemSticker(this, foodWithoutNutrInfos);
 
         /*SwipeMenuListView listView = new SwipeMenuListView(getApplicationContext());
         SwipeMenuCreator creator = new SwipeMenuCreator() {
@@ -95,9 +108,13 @@ public class DayRecordingActivity extends MenuNavigableActivity {
             }
         });
         listView.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);*/
+        LinearLayout cardLayout = new LinearLayout(this);
+        cardLayout.setOrientation(LinearLayout.VERTICAL);
+        cardLayout.addView(card1);
+        cardLayout.addView(card2);
 
+        RecordingContainer foodsContainer = new RecordingContainer(this, TITLE_FOODS, cardLayout);
 
-        RecordingContainer foodsContainer = new RecordingContainer(this, TITLE_FOODS, card);
         stickersLayout.addView(foodsContainer);
     }
 
