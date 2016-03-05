@@ -85,46 +85,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         }
     }
 
-    private void onMissingHeightInfo(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast toast = Toast.makeText(getBaseContext(), "Height Missing", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 0);
-                toast.show();
-            }
-        });
-    }
-
-    private void onWrongHeightInfo(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast toast = Toast.makeText(getBaseContext(), "Height Must be between 40cm and 250cm", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 0);
-                toast.show();
-            }
-        });
-    }
-
-    private void onMissingWeightInfo(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast toast = Toast.makeText(getBaseContext(), "Weight Missing", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 0);
-                toast.show();
-            }
-        });
-    }
-
-    private void onWrongWeightInfo(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast toast = Toast.makeText(getBaseContext(), "Weight Must be between 35kg and 250kg", Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 0);
-                toast.show();
-            }
-        });
-    }
-
     private void showToast(String message){
         final String m = message;
         runOnUiThread(new Runnable() {
