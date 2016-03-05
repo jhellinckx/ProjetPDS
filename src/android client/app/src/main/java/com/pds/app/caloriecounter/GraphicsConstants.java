@@ -75,20 +75,29 @@ public final class GraphicsConstants {
     }
 
     public static final class ItemSticker{
-        public static final int CARD_PADDING = Converter.dp2px(16);
+        public static final int CARD_PADDING = Converter.dp2px(4);
         public static final int BOTTOM_MARGIN = Converter.dp2px(8);
         public static final int IMAGE_HEIGHT = Converter.dp2px(60); // == card height
         public static final int IMAGE_WIDTH = Converter.dp2px(60);
         public static final int IMAGE_BORDER_COLOR = context.getResources().getColor(R.color.smalt);
         public static final int IMAGE_BORDER_WIDTH = Converter.dp2px(1);
         public static final int SPACE_BETWEEN_IMAGE_AND_TEXT = Converter.dp2px(16);
+        public static final int NOT_ICON_MARGIN = Converter.dp2px(10);
+        public static final int IMAGE_MARGIN_LEFT = NOT_ICON_MARGIN;
+        public static final int IMAGE_MARGIN_TOP = NOT_ICON_MARGIN;
+        public static final int IMAGE_MARGIN_RIGHT = SPACE_BETWEEN_IMAGE_AND_TEXT;
+        public static final int IMAGE_MARGIN_BOTTOM = NOT_ICON_MARGIN;
+        public static final int TEXT_MARGIN_LEFT = Converter.dp2px(0);
+        public static final int TEXT_MARGIN_TOP = NOT_ICON_MARGIN;
+        public static final int TEXT_MARGIN_RIGHT = NOT_ICON_MARGIN;
+        public static final int TEXT_MARGIN_BOTTOM = NOT_ICON_MARGIN;
         public static final int MAIN_TEXT_SIZE = Converter.dp2px(8);
         public static final int MAIN_TEXT_COLOR = Color.GRAY;
         public static final int MAIN_TEXT_MAX_LINES = 1;
         public static final int SECONDARY_TEXT_SIZE = Converter.dp2px(6);
         public static final int SECONDARY_TEXT_COLOR = Color.LTGRAY;
         public static final int SECONDARY_TEXT_MAX_LINES = 2;
-        public static final int ICON_DELETE_SIZE = Converter.dp2px(16);
+        public static final int ICON_SIZE = Converter.dp2px(20);
     }
 
     public static final class ItemList{

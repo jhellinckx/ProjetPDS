@@ -1,13 +1,12 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,9 +25,9 @@ import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
  * Created by jhellinckx on 05/03/16.
  */
 public class EdibleItemSticker extends CardView {
-    private class EdibleItemStickerTextLayout extends LinearLayout{
+    private class EdibleItemInfosLayout extends LinearLayout{
         EdibleItemSticker card;
-        EdibleItemStickerTextLayout(Context context, EdibleItemSticker card){
+        EdibleItemInfosLayout(Context context, EdibleItemSticker card){
             super(context);
             this.card = card;
         }
@@ -44,7 +43,9 @@ public class EdibleItemSticker extends CardView {
     private EdibleItem item;
     private LinearLayout cardLayout;
     private CircleImageView cardImage;
-    private LinearLayout textCont;
+    private LinearLayout textLayout;
+    private LinearLayout itemInfosLayout;
+    private LinearLayout iconsLayout;
     boolean removable; boolean addable;
     boolean ratable; boolean expandable;
 
@@ -76,10 +77,18 @@ public class EdibleItemSticker extends CardView {
         cardLayout = new LinearLayout(getContext());
         cardLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0, BOTTOM_MARGIN);
         cardLayout.setLayoutParams(layoutParams);
         cardLayout.setPadding(CARD_PADDING, CARD_PADDING, CARD_PADDING, CARD_PADDING);
         this.addView(cardLayout);
+
+        itemInfosLayout = new EdibleItemInfosLayout(getContext(), this);
+        itemInfosLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams infosLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        infosLayoutParams.setMargins(NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN);
+        itemInfosLayout.setLayoutParams(infosLayoutParams);
+        cardLayout.addView(itemInfosLayout);
+
+        iconsLayout = null; // Will be initialized in initActions()
     }
 
     private void initImage(){
@@ -92,15 +101,15 @@ public class EdibleItemSticker extends CardView {
         cardImage.setLayoutParams(imageParams);
         cardImage.setBorderColor(IMAGE_BORDER_COLOR);
         cardImage.setBorderWidth(IMAGE_BORDER_WIDTH);
-        cardLayout.addView(cardImage);
+        itemInfosLayout.addView(cardImage);
     }
 
     private void initTexts(){
-        textCont = new EdibleItemStickerTextLayout(getContext(), this);
+        textLayout = new LinearLayout(getContext());
         LinearLayout.LayoutParams textContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        textCont.setLayoutParams(textContParams);
-        textCont.setOrientation(LinearLayout.VERTICAL);
-        textCont.setGravity(Gravity.CENTER_VERTICAL);
+        textLayout.setLayoutParams(textContParams);
+        textLayout.setOrientation(LinearLayout.VERTICAL);
+        textLayout.setGravity(Gravity.CENTER_VERTICAL);
 
         TextView mainText = new TextView(getContext());
         LinearLayout.LayoutParams mainTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -111,7 +120,7 @@ public class EdibleItemSticker extends CardView {
         mainText.setMaxLines(MAIN_TEXT_MAX_LINES);
         mainText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         mainText.setEllipsize(TextUtils.TruncateAt.END);
-        textCont.addView(mainText);
+        textLayout.addView(mainText);
 
         String nutrInfos = getNutrInfos();
         if(! nutrInfos.isEmpty()) {
@@ -124,19 +133,33 @@ public class EdibleItemSticker extends CardView {
             secondaryText.setMaxLines(SECONDARY_TEXT_MAX_LINES);
             secondaryText.canScrollHorizontally(LinearLayout.HORIZONTAL);
             secondaryText.setEllipsize(TextUtils.TruncateAt.END);
-            textCont.addView(secondaryText);
+            textLayout.addView(secondaryText);
         }
-        cardLayout.addView(textCont);
+        itemInfosLayout.addView(textLayout);
     }
 
     private void initActions(int w, int h){
+        if(iconsLayout != null) return;
+        /* This method will only be called once we know exactly the width of the itemInfosLayout.
+         * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
+        if(removable || addable || expandable || ratable){
+            LinearLayout.LayoutParams newItemInfosLayoutParams = new LinearLayout.LayoutParams(w - ICON_SIZE, LinearLayout.LayoutParams.WRAP_CONTENT);
+            newItemInfosLayoutParams.setMargins(NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN);
+            itemInfosLayout.setLayoutParams(newItemInfosLayoutParams);
+
+            iconsLayout = new LinearLayout(getContext());
+            iconsLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            iconsLayout.setLayoutParams(iconsLayoutParams);
+            cardLayout.addView(iconsLayout);
+
+        }
         if(removable){
-            textCont.setLayoutParams(new LinearLayout.LayoutParams(w - ICON_DELETE_SIZE, LinearLayout.LayoutParams.MATCH_PARENT));
             ImageView clearIcon = new ImageView(getContext());
-            clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_DELETE_SIZE, ICON_DELETE_SIZE));
+            clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
             clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
             clearIcon.setScaleType(ImageView.ScaleType.FIT_END);
-            cardLayout.addView(clearIcon);
+            iconsLayout.addView(clearIcon);
         }
         if(addable){
 
