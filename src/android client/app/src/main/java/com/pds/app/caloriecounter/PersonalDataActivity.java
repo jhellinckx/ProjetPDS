@@ -4,12 +4,15 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.content.Intent;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
@@ -21,6 +24,8 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     private Button update = null;
     private EditText weight = null;
     private EditText height = null;
+    private SeekBar bar = null;
+    private EditText seekBarText = null;
 
     private static int _height = -1;
     private static float _weight = -1F;
@@ -34,8 +39,11 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
             @Override
             public void onClick(View v){
-                _height = Integer.parseInt(height.getText().toString());
-                _weight = Float.parseFloat(weight.getText().toString());
+                String h = height.getText().toString();
+                String w = weight.getText().toString();
+                if(!validate(h,w)){
+                    return;
+                }
                 id = (int) agebracket.getSelectedItemId();
 
                 sendData((String) agebracket.getSelectedItem(), weight.getText().toString());
@@ -45,6 +53,86 @@ public class PersonalDataActivity extends MenuNavigableActivity {
                 startActivity(homeActivity);
             }
 
+        });
+    }
+
+    private Boolean validate(String height, String weight){
+        if(height.length()!=0 && weight.length()!=0){
+            _height = Integer.parseInt(height);
+            _weight = Float.parseFloat(weight);
+            if(_height < 250 && _height >40){
+                if(_weight < 250. && _weight >35.){
+                    return true;
+                }else{
+                    showToast("Weight Must be between 35kg and 250kg");
+                    return false;
+                }
+            }else{
+                showToast("Height Must be between 40cm and 250cm");
+                return false;
+            }
+
+        }else if(height.length()==0 && weight.length()!=0){
+            showToast("Height Missing");
+            return false;
+        }else if(height.length()!=0 && weight.length()==0){
+            showToast("Weight Missing");
+            return false;
+        } else {
+            showToast("Height Missing");
+            showToast("Weight Missing");
+            return false;
+        }
+    }
+
+    private void onMissingHeightInfo(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast toast = Toast.makeText(getBaseContext(), "Height Missing", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
+        });
+    }
+
+    private void onWrongHeightInfo(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast toast = Toast.makeText(getBaseContext(), "Height Must be between 40cm and 250cm", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
+        });
+    }
+
+    private void onMissingWeightInfo(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast toast = Toast.makeText(getBaseContext(), "Weight Missing", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
+        });
+    }
+
+    private void onWrongWeightInfo(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast toast = Toast.makeText(getBaseContext(), "Weight Must be between 35kg and 250kg", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
+        });
+    }
+
+    private void showToast(String message){
+        final String m = message;
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast toast = Toast.makeText(getBaseContext(), m, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
         });
     }
 
@@ -75,6 +163,64 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
     }
 
+    private void addSeekBarListener(SeekBar bar, final EditText text){
+        bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                text.setText(Integer.toString(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+
+    private void setText(EditText text, int progress){
+        text.setText(Integer.toString(progress));
+    }
+
+    private SeekBar updateSeekBarAndText(SeekBar bar){
+        EditText text = null;
+        seekBarText = (EditText) v.findViewById(R.id.constraints_cal);
+        bar = (SeekBar) v.findViewById(R.id.bar_cal);
+        bar.setMax(computeMaxEnergy());
+        text = seekBarText;
+        setText(text, bar.getMax());
+        bar.setProgress(bar.getMax());
+        return bar;
+
+    }
+
+    private int computeMaxEnergy(){
+        id = (int) agebracket.getSelectedItemId();
+        float max_energy;
+        switch (id){
+            case 0:
+                max_energy = CHILD_DAILY_ENERGY;
+                break;
+            case 1:
+                max_energy = TEEN_DAILY_ENERGY;
+                break;
+            case 2:
+                max_energy = WOMEN_DAILY_ENERGY;
+                break;
+            default:
+                max_energy = MEN_DAILY_ENERGY;
+                break;
+
+        }
+        return (int) ((max_energy/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +236,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
         initSpinner();
         initButton();
+        addSeekBarListener(updateSeekBarAndText((SeekBar) v.findViewById(R.id.bar_cal)), seekBarText);
 
     }
 

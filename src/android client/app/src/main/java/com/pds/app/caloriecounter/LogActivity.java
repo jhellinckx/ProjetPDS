@@ -163,7 +163,6 @@ public class LogActivity extends NotifiableActivity {
     }
 
     public void onLoginFailed() {
-        System.out.println("LOOPER --------------------------> "+Boolean.toString(Looper.myLooper() == Looper.getMainLooper()));
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);
