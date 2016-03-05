@@ -1,10 +1,9 @@
-package com.pds.app.caloriecounter.dayrecording;
+package com.pds.app.caloriecounter;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
 
-import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.utils.Converter;
 
 /**
@@ -75,6 +74,19 @@ public final class GraphicsConstants {
         public static final int CONTENT_BOTTOM_MARGIN = Converter.dp(context, 10);
     }
 
+    public static final class ItemSticker{
+        public static final int CARD_PADDING = Converter.dp(context, 16);
+        public static final int BOTTOM_MARGIN = Converter.dp(context, 8);
+        public static final int IMAGE_HEIGHT = Converter.dp(context, 60); // == card height
+        public static final int IMAGE_WIDTH = Converter.dp(context, 60);
+        public static final int IMAGE_BORDER_COLOR = context.getResources().getColor(R.color.smalt);
+        public static final int IMAGE_BORDER_WIDTH = Converter.dp(context, 1);
+        public static final int SPACE_BETWEEN_IMAGE_AND_TEXT = Converter.dp(context, 16);
+        public static final int MAIN_TEXT_SIZE = Converter.dp(context, 10);
+        public static final int MAIN_TEXT_COLOR = Color.GRAY;
+        public static final int SECONDARY_TEXT_SIZE = Converter.dp(context, 8);
+        public static final int SECONDARY_TEXT_COLOR = Color.LTGRAY;
+    }
 
 
 

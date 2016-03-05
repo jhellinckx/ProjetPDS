@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Recording.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.Recording.*;
 
 class RecordingContainer extends CardView {
     private TextView title;

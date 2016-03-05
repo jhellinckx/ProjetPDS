@@ -1,19 +1,11 @@
 package com.pds.app.caloriecounter.dayrecording;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.view.Gravity;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
-import com.pds.app.caloriecounter.utils.Converter;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
-import com.squareup.picasso.Picasso;
 
 import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONObject;
@@ -22,7 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Global.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 
 public class DayRecordingActivity extends MenuNavigableActivity {
 
@@ -64,60 +56,7 @@ public class DayRecordingActivity extends MenuNavigableActivity {
     public void initFoodsRecordingContainer(){
         dailyFoods = new ArrayList<>();
 
-        CardView card = new CardView(this);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        card.setLayoutParams(params);
-
-        LinearLayout inCard = new LinearLayout(this);
-        inCard.setOrientation(LinearLayout.HORIZONTAL);
-        inCard.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-        inCard.setPadding(Converter.dp(this, 16), Converter.dp(this, 16), Converter.dp(this, 16), Converter.dp(this, 16));
-
-        CircleImageView menuImage = new CircleImageView(this);
-        //ImageView menuImage = new ImageView(this);
-        Picasso.with(this)
-                .load("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/41/54/asset-834154.jpg")
-                .into(menuImage);
-        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(Converter.dp(this, 60), Converter.dp(this, 60));
-        imageParams.setMargins(0, 0, Converter.dp(this, 16), 0);
-        menuImage.setLayoutParams(imageParams);
-        //menuImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        menuImage.setBorderColor(getResources().getColor(R.color.smalt));
-        menuImage.setBorderWidth(Converter.dp(this, 1));
-
-
-
-        LinearLayout textCont = new LinearLayout(this);
-        LinearLayout.LayoutParams textContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        textCont.setLayoutParams(textContParams);
-        textCont.setOrientation(LinearLayout.VERTICAL);
-        textCont.setGravity(Gravity.CENTER_VERTICAL);
-
-        TextView mainText = new TextView(this);
-        LinearLayout.LayoutParams mainTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        mainText.setLayoutParams(mainTextParams);
-        mainText.setTextSize(Converter.sp(this, 10));
-        mainText.setText("Primary");
-        mainText.setTextColor(Color.GRAY);
-        //mainText.setGravity(Gravity.CENTER_VERTICAL);
-        //mainText.setGravity(Gravity.LEFT);
-
-        TextView secondaryText = new TextView(this);
-        LinearLayout.LayoutParams secondaryTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        secondaryText.setLayoutParams(secondaryTextParams);
-        secondaryText.setTextSize(Converter.sp(this, 8));
-        secondaryText.setText("Secondary");
-        //secondaryText.setGravity(Gravity.CENTER_VERTICAL);
-        secondaryText.setTextColor(Color.LTGRAY);
-
-        textCont.addView(mainText);
-        textCont.addView(secondaryText);
-        //textCont.addView(textLayout);
-
-        inCard.addView(menuImage);
-        inCard.addView(textCont);
-        card.addView(inCard);
 
 
         /*SwipeMenuListView listView = new SwipeMenuListView(getApplicationContext());

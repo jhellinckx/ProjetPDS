@@ -3,7 +3,9 @@ package com.pds.app.caloriecounter.dayrecording;
 import android.content.Context;
 import android.view.ViewGroup;
 import com.pds.app.caloriecounter.progresslib.DonutProgress;
-import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Progress.*;
+import com.pds.app.caloriecounter.utils.Converter;
+
+import static com.pds.app.caloriecounter.GraphicsConstants.Progress.*;
 /**
  * Created by jhellinckx on 03/03/16.
  */
@@ -42,8 +44,8 @@ public class IntakeProgress extends DonutProgress {
     private void initDonutText(){
         this.setTextSize(TEXT_CENTER_SIZE);
         this.setTextColor(TEXT_CENTER_COLOR);
-        this.setText(intakeString(intakeProgress) + " " + unit);
-        this.setInnerBottomText("/" + intakeString(intakeMax));
+        this.setText(Converter.floatToString(intakeProgress) + " " + unit);
+        this.setInnerBottomText("/" + Converter.floatToString(intakeMax));
         this.setInnerBottomTextColor(TEXT_BOTTOM_COLOR);
         this.setInnerBottomTextSize(TEXT_BOTTOM_SIZE);
     }
@@ -51,15 +53,6 @@ public class IntakeProgress extends DonutProgress {
     private int floatProgressToDonutScale(){
         return (int)Math.ceil((intakeProgress / intakeMax)*BAR_PRECISION);
 
-    }
-
-    private String intakeString(Float intake){
-        String intakeString = Float.toString(intake);
-        String[] dotSplitted = intakeString.split("\\.");
-        if (dotSplitted.length > 1 && Integer.valueOf(dotSplitted[1]).equals(0)) {
-            intakeString = dotSplitted[0];
-        }
-        return intakeString;
     }
 
     public void setIntakeMax(float max){

@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pds.app.caloriecounter.R;
-import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.ProgressSticker.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.ProgressSticker.*;
 
 public class IntakeProgressSticker extends LinearLayout {
     private TextView intakeType;
