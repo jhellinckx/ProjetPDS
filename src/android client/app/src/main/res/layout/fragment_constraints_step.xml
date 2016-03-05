@@ -163,13 +163,29 @@
         android:layout_marginRight="10sp"
         android:layout_toRightOf="@+id/bar_carbo" />
 
+    <AutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/autoCompleteTextView"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:layout_below="@+id/constraints_carbo"
+        android:layout_alignLeft="@+id/textView21"
+        android:hint="Entrez une catégorie"
+        android:textColor="#000000"
+        android:textColorLink="#000000"
+        android:textColorHighlight="#000000"
+        android:layout_toLeftOf="@+id/constraints_carbo" />
+
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:layout_below="@+id/progressBar4"
         android:layout_alignLeft="@+id/textView15"
-        android:id="@+id/radio_group">
+        android:id="@+id/radio_group"
+        android:layout_alignBottom="@+id/textView15"
+        android:layout_alignRight="@+id/constraints_cal">
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -189,6 +205,7 @@
             android:layout_below="@+id/progressBar4"
             android:layout_alignLeft="@+id/textView15"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
     </RadioGroup>
 
 </RelativeLayout>

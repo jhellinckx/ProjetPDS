@@ -56,14 +56,14 @@ public class KnowledgeBasedFilter {
 		}
 	}
 
-	private ArrayList<Food> recommendMethod(List<Food> previousAliments) {
+	private ArrayList<Food> recommendMethod(List<Food> previousAliments, String category) {
 		previousEatenAliments(previousAliments);
-		ArrayList<Food> results = new ArrayList<Food>(foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, saltNeeded));
+		ArrayList<Food> results = new ArrayList<Food>(foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, saltNeeded, category));
 		return results;
 	}
 
 
-	public ArrayList<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn) {
+	public ArrayList<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn, String category) {
 
 		energyNeeded = energySupBorn;
 		fatNeeded = fatSupBorn;
@@ -72,6 +72,6 @@ public class KnowledgeBasedFilter {
 		carbohydratesNeeded = carbohydratesSupBorn;
 		sugarsNeeded = HUMAN_DAILY_SUGARS;
 		saltNeeded = HUMAN_DAILY_SODIUM;
-		return recommendMethod(previousAliments);
+		return recommendMethod(previousAliments,category);
 	}
 }

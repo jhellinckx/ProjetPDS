@@ -30,6 +30,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
+    private static ArrayList<String> _foodCategories = new ArrayList<String>();
     private ArrayList<String> _productNames = new ArrayList<String>();
     private ArrayList<String> _productCodes = new ArrayList<String>();
     private ArrayList<String> _productDates = new ArrayList<String>();
@@ -81,12 +82,13 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
                 frag.setArguments(b);
                 replaceFragment(frag, "sports");
             }
-        }
-        else if(request.equals(RECOMMEND_REQUEST)) {
+        } else if(request.equals(RECOMMEND_REQUEST)) {
            onRecommendResults(data);
-
-
-        }else if(request.equals(FOOD_CODE_REQUEST)){
+        } else if(request.equals(FOOD_CATEGORIES_REQUEST)){
+            for(int i=0; i<data.size(); i++) {
+                _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
+            }
+        } else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
                 String product_name = (String) data.get(FOOD_NAME);
@@ -97,23 +99,26 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
                 frag.setArguments(b);
                 replaceFragment(frag,"past");
             }
-        }else if(request.equals(UPDATE_DATA_REQUEST) || request.equals(DATA_REQUEST)){
+        }
+        else if(request.equals(UPDATE_DATA_REQUEST) || request.equals(DATA_REQUEST)){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             RecommendationConstraintsFragment frag = new RecommendationConstraintsFragment();
             Bundle b = new Bundle();
             b.putString("gender", gender);
+            b.putStringArrayList("foodCategories",_foodCategories);
             frag.setArguments(b);
             replaceFragment(frag, "constraints");
         }
 
     }
 
-    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo, String recipeOrFood){
+    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo, String recipeOrFood, String category){
         recom_data.put(MAX_ENERGY, energy);
         recom_data.put(MAX_FAT, fat);
         recom_data.put(MAX_PROT, prot);
         recom_data.put(MAX_CARBOHYDRATES, carbo);
         recom_data.put(RECIPE_OR_FOOD, recipeOrFood);
+        recom_data.put(FOOD_CATEGORY, category);
     }
 
     public void sendCode(String code, String date) {
@@ -156,11 +161,14 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         else{
             recom_data.put(SPORT_NAME, null);
         }
+        if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
+            send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
+        }
         send(networkJSON(DATA_REQUEST, new JSONObject()));
     }
 
-    public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood){
-        addConstraintsToJSON(energy, fat, prot, carbo, recipeOrFood);
+    public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category){
+        addConstraintsToJSON(energy, fat, prot, carbo, recipeOrFood, category);
         send(networkJSON(RECOMMEND_REQUEST, recom_data));
     }
 
