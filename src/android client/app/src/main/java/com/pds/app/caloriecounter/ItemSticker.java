@@ -14,22 +14,32 @@ public class ItemSticker extends LinearLayout {
     private Context context;
     private ImageView thumbnail;
     private TextView describing_text;
+    private int imageWidth;
+    private int imageHeight;
 
     public ItemSticker(Context cont, String url, String txt){
+        this(cont, url, txt, 200, 200);
+    }
+
+    public ItemSticker(Context cont, String url, String txt, int imageWidth, int imageHeight){
         super(cont);
         context = cont;
         this.setOrientation(LinearLayout.HORIZONTAL);
-        this.setBackground(context.getResources().getDrawable(R.drawable.background_sticker));
+        //this.setBackground(context.getResources().getDrawable(R.drawable.background_sticker));
+        this.setBackgroundColor(context.getResources().getColor(R.color.primary));
+        this.imageHeight = imageHeight;
+        this.imageWidth = imageWidth;
         initThumbnail(url);
         addDescribingText(txt);
+
     }
 
     private void initThumbnail(String url){
         thumbnail = new ImageView(context);
         Picasso.with(context)
                 .load(url)
-                .resize(200,200)
-                .transform(new RoundedTransformation(5,0,4))
+                .resize(imageWidth,imageHeight )
+                //  .transform(new RoundedTransformation(5,0,4))
                 .into(thumbnail);
         thumbnail.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));

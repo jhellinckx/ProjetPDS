@@ -19,7 +19,7 @@ public final class GraphicsConstants {
 
     public static final class Global{
         public static final String TITLE_RDI = "APPORTS JOURNALIERS";
-        public static final String TITLE_FOODS = "REPAS";
+        public static final String TITLE_FOODS = "MENU";
         public static final String TITLE_SPORTS = "ACTIVITES SPORTIVES";
         public static final String TITLE_CALORIES = "Calories";
         public static final String TITLE_PROTEINS = "Protéines";
@@ -31,7 +31,7 @@ public final class GraphicsConstants {
     }
 
     public static final class Progress {
-        public static final int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.snowy_mint);
+        public static final int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.smalt);
         public static final int STROKE_UNFINISHED_COLOR = Color.WHITE;
         public static final float SRTOKE_FINISHED_WIDTH = Converter.dp(context, 8);
         public static final float STROKE_UNFINISHED_WIDTH = Converter.dp(context, 1);
@@ -45,7 +45,7 @@ public final class GraphicsConstants {
         public static final int DONUT_HEIGHT = Converter.dp(context, 100);
     }
 
-    public static final class ProgressContainer {
+    public static final class ProgressSticker {
         public static final int BACKGROUND_COLOR = context.getResources().getColor(R.color.primary);
         public static final int TEXT_COLOR = context.getResources().getColor(R.color.white);
         public static final int TEXT_SIZE = Converter.sp(context, 8);
@@ -55,19 +55,19 @@ public final class GraphicsConstants {
         public static final int MARGIN_BOTTOM = Converter.dp(context, 20);
     }
 
-    public static final class Sticker{
+    public static final class Recording{
         public static final int BACKGROUND_COLOR = context.getResources().getColor(R.color.white);
         public static final int MARGIN_LEFT = Converter.dp(context, 5);
         public static final int MARGIN_TOP = Converter.dp(context, 5);
         public static final int MARGIN_RIGHT = Converter.dp(context, 5);
-        public static final int MARGIN_BOTTOM = Converter.dp(context, 5);
+        public static final int MARGIN_BOTTOM = Converter.dp(context, 0);
 
-        public static final int TEXT_COLOR = Color.LTGRAY;
-        public static final int TEXT_GRAVITY = Gravity.LEFT;
-        public static final int TEXT_LEFT_MARGIN = Converter.dp(context, 5);
-        public static final int TEXT_TOP_MARGIN = Converter.dp(context, 5);
-        public static final int TEXT_RIGHT_MARGIN = Converter.dp(context, 5);
-        public static final int TEXT_BOTTOM_MARGIN = Converter.dp(context, 5);
+        public static final int TITLE_COLOR = Color.GRAY;
+        public static final int TITLE_GRAVITY = Gravity.LEFT;
+        public static final int TITLE_LEFT_MARGIN = Converter.dp(context, 5);
+        public static final int TITLE_TOP_MARGIN = Converter.dp(context, 5);
+        public static final int TITLE_RIGHT_MARGIN = Converter.dp(context, 5);
+        public static final int TITLE_BOTTOM_MARGIN = Converter.dp(context, 5);
 
         public static final int CONTENT_LEFT_MARGIN = Converter.dp(context, 10);
         public static final int CONTENT_TOP_MARGIN = Converter.dp(context, 10);

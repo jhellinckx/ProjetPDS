@@ -1,37 +1,44 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Sticker.*;
+import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Recording.*;
 
-class RecordingContainer extends LinearLayout {
+class RecordingContainer extends CardView {
     private TextView title;
     private View content;
+    private LinearLayout layout;
 
     public RecordingContainer(Context context, String title, View content){
         super(context);
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        cardParams.setMargins(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
+        this.setLayoutParams(cardParams);
+
+        layout = new LinearLayout(context);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        params.setMargins(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
-        this.setLayoutParams(params);
-        this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(BACKGROUND_COLOR);
+        layout.setLayoutParams(params);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        //layout.setBackgroundColor(BACKGROUND_COLOR);
         initTitle(title);
         initContent(content);
+        this.addView(layout);
     }
 
     private void initTitle(String title){
         this.title = new TextView(getContext());
         this.title.setText(title);
         this.title.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Small);
-        this.title.setTextColor(TEXT_COLOR);
-        this.title.setGravity(TEXT_GRAVITY);
+        this.title.setTextColor(TITLE_COLOR);
+        this.title.setGravity(TITLE_GRAVITY);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(TEXT_LEFT_MARGIN, TEXT_TOP_MARGIN, TEXT_RIGHT_MARGIN, TEXT_BOTTOM_MARGIN);
+        layoutParams.setMargins(TITLE_LEFT_MARGIN, TITLE_TOP_MARGIN, TITLE_RIGHT_MARGIN, TITLE_BOTTOM_MARGIN);
         this.title.setLayoutParams(layoutParams);
-        this.addView(this.title);
+        layout.addView(this.title);
     }
 
     private void initContent(View content){
@@ -39,7 +46,7 @@ class RecordingContainer extends LinearLayout {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(CONTENT_LEFT_MARGIN, CONTENT_TOP_MARGIN, CONTENT_RIGHT_MARGIN, CONTENT_BOTTOM_MARGIN);
         content.setLayoutParams(params);
-        this.addView(this.content);
+        layout.addView(this.content);
     }
 
     public void setTitle(String title){
@@ -47,7 +54,7 @@ class RecordingContainer extends LinearLayout {
     }
 
     public void setContent(View content){
-        this.removeView(this.content);
+        layout.removeView(this.content);
         this.initContent(content);
     }
 }
