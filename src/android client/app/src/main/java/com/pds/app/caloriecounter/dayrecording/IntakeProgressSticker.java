@@ -1,6 +1,8 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -8,23 +10,30 @@ import android.widget.TextView;
 import com.pds.app.caloriecounter.R;
 import static com.pds.app.caloriecounter.GraphicsConstants.ProgressSticker.*;
 
-public class IntakeProgressSticker extends LinearLayout {
+public class IntakeProgressSticker extends CardView {
     private TextView intakeType;
     private IntakeProgress intakeProgress;
+    private LinearLayout cardLayout;
 
     public IntakeProgressSticker(Context context, String intakeType, IntakeProgress progress) {
         super(context);
         this.intakeProgress = progress;
-        initContainerLayout();
+        initCard();
         initIntakeText(intakeType);
         initIntakeProgress();
     }
 
-    private void initContainerLayout(){
-        this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(BACKGROUND_COLOR);
-        this.setPadding(0, 0, 0, 0);
-        this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+    private void initCard(){
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        this.setLayoutParams(cardParams);
+        this.setPreventCornerOverlap(false);
+
+        cardLayout = new LinearLayout(getContext());
+        cardLayout.setOrientation(LinearLayout.VERTICAL);
+        cardLayout.setBackgroundColor(BACKGROUND_COLOR);
+        cardLayout.setPadding(0, 0, 0, 0);
+        cardLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        this.addView(cardLayout);
     }
 
     private void initIntakeText(String intakeType) {
@@ -38,16 +47,16 @@ public class IntakeProgressSticker extends LinearLayout {
         layoutParams.setMargins(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
         this.intakeType.setBackgroundColor(getResources().getColor(R.color.primary_dark));
         this.intakeType.setLayoutParams(layoutParams);
-        this.addView(this.intakeType);
+        cardLayout.addView(this.intakeType);
     }
 
     private void initIntakeProgress() {
-        this.addView(this.intakeProgress);
+        cardLayout.addView(this.intakeProgress);
     }
 
     public void setIntakeProgress(IntakeProgress progress){
-        this.removeView(this.intakeProgress);
+        cardLayout.removeView(this.intakeProgress);
         this.intakeProgress = progress;
-        this.addView(progress);
+        cardLayout.addView(progress);
     }
 }

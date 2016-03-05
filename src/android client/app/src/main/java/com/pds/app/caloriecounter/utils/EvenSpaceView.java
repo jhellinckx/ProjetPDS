@@ -10,6 +10,6 @@ import android.widget.LinearLayout;
 public class EvenSpaceView extends View { // Needed to horizontally fill gaps between other views
     public EvenSpaceView(Context context){
         super(context);
-        this.setLayoutParams(new LinearLayout.LayoutParams(Converter.dp(context, 0), Converter.dp(context, 1), 1));
+        this.setLayoutParams(new LinearLayout.LayoutParams(Converter.dp2px(0), Converter.dp2px(1), 1));
     }
 }

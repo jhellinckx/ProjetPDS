@@ -1,13 +1,18 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.utils.Converter;
 import com.squareup.picasso.Picasso;
 
@@ -21,12 +26,44 @@ import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
  * Created by jhellinckx on 05/03/16.
  */
 public class EdibleItemSticker extends CardView {
+    private class EdibleItemStickerTextLayout extends LinearLayout{
+        EdibleItemSticker card;
+        EdibleItemStickerTextLayout(Context context, EdibleItemSticker card){
+            super(context);
+            this.card = card;
+        }
+
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh){
+            if(oldw == 0) {
+                Log.d("CALLING INIT ACTIONS :", Integer.toString(oldw) + " -> " + Integer.toString(w));
+                card.initActions(w, h);
+            }
+        }
+    }
     private EdibleItem item;
     private LinearLayout cardLayout;
+    private CircleImageView cardImage;
+    private LinearLayout textCont;
+    boolean removable; boolean addable;
+    boolean ratable; boolean expandable;
+
 
     public EdibleItemSticker(Context context, EdibleItem item){
+        this(context, item, false, false, false, false);
+    }
+
+    public EdibleItemSticker(Context context, EdibleItem item, boolean removable,
+                             boolean addable, boolean ratable, boolean expandable){
         super(context);
+        setEdibleItem(item, removable, addable, ratable, expandable);
+    }
+
+    public void setEdibleItem(EdibleItem item, boolean removable,
+                              boolean addable, boolean ratable, boolean expandable){
         this.item = item;
+        this.removable = removable; this.addable = addable;
+        this.ratable = ratable; this.expandable = expandable;
         initCard();
         initImage();
         initTexts();
@@ -46,7 +83,7 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initImage(){
-        CircleImageView cardImage = new CircleImageView(getContext());
+        cardImage = new CircleImageView(getContext());
         Picasso.with(getContext())
                 .load(item.getImageUrl())
                 .into(cardImage);
@@ -59,7 +96,7 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initTexts(){
-        LinearLayout textCont = new LinearLayout(getContext());
+        textCont = new EdibleItemStickerTextLayout(getContext(), this);
         LinearLayout.LayoutParams textContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         textCont.setLayoutParams(textContParams);
         textCont.setOrientation(LinearLayout.VERTICAL);
@@ -71,7 +108,7 @@ public class EdibleItemSticker extends CardView {
         mainText.setTextSize(MAIN_TEXT_SIZE);
         mainText.setTextColor(MAIN_TEXT_COLOR);
         mainText.setText(item.getProductName());
-        mainText.setMaxLines(1);
+        mainText.setMaxLines(MAIN_TEXT_MAX_LINES);
         mainText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         mainText.setEllipsize(TextUtils.TruncateAt.END);
         textCont.addView(mainText);
@@ -84,7 +121,7 @@ public class EdibleItemSticker extends CardView {
             secondaryText.setTextSize(SECONDARY_TEXT_SIZE);
             secondaryText.setTextColor(SECONDARY_TEXT_COLOR);
             secondaryText.setText(nutrInfos);
-            secondaryText.setMaxLines(2);
+            secondaryText.setMaxLines(SECONDARY_TEXT_MAX_LINES);
             secondaryText.canScrollHorizontally(LinearLayout.HORIZONTAL);
             secondaryText.setEllipsize(TextUtils.TruncateAt.END);
             textCont.addView(secondaryText);
@@ -92,14 +129,36 @@ public class EdibleItemSticker extends CardView {
         cardLayout.addView(textCont);
     }
 
+    private void initActions(int w, int h){
+        if(removable){
+            textCont.setLayoutParams(new LinearLayout.LayoutParams(w - ICON_DELETE_SIZE, LinearLayout.LayoutParams.MATCH_PARENT));
+            ImageView clearIcon = new ImageView(getContext());
+            clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_DELETE_SIZE, ICON_DELETE_SIZE));
+            clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+            clearIcon.setScaleType(ImageView.ScaleType.FIT_END);
+            cardLayout.addView(clearIcon);
+        }
+        if(addable){
+
+        }
+        if(expandable){
+
+        }
+        if(ratable){
+
+        }
+    }
+
     private String getNutrInfos(){
         String infos = "";
         if(item.getTotalEnergy() != null)
-            infos += Converter.floatToString(item.getTotalEnergy()) + " " + CALORIES_UNIT + " ";
+            infos += Converter.floatToString(item.getTotalEnergy()) + " " + CALORIES_UNIT + ", ";
         if(item.getTotalProteins() != null)
-            infos += Converter.floatToString(item.getTotalProteins()) + " " + DEFAULT_UNIT + " " + TITLE_PROTEINS.toLowerCase() + " ";
+            infos += Converter.floatToString(item.getTotalProteins()) + " " + DEFAULT_UNIT + " " + TITLE_PROTEINS.toLowerCase() + ", ";
         if(item.getTotalCarbohydrates() != null)
-            infos += Converter.floatToString(item.getTotalCarbohydrates()) + " " + DEFAULT_UNIT + " " + TITLE_CARBO.toLowerCase();
+            infos += Converter.floatToString(item.getTotalCarbohydrates()) + " " + DEFAULT_UNIT + " " + TITLE_CARBO.toLowerCase() + ", ";
+        if(! infos.isEmpty())
+            infos = new String(infos.substring(0, infos.length() - 2));
         return infos;
     }
 }
