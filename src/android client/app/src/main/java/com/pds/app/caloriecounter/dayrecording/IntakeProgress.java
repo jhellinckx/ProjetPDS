@@ -1,7 +1,6 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.ViewGroup;
 import com.pds.app.caloriecounter.progresslib.DonutProgress;
 import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Progress.*;
@@ -11,30 +10,45 @@ import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.Progress
 public class IntakeProgress extends DonutProgress {
     private float intakeProgress;
     private float intakeMax;
+    private String unit;
 
     public IntakeProgress(Context context, float intakeProgress, float intakeMax, String unit){
         super(context);
         this.intakeProgress = intakeProgress;
         this.intakeMax = intakeMax;
+        this.unit = unit;
+        initDonutProgressValues();
+        initDonutStroke();
+        initDonutText();
+    }
+
+    private void initDonutProgressValues(){
         this.setIntakeProgress(intakeProgress);
         this.setIntakeMax(intakeMax);
         this.setMax(BAR_PRECISION);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        //this.setLayoutParams(new ViewGroup.LayoutParams(DONUT_WIDTH, DONUT_HEIGHT));
+
         this.setStartingDegree(STARTING_DEGREE);
+    }
+
+    private void initDonutStroke(){
         this.setUnfinishedStrokeWidth(STROKE_UNFINISHED_WIDTH);
         this.setFinishedStrokeWidth(SRTOKE_FINISHED_WIDTH);
         this.setUnfinishedStrokeColor(STROKE_UNFINISHED_COLOR);
         this.setFinishedStrokeColor(STROKE_FINISHED_COLOR);
+    }
+
+    private void initDonutText(){
         this.setTextSize(TEXT_CENTER_SIZE);
         this.setTextColor(TEXT_CENTER_COLOR);
         this.setText(intakeString(intakeProgress) + " " + unit);
         this.setInnerBottomText("/" + intakeString(intakeMax));
         this.setInnerBottomTextColor(TEXT_BOTTOM_COLOR);
         this.setInnerBottomTextSize(TEXT_BOTTOM_SIZE);
-        this.setLayoutParams(new ViewGroup.LayoutParams(DONUT_WIDTH, DONUT_HEIGHT));
     }
 
-    private int floatProgressToInt(){
+    private int floatProgressToDonutScale(){
         return (int)Math.ceil((intakeProgress / intakeMax)*BAR_PRECISION);
 
     }
@@ -51,7 +65,7 @@ public class IntakeProgress extends DonutProgress {
     public void setIntakeMax(float max){
         if(max > 0) {
             intakeMax = max;
-            setProgress(floatProgressToInt());
+            setProgress(floatProgressToDonutScale());
         }
     }
 
@@ -62,7 +76,7 @@ public class IntakeProgress extends DonutProgress {
     public void setIntakeProgress(float progress){
         if(progress > 0) {
             intakeProgress = progress;
-            setProgress(floatProgressToInt());
+            setProgress(floatProgressToDonutScale());
         }
     }
 

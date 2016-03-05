@@ -7,26 +7,30 @@ import android.widget.TextView;
 
 import com.pds.app.caloriecounter.R;
 import static com.pds.app.caloriecounter.dayrecording.GraphicsConstants.ProgressContainer.*;
-public class IntakeProgressContainer extends LinearLayout {
-    private Context context;
+
+public class IntakeProgressSticker extends LinearLayout {
     private TextView intakeType;
     private IntakeProgress intakeProgress;
 
-    public IntakeProgressContainer(Context context, String intakeType, float progress, float max, String unit) {
+    public IntakeProgressSticker(Context context, String intakeType, IntakeProgress progress) {
         super(context);
-        this.context = context;
+        this.intakeProgress = progress;
+        initContainerLayout();
+        initIntakeText(intakeType);
+        initIntakeProgress();
+    }
+
+    private void initContainerLayout(){
         this.setOrientation(LinearLayout.VERTICAL);
         this.setBackgroundColor(BACKGROUND_COLOR);
         this.setPadding(0, 0, 0, 0);
         this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        initIntakeText(intakeType);
-        initIntakeProgress(progress, max, unit);
     }
 
     private void initIntakeText(String intakeType) {
-        this.intakeType = new TextView(context);
+        this.intakeType = new TextView(getContext());
         this.intakeType.setText(intakeType);
-        this.intakeType.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Medium);
+        this.intakeType.setTextAppearance(getContext(), android.R.style.TextAppearance_DeviceDefault_Medium);
         this.intakeType.setTextColor(TEXT_COLOR);
         this.intakeType.setGravity(Gravity.CENTER_HORIZONTAL);
         this.intakeType.setTextSize(TEXT_SIZE);
@@ -37,24 +41,13 @@ public class IntakeProgressContainer extends LinearLayout {
         this.addView(this.intakeType);
     }
 
-    private void initIntakeProgress(float barProgress, float barMax, String unit) {
-        this.intakeProgress = new IntakeProgress(context, barProgress, barMax, unit);
+    private void initIntakeProgress() {
         this.addView(this.intakeProgress);
     }
 
-    public void setMax(float max){
-        this.intakeProgress.setIntakeMax(max);
-    }
-
-    public float getMax(){
-        return intakeProgress.getIntakeMax();
-    }
-
-    public float getProgress(){
-        return intakeProgress.getIntakeProgress();
-    }
-
-    public void setProgress(float progress){
-        intakeProgress.setIntakeProgress(progress);
+    public void setIntakeProgress(IntakeProgress progress){
+        this.removeView(this.intakeProgress);
+        this.intakeProgress = progress;
+        this.addView(progress);
     }
 }

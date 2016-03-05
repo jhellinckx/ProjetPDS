@@ -1,12 +1,12 @@
-package com.pds.app.caloriecounter;
+package com.pds.app.caloriecounter.utils;
 
 import android.content.Context;
 import android.util.TypedValue;
 
 /**
- * Created by jhellinckx on 04/03/16.
+ * Created by jhellinckx on 05/03/16.
  */
-public class Utils {
+public class Converter {
     public static int dp(Context context, int dp){
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
