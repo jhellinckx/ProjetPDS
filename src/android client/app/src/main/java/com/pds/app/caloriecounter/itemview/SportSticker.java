@@ -51,6 +51,11 @@ public class SportSticker extends CardView {
             if(oldw == 0) {
                 Log.d("CALLING INIT ACTIONS :", Integer.toString(oldw) + " -> " + Integer.toString(w));
                 card.initActions(w, h);
+                post(new Runnable() {
+                    public void run() {
+                        requestLayout();
+                    }
+                });
             }
         }
     }
@@ -144,19 +149,23 @@ public class SportSticker extends CardView {
         LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         iconsLayout.setLayoutParams(iconsLayoutParams);
         cardLayout.addView(iconsLayout);
-
     }
 
     private void initActions(int w, int h){
-        if(iconsLayout != null) return;
+        if(iconsLayout != null) {
+            Log.d("INIT ACTIONS","ICONS LAYOUT NOT NULL !!");
+            return;
+        }
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
-        if(removable || addable) {
+        if(removable || addable){
             initIconsLayout(w);
             List<View> icons = new ArrayList<>();
             icons.add((removable) ? initClearAction() : initEmptyAction());
             icons.add((addable) ? initAddAction() : initEmptyAction());
+            icons.add(initEmptyAction());
             distributeSpace(icons, iconsLayout);
+
         }
     }
 

@@ -41,6 +41,11 @@ public class EdibleItemSticker extends CardView {
             if(oldw == 0) {
                 Log.d("CALLING INIT ACTIONS :", Integer.toString(oldw) + " -> " + Integer.toString(w));
                 card.initActions(w, h);
+                post(new Runnable() {
+                    public void run() {
+                        requestLayout();
+                    }
+                });
             }
         }
     }

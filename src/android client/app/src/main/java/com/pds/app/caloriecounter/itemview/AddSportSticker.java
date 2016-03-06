@@ -49,6 +49,11 @@ public class AddSportSticker extends CardView {
             if(oldw == 0) {
                 Log.d("CALLING INIT ACTIONS :", Integer.toString(oldw) + " -> " + Integer.toString(w));
                 card.initActions(w, h);
+                post(new Runnable() {
+                    public void run() {
+                        requestLayout();
+                    }
+                });
             }
         }
     }
@@ -176,6 +181,7 @@ public class AddSportSticker extends CardView {
             List<View> icons = new ArrayList<>();
             icons.add((removable) ? initClearAction() : initEmptyAction());
             icons.add((addable) ? initAddAction() : initEmptyAction());
+            icons.add(initEmptyAction());
             distributeSpace(icons, iconsLayout);
         }
     }
