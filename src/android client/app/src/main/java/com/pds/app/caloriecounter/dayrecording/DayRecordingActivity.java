@@ -21,6 +21,7 @@ import com.pds.app.caloriecounter.utils.EvenSpaceView;
 import com.shehabic.droppy.DroppyClickCallbackInterface;
 import com.shehabic.droppy.DroppyMenuItem;
 import com.shehabic.droppy.DroppyMenuPopup;
+import com.shehabic.droppy.animations.DroppyFadeInAnimation;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -118,7 +119,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         CircularButton openDropdown = new CircularButton(this);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
-        //buttonParams.setMargins(NOT_ICON_MARGIN, NOT_ICON_MARGIN, Converter.dp2px(7), NOT_ICON_MARGIN + Converter.dp2px(10));
         buttonParams.gravity = Gravity.RIGHT;
         openDropdown.setLayoutParams(buttonParams);
         openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
@@ -131,25 +131,34 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         stickersLayout.addView(foodsContainer);
 
-        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(DayRecordingActivity.this, openDropdown);
+        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(this, openDropdown);
+        droppyBuilder.fromMenu(R.menu.foodslist_dropdown_add)
+                .setOnClick(new DroppyClickCallbackInterface() {
+                    @Override
+                    public void call(View v, int id) {
+                        String menuId = getResources().getResourceName(id).split("/")[1];
+                        Log.d("MENU : ",menuId);
+                        if(menuId.equals("addfood_scan"))
+                            onAddScan();
+                        else if(menuId.equals("addfood_article"))
+                            onAddArticle();
+                        else if(menuId.equals("addfood_receipt"))
+                            onAddReceipt();
 
-        droppyBuilder.addMenuItem(new DroppyMenuItem("test1"))
-                .addSeparator()
-                .addMenuItem(new DroppyMenuItem("test2"))
-                .addSeparator()
-                .addMenuItem(new DroppyMenuItem("test3"));
-        droppyBuilder.setOnClick(new DroppyClickCallbackInterface() {
-            @Override
-            public void call(View v, int id) {
-                Log.d("Clicked on ", String.valueOf(id));
-            }
-        });
-
-        DroppyMenuPopup droppyMenu = droppyBuilder.build();
+                    }
+                })
+                .setPopupAnimation(new DroppyFadeInAnimation())
+                .setXOffset(5)
+                .setYOffset(5)
+                .build();
     }
 
     private void initSportsRecording(){
-        //TODO
+        //TODO fill layout
+        LinearLayout sportsLayout = new LinearLayout(this);
+        DailyRecording sportsContainer = new DailyRecording(this, TITLE_SPORTS, sportsLayout);
+        stickersLayout.addView(sportsContainer);
+
     }
 
     public void setintakesProgress(){
@@ -173,6 +182,18 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 }
             }
         }
+    }
+
+    public void onAddScan(){
+        Log.d("CLICK : "," SCAN");
+    }
+
+    public void onAddArticle(){
+        Log.d("CLICK : "," ARTICLE");
+    }
+
+    public void onAddReceipt(){
+        Log.d("CLICK : "," RECEIPT");
     }
 
     @Override

@@ -16,6 +16,10 @@
         <item name="colorControlHighlight">@color/gray</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
+        <item name="droppyPopupStyle">@style/AppThemeCC.DroppyMenu</item>
+        <item name="droppyMenuItemStyle">@style/AppThemeCC.DroppyMenuItem</item>
+        <item name="droppyMenuItemTitleStyle">@style/AppThemeCC.DroppyMenuItemTitle</item>
+        <item name="droppyMenuItemIconStyle">@style/AppThemeCC.DroppyMenuItemIcon</item>
     </style>
 
 
@@ -61,6 +65,20 @@
         <item name="colorControlNormal">@color/red</item>
         <item name="colorControlActivated">@color/yellow</item>
         <item name="colorControlHighlight">@color/blue</item>
+    </style>
+
+    <style name="AppThemeCC.DroppyPopup" parent="Droppy.DroppyPopup">
+    </style>
+    <style name="AppThemeCC.DroppyMenu" parent="Droppy.DroppyMenu">
+    </style>
+    <style name="AppThemeCC.DroppyMenuSeparator" parent="Droppy.DroppyMenuSeparator">
+    </style>
+    <style name="AppThemeCC.DroppyMenuItem" parent="Droppy.DroppyMenuItem">
+        <item name="color">@color/black</item>
+    </style>
+    <style name="AppThemeCC.DroppyMenuItemTitle" parent="Droppy.DroppyMenuItemTitle">
+    </style>
+    <style name="AppThemeCC.DroppyMenuItemIcon" parent="Droppy.DroppyMenuItemIcon">
     </style>
 
 </resources>

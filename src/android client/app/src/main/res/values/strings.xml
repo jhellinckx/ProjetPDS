@@ -11,6 +11,10 @@
     <string name="man">Man</string>
     <string name="woman">Woman</string>
 
+    <string name="scanFoodDropMenu">Scanner un article</string>
+    <string name="seekFoodDropMenu">Recommandations d\'articles</string>
+    <string name="receiptRecomfoodDropMenu">Recommandations de recettes</string>
+
 
     <string name="username">User Name</string>
 

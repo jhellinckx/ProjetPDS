@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".dayrecording.DayRecordingActivity">
+    <group android:enabled="true">
+        <item
+            android:id="@+id/addfood_scan"
+            android:title="@string/scanFoodDropMenu"
+            android:icon="@drawable/ic_camera_alt_black_18dp"
+            />
+
+        <item
+            android:id="@+id/addfood_article"
+            android:title="@string/seekFoodDropMenu"
+            android:icon="@drawable/ic_shopping_cart_black_18dp"
+            />
+        <item
+            android:id="@+id/addfood_receipt"
+            android:title="@string/receiptRecomfoodDropMenu"
+            android:icon="@drawable/ic_restaurant_black_18dp"
+            />
+    </group>
+</menu>
