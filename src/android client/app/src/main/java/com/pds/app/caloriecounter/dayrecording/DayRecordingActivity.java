@@ -38,6 +38,14 @@ import java.util.Map;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
+import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
+import static org.calorycounter.shared.Constants.network.SPORT_NAME;
+import static org.calorycounter.shared.Constants.network.networkJSON;
 
 public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback, SportActionCallback {
 
@@ -46,7 +54,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private List<EdibleItem> dailyFoods;
     private List<Sport> dailySports;
     private DailyRecording sportsContainer;
-
+    private static List<String> _sportNames = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,13 +168,15 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     private void initSportsRecording(){
-
+        if(_sportNames.size() != SPORTS_LIST_SIZE){
+            send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
+        }
         dailySports = new ArrayList<Sport>();
 
         Sport test = new Sport(1L,"Basket",120,2300f);
 
         dailySports.add(test);
-        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, FLAG_REMOVABLE));
+        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, _sportNames,  FLAG_REMOVABLE));
 
         stickersLayout.addView(sportsContainer);
     }
@@ -255,7 +265,18 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void handleMessage(JSONObject msg){
-
+        Log.d("SPORTFRAG HANDLE MSG", msg.toString());
+        String request = (String) msg.get(REQUEST_TYPE);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if(request.equals(SPORTS_LIST_REQUEST)) {
+            String response = (String) data.get(SPORTS_LIST_RESPONSE);
+            if (response.equals(SPORTS_LIST_SUCCESS)) {
+                Log.d("SPORTS DATA LIST : ", data.toString());
+                for (int i = 0; i < data.size() - 1; ++i) {
+                    _sportNames.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
+                }
+            }
+        }
     }
 
     @Override
@@ -273,7 +294,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         Sport newSport = new Sport(sportName, duration, 1400f);
         dailySports.add(newSport);
         stickersLayout.removeView((sportsContainer));
-        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, FLAG_REMOVABLE));
+        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, _sportNames, FLAG_REMOVABLE));
         stickersLayout.addView(sportsContainer);
         if (newSport.getEnergyConsumed() != null){
             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);

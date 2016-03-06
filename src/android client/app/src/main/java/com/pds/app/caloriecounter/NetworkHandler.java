@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -146,7 +148,8 @@ public class NetworkHandler {
             } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
                 _doDispatch(msg, RatingActivity.class);
             } else if (request.equals(SPORTS_LIST_REQUEST)) {
-                _doDispatch(msg, RecommendationActivity.class);
+                System.out.println("=============== DISPATCH DAY RECORDING ==================");
+                _doDispatch(msg, DayRecordingActivity.class);
             } else if (request.equals(RECOMMEND_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(UPDATE_DATA_REQUEST)) {

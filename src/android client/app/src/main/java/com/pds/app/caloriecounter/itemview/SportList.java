@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import org.calorycounter.shared.models.Sport;
@@ -21,11 +22,11 @@ public class SportList extends LinearLayout {
     private Map<Sport, View> sportViewMap;
     private SportActionCallback actionCallback;
 
-    public SportList(Context context, List<Sport> sports, SportActionCallback actionCallback, int... flags){
+    public SportList(Context context, List<Sport> sports, SportActionCallback actionCallback, List<String> sportNames, int... flags){
         super(context);
         this.actionCallback = actionCallback;
         initLayout();
-        initItems(sports, flags);
+        initItems(sports, sportNames, flags);
     }
 
     private void initLayout(){
@@ -33,7 +34,7 @@ public class SportList extends LinearLayout {
         this.setLayoutParams(params);
         this.setOrientation(LinearLayout.VERTICAL);
     }
-    private void initItems(List<Sport> sports, int... flags){
+    private void initItems(List<Sport> sports, List<String> sportNames, int... flags){
         boolean removable = false; boolean addable = false;
         for(int flag : flags){
             if(flag == FLAG_REMOVABLE) removable = true;
@@ -48,8 +49,7 @@ public class SportList extends LinearLayout {
             this.sportViewMap.put(sport, sticker);
             this.addView(sticker);
         }
-
-        AddSportSticker addSportSticker = new AddSportSticker(getContext(),this,false,true);
+        AddSportSticker addSportSticker = new AddSportSticker(getContext(),this,sportNames,false,true);
         this.sportViewMap.put(new Sport(), addSportSticker);
         this.addView(addSportSticker);
     }

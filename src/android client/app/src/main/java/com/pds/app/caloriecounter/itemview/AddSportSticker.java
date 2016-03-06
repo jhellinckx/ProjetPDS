@@ -65,16 +65,18 @@ public class AddSportSticker extends CardView {
     private AutoCompleteTextView _autoComplete;
     private ArrayAdapter<String> _adapter;
     private EditText secondaryEditText;
+    private static List<String> _sportNames;
     boolean removable; boolean addable;
 
-    public AddSportSticker(Context context, SportList container){
-        this(context, container, false, false);
+    public AddSportSticker(Context context, SportList container, List<String> sportNames){
+        this(context, container, sportNames, false, false);
     }
 
-    public AddSportSticker(Context context, SportList container,
+    public AddSportSticker(Context context, SportList container, List<String> sportNames,
                         boolean removable, boolean addable){
         super(context);
         this.container = container;
+        this._sportNames = sportNames;
         setSport(removable, addable);
     }
 
@@ -116,8 +118,8 @@ public class AddSportSticker extends CardView {
         _autoComplete = new AutoCompleteTextView(getContext());
         LinearLayout.LayoutParams mainTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         _autoComplete.setLayoutParams(mainTextParams);
-        String[] foo = new String[] { "Tennis" };
-        _adapter = new ArrayAdapter<String>(getContext(),android.R.layout.select_dialog_item,foo);
+        //String[] foo = new String[] { "Tennis" };
+        _adapter = new ArrayAdapter<String>(getContext(),android.R.layout.select_dialog_item,_sportNames);
         _autoComplete.setAdapter(_adapter);
         _autoComplete.setTextSize(MAIN_TEXT_SIZE);
         _autoComplete.setTextColor(MAIN_TEXT_COLOR);
