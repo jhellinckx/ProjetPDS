@@ -3,11 +3,8 @@
 
 import sys
 import ast
-import datetime
 import requests
 import requests.exceptions
-import time
-from math import floor
 
 try:
 	import mysql.connector
@@ -26,6 +23,8 @@ RESET = "\033[0m"
 
 db_name = "db_colruyt"
 db_properties_filename = "../../src/main/resources/dao.properties"
+filename = "raw/images_binary_file.txt"
+delimiter = "€£"
 
 def db_params():
 	username = None
@@ -117,6 +116,14 @@ def getAllImagesFromUrl(image_urls):
 		
 	return images
 
+def getAllImagesFromFile():
+	images = []
+	print("Getting images from file ...")
+	with open(filename, 'rb') as f:
+		images = f.read().split(delimiter)
+		images = images[:len(images)-1]
+	return images
+
 def updateDb(images, image_urls):
 	updateImageColumnCommand = (
 		"UPDATE `Food`"
@@ -125,6 +132,7 @@ def updateDb(images, image_urls):
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
+	sys.stdout.write("Updating image_blob in DB ...")
 
 	for i in range(len(images)):
 		try:
@@ -139,12 +147,17 @@ def updateDb(images, image_urls):
 
 
 
-def execute():
+def execute(with_file):
+	addOrDeleteColumnToTable(True)
 	addOrDeleteColumnToTable(False)
 	image_urls = selectInfoFromDbColumn()
-	images = getAllImagesFromUrl(image_urls)
+	if with_file:
+		images = getAllImagesFromFile() 
+	else: 
+		images = getAllImagesFromUrl(image_urls)
+	
 	updateDb(images, image_urls)
 
 
 if __name__ == "__main__":
-	execute()
+	execute(True)

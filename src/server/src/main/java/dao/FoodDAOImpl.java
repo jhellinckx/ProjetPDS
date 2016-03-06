@@ -11,6 +11,10 @@ import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.InputStream;
+import java.awt.*;
+import javax.swing.*;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 
 import org.calorycounter.shared.models.Food;
 
@@ -21,7 +25,7 @@ public class FoodDAOImpl implements FoodDAO {
 	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE id_food = ?";
     private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE image_url = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food";
-    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, quantity, code, product_name, image_url,image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? ORDER BY energy_100g DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? ORDER BY energy_100g DESC";
     private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? AND categories LIKE ? ORDER BY energy_100g DESC";
     private static final String SQL_SELECT_ALL_BY_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, image_blob, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where categories like ?";
 
@@ -193,9 +197,19 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSugars(resultSet.getFloat( "sugars_100g" )  );
         food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
-        Blob blob = resultSet.getBlob( "image_blob ");
-        food.setImageStream(blob.getBinaryStream());
-
+        Blob blob = resultSet.getBlob( "image_blob");
+        //food.setImageStream(blob.getBinaryStream());
+        try{
+            Image image = ImageIO.read(blob.getBinaryStream());
+            JFrame frame = new JFrame();
+            JLabel label = new JLabel();
+            label.setIcon(new ImageIcon(image));
+            frame.getContentPane().add(label, BorderLayout.CENTER);
+            frame.pack();
+            frame.setVisible(true);
+        } catch (IOException e){
+            System.err.println(e.getMessage());
+        }
         return food;
     }
 }
