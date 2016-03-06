@@ -1,24 +1,24 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.calorycounter.shared.models.EdibleItem;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 
 /**
  * Created by jhellinckx on 05/03/16.
  */
 public class EdibleItemsList extends LinearLayout {
-    private List<EdibleItem> items;
+    private Map<EdibleItem, View> itemViewMap;
 
     public EdibleItemsList(Context context, List<EdibleItem> items, int... flags){
         super(context);
@@ -41,12 +41,18 @@ public class EdibleItemsList extends LinearLayout {
             else if(flag == FLAG_RATABLE) ratable = true;
             else if(flag == FLAG_EXPANDABLE) expandable = true;
         }
-        this.items = new ArrayList<>(items);
+        this.itemViewMap = new LinkedHashMap<>(items.size(), MAP_LOAD_FACTOR);
+
         for(EdibleItem item : items){
-            this.addView(new EdibleItemSticker(getContext(), item, removable, addable, ratable, expandable));
+            View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable);
+            this.itemViewMap.put(item, sticker);
+            this.addView(sticker);
         }
+    }
 
-
+    public void onRemoveItem(EdibleItem item){
+        this.removeView(itemViewMap.get(item));
+        itemViewMap.remove(item);
     }
 
 }

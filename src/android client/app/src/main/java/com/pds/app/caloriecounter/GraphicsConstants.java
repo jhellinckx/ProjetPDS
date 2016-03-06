@@ -27,6 +27,8 @@ public final class GraphicsConstants {
         public static final String TITLE_FAT = "Lipides";
         public static final String CALORIES_UNIT = "kcal";
         public static final String DEFAULT_UNIT = "g";
+
+        public static final float MAP_LOAD_FACTOR = 0.75f;
     }
 
     public static final class Progress {

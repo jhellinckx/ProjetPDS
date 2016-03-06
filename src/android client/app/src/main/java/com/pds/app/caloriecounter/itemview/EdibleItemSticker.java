@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,17 +47,20 @@ public class EdibleItemSticker extends CardView {
     private LinearLayout textLayout;
     private LinearLayout itemInfosLayout;
     private LinearLayout iconsLayout;
+    private EdibleItemsList container;
     boolean removable; boolean addable;
     boolean ratable; boolean expandable;
 
 
-    public EdibleItemSticker(Context context, EdibleItem item){
-        this(context, item, false, false, false, false);
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemsList container){
+        this(context, item, container, false, false, false, false);
     }
 
-    public EdibleItemSticker(Context context, EdibleItem item, boolean removable,
-                             boolean addable, boolean ratable, boolean expandable){
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemsList container,
+                             boolean removable, boolean addable,
+                             boolean ratable, boolean expandable){
         super(context);
+        this.container = container;
         setEdibleItem(item, removable, addable, ratable, expandable);
     }
 
@@ -138,38 +142,61 @@ public class EdibleItemSticker extends CardView {
         itemInfosLayout.addView(textLayout);
     }
 
+    private void initIconsLayout(int w){
+        itemInfosLayout.getLayoutParams().width = w - ICON_SIZE; // Crucial - makes space on the card for the icon layout
+        iconsLayout = new LinearLayout(getContext());
+        iconsLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        iconsLayout.setLayoutParams(iconsLayoutParams);
+        cardLayout.addView(iconsLayout);
+
+    }
+
     private void initActions(int w, int h){
         if(iconsLayout != null) return;
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
         if(removable || addable || expandable || ratable){
-            LinearLayout.LayoutParams newItemInfosLayoutParams = new LinearLayout.LayoutParams(w - ICON_SIZE, LinearLayout.LayoutParams.WRAP_CONTENT);
-            newItemInfosLayoutParams.setMargins(NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN, NOT_ICON_MARGIN);
-            itemInfosLayout.setLayoutParams(newItemInfosLayoutParams);
-
-            iconsLayout = new LinearLayout(getContext());
-            iconsLayout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            iconsLayout.setLayoutParams(iconsLayoutParams);
-            cardLayout.addView(iconsLayout);
-
+            initIconsLayout(w);
         }
         if(removable){
-            ImageView clearIcon = new ImageView(getContext());
-            clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
-            clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
-            clearIcon.setScaleType(ImageView.ScaleType.FIT_END);
-            iconsLayout.addView(clearIcon);
+            initClearAction();
         }
         if(addable){
-
+            initAddAction();
         }
         if(expandable){
-
+            initExpandableAction();
         }
         if(ratable){
-
+            initRateAction();
         }
+    }
+
+    private void initClearAction(){
+        ImageView clearIcon = new ImageView(getContext());
+        clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
+        clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        clearIcon.setScaleType(ImageView.ScaleType.FIT_END);
+        iconsLayout.addView(clearIcon);
+        clearIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.onRemoveItem(item);
+            }
+        });
+    }
+
+    private void initAddAction(){
+
+    }
+
+    private void initExpandableAction(){
+
+    }
+
+    private void initRateAction(){
+
     }
 
     private String getNutrInfos(){

@@ -74,16 +74,19 @@ public class DayRecordingActivity extends MenuNavigableActivity {
         item1.setTotalCarbohydrates(119.4f);
         item1.setTotalEnergy(8100f);
         item1.setTotalProteins(31f);
+        item1.setId(1000L);
 
         EdibleItem item2 = new Food();
         item2.setProductName("Kellogg's Frosties 600g");
         item2.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/14/17/asset-741417.jpg");
+        item2.setId(1001L);
 
         EdibleItem item3 = new Food();
         item3.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/69/05/asset-396905.jpg");
         item3.setProductName("Aoste Stickado - Classique XL");
         item3.setTotalProteins(5f);
         item3.setTotalEnergy(1000f);
+        item3.setId(1002L);
 
         EdibleItem[] itemsArray = {item1, item2, item3};
         List<EdibleItem> items = Arrays.asList(itemsArray);
