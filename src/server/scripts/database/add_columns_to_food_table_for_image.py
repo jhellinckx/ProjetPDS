@@ -99,7 +99,7 @@ def selectInfoFromDbColumn():
 
 def getAllImagesFromUrl(image_urls):
 	images = []
-	print("Downloading images (takes overs 25 min for db_colruyt).. ")
+	print "Downloading images (takes overs 25 min for db_colruyt).. "
 	string = "Images Downloaded: {0}"
 	count = 0
 	s = requests.Session()				# http-presistent requests.
@@ -118,7 +118,7 @@ def getAllImagesFromUrl(image_urls):
 
 def getAllImagesFromFile():
 	images = []
-	print("Getting images from file ...")
+	print "Getting images from file ..."
 	with open(filename, 'rb') as f:
 		images = f.read().split(delimiter)
 		images = images[:len(images)-1]
