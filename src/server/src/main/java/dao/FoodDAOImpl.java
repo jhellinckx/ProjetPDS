@@ -191,7 +191,6 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSugars(resultSet.getFloat( "sugars_100g" )  );
         food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
-
         return food;
     }
 }
