@@ -22,6 +22,7 @@ RESET = "\033[0m"
 db_name = "db_colruyt"
 db_properties_filename = "../../src/main/resources/dao.properties"
 filename = "raw/images_binary_file.txt"
+delimiter = "€£"
 
 def db_params():
 	username = None
@@ -50,7 +51,8 @@ def selectImagesFromDb():
 	try:
 		cursor.execute(selectInfoFromFoodCommand)
 		for image_blob in cursor:
-			images.append(image_blob[0])
+			if (image_blob[0] != None):
+				images.append(image_blob[0])
 		sys.stdout.write("All images fetched !\n")
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
@@ -61,7 +63,8 @@ def selectImagesFromDb():
 def writeImagesToFile(images):
 	with open(filename, 'wb') as f:
 		for image in images:
-			f.write(image)
+			f.write(image + delimiter)
+
 
 def execute():
 	images = selectImagesFromDb()

@@ -4,6 +4,7 @@ import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.Constants;
 import org.json.simple.JSONObject;
 import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
 
 
 public abstract class EdibleItem implements JSONSerializable{
@@ -11,6 +12,7 @@ public abstract class EdibleItem implements JSONSerializable{
     protected String    url;
     protected String    productName;
     protected String    image_url;
+    protected InputStream image_stream;
     protected Float    total_energy;
     protected Float    total_fat;
     protected Float    total_proteins;
@@ -46,6 +48,14 @@ public abstract class EdibleItem implements JSONSerializable{
     }
     public void setImageUrl( String image_url ) {
         this.image_url = image_url;
+    }
+
+    public InputStream getImageStream() {
+        return image_stream;
+    }
+
+    public void setImageStream( InputStream image_strm ){
+        this.image_stream = image_strm;
     }
 
     public Float getTotalEnergy() {
