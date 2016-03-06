@@ -111,6 +111,7 @@ public final class Constants {
 		public static final int SPORTS_LIST_SIZE = 45;
 		public static final String CHOSEN_SPORT_REQUEST = "r_chosensport";
 		public static final String SPORT_DURATION = "d_sportduration";
+		public static final String SPORT_ENERGY_CONSUMED = "d_sportenergyconsumed";
 
 		/* Personal Data */
 		public static final String UPDATE_DATA_REQUEST = "r_updatedata";
