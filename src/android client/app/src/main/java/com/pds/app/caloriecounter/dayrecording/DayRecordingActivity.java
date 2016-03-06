@@ -87,7 +87,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         EdibleItem[] itemsArray = {item1, item2, item3};
         List<EdibleItem> items = Arrays.asList(itemsArray);
-        foodsContainer = new RecordingContainer(this, TITLE_FOODS, new EdibleItemList(this, items, this, FLAG_REMOVABLE, FLAG_ADDABLE));
+        foodsContainer = new RecordingContainer(this, TITLE_FOODS, new EdibleItemList(this, items, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
         stickersLayout.addView(foodsContainer);
     }
 

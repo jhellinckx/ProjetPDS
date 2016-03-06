@@ -66,7 +66,7 @@ public class EdibleItemList extends LinearLayout {
     }
 
     public void onExpandItem(EdibleItem item){
-
+        actionCallback.onExpandEdibleItem(item);
     }
 
 }

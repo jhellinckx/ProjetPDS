@@ -100,6 +100,9 @@ public final class GraphicsConstants {
         public static final int SECONDARY_TEXT_COLOR = Color.LTGRAY;
         public static final int SECONDARY_TEXT_MAX_LINES = 2;
         public static final int ICON_SIZE = Converter.dp2px(20);
+        public static final int DELETE_ICON = R.drawable.ic_clear_grey_600_18dp;
+        public static final int ADD_ICON = R.drawable.ic_add_green_700_18dp;
+        public static final int RATE_ICON = R.drawable.ic_star_rate_amber_a200_18dp;
     }
 
     public static final class ItemList{

@@ -191,7 +191,7 @@ public class EdibleItemSticker extends CardView {
     private View initClearAction(){
         ImageView clearIcon = new ImageView(getContext());
         clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
-        clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        clearIcon.setImageResource(DELETE_ICON);
         clearIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,7 +204,7 @@ public class EdibleItemSticker extends CardView {
     private View initAddAction(){
         ImageView addIcon = new ImageView(getContext());
         addIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
-        addIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        addIcon.setImageResource(ADD_ICON);
         addIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,12 +215,18 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initExpandableAction(){
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.onExpandItem(item);
+            }
+        });
     }
 
     private View initRateAction(){
         ImageView rateIcon = new ImageView(getContext());
         rateIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
-        rateIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        rateIcon.setImageResource(RATE_ICON);
         rateIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
