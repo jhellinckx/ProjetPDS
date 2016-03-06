@@ -1,15 +1,12 @@
 package com.pds.app.caloriecounter.dayrecording;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
-import com.pds.app.caloriecounter.itemview.EdibleItemSticker;
-import com.pds.app.caloriecounter.itemview.EdibleItemsList;
+import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
+import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
 
 import org.calorycounter.shared.models.EdibleItem;
@@ -24,7 +21,7 @@ import java.util.Map;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 
-public class DayRecordingActivity extends MenuNavigableActivity {
+public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
 
     private LinearLayout stickersLayout;
     private Map<String, IntakeProgress> dailyIntakes;
@@ -90,15 +87,27 @@ public class DayRecordingActivity extends MenuNavigableActivity {
 
         EdibleItem[] itemsArray = {item1, item2, item3};
         List<EdibleItem> items = Arrays.asList(itemsArray);
-        foodsContainer = new RecordingContainer(this, TITLE_FOODS, new EdibleItemsList(this, items, FLAG_REMOVABLE));
+        foodsContainer = new RecordingContainer(this, TITLE_FOODS, new EdibleItemList(this, items, this, FLAG_REMOVABLE, FLAG_ADDABLE));
         stickersLayout.addView(foodsContainer);
     }
 
-    public void requestDailyFoods(){
+    @Override
+    public void onRemoveEdibleItem(EdibleItem item){
 
     }
 
-    public void onRemoveEdibleItem(EdibleItem item){
+    @Override
+    public void onAddEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onRateEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onExpandEdibleItem(EdibleItem item){
 
     }
 

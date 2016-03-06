@@ -1,7 +1,6 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
@@ -14,9 +13,13 @@ import android.widget.TextView;
 
 import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.utils.Converter;
+import com.pds.app.caloriecounter.utils.EvenSpaceView;
 import com.squareup.picasso.Picasso;
 
 import org.calorycounter.shared.models.EdibleItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
@@ -47,16 +50,16 @@ public class EdibleItemSticker extends CardView {
     private LinearLayout textLayout;
     private LinearLayout itemInfosLayout;
     private LinearLayout iconsLayout;
-    private EdibleItemsList container;
+    private EdibleItemList container;
     boolean removable; boolean addable;
     boolean ratable; boolean expandable;
 
 
-    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemsList container){
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container){
         this(context, item, container, false, false, false, false);
     }
 
-    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemsList container,
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container,
                              boolean removable, boolean addable,
                              boolean ratable, boolean expandable){
         super(context);
@@ -156,47 +159,75 @@ public class EdibleItemSticker extends CardView {
         if(iconsLayout != null) return;
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
-        if(removable || addable || expandable || ratable){
+        if(removable || addable || expandable || ratable) {
             initIconsLayout(w);
-        }
-        if(removable){
-            initClearAction();
-        }
-        if(addable){
-            initAddAction();
-        }
-        if(expandable){
-            initExpandableAction();
-        }
-        if(ratable){
-            initRateAction();
+            List<View> icons = new ArrayList<>();
+            icons.add((removable) ? initClearAction() : initEmptyAction());
+            icons.add((addable) ? initAddAction() : initEmptyAction());
+            icons.add((ratable) ? initRateAction() : initEmptyAction());
+            if (expandable) {
+                initExpandableAction();
+            }
+            distributeSpace(icons, iconsLayout);
         }
     }
 
-    private void initClearAction(){
+    private View initEmptyAction(){
+        View emptyView = new View(getContext());
+        emptyView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
+        return emptyView;
+    }
+
+    private void distributeSpace(List<View> views, LinearLayout parent){
+        if(!views.isEmpty()) {
+            for(int i = 0; i < views.size(); ++i) {
+                parent.addView(views.get(i));
+                if(i != views.size() - 1)
+                    parent.addView(new EvenSpaceView(getContext()));
+            }
+        }
+    }
+
+    private View initClearAction(){
         ImageView clearIcon = new ImageView(getContext());
         clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
         clearIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
-        clearIcon.setScaleType(ImageView.ScaleType.FIT_END);
-        iconsLayout.addView(clearIcon);
         clearIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 container.onRemoveItem(item);
             }
         });
+        return clearIcon;
     }
 
-    private void initAddAction(){
-
+    private View initAddAction(){
+        ImageView addIcon = new ImageView(getContext());
+        addIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
+        addIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        addIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.onAddItem(item);
+            }
+        });
+        return addIcon;
     }
 
     private void initExpandableAction(){
-
     }
 
-    private void initRateAction(){
-
+    private View initRateAction(){
+        ImageView rateIcon = new ImageView(getContext());
+        rateIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
+        rateIcon.setImageResource(R.drawable.ic_clear_grey_600_18dp);
+        rateIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.onRateItem(item);
+            }
+        });
+        return rateIcon;
     }
 
     private String getNutrInfos(){
