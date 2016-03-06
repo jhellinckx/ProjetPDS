@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
+
 import org.json.simple.JSONObject;
 
 import static org.calorycounter.shared.Constants.network.*;
@@ -30,6 +32,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     private static int _height = -1;
     private static float _weight = -1F;
     private static int id = 0;
+    private static int _energy = 0;
 
     private void initButton() {
 
@@ -48,9 +51,9 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
                 sendData((String) agebracket.getSelectedItem(), weight.getText().toString());
 
-                Intent homeActivity = new Intent(PersonalDataActivity.this,RecommendationActivity.class);
+                Intent dayRecordingActivity = new Intent(PersonalDataActivity.this,DayRecordingActivity.class);
 
-                startActivity(homeActivity);
+                startActivity(dayRecordingActivity);
             }
 
         });
@@ -90,7 +93,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 Toast toast = Toast.makeText(getBaseContext(), m, Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.setGravity(Gravity.BOTTOM, 0, 170);
                 toast.show();
             }
         });
@@ -147,7 +150,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         text.setText(Integer.toString(progress));
     }
 
-    private SeekBar updateSeekBarAndText(SeekBar bar){
+    private SeekBar updateSeekBarAndText(){
         EditText text = null;
         seekBarText = (EditText) v.findViewById(R.id.constraints_cal);
         bar = (SeekBar) v.findViewById(R.id.bar_cal);
@@ -177,7 +180,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
                 break;
 
         }
-        return (int) ((max_energy/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY);
+        return (int) ((max_energy/CAL_TO_JOULE_FACTOR));
 
     }
 
@@ -196,7 +199,8 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
         initSpinner();
         initButton();
-        addSeekBarListener(updateSeekBarAndText((SeekBar) v.findViewById(R.id.bar_cal)), seekBarText);
+        bar = (SeekBar) v.findViewById(R.id.bar_cal);
+        addSeekBarListener(updateSeekBarAndText(), seekBarText);
 
     }
 

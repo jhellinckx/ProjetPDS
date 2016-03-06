@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">Calorie Counter</string>
     <string name="id"><u>Identifiant</u></string>
-    <string name="age">Age Bracket: </string>
-    <string name="weight">Weight (in kg): </string>
-    <string name="height">Height (in cm): </string>
+    <string name="age">Catégorie d\'âge: </string>
+    <string name="weight">Poids (en kg): </string>
+    <string name="height">Taille (en cm): </string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="validation">Validate</string>
-    <string name="kid">Kid</string>
-    <string name="teen">Teen</string>
-    <string name="man">Man</string>
-    <string name="woman">Woman</string>
+    <string name="kid">Enfant</string>
+    <string name="teen">Adolescent</string>
+    <string name="man">Homme</string>
+    <string name="woman">Femme</string>
 
     <string name="scanFoodDropMenu">Scanner un article</string>
     <string name="seekFoodDropMenu">Recommandations d\'articles</string>
@@ -50,6 +50,7 @@
     <string name="cancel">Cancel</string>
     <string name="product_name">Product name</string>
     <string name="cal">Energy (kcal)</string>
+    <string name="cal2">Calories pour aujourd\'hui (kcal)</string>
     <string name="quantity">Quantity</string>
     <string name="fat">Fat (g)</string>
     <string name="insatfat">Insaturated Fat (g)</string>
