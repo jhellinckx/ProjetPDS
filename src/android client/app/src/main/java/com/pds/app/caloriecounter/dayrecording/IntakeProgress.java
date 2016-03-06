@@ -59,7 +59,7 @@ public class IntakeProgress extends DonutProgress {
     public void setIntakeMax(float max){
         if(max > 0) {
             intakeMax = max;
-            setProgress(floatProgressToDonutScale());
+            setIntakeProgress(this.intakeProgress);
             this.setInnerBottomText("/" + Converter.floatToString(intakeMax));
         }
     }
