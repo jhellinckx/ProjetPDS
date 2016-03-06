@@ -34,7 +34,6 @@ public class HistoryActivity extends MenuNavigableActivity {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_history,frameLayout);
         addFoodButton = (Button) v.findViewById(R.id.scan);
-
         addFoodButton.setOnClickListener(new View.OnClickListener() {
 
             @Override

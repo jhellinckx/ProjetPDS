@@ -22,7 +22,7 @@ public class KnowledgeBasedFilter {
 	private float saturatedFatNeeded;
 	private float carbohydratesNeeded;
 	private float sugarsNeeded;
-	private float sodiumNeeded;
+	private float saltNeeded;
 
 	public KnowledgeBasedFilter(FoodDAO fDAO) {
 
@@ -51,19 +51,19 @@ public class KnowledgeBasedFilter {
 				saturatedFatNeeded = saturatedFatNeeded - aliment.getTotalSaturatedFat();
 				carbohydratesNeeded = carbohydratesNeeded - aliment.getTotalCarbohydrates();
 				sugarsNeeded = sugarsNeeded - aliment.getTotalSugars();
-				sodiumNeeded = sodiumNeeded - aliment.getTotalSodium();
+				saltNeeded = saltNeeded - aliment.getTotalSalt();
 			}
 		}
 	}
 
-	private ArrayList<Food> recommendMethod(List<Food> previousAliments) {
+	private ArrayList<Food> recommendMethod(List<Food> previousAliments, String category) {
 		previousEatenAliments(previousAliments);
-		ArrayList<Food> results = new ArrayList<Food>(foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, sodiumNeeded));
+		ArrayList<Food> results = new ArrayList<Food>(foodDAO.findFoodWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, saturatedFatNeeded, carbohydratesNeeded, sugarsNeeded, saltNeeded, category));
 		return results;
 	}
 
 
-	public ArrayList<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn) {
+	public ArrayList<Food> recommend(List<Food> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn, String category) {
 
 		energyNeeded = energySupBorn;
 		fatNeeded = fatSupBorn;
@@ -71,7 +71,7 @@ public class KnowledgeBasedFilter {
 		saturatedFatNeeded = HUMAN_DAILY_SATURATED_FAT;
 		carbohydratesNeeded = carbohydratesSupBorn;
 		sugarsNeeded = HUMAN_DAILY_SUGARS;
-		sodiumNeeded = HUMAN_DAILY_SODIUM;
-		return recommendMethod(previousAliments);
+		saltNeeded = HUMAN_DAILY_SODIUM;
+		return recommendMethod(previousAliments,category);
 	}
 }

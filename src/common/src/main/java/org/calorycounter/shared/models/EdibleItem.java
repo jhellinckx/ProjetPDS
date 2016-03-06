@@ -17,7 +17,7 @@ public abstract class EdibleItem implements JSONSerializable{
     protected Float    total_saturated_fat;
     protected Float    total_carbohydrates;
     protected Float    total_sugars;
-    protected Float    total_sodium;
+    protected Float    total_salt;
     protected String   quantity;
     
     public Long getId() {
@@ -90,11 +90,11 @@ public abstract class EdibleItem implements JSONSerializable{
         this.total_sugars = total_su;
     }
 
-    public Float getTotalSodium() {
-        return total_sodium;
+    public Float getTotalSalt() {
+        return total_salt;
     }
-    public void setTotalSodium( Float total_so ) {
-        this.total_sodium = total_so;
+    public void setTotalSalt( Float total_so ) {
+        this.total_salt = total_so;
     }
 
     public String getQuantity(){
@@ -123,7 +123,7 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SATURATED_FAT, total_saturated_fat);
         repr.put(FOOD_TOTAL_CARBOHYDRATES, total_carbohydrates);
         repr.put(FOOD_TOTAL_SUGARS, total_sugars);
-        repr.put(FOOD_TOTAL_SODIUM, total_sodium);
+        repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
         return repr;
     }
@@ -140,7 +140,7 @@ public abstract class EdibleItem implements JSONSerializable{
         this.total_saturated_fat = (Float) obj.get(FOOD_TOTAL_SATURATED_FAT);
         this.total_carbohydrates = (Float) obj.get(FOOD_TOTAL_CARBOHYDRATES);
         this.total_sugars = (Float) obj.get(FOOD_TOTAL_SUGARS);
-        this.total_sodium = (Float) obj.get(FOOD_TOTAL_SODIUM);
+        this.total_salt = (Float) obj.get(FOOD_TOTAL_SODIUM);
         this.quantity = (String) obj.get(FOOD_QUANTITY);
     }
 }

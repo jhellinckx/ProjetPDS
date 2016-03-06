@@ -7,6 +7,7 @@ import java.util.Map;
 import java.net.Socket;
 
 import org.json.simple.parser.JSONParser;
+import org.calorycounter.shared.models.User;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -130,4 +131,6 @@ public abstract class AbstractNIOServer{
 		this._controller.wakeupIn();
 		this._controller.stopStreams();
 	}
+
+	public abstract User getUser(Message msg);
 }

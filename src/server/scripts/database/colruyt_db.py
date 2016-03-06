@@ -199,9 +199,14 @@ def insert_items_in_food():
 			article = ast.literal_eval(line.rstrip("\n"))
 			for key in article:
 				if isinstance(article[key], list):
-					article[key] = str(article[key])[1:-1] # Get rid of [ and ] of list string
 					if len(article[key]) == 0:
 						article[key] = None
+					else:
+						listString = ""
+						for item in article[key]:
+							listString += item + ", "
+						listString = listString[:-2]
+						article[key] = listString
 				elif article[key] != None and (key == BaseArticle.PRICE_KG_KEY or key == BaseArticle.PRICE_UNIT_KEY) :
 					article[key] = float(article[key].replace(',','.'))
 				elif article[key] != None and key in RDAs:
@@ -223,6 +228,7 @@ def create_user_table():
 	username VARCHAR(60) NOT NULL,\
 	gender VARCHAR(1) NOT NULL,\
 	weight FLOAT,\
+	password VARCHAR(255) NOT NULL,\
 	UNIQUE(username),\
 	PRIMARY KEY(id_user)\
 	) ENGINE=INNODB;"

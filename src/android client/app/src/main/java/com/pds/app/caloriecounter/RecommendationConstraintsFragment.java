@@ -6,9 +6,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
+
+import java.util.ArrayList;
+
 import static org.calorycounter.shared.Constants.network.*;
 
 /**
@@ -20,13 +29,24 @@ public class RecommendationConstraintsFragment extends Fragment {
     private EditText _fat;
     private EditText _prot;
     private EditText _carbo;
+    private RadioButton _recipe;
+    private RadioGroup _radioGroup;
+    private AutoCompleteTextView _autoComplete;
+    private ArrayAdapter<String> _adapter;
+    private ArrayList<String> _foodCategories;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_constraints_step, container, false);
+        Bundle b = this.getArguments();
+        _foodCategories=b.getStringArrayList("foodCategories");
+        initAutoComplete(view);
+        initRadioButtons(view);
         initEditTexts(view);
         addListenersToSeekBars(view);
+
+
 
         Button next = (Button) view.findViewById(R.id.constraints_res);
         next.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +88,30 @@ public class RecommendationConstraintsFragment extends Fragment {
         _prot = (EditText) v.findViewById(R.id.constraints_prot);
         _carbo = (EditText) v.findViewById(R.id.constraints_carbo);
 
+    }
+
+    private void initRadioButtons(View v){
+        _radioGroup = (RadioGroup) v.findViewById(R.id.radio_group);
+        _recipe = (RadioButton) v.findViewById(R.id.recipeButton);
+        _radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == _recipe.getId()) {
+                    _autoComplete.setVisibility(View.GONE);
+                }else{
+                    _autoComplete.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void initAutoComplete(View v){
+        _autoComplete = (AutoCompleteTextView) v.findViewById(R.id.autoCompleteTextView);
+        //String[] foo = new String[] { "Vins" };
+        _adapter = new ArrayAdapter<String>(v.getContext(),android.R.layout.select_dialog_item,_foodCategories);
+        _autoComplete.setAdapter(_adapter);
+        _autoComplete.setThreshold(0);
+        _autoComplete.setVisibility(View.GONE);
     }
 
     private int computeMaxEnergy(){
@@ -126,8 +170,17 @@ public class RecommendationConstraintsFragment extends Fragment {
         addListenerToSeekBar(updateSeekBarAndText((SeekBar) v.findViewById(R.id.bar_carbo)), _carbo);
     }
 
+    private String getRadioButtonName(int id){
+        if( id == _recipe.getId()){
+            return "recipe";
+        }
+        else{
+            return "food";
+        }
+    }
+
     public interface OnItemClickListener {
-        public void onResultsClick(String energy, String fat, String prot, String carbo);
+        public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category);
     }
 
     @Override
@@ -146,9 +199,22 @@ public class RecommendationConstraintsFragment extends Fragment {
         listener = null;
     }
 
-    public void getResults(){
+    private boolean checkErrors() {
+        if (_autoComplete.getText().toString().isEmpty()) {
+            _autoComplete.setText("None");
+            return false;
+        } else if (_adapter.getCount() == 0 || _adapter.getPosition(_autoComplete.getText().toString()) == -1) {
+            _autoComplete.setError("Enter a valid category");
+            return true;
+        }
 
-        listener.onResultsClick(_energy.getText().toString(), _fat.getText().toString(),
-                _prot.getText().toString(), _carbo.getText().toString());
+        return false;
+    }
+
+    public void getResults(){
+        if(!checkErrors()) {
+            listener.onResultsClick(_energy.getText().toString(), _fat.getText().toString(),
+                    _prot.getText().toString(), _carbo.getText().toString(), getRadioButtonName(_radioGroup.getCheckedRadioButtonId()),_autoComplete.getText().toString());
+        }
     }
 }
