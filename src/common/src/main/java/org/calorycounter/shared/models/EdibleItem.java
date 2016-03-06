@@ -4,7 +4,6 @@ import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.Constants;
 import org.json.simple.JSONObject;
 import java.io.UnsupportedEncodingException;
-import java.awt.image.BufferedImage;
 
 
 public abstract class EdibleItem implements JSONSerializable{
@@ -12,7 +11,7 @@ public abstract class EdibleItem implements JSONSerializable{
     protected String    url;
     protected String    productName;
     protected String    image_url;
-    protected BufferedImage image_pic;
+    protected EdibleItemImage image_pic;
     protected Float    total_energy;
     protected Float    total_fat;
     protected Float    total_proteins;
@@ -50,11 +49,11 @@ public abstract class EdibleItem implements JSONSerializable{
         this.image_url = image_url;
     }
 
-    public BufferedImage getImagePic() {
+    public EdibleItemImage getImagePic() {
         return image_pic;
     }
 
-    public void setImagePic( BufferedImage img ){
+    public void setImagePic( EdibleItemImage img ){
         this.image_pic = img;
     }
 
@@ -135,6 +134,7 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SUGARS, total_sugars);
         repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
+        repr.put(FOOD_IMAGE, image_pic.toJSON());
         return repr;
     }
 
@@ -152,5 +152,10 @@ public abstract class EdibleItem implements JSONSerializable{
         this.total_sugars = (Float) obj.get(FOOD_TOTAL_SUGARS);
         this.total_salt = (Float) obj.get(FOOD_TOTAL_SODIUM);
         this.quantity = (String) obj.get(FOOD_QUANTITY);
+        JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
+        EdibleItemImage pic = new EdibleItemImage();
+        pic.initFromJSON(img);
+        this.setImagePic(pic);
+
     }
 }
