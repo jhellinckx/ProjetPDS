@@ -2,7 +2,8 @@ package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
 import android.view.ViewGroup;
-import com.pds.app.caloriecounter.progresslib.DonutProgress;
+
+import com.pds.app.caloriecounter.rawlibs.DonutProgress;
 import com.pds.app.caloriecounter.utils.Converter;
 
 import static com.pds.app.caloriecounter.GraphicsConstants.Progress.*;
@@ -51,7 +52,7 @@ public class IntakeProgress extends DonutProgress {
     }
 
     private int floatProgressToDonutScale(){
-        return (int)Math.ceil((intakeProgress / intakeMax)*BAR_PRECISION);
+        return (intakeProgress>intakeMax) ? BAR_PRECISION : (int)Math.ceil((intakeProgress / intakeMax)*BAR_PRECISION);
 
     }
 
@@ -59,6 +60,7 @@ public class IntakeProgress extends DonutProgress {
         if(max > 0) {
             intakeMax = max;
             setProgress(floatProgressToDonutScale());
+            this.setInnerBottomText("/" + Converter.floatToString(intakeMax));
         }
     }
 
@@ -67,14 +69,25 @@ public class IntakeProgress extends DonutProgress {
     }
 
     public void setIntakeProgress(float progress){
-        if(progress > 0) {
-            intakeProgress = progress;
+        if(progress >= 0) {
+            intakeProgress =  Float.parseFloat(String.format("%." + Integer.toString(FLOAT_PRECISION) + "f", progress));
             setProgress(floatProgressToDonutScale());
+            this.setText(Converter.floatToString(intakeProgress) + " " + unit);
+        }
+    }
+
+    public void addIntakeProgress(float progress){
+        if(progress > 0) setIntakeProgress(intakeProgress + progress);
+    }
+
+    public void substractIntakeProgress(float regress){
+        if(regress > 0) {
+            float sub = intakeProgress - regress;
+            setIntakeProgress((sub > 0) ? sub : 0);
         }
     }
 
     public float getIntakeProgress(){
         return intakeProgress;
     }
-
 }

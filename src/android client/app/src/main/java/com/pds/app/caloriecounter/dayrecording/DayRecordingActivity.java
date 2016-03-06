@@ -1,13 +1,26 @@
 package com.pds.app.caloriecounter.dayrecording;
 
+import android.app.ActionBar;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
+import com.pds.app.caloriecounter.rawlibs.CircularButton;
+import com.pds.app.caloriecounter.utils.Converter;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
+import com.shehabic.droppy.DroppyClickCallbackInterface;
+import com.shehabic.droppy.DroppyMenuItem;
+import com.shehabic.droppy.DroppyMenuPopup;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -20,48 +33,54 @@ import java.util.List;
 import java.util.Map;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 
 public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
 
     private LinearLayout stickersLayout;
     private Map<String, IntakeProgress> dailyIntakes;
-    private List<Food> dailyFoods;
-
-    private RecordingContainer foodsContainer;
+    private List<EdibleItem> dailyFoods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
-        initIntakesRecordingContainer();
-        initFoodsRecordingContainer();
+        initIntakesRecording();
+        initFoodsRecording();
+        initSportsRecording();
+
+        setintakesProgress();
     }
 
-    public void initIntakesRecordingContainer(){
+    private void initIntakesRecording(){
         LinearLayout intakesStickersLayout = new LinearLayout(this);
         intakesStickersLayout.setOrientation(LinearLayout.HORIZONTAL);
-        dailyIntakes = new LinkedHashMap<>();
 
+        dailyIntakes = new LinkedHashMap<>();
         /* Intake placeholders */
-        IntakeProgress calorieIntake = new IntakeProgress(this, 250, 2000, CALORIES_UNIT);
+        IntakeProgress calorieIntake = new IntakeProgress(this, 0, 2000, CALORIES_UNIT);
         dailyIntakes.put(TITLE_CALORIES, calorieIntake);
-        IntakeProgress proteinIntake = new IntakeProgress(this, 3.5f, 40, DEFAULT_UNIT);
+        IntakeProgress proteinIntake = new IntakeProgress(this, 0, 40, DEFAULT_UNIT);
         dailyIntakes.put(TITLE_PROTEINS, proteinIntake);
-        IntakeProgress carboIntake = new IntakeProgress(this, 150, 300, DEFAULT_UNIT);
+        IntakeProgress carboIntake = new IntakeProgress(this, 0, 300, DEFAULT_UNIT);
         dailyIntakes.put(TITLE_CARBO, carboIntake);
 
-        for(String key : dailyIntakes.keySet()){
-            intakesStickersLayout.addView(new EvenSpaceView(this));
-            intakesStickersLayout.addView(new IntakeProgressSticker(this, key, dailyIntakes.get(key)));
-        }
-        intakesStickersLayout.addView(new EvenSpaceView(this));
+        LinearLayout intakesLayout = new LinearLayout(this);
+        intakesLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        RecordingContainer intakesContainer = new RecordingContainer(this, TITLE_RDI, intakesStickersLayout);
-        stickersLayout.addView(intakesContainer);
+        /* Distribute open space in invisible views */
+        for(String intake : dailyIntakes.keySet()){
+            intakesLayout.addView(new EvenSpaceView(this));
+            intakesLayout.addView(new IntakeProgressSticker(this, intake, dailyIntakes.get(intake)));
+        }
+        intakesLayout.addView(new EvenSpaceView(this));
+
+        DailyRecording intakes = new DailyRecording(this, TITLE_RDI, intakesLayout);
+        stickersLayout.addView(intakes);
     }
 
-    public void initFoodsRecordingContainer(){
+    private void initFoodsRecording(){
         dailyFoods = new ArrayList<>();
 
         /* EdibleItem placeholders */
@@ -69,13 +88,16 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         item1.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
         item1.setProductName("nappage au chocolat 290 ml test longueur");
         item1.setTotalCarbohydrates(119.4f);
-        item1.setTotalEnergy(8100f);
+        item1.setTotalEnergy(1000f);
         item1.setTotalProteins(31f);
         item1.setId(1000L);
 
         EdibleItem item2 = new Food();
         item2.setProductName("Kellogg's Frosties 600g");
         item2.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/14/17/asset-741417.jpg");
+        item2.setTotalCarbohydrates(20.4f);
+        item2.setTotalEnergy(400f);
+        item2.setTotalProteins(2f);
         item2.setId(1001L);
 
         EdibleItem item3 = new Food();
@@ -85,15 +107,95 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         item3.setTotalEnergy(1000f);
         item3.setId(1002L);
 
-        EdibleItem[] itemsArray = {item1, item2, item3};
-        List<EdibleItem> items = Arrays.asList(itemsArray);
-        foodsContainer = new RecordingContainer(this, TITLE_FOODS, new EdibleItemList(this, items, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
+        dailyFoods.add(item1);
+        dailyFoods.add(item2);
+        dailyFoods.add(item3);
+
+        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
+
+        LinearLayout addMenuLayout = new LinearLayout(this);
+        addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        CircularButton openDropdown = new CircularButton(this);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
+        //buttonParams.setMargins(NOT_ICON_MARGIN, NOT_ICON_MARGIN, Converter.dp2px(7), NOT_ICON_MARGIN + Converter.dp2px(10));
+        buttonParams.gravity = Gravity.RIGHT;
+        openDropdown.setLayoutParams(buttonParams);
+        openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
+        openDropdown.setButtonColor(getResources().getColor(R.color.primary));
+        openDropdown.setShadowColor(Color.BLACK);
+
+        addMenuLayout.addView(new EvenSpaceView(this));
+        addMenuLayout.addView(openDropdown);
+        foodsContainer.setFooter(addMenuLayout);
+
         stickersLayout.addView(foodsContainer);
+
+        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(DayRecordingActivity.this, openDropdown);
+
+        droppyBuilder.addMenuItem(new DroppyMenuItem("test1"))
+                .addSeparator()
+                .addMenuItem(new DroppyMenuItem("test2"))
+                .addSeparator()
+                .addMenuItem(new DroppyMenuItem("test3"));
+        droppyBuilder.setOnClick(new DroppyClickCallbackInterface() {
+            @Override
+            public void call(View v, int id) {
+                Log.d("Clicked on ", String.valueOf(id));
+            }
+        });
+
+        DroppyMenuPopup droppyMenu = droppyBuilder.build();
+    }
+
+    private void initSportsRecording(){
+        //TODO
+    }
+
+    public void setintakesProgress(){
+        for(EdibleItem item : dailyFoods){
+            if (item.getTotalEnergy() != null) {
+                IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+                if(calorieProgress != null){
+                    calorieProgress.addIntakeProgress(item.getTotalEnergy());
+                }
+            }
+            if(item.getTotalProteins() != null){
+                IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
+                if(proteinProgress != null){
+                    proteinProgress.addIntakeProgress(item.getTotalProteins());
+                }
+            }
+            if(item.getTotalCarbohydrates() != null){
+                IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
+                if(carboProgress != null){
+                    carboProgress.addIntakeProgress(item.getTotalCarbohydrates());
+                }
+            }
+        }
     }
 
     @Override
-    public void onRemoveEdibleItem(EdibleItem item){
-
+    public void onRemoveEdibleItem(EdibleItem item) {
+        if (item.getTotalEnergy() != null) {
+            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+            if(calorieProgress != null){
+                calorieProgress.substractIntakeProgress(item.getTotalEnergy());
+            }
+        }
+        if(item.getTotalProteins() != null){
+            IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
+            if(proteinProgress != null){
+                proteinProgress.substractIntakeProgress(item.getTotalProteins());
+            }
+        }
+        if(item.getTotalCarbohydrates() != null){
+            IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
+            if(carboProgress != null){
+                carboProgress.substractIntakeProgress(item.getTotalCarbohydrates());
+            }
+        }
+        //add others if needed
     }
 
     @Override
@@ -112,7 +214,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
 
-
+    @Override
     public void handleMessage(JSONObject msg){
 
     }

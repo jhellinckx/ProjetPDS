@@ -65,4 +65,8 @@
         <attr name="donutProgressStyle" format="reference"/>
         <attr name="arcProgressStyle" format="reference"/>
     </declare-styleable>
+    <declare-styleable name="CircularButton">
+        <attr name="shadowColor" format="color" />
+        <attr name="buttonColor" format="color" />
+    </declare-styleable>
 </resources>

@@ -8,12 +8,17 @@ import android.widget.TextView;
 
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.*;
 
-class RecordingContainer extends CardView {
+class DailyRecording extends CardView {
     private TextView title;
     private View content;
+    private View footer;
     private LinearLayout layout;
 
-    public RecordingContainer(Context context, String title, View content){
+    public DailyRecording(Context context, String title){
+        this(context, title, new View(context));
+    }
+
+    public DailyRecording(Context context, String title, View content){
         super(context);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         cardParams.setMargins(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
@@ -45,8 +50,16 @@ class RecordingContainer extends CardView {
         this.content = content;
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(CONTENT_LEFT_MARGIN, CONTENT_TOP_MARGIN, CONTENT_RIGHT_MARGIN, CONTENT_BOTTOM_MARGIN);
-        content.setLayoutParams(params);
+        this.content.setLayoutParams(params);
         layout.addView(this.content);
+    }
+
+    private void initFooter(View footer){
+        this.footer = footer;
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(CONTENT_LEFT_MARGIN, 0, CONTENT_RIGHT_MARGIN, CONTENT_BOTTOM_MARGIN);
+        this.footer.setLayoutParams(params);
+        layout.addView(footer);
     }
 
     public void setTitle(String title){
@@ -56,5 +69,10 @@ class RecordingContainer extends CardView {
     public void setContent(View content){
         layout.removeView(this.content);
         this.initContent(content);
+    }
+
+    public void setFooter(View footer){
+        layout.removeView(this.footer);
+        this.initFooter(footer);
     }
 }

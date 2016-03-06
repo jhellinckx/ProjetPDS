@@ -32,7 +32,7 @@ public final class GraphicsConstants {
     }
 
     public static final class Progress {
-        public static final int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.smalt);
+        public static final int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.snowy_mint);
         public static final int STROKE_UNFINISHED_COLOR = Color.WHITE;
         public static final float SRTOKE_FINISHED_WIDTH = Converter.dp2px(8);
         public static final float STROKE_UNFINISHED_WIDTH = Converter.dp2px(1);
@@ -44,6 +44,8 @@ public final class GraphicsConstants {
         public static final int BAR_PRECISION = 100;
         public static final int DONUT_WIDTH = Converter.dp2px(100);
         public static final int DONUT_HEIGHT = Converter.dp2px(100);
+
+        public static final int FLOAT_PRECISION = 4;
     }
 
     public static final class ProgressSticker {
@@ -74,6 +76,14 @@ public final class GraphicsConstants {
         public static final int CONTENT_TOP_MARGIN = Converter.dp2px(10);
         public static final int CONTENT_RIGHT_MARGIN = Converter.dp2px(10);
         public static final int CONTENT_BOTTOM_MARGIN = Converter.dp2px(10);
+
+        public static final int FLAG_CALORIES = 1;
+        public static final int FLAG_PROTEINS = 2;
+        public static final int FLAG_CARBO = 3;
+        public static final int FLAG_SALT = 4;
+        public static final int FLAG_FAT = 5;
+
+
     }
 
     public static final class ItemSticker{
@@ -81,8 +91,8 @@ public final class GraphicsConstants {
         public static final int BOTTOM_MARGIN = Converter.dp2px(8);
         public static final int IMAGE_HEIGHT = Converter.dp2px(60); // == card height
         public static final int IMAGE_WIDTH = Converter.dp2px(60);
-        public static final int IMAGE_BORDER_COLOR = context.getResources().getColor(R.color.smalt);
-        public static final int IMAGE_BORDER_WIDTH = Converter.dp2px(1);
+        public static final int IMAGE_BORDER_COLOR = context.getResources().getColor(R.color.primary);
+        public static final int IMAGE_BORDER_WIDTH = Converter.dp2px(2);
         public static final int SPACE_BETWEEN_IMAGE_AND_TEXT = Converter.dp2px(16);
         public static final int NOT_ICON_MARGIN = Converter.dp2px(10);
         public static final int IMAGE_MARGIN_LEFT = NOT_ICON_MARGIN;

@@ -1,4 +1,4 @@
-package com.pds.app.caloriecounter.progresslib;
+package com.pds.app.caloriecounter.rawlibs;
 
 import android.content.res.Resources;
 
