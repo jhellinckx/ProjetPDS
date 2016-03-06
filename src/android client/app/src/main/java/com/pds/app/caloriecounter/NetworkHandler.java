@@ -138,8 +138,6 @@ public class NetworkHandler {
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
                 _doDispatch(msg, RatingActivity.class);
-            } else if (request.equals(SPORTS_LIST_REQUEST)) {
-                _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(RECOMMEND_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(UPDATE_DATA_REQUEST)) {
@@ -148,7 +146,6 @@ public class NetworkHandler {
             } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
                 _doDispatch(msg, RatingActivity.class);
             } else if (request.equals(SPORTS_LIST_REQUEST)) {
-                System.out.println("=============== DISPATCH DAY RECORDING ==================");
                 _doDispatch(msg, DayRecordingActivity.class);
             } else if (request.equals(RECOMMEND_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);

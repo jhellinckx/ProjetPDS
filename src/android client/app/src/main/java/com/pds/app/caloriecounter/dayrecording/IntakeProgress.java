@@ -70,8 +70,8 @@ public class IntakeProgress extends DonutProgress {
 
     public void setIntakeProgress(float progress){
         if(progress >= 0) {
-            intakeProgress = progress;
-            //intakeProgress =  Float.parseFloat(String.format("%." + Integer.toString(FLOAT_PRECISION) + "f", progress));
+            //intakeProgress = progress;
+            intakeProgress =  Float.parseFloat(String.format("%." + Integer.toString(FLOAT_PRECISION) + "f", progress));
             setProgress(floatProgressToDonutScale());
             this.setText(Converter.floatToString(intakeProgress) + " " + unit);
         }

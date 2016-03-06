@@ -265,7 +265,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void handleMessage(JSONObject msg){
-        Log.d("SPORTFRAG HANDLE MSG", msg.toString());
+        Log.d("DAYRECORDING HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(SPORTS_LIST_REQUEST)) {
