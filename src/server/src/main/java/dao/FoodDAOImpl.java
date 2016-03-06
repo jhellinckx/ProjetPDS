@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.EdibleItemImage;
 import util.ImageConverter;
 
 public class FoodDAOImpl implements FoodDAO {
@@ -193,7 +194,8 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
         String filename = resultSet.getString( "image_pic" );
-        food.setImagePic(ImageConverter.getBufferedImageFromFile(filename));
+        EdibleItemImage img = new EdibleItemImage(ImageConverter.getBufferedImageFromFile(filename));
+        food.setImagePic(img);
         return food;
     }
 }

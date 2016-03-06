@@ -189,6 +189,12 @@ public final class Constants {
 		public static final String CATEGORY_NAME = "d_category_name";
 		public static final int FOOD_CATEGORIES_SIZE = 16;
 
+		/* Food Images */
+		public static final String FOOD_IMAGE = "d_food_image";
+		public static final String IMAGE_WIDTH = "d_image_width";
+		public static final String IMAGE_HEIGHT = "d_image_height";
+		public static final String IMAGE_BYTES = "d_image_bytes";
+
 
 		public static String local_ip(){
 			try{

@@ -31,6 +31,7 @@ public final class ImageConverter {
 		BufferedImage img = null;
 		try{
 			BufferedInputStream stream = getImageStream(filepath);
+			
 			img = ImageIO.read(stream);
 			addDataToCaches(filepath, img);
 		} catch (IOException e){
