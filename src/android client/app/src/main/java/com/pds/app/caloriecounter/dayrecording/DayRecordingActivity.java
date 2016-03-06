@@ -275,7 +275,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         stickersLayout.removeView((sportsContainer));
         sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, FLAG_REMOVABLE));
         stickersLayout.addView(sportsContainer);
-        setintakesProgress();
+        if (newSport.getEnergyConsumed() != null){
+            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+            if(calorieProgress != null){
+                calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+newSport.getEnergyConsumed());
+            }
+        }
 
     }
 
