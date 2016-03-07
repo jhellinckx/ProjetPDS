@@ -177,6 +177,24 @@ class SubCategoryParserWorker(threading.Thread):
 			n_ratings_span = recipe_main_tag.find("span",attrs={"class":"jNbNote"})
 			if n_ratings_span != None :
 				recipe[NBR_RATINGS_KEY] = n_ratings_span.string
+
+			# Find portions
+			portions_title_p_tag = recipe_main_tag.find("p", attrs={"class" : "bu_cuisine_title_3"})
+			if portions_title_p_tag != None : 
+				portions_span = portions_title_p_tag.find("span")
+				if portions_span != None :
+					recipe[PORTIONS_KEY] = portions_span.string
+
+			# Find difficulty and prep time
+			ul_tag = recipe_main_tag.find("ul",attrs={"class":"bu_cuisine_carnet_2"})
+			li_tags = ul_tag.find_all("li")
+			if len(li_tags) > 1 :
+				recipe[DIFFICULTY_KEY] = li_tags[0].string
+				span_tag = li_tags[1].find("span",attrs={"class":"value-title"})
+				if span_tag != None and "title" in span_tag.attrs:
+					recipe[PREPARATION_TIME_KEY] = span_tag.attrs["title"]
+
+
 		print repr(recipe)
 
 
