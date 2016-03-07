@@ -72,7 +72,7 @@ public final class Constants {
 		public static final String FOOD_URL = "f_url";
 		public static final String FOOD_CODE = "f_code";
 		public static final String FOOD_NAME = "f_p_name";
-		public static final String FOOD_NAMES = "f_p_names";
+		public static final String FOOD_LIST = "f_list";
 		public static final String FOOD_IMAGE_URL = "f_image";
 		public static final String FOOD_TOTAL_ENERGY = "f_nrj";
 		public static final String FOOD_TOTAL_FAT = "f_fat";

@@ -30,6 +30,7 @@ import com.shehabic.droppy.animations.DroppyFadeInAnimation;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Sport;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_LIST;
+import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
+import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUEST;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
@@ -71,6 +75,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
+        dailyFoods = new ArrayList<>();
         sac = new SportActionCallback() {
             @Override
             public void onRemoveSport(Sport sport) {
@@ -93,10 +98,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         context= v.getContext();
         initDate();
         initIntakesRecording();
-        initFoodsRecording();
-        initSportsRecording();
-
-        setintakesProgress();
+        sendHistoryForCurrentDayRequest();
     }
 
     private void initDate(){
@@ -115,6 +117,19 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         date.setEnabled(false);
         stickersLayout.addView(date);
 
+    }
+
+    private void sendHistoryForCurrentDayRequest(){
+        JSONObject data = new JSONObject();
+        data.put(HISTORY_DATE, date.getText().toString());
+        send(networkJSON(HISTORY_FOR_DATE_REQUEST, data));
+    }
+
+    private void postResponseInitialisations(){
+        initFoodsRecording();
+        initSportsRecording();
+
+        setintakesProgress();
     }
 
     private void initIntakesRecording(){
@@ -145,35 +160,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     private void initFoodsRecording(){
-        dailyFoods = new ArrayList<>();
-
-        /* EdibleItem placeholders */
-        EdibleItem item1 = new Food();
-        item1.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
-        item1.setProductName("nappage au chocolat 290 ml test longueur");
-        item1.setTotalCarbohydrates(119.4f);
-        item1.setTotalEnergy(1000f);
-        item1.setTotalProteins(31f);
-        item1.setId(1000L);
-
-        EdibleItem item2 = new Food();
-        item2.setProductName("Kellogg's Frosties 600g");
-        item2.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/14/17/asset-741417.jpg");
-        item2.setTotalCarbohydrates(20.4f);
-        item2.setTotalEnergy(400f);
-        item2.setTotalProteins(2f);
-        item2.setId(1001L);
-
-        EdibleItem item3 = new Food();
-        item3.setImageUrl("https://fic.colruytgroup.com/productinfo/step/JPG/JPG/320x320/std.lang.all/69/05/asset-396905.jpg");
-        item3.setProductName("Aoste Stickado - Classique XL");
-        item3.setTotalProteins(5f);
-        item3.setTotalEnergy(1000f);
-        item3.setId(1002L);
-
-        dailyFoods.add(item1);
-        dailyFoods.add(item2);
-        dailyFoods.add(item3);
 
         DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
 
@@ -343,6 +329,20 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                     calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+newSport.getEnergyConsumed());
                 }
             }
+        } else if(request.equals(HISTORY_FOR_DATE_REQUEST)){
+            JSONArray response = (JSONArray) data.get(FOOD_LIST);
+            for (int i = 0; i < response.size(); i++){
+                Food f = new Food();
+                f.initFromJSON((JSONObject) response.get(i));
+                dailyFoods.add(f);
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    postResponseInitialisations();
+                }
+            });
+
         }
     }
 

@@ -134,7 +134,7 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SUGARS, total_sugars);
         repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
-        repr.put(FOOD_IMAGE, image_pic.toJSON());
+        //repr.put(FOOD_IMAGE, image_pic.toJSON());
         return repr;
     }
 
@@ -144,6 +144,21 @@ public abstract class EdibleItem implements JSONSerializable{
         this.url = (String) obj.get(FOOD_URL);
         this.productName = (String) obj.get(FOOD_NAME);
         this.image_url = (String) obj.get(FOOD_IMAGE_URL);
+        try{
+            initFloatValuesFromFloat(obj);
+        } catch (ClassCastException e){
+            initFloatValuesFromDouble(obj);
+        }
+
+        this.quantity = (String) obj.get(FOOD_QUANTITY);
+        /*JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
+        EdibleItemImage pic = new EdibleItemImage();
+        pic.initFromJSON(img);
+        this.setImagePic(pic);*/
+
+    }
+
+    private void initFloatValuesFromFloat(JSONObject obj) throws ClassCastException{        // From Android, the values send are Double, this method handles this case.
         this.total_energy = (Float) obj.get(FOOD_TOTAL_ENERGY);
         this.total_fat = (Float) obj.get(FOOD_TOTAL_FAT);
         this.total_proteins = (Float) obj.get(FOOD_TOTAL_PROTEINS);
@@ -151,11 +166,16 @@ public abstract class EdibleItem implements JSONSerializable{
         this.total_carbohydrates = (Float) obj.get(FOOD_TOTAL_CARBOHYDRATES);
         this.total_sugars = (Float) obj.get(FOOD_TOTAL_SUGARS);
         this.total_salt = (Float) obj.get(FOOD_TOTAL_SODIUM);
-        this.quantity = (String) obj.get(FOOD_QUANTITY);
-        JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
-        EdibleItemImage pic = new EdibleItemImage();
-        pic.initFromJSON(img);
-        this.setImagePic(pic);
+    }
+
+    private void initFloatValuesFromDouble(JSONObject obj){
+        this.total_energy = ((Double) obj.get(FOOD_TOTAL_ENERGY)).floatValue();
+        this.total_fat = ((Double) obj.get(FOOD_TOTAL_FAT)).floatValue();
+        this.total_proteins = ((Double) obj.get(FOOD_TOTAL_PROTEINS)).floatValue();
+        this.total_saturated_fat = ((Double) obj.get(FOOD_TOTAL_SATURATED_FAT)).floatValue();
+        this.total_carbohydrates = ((Double) obj.get(FOOD_TOTAL_CARBOHYDRATES)).floatValue();
+        this.total_sugars = ((Double) obj.get(FOOD_TOTAL_SUGARS)).floatValue();
+        this.total_salt = ((Double) obj.get(FOOD_TOTAL_SODIUM)).floatValue();
 
     }
 }

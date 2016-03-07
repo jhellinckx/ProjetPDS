@@ -87,13 +87,13 @@ public class HistoryRequestManager implements RequestManager{
 	private JSONObject onHistoryForDateRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String date = (String) data.get(HISTORY_DATE);
-		List<String> foodNames = _userHistoryDatabase.getHistoryFoodNamesForDate(user, date);
-		JSONArray foodNamesData = new JSONArray();
-		for (int i = 0; i < foodNames.size(); i++){
-			JSONObject foodName = new JSONObject();
-			foodName.put(FOOD_NAME, foodNames.get(i));
+		List<Food> foods = _userHistoryDatabase.getHistoryFoodForDate(user, date);
+		JSONArray foodData = new JSONArray();
+		for (int i = 0; i < foods.size(); i++){
+
+			foodData.add(foods.get(i).toJSON());
 		}
-		data.put(FOOD_NAMES, foodNamesData);
+		data.put(FOOD_LIST, foodData);
 		return data;
 	}
 

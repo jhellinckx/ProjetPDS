@@ -86,8 +86,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	}
 
 	@Override
-	public List<String> getHistoryFoodNamesForDate(User user, String date){
-		List<String> foodNames = new ArrayList<>();
+	public List<Food> getHistoryFoodForDate(User user, String date){
+		List<Food> foods = new ArrayList<>();
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -101,14 +101,14 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			while (resultSet.next()){
 				Long idFood = (long) resultSet.getInt("idFood");
 				Food food = foodDAO.findById(idFood);
-				foodNames.add(food.getProductName());
+				foods.add(food);
 			}
 		} catch (SQLException e) {
 			throw new DAOException (e);
 		} finally{
 			silentClosures( resultSet, preparedStatement, connection );
 		}
-		return foodNames;
+		return foods;
 	}
 
 	@Override
