@@ -3,6 +3,10 @@ package manager;
 import java.lang.Math;
 import dao.SportsDAO;
 import nioserver.Message;
+import nioserver.AbstractNIOServer;
+
+import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Sport;
 
 import org.json.simple.JSONObject;
 import java.util.List;
@@ -13,8 +17,10 @@ import static org.calorycounter.shared.Constants.network.*;
 public class SportRequestManager implements RequestManager{
 
 	private SportsDAO _sportsDatabase;
+	private AbstractNIOServer _server;
 
-	public SportRequestManager(SportsDAO sdb){
+	public SportRequestManager(AbstractNIOServer srv, SportsDAO sdb){
+		_server = srv;
 		_sportsDatabase = sdb;
 	}
 
@@ -32,16 +38,37 @@ public class SportRequestManager implements RequestManager{
 		}
 	}
 
+	private JSONObject onChosenSportRequest(Message msg, JSONObject response){
+		User user = _server.getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		String sportName = (String) data.get(SPORT_NAME);
+		Float jouleFromSport = 0F; 
+		if(sportName != null){
+			int sportDuration = Integer.parseInt((String) data.get(SPORT_DURATION));
+			jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight()) * sportDuration;
+			Sport sport = new Sport(sportName, sportDuration, jouleFromSport);
+			return sport.toJSON();
+		}else{
+			return response;
+		}
+	}
+
 	@Override
 	public JSONObject manageRequest(Message msg){
-		int nbPackets = (int) Math.ceil((double)SPORTS_LIST_SIZE/JSON_THRESHOLD);
-		List<String> db_names = _sportsDatabase.findSportsNames();
+		JSONObject infos = (JSONObject) msg.toJSON();
+		String request = (String) infos.get(REQUEST_TYPE);
 		JSONObject response = new JSONObject();
-		if(db_names.size() == 0){
-			manageFailure(response);
-		}
-		else{
-			manageSuccess(response, db_names, nbPackets);		
+		if (request.equals(SPORTS_LIST_REQUEST)){
+			int nbPackets = (int) Math.ceil((double)SPORTS_LIST_SIZE/JSON_THRESHOLD);
+			List<String> db_names = _sportsDatabase.findSportsNames();
+			if(db_names.size() == 0){
+				manageFailure(response);
+			}
+			else{
+				manageSuccess(response, db_names, nbPackets);		
+			}
+		} else if(request.equals(CHOSEN_SPORT_REQUEST)){
+			response = onChosenSportRequest(msg,response);
 		}
 		return response;
 	}

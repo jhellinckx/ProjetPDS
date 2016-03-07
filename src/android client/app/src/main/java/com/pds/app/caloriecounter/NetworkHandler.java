@@ -147,7 +147,9 @@ public class NetworkHandler {
                 _doDispatch(msg, RatingActivity.class);
             } else if (request.equals(SPORTS_LIST_REQUEST)) {
                 _doDispatch(msg, DayRecordingActivity.class);
-            } else if (request.equals(RECOMMEND_REQUEST)) {
+            }  else if (request.equals(CHOSEN_SPORT_REQUEST)) {
+                _doDispatch(msg, DayRecordingActivity.class);
+            }else if (request.equals(RECOMMEND_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(UPDATE_DATA_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);

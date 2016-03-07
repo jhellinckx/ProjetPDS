@@ -82,7 +82,7 @@ public class AppliServer extends AbstractNIOServer{
 		RatingRequestManager rrm = new RatingRequestManager(this, _foodDatabase, _userprefDatabase, _categoryRatingDatabase);
 		DataRequestManager drm = new DataRequestManager(this, _userDatabase);
 		HistoryRequestManager hrm = new HistoryRequestManager(this, _foodDatabase, _userHistoryDatabase);
-		SportRequestManager srm = new SportRequestManager(_sportsDatabase);
+		SportRequestManager srm = new SportRequestManager(this,_sportsDatabase);
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
 			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
@@ -99,6 +99,7 @@ public class AppliServer extends AbstractNIOServer{
 		_managers.put(RANDOM_UNRANKED_FOODS_REQUEST, frm);
 		_managers.put(SEND_RATINGS_REQUEST, rrm);
 		_managers.put(SPORTS_LIST_REQUEST, srm);
+		_managers.put(CHOSEN_SPORT_REQUEST, srm);
 		_managers.put(UPDATE_DATA_REQUEST, drm);
 		_managers.put(DATA_REQUEST, drm);
 		_managers.put(HISTORY_REQUEST, hrm);

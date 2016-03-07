@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -38,16 +39,18 @@ import java.util.Map;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
+import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
+import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
 import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 
-public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback, SportActionCallback {
+public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
 
     private LinearLayout stickersLayout;
     private Map<String, IntakeProgress> dailyIntakes;
@@ -55,12 +58,34 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private List<Sport> dailySports;
     private DailyRecording sportsContainer;
     private static List<String> _sportNames = new ArrayList<String>();
+    private SportActionCallback sac;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
+        sac = new SportActionCallback() {
+            @Override
+            public void onRemoveSport(Sport sport) {
+                if (sport.getEnergyConsumed() != null) {
+                    IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+                    if(calorieProgress != null){
+                        calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() - sport.getEnergyConsumed());
+                    }
+                }
+            }
+
+            @Override
+            public void onAddSport(String sportName, int duration) {
+                JSONObject request = new JSONObject();
+                request.put(SPORT_NAME, sportName);
+                request.put(SPORT_DURATION, Integer.toString(duration));
+                send(networkJSON(CHOSEN_SPORT_REQUEST, request));
+            }
+        };
+        context= v.getContext();
         initIntakesRecording();
         initFoodsRecording();
         initSportsRecording();
@@ -176,7 +201,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         Sport test = new Sport(1L,"Basket",120,2300f);
 
         dailySports.add(test);
-        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, _sportNames,  FLAG_REMOVABLE));
+        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, sac, _sportNames,  FLAG_REMOVABLE));
 
         stickersLayout.addView(sportsContainer);
     }
@@ -276,34 +301,27 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                     _sportNames.add(((String) data.get(SPORT_NAME + String.valueOf(i))));
                 }
             }
-        }
-    }
+        }else if(request.equals(CHOSEN_SPORT_REQUEST)){
+            Sport newSport = new Sport();
+            newSport.initFromJSON(data);
+            dailySports.add(newSport);
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    stickersLayout.removeView((sportsContainer));
+                    sportsContainer = new DailyRecording(context, TITLE_SPORTS, new SportList(context, dailySports, sac, _sportNames, FLAG_REMOVABLE));
+                    stickersLayout.addView(sportsContainer);
+                }
+            });
 
-    @Override
-    public void onRemoveSport(Sport sport){
-        if (sport.getEnergyConsumed() != null) {
-            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-            if(calorieProgress != null){
-                calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() - sport.getEnergyConsumed());
+            if (newSport.getEnergyConsumed() != null){
+                IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+                if(calorieProgress != null){
+                    calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+newSport.getEnergyConsumed());
+                }
             }
         }
     }
 
-    @Override
-    public void onAddSport(String sportName, int duration){
-        Sport newSport = new Sport(sportName, duration, 1400f);
-        dailySports.add(newSport);
-        stickersLayout.removeView((sportsContainer));
-        sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, this, _sportNames, FLAG_REMOVABLE));
-        stickersLayout.addView(sportsContainer);
-        if (newSport.getEnergyConsumed() != null){
-            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-            if(calorieProgress != null){
-                calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+newSport.getEnergyConsumed());
-            }
-        }
-
-    }
 
 
 }

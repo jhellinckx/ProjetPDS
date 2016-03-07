@@ -69,15 +69,15 @@ public class Sport implements JSONSerializable{
 	public JSONObject toJSON(){
 		JSONObject repr = new JSONObject();
 		repr.put(SPORT_NAME, this.name);
-		repr.put(SPORT_DURATION, this.duration);
-		repr.put(SPORT_ENERGY_CONSUMED, this.energyConsumed);
+		repr.put(SPORT_DURATION, Integer.toString(this.duration));
+		repr.put(SPORT_ENERGY_CONSUMED, Float.toString(this.energyConsumed));
 		return repr;
 	}
 
 	@Override
 	public void initFromJSON(JSONObject obj){
 		this.setName((String) obj.get(SPORT_NAME));
-		this.setDuration((int) obj.get(SPORT_DURATION));
-		this.setEnergyConsumed((float) obj.get(SPORT_ENERGY_CONSUMED));
+		this.setDuration(Integer.parseInt((String) obj.get(SPORT_DURATION)));
+		this.setEnergyConsumed(Float.parseFloat((String) obj.get(SPORT_ENERGY_CONSUMED)));
 	}
 }
