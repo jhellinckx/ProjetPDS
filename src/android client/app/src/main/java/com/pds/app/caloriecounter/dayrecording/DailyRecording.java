@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.*;
 
-class DailyRecording extends CardView {
+public class DailyRecording extends CardView {
     private TextView title;
     private View content;
     private View footer;
@@ -28,7 +28,6 @@ class DailyRecording extends CardView {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
-        //layout.setBackgroundColor(BACKGROUND_COLOR);
         initTitle(title);
         initContent(content);
         this.addView(layout);
