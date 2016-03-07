@@ -30,6 +30,8 @@ sub_tags_filename = "jdf_subtags.txt"
 
 results_recipes_filename = "results_jdf_recipes.txt"
 
+post_rdi_url = "http://www.monmenu.fr/s/calculer-calories.html"
+
 
 def get_all_tags():
 	structured_response = BeautifulSoup(requests.get(domain + all_tags).content, "lxml")
@@ -225,9 +227,47 @@ class SubCategoryParserWorker(threading.Thread):
 			for a_tag in tags_aside.find_all("a"):
 				recipe[TAGS_KEY].append(a_tag.text)
 
+		self.parseRecipeRDIs(recipe)
 
 		print repr(recipe)
 
+	def parseRecipeRDIs(self, recipe):
+		FORM_CONTENT_KEY = "content"
+		FORM_PORTIONS_KEY = "portions"
+		form_data = \
+		{
+			FORM_CONTENT_KEY : "",\
+			FORM_PORTIONS_KEY : 1
+		}
+		if INGREDIENTS_LIST_KEY in recipe :
+			for ingredient in recipe[INGREDIENTS_LIST_KEY]:
+				form_data[FORM_CONTENT_KEY] += ingredient + "\n"
+			if len(form_data[FORM_CONTENT_KEY]) > 0 :
+				form_data[FORM_CONTENT_KEY] = form_data[FORM_CONTENT_KEY][:-1]
+		if PORTIONS_KEY in recipe :
+			form_data[FORM_PORTIONS_KEY] = recipe[PORTIONS_KEY]
+		structured_response = BeautifulSoup(requests.post(post_rdi_url, data = form_data).content, "lxml")
+		rdis_div = structured_response.find("div",attrs={"class":"grid2 grey rounded-box bordered mt1 pa1"})
+		cal_li = rdis_div.find("li",attrs={"id":"kcal"})
+		if cal_li != None :
+			cal_div = cal_li.find("div")
+			if cal_div != None :
+				recipe[CALORIE_PER_PORTION_KEY] = " ".join(cal_div.text.split())
+		prot_li = rdis_div.find("li",attrs={"id":"proteine"})
+		if prot_li != None :
+			prot_div = prot_li.find("div")
+			if prot_div != None :
+				recipe[PROTEIN_PER_PORTION_KEY] = " ".join(prot_div.text.split())
+		fat_li = rdis_div.find("li",attrs={"id":"lipide"})
+		if fat_li != None :
+			fat_div = fat_li.find("div")
+			if fat_div != None :
+				recipe[FAT_PER_PORTION_KEY] = " ".join(fat_div.text.split())
+		carbo_li = rdis_div.find("li",attrs={"id":"glucide"})
+		if carbo_li != None :
+			carbo_div = carbo_li.find("div")
+			if carbo_div != None :
+				recipe[CARBO_PER_PORTION_KEY] = " ".join(carbo_div.text.split())
 
 
 	@staticmethod
@@ -243,7 +283,7 @@ class SubCategoryParserWorker(threading.Thread):
 			SubCategoryParserWorker.file_lock.release()
 
 
-def get_recipes_types_urls() : 
+def get_recipes_sub_categories() : 
 	raw_response = requests.get(domain + all_recipes_categories)
 	structured_response = BeautifulSoup(raw_response.content, "lxml")
 	tag_titles = {}
@@ -279,5 +319,5 @@ def start_parsing_sub_categories():
 
 if __name__ == "__main__":
 	#get_all_tags()
-	#get_recipes_types_urls()
+	#get_recipes_sub_categories()
 	start_parsing_sub_categories()
