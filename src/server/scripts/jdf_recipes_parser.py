@@ -142,7 +142,8 @@ class SubCategoryParserWorker(threading.Thread):
 					if recipe_title_tag != None:
 						url_tag = recipe_title_tag.find("a")
 						if "href" in url_tag.attrs :
-							self.parseRecipe(sub_category, url_tag.attrs["href"])
+							#self.parseRecipe(sub_category, url_tag.attrs["href"])
+							self.parseRecipe(sub_category, "/recette/242289-moussaka") # TO DELETE
 							return # TO DELETE ------------------------------------
 
 	def parseRecipe(self, sub_category, sub_url):
@@ -193,6 +194,36 @@ class SubCategoryParserWorker(threading.Thread):
 				span_tag = li_tags[1].find("span",attrs={"class":"value-title"})
 				if span_tag != None and "title" in span_tag.attrs:
 					recipe[PREPARATION_TIME_KEY] = span_tag.attrs["title"]
+
+			# Find ingredients
+			recipe[INGREDIENTS_LIST_KEY] = []
+			recipe[INGREDIENTS_NAMES_KEY] = []
+			ingredients_ul = recipe_main_tag.find("ul", attrs={"class":"bu_cuisine_ingredients"})
+			for li_tag in ingredients_ul.find_all("li"):
+				recipe[INGREDIENTS_LIST_KEY].append(li_tag.text)
+				ingr_name_tag = li_tag.find("a")
+				if ingr_name_tag != None :
+					recipe[INGREDIENTS_NAMES_KEY].append(ingr_name_tag.text)
+
+		# Find prep steps
+		recipe[PREPARATION_STEPS_KEY] = []
+		prepa_exception = structured_recipe.find("div",attrs={"class":"bu_cuisine_recette_prepa bu_cuisine_recette_prepa_exception"}) 
+		prepa_normal = structured_recipe.find_all("div",attrs={"bu_cuisine_recette_prepa"})
+		if prepa_exception != None: 
+			grid_last_div = prepa_exception.find("div",attrs={"class":"grid_last"})
+			if grid_last_div != None :
+				recipe[PREPARATION_STEPS_KEY].append(" ".join(grid_last_div.text.split()))
+		elif prepa_normal != None :
+			for prepa_step in prepa_normal :
+				recipe[PREPARATION_STEPS_KEY].append(" ".join(prepa_step.text.split()))
+
+
+		# Find tags
+		recipe[TAGS_KEY] = []
+		tags_aside = structured_recipe.find("aside",attrs={"class":"grid_line bu_cuisine_themes"})
+		if tags_aside != None :
+			for a_tag in tags_aside.find_all("a"):
+				recipe[TAGS_KEY].append(a_tag.text)
 
 
 		print repr(recipe)
