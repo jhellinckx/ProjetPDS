@@ -26,7 +26,7 @@ all_tags = "/s/?f_libelle="
 min_ratings = 5
 
 tags_filename = "jdf_tags.txt"
-sub_tags_filename = "jdf_subtags.txt"
+sub_categories_filename = "jdf_sub_categories.txt"
 
 results_recipes_filename = "results_jdf_recipes.txt"
 
@@ -285,24 +285,22 @@ class SubCategoryParserWorker(threading.Thread):
 
 def get_recipes_sub_categories() : 
 	raw_response = requests.get(domain + all_recipes_categories)
-	structured_response = BeautifulSoup(raw_response.content, "lxml")
+	all_cat_structured_response = BeautifulSoup(raw_response.content, "lxml")
 	tag_titles = {}
-	for tag_title in structured_response.find_all("a",attrs={"class":"bu_cuisine_title_3"}):
-		tag_title_name = tag_title.string
-		tag_titles[tag_title_name] = []
-		for sub_tag in tag_title.parent.find_all("a",attrs={"class":"bu_cuisine_bloc"}):
-			sub_tag_tuple = (sub_tag.string, "")
-			href = ""
-			if "href" in sub_tag.attrs:
-				href = sub_tag.attrs["href"]
-			sub_tag_tuple = (sub_tag.string, href)
-			tag_titles[tag_title_name].append(sub_tag_tuple)
-	with open(sub_tags_filename, "w+") as f:
+	for tag_title in all_cat_structured_response.find_all("a",attrs={"class":"bu_cuisine_title_3"}):
+		if "href" in tag_title.attrs:
+			tag_title_name = tag_title.string
+			tag_titles[tag_title_name] = []
+			cat_structured_response = BeautifulSoup(requests.get(domain + tag_title.attrs["href"]).content, "lxml")
+			for sub_cat_a_tag in cat_structured_response.find_all("a",attrs={"class":"bu_cuisine_title_4 bu_cuisine_title_4--txtC"}):
+				if "href" in sub_cat_a_tag.attrs :
+					tag_titles[tag_title_name].append((sub_cat_a_tag.string, sub_cat_a_tag.attrs["href"]))
+	with open(sub_categories_filename, "w+") as f:
 		f.write(repr(tag_titles))
 
 def start_parsing_sub_categories():
 	categories = {}
-	with open(sub_tags_filename, "r") as f:
+	with open(sub_categories_filename, "r") as f:
 		categories = ast.literal_eval(f.read())
 	category = (u'Petit d\xe9jeuner', [(u'Boisson brunch', '/recette-boisson-brunch'), (u'Brioche', '/recette-brioche'), (u'Brunch sal\xe9', '/recette-brunch-sale'), (u'Brunch sucr\xe9', '/recette-brunch-sucre'), (u'Confiture', '/recette-confiture'), (u'Pain boulanger', '/recette-pain-boulanger')])
 	worker = SubCategoryParserWorker(category[0], category[1])
@@ -318,6 +316,6 @@ def start_parsing_sub_categories():
 
 
 if __name__ == "__main__":
-	#get_all_tags()
+	get_all_tags()
 	#get_recipes_sub_categories()
-	start_parsing_sub_categories()
+	#start_parsing_sub_categories()
