@@ -3,14 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/day_frame"
-        android:layout_marginTop="25sp"
-        android:visibility="gone"></FrameLayout>
-
     <CalendarView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

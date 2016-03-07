@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 
 import static org.calorycounter.shared.Constants.network.*;
+import org.calorycounter.shared.models.EdibleItemImage;
 
 public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener{
 
@@ -27,6 +28,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
     private ArrayList<String> names;
+    private ArrayList<EdibleItemImage> images;
 
 
 
@@ -45,10 +47,12 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         urls = new ArrayList<String>();
         ratings = new ArrayList<Float>();
         names = new ArrayList<String>();
+        images = new ArrayList<>();
         gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
         initializer(names);
+        initializer(images);
         getUrlsFromServer();
 
     }
@@ -142,7 +146,9 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     urls.set(i, (String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
                     names.set(i, (String) data.get(FOOD_NAME + String.valueOf(i)));
-
+                    EdibleItemImage img = new EdibleItemImage();
+                    img.initFromJSON((JSONObject) data.get(FOOD_IMAGE + String.valueOf(i)));
+                    images.set(i,img);
                 }
             }
         }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,12 +34,14 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
@@ -49,6 +52,7 @@ import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
 import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
 import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.networkJSON;
+import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
 public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
 
@@ -60,6 +64,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private static List<String> _sportNames = new ArrayList<String>();
     private SportActionCallback sac;
     private Context context;
+    private EditText date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +91,30 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             }
         };
         context= v.getContext();
+        initDate();
         initIntakesRecording();
         initFoodsRecording();
         initSportsRecording();
 
         setintakesProgress();
+    }
+
+    private void initDate(){
+        Bundle b = getIntent().getExtras();
+        String current_day;
+        if (b == null){
+            current_day = SDFORMAT.format(Calendar.getInstance().getTime());
+        }
+        else{
+            current_day = b.getString("day");
+        }
+        date = new EditText(context);
+        date.setText(current_day);
+        date.setTextColor(TITLE_COLOR);
+        date.setGravity(Gravity.CENTER_HORIZONTAL);
+        date.setEnabled(false);
+        stickersLayout.addView(date);
+
     }
 
     private void initIntakesRecording(){
