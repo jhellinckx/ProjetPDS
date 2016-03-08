@@ -31,9 +31,6 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WID
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_COLOR;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_MAX_LINES;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_SIZE;
-import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_BOTTOM_MARGIN;
-import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_LEFT_MARGIN;
-import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_RIGHT_MARGIN;
 import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
@@ -63,32 +60,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     private static int id = 0;
     private static int _energy = 0;
 
-    private void initButton() {
-
-
-        checkButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                /*
-                String h = height.getText().toString();
-                String w = weight.getText().toString();
-                if (!validate(h, w)) {
-                    return;
-                }
-                id = (int) agebracket.getSelectedItemId();
-
-                sendData((String) agebracket.getSelectedItem(), weight.getText().toString());
-
-                Intent dayRecordingActivity = new Intent(PersonalDataActivity.this, DayRecordingActivity.class);
-
-                startActivity(dayRecordingActivity);
-                */
-
-            }
-
-        });
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,8 +252,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         calorieSeekBar = new SeekBar(this);
         LinearLayout.LayoutParams calorieSeekBarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         calorieSeekBar.setLayoutParams(calorieSeekBarParams);
-        calorieSeekBar.setScrollBarSize(100);
-        //calorieSeekBar.setMinimumWidth(500);
         calorieSeekBar.canScrollHorizontally(LinearLayout.HORIZONTAL);
         calorieSliderLayout.addView(calorieSeekBar);
 

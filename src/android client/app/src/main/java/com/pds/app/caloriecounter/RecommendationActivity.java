@@ -54,12 +54,18 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_recommendation, frameLayout);
 
-        Bundle b = new Bundle();
-        b.putStringArrayList("productNames",_productNames);
+
         FragmentTransaction transaction = manager.beginTransaction();
-        RecommendationPastFragment pastFrag = new RecommendationPastFragment();
-        pastFrag.setArguments(b);
-        transaction.add(R.id.fragment_layout, pastFrag);
+        //RecommendationPastFragment pastFrag = new RecommendationPastFragment();
+        //pastFrag.setArguments(b);
+        Bundle b = new Bundle();
+        b.putString("gender", "genderTest");
+        b.putStringArrayList("foodCategories",_foodCategories);
+        RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
+        constrFrag.setArguments(b);
+        //transaction.add(R.id.fragment_layout, pastFrag);
+
+        transaction.add(R.id.fragment_layout, constrFrag);
         transaction.commit();
     }
 

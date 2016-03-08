@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter.dayrecording;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
+import com.pds.app.caloriecounter.RecommendationActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import com.pds.app.caloriecounter.itemview.SportActionCallback;
@@ -250,6 +252,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     public void onAddArticle(){
         Log.d("CLICK : "," ARTICLE");
+
+        //Bundle b = new Bundle();
+        //b.put
+        Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
+
+        startActivity(recommendactivity);
     }
 
     public void onAddReceipt(){

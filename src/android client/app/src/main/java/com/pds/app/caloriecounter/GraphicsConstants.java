@@ -24,6 +24,7 @@ public final class GraphicsConstants {
         public static final String TITLE_PROTEINS = "Protéines";
         public static final String TITLE_CARBO = "Glucides";
         public static final String TITLE_INFOS = "INFORMATIONS PERSONNELLES";
+        public static final String TITLE_RECOM_CONSTR = "CONTRAINTES PROCHAINE RECOMMANDATION";
         public static final String TITLE_SALT = "Sels";
         public static final String TITLE_FAT = "Lipides";
         public static final String CALORIES_UNIT = "kcal";
