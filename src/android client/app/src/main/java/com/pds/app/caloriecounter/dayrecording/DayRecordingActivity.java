@@ -321,8 +321,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             });
 
             if (newSport.getEnergyConsumed() != null){
-                IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-                if(calorieProgress != null){
+                if(dailyIntakes.get(TITLE_CALORIES) != null){
                     runOnUiThread(new Runnable() {
                         public void run() {
                             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
