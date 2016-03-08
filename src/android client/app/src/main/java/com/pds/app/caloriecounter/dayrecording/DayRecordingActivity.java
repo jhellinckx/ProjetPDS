@@ -47,7 +47,9 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_LIST;
+import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
 import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUEST;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
@@ -57,6 +59,7 @@ import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
 import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
 import static org.calorycounter.shared.Constants.network.SPORT_NAME;
+import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -289,7 +292,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onAddEdibleItem(EdibleItem item){
-
+        /*JSONObject data = new JSONObject();
+        data.put(FOOD_NAME, item);
+        data.put(HISTORY_DATE, date.getText().toString());
+        int status = (item.isEaten()) ? 1 : 0;
+        data.put(FOOD_IS_EATEN, (1-status));
+        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));*/
     }
 
     @Override

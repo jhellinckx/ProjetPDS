@@ -108,6 +108,7 @@ public class AppliServer extends AbstractNIOServer{
 		_managers.put(RECOMMEND_REQUEST, rerm);
 		_managers.put(FOOD_CATEGORIES_REQUEST, crm);
 		_managers.put(RECIPE_CATEGORIES_REQUEST, crm);
+		_managers.put(CHANGE_EATEN_STATUS_REQUEST, hrm);
 	}
 
 	public User getUser(Message msg){

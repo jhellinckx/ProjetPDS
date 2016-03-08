@@ -193,6 +193,7 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSugars(resultSet.getFloat( "sugars_100g" )  );
         food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
+        food.notEaten();
         String filename = resultSet.getString( "image_pic" );
         EdibleItemImage img = new EdibleItemImage(ImageConverter.getBufferedImageFromFile(filename));
         food.setImagePic(img);
