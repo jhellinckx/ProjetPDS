@@ -60,19 +60,6 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
         initCategories();
         launchConstraintFragment();
-        /*
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        Bundle b = new Bundle();
-
-        b.putString("gender", "genderTest");
-        b.putStringArrayList("foodCategories",_foodCategories);
-        b.putBoolean("isReceipt", isReceipt);
-        RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
-        constrFrag.setArguments(b);
-        transaction.add(R.id.fragment_layout, constrFrag);
-        transaction.commit();
-        */
     }
 
     public void launchConstraintFragment(){
@@ -114,18 +101,6 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             for(int i=0; i<data.size(); i++) {
                 _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            /*
-            FragmentTransaction transaction = manager.beginTransaction();
-            Bundle b = new Bundle();
-
-            b.putString("gender", "genderTest");
-            b.putStringArrayList("foodCategories",_foodCategories);
-            b.putBoolean("isReceipt", isReceipt);
-            RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
-            constrFrag.setArguments(b);
-            transaction.add(R.id.fragment_layout, constrFrag);
-            transaction.commit();
-            */
             launchConstraintFragment();
         } else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);

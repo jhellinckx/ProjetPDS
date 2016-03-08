@@ -344,8 +344,6 @@ public class RecommendationConstraintsFragment extends Fragment {
                 listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
                         editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,"None");
             }
-            //listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
-                   // editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString());
         }
     }
 }
