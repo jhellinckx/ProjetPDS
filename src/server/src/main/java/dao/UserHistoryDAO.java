@@ -23,4 +23,6 @@ public interface UserHistoryDAO {
 
 	void changeEatenStatus(User user, Food food, String date, int status) throws DAOException; 
 
+	void deleteFoodFromHistory(User user, Food food, String date) throws DAOException;
+
 }

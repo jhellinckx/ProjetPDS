@@ -60,6 +60,7 @@ import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
 import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
 import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
+import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -220,23 +221,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     public void setintakesProgress(){
         for(EdibleItem item : dailyFoods){
-            if (item.getTotalEnergy() != null) {
-                IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-                if(calorieProgress != null){
-                    calorieProgress.addIntakeProgress(item.getTotalEnergy());
-                }
-            }
-            if(item.getTotalProteins() != null){
-                IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
-                if(proteinProgress != null){
-                    proteinProgress.addIntakeProgress(item.getTotalProteins());
-                }
-            }
-            if(item.getTotalCarbohydrates() != null){
-                IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
-                if(carboProgress != null){
-                    carboProgress.addIntakeProgress(item.getTotalCarbohydrates());
-                }
+            if (item.isEaten()) {
+                substractToProgresses(item);
             }
         }
         for(Sport sport : dailySports){
@@ -247,6 +233,50 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 }
             }
         }
+    }
+
+    private void addToProgresses(EdibleItem item){
+        if (item.getTotalEnergy() != null) {
+            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+            if(calorieProgress != null){
+                calorieProgress.substractIntakeProgress(item.getTotalEnergy());
+            }
+        }
+        if(item.getTotalProteins() != null){
+            IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
+            if(proteinProgress != null){
+                proteinProgress.substractIntakeProgress(item.getTotalProteins());
+            }
+        }
+        if(item.getTotalCarbohydrates() != null){
+            IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
+            if(carboProgress != null){
+                carboProgress.substractIntakeProgress(item.getTotalCarbohydrates());
+            }
+        }
+        //add others if needed
+    }
+
+    private void substractToProgresses(EdibleItem item){
+        if (item.getTotalEnergy() != null) {
+            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+            if(calorieProgress != null){
+                calorieProgress.addIntakeProgress(item.getTotalEnergy());
+            }
+        }
+        if(item.getTotalProteins() != null){
+            IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
+            if(proteinProgress != null){
+                proteinProgress.addIntakeProgress(item.getTotalProteins());
+            }
+        }
+        if(item.getTotalCarbohydrates() != null){
+            IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
+            if(carboProgress != null){
+                carboProgress.addIntakeProgress(item.getTotalCarbohydrates());
+            }
+        }
+        //add others if needed
     }
 
     public void onAddScan(){
@@ -269,25 +299,13 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onRemoveEdibleItem(EdibleItem item) {
-        if (item.getTotalEnergy() != null) {
-            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-            if(calorieProgress != null){
-                calorieProgress.substractIntakeProgress(item.getTotalEnergy());
-            }
+        if(item.isEaten()) {
+            addToProgresses(item);
         }
-        if(item.getTotalProteins() != null){
-            IntakeProgress proteinProgress = dailyIntakes.get(TITLE_PROTEINS);
-            if(proteinProgress != null){
-                proteinProgress.substractIntakeProgress(item.getTotalProteins());
-            }
-        }
-        if(item.getTotalCarbohydrates() != null){
-            IntakeProgress carboProgress = dailyIntakes.get(TITLE_CARBO);
-            if(carboProgress != null){
-                carboProgress.substractIntakeProgress(item.getTotalCarbohydrates());
-            }
-        }
-        //add others if needed
+        JSONObject data = new JSONObject();
+        data.put(FOOD_NAME, item.toJSON());
+        data.put(HISTORY_DATE, date.getText().toString());
+        send(networkJSON(DELETE_FOOD_HISTORY_REQUEST, data));
     }
 
     @Override
@@ -306,6 +324,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         data.put(HISTORY_DATE, date.getText().toString());
         int status = (item.isEaten()) ? 1 : 0;
         data.put(FOOD_IS_EATEN, status);
+        if(item.isEaten()){
+            substractToProgresses(item);
+        }else {
+            addToProgresses(item);
+        }
         send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
     }
 

@@ -167,6 +167,8 @@ public class NetworkHandler {
                 _doDispatch(msg, DayRecordingActivity.class);
             }else if (request.equals(CHANGE_EATEN_STATUS_REQUEST)){
 
+            }else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
+
             }else{
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
 

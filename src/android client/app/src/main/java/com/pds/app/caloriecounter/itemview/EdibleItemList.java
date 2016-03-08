@@ -30,7 +30,7 @@ public class EdibleItemList extends LinearLayout {
         this.actionCallback = actionCallback;
         this.items = givenItems;
         initLayout();
-        initItems(items, flags);
+        initItems(flags);
     }
 
     private void initLayout(){
@@ -39,7 +39,7 @@ public class EdibleItemList extends LinearLayout {
         this.setOrientation(LinearLayout.VERTICAL);
     }
 
-    private void initItems(List<EdibleItem> items, int... flags){
+    private void initItems( int... flags){
 
         for(int flag : flags){
             if(flag == FLAG_REMOVABLE) removable = true;
@@ -97,7 +97,7 @@ public class EdibleItemList extends LinearLayout {
 
     public void onExpandItem(EdibleItem item){
         this.removeAllViews();
-        initItems(items);
+        initItems();
         actionCallback.onExpandEdibleItem(item);
     }
 

@@ -20,7 +20,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ?";
 	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ?";
-
+	private static final String SQL_DELETE = "DELETE FROM Users_history WHERE idUser = ? AND idFood = ? AND date = ?";
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -111,8 +111,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 				Food food = foodDAO.findById(idFood);
 				int checked = (int) resultSet.getInt("checked");
 				if(checked==1){
-					food.isEaten();
-				}else {
+					food.eaten();
+				}else{
 					food.notEaten();
 				}
 				foods.add(food);
@@ -187,5 +187,27 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		} finally {
 			silentClosures(preparedStatement, connection );
 		}
+	}
+
+	@Override
+	public void deleteFoodFromHistory(User user, Food food, String date) throws DAOException {
+		Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+        	connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_DELETE, false, user.getId(), food.getId(), date);
+
+            int statut = preparedStatement.executeUpdate();
+            /* Analyse du statut retourne par la requete d'insertion */
+            if ( statut == 0 ) {
+                throw new DAOException( "Failed to delete the food history, no modifications to the table." );  
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( preparedStatement, connexion );
+        }
 	}
 }
