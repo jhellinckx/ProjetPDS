@@ -1,6 +1,7 @@
 package manager;
 
 import java.util.List;
+import java.lang.Math;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -102,7 +103,7 @@ public class HistoryRequestManager implements RequestManager{
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		Food food = new Food();
 		food.initFromJSON((JSONObject) data.get(FOOD_NAME));
-		int eatenStatus = (int) data.get(FOOD_IS_EATEN);
+		int eatenStatus =(int) ((long) data.get(FOOD_IS_EATEN));
 		String date = (String) data.get(HISTORY_DATE);
 		_userHistoryDatabase.changeEatenStatus(user, food, date, eatenStatus);
 		return new JSONObject();

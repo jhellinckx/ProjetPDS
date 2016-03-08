@@ -292,12 +292,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onAddEdibleItem(EdibleItem item){
-        /*JSONObject data = new JSONObject();
-        data.put(FOOD_NAME, item);
-        data.put(HISTORY_DATE, date.getText().toString());
-        int status = (item.isEaten()) ? 1 : 0;
-        data.put(FOOD_IS_EATEN, (1-status));
-        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));*/
     }
 
     @Override
@@ -307,7 +301,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
-
+        JSONObject data = new JSONObject();
+        data.put(FOOD_NAME, item.toJSON());
+        data.put(HISTORY_DATE, date.getText().toString());
+        int status = (item.isEaten()) ? 1 : 0;
+        data.put(FOOD_IS_EATEN, status);
+        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
     }
 
 

@@ -224,7 +224,13 @@ public class EdibleItemSticker extends CardView {
         cardLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("CLICK EXPANDABLE", "OK");
+                if (item.isEaten()) {
+                    item.notEaten();
+                    cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                }else {
+                    item.eaten();
+                    cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                }
                 container.onExpandItem(item);
             }
         });
