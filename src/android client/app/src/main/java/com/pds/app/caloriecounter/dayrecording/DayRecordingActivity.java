@@ -208,9 +208,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         }
         dailySports = new ArrayList<Sport>();
 
-        Sport test = new Sport(1L,"Basket",120,2300f);
-
-        dailySports.add(test);
         sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, sac, _sportNames,  FLAG_REMOVABLE));
 
         stickersLayout.addView(sportsContainer);
@@ -312,7 +309,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 }
             }
         }else if(request.equals(CHOSEN_SPORT_REQUEST)){
-            Sport newSport = new Sport();
+            final Sport newSport = new Sport();
             newSport.initFromJSON(data);
             dailySports.add(newSport);
             runOnUiThread(new Runnable() {
@@ -326,10 +323,15 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             if (newSport.getEnergyConsumed() != null){
                 IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
                 if(calorieProgress != null){
-                    calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+newSport.getEnergyConsumed());
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
+                            calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() + newSport.getEnergyConsumed());
+                        }
+                    });
                 }
             }
-        } else if(request.equals(HISTORY_FOR_DATE_REQUEST)){
+        } else if (request.equals(HISTORY_FOR_DATE_REQUEST)) {
             JSONArray response = (JSONArray) data.get(FOOD_LIST);
             for (int i = 0; i < response.size(); i++){
                 Food f = new Food();
