@@ -34,6 +34,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
     private ArrayList<String> _productNames = new ArrayList<String>();
     private ArrayList<String> _productCodes = new ArrayList<String>();
     private ArrayList<String> _productDates = new ArrayList<String>();
+    private Boolean isReceipt;
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
@@ -53,18 +54,24 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         v = getLayoutInflater().inflate(R.layout.activity_recommendation, frameLayout);
+        Bundle b_ = new Bundle();
+        b_=getIntent().getExtras();
+        isReceipt = b_.getBoolean("isReceipt");
 
+        initCategories();
+        launchConstraintFragment();
+    }
 
+    public void launchConstraintFragment(){
         FragmentTransaction transaction = manager.beginTransaction();
-        //RecommendationPastFragment pastFrag = new RecommendationPastFragment();
-        //pastFrag.setArguments(b);
+
         Bundle b = new Bundle();
+
         b.putString("gender", "genderTest");
         b.putStringArrayList("foodCategories",_foodCategories);
+        b.putBoolean("isReceipt", isReceipt);
         RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
         constrFrag.setArguments(b);
-        //transaction.add(R.id.fragment_layout, pastFrag);
-
         transaction.add(R.id.fragment_layout, constrFrag);
         transaction.commit();
     }
@@ -89,11 +96,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
                 replaceFragment(frag, "sports");
             }
         } else if(request.equals(RECOMMEND_REQUEST)) {
-           onRecommendResults(data);
+            onRecommendResults(data);
         } else if(request.equals(FOOD_CATEGORIES_REQUEST)){
             for(int i=0; i<data.size(); i++) {
                 _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
+            launchConstraintFragment();
         } else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
@@ -159,7 +167,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         }
     }
 
-    public void onNextSportClick(Spinner sports, EditText duration){
+    public void onNextSportClick(){
+        /*
         if(!duration.getText().toString().isEmpty()){
             recom_data.put(SPORT_NAME, (String) sports.getSelectedItem());
             recom_data.put(SPORT_DURATION, duration.getText().toString());
@@ -167,10 +176,18 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         else{
             recom_data.put(SPORT_NAME, null);
         }
+        */
+
         if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
             send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
         }
         send(networkJSON(DATA_REQUEST, new JSONObject()));
+    }
+
+    public void initCategories(){
+        if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
+            send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
+        }
     }
 
     public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category){
@@ -194,7 +211,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
     }
 
     public void restart(){
-        replaceFragment(new RecommendationPastFragment(), "past");
+        replaceFragment(new RecommendationConstraintsFragment(), "past");
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){

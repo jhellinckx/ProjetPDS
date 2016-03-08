@@ -286,15 +286,16 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     public void onAddArticle(){
         Log.d("CLICK : "," ARTICLE");
 
-        //Bundle b = new Bundle();
-        //b.put
         Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
-
+        recommendactivity.putExtra("isReceipt", false);
         startActivity(recommendactivity);
     }
 
     public void onAddReceipt(){
         Log.d("CLICK : "," RECEIPT");
+        Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
+        recommendactivity.putExtra("isReceipt", true);
+        startActivity(recommendactivity);
     }
 
     @Override

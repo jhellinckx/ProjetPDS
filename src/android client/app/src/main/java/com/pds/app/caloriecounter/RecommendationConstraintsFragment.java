@@ -51,11 +51,16 @@ public class RecommendationConstraintsFragment extends Fragment {
     private ArrayList<SeekBar> seekBarList = new ArrayList<SeekBar>();
     private ArrayList<EditText> editTextList = new ArrayList<EditText>();
 
+    private Boolean isReceipt;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_day_recording,container,false);
+        View view = inflater.inflate(R.layout.activity_day_recording, container, false);
         stickersLayout = (LinearLayout) view.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
+        Bundle b = this.getArguments();
+        _foodCategories = b.getStringArrayList("foodCategories");
+        isReceipt = b.getBoolean("isReceipt");
         initInfosLayout();
         //addEnergyLayout();
         addSliderLayout("Calories du jour : ");
@@ -63,9 +68,10 @@ public class RecommendationConstraintsFragment extends Fragment {
         addSliderLayout("Protein : ");
         addSliderLayout("Carbohydates : ");
         addListenersToSeekBars(view);
-        //addFatLayout();
-        //addProteinLayout();
-        //addCarbohydratesLayout();
+        if(isReceipt){
+            addCategories();
+            initAutoComplete(view);
+        }
         infosContainer = new DailyRecording(getContext(), TITLE_RECOM_CONSTR, constraintsLayout);
         addFooterButton();
 
@@ -83,27 +89,27 @@ public class RecommendationConstraintsFragment extends Fragment {
     }
 
     public void addSliderLayout(String title){
-        LinearLayout calorieTextLayout = new LinearLayout(getContext());
-        LinearLayout.LayoutParams calorieSliderContParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        calorieTextLayout.setLayoutParams(calorieSliderContParams_);
-        calorieTextLayout.setOrientation(LinearLayout.HORIZONTAL);
-        calorieTextLayout.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout sliderTextLayout = new LinearLayout(getContext());
+        LinearLayout.LayoutParams sliderContParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        sliderTextLayout.setLayoutParams(sliderContParams_);
+        sliderTextLayout.setOrientation(LinearLayout.HORIZONTAL);
+        sliderTextLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView calorieText = new TextView(getContext());
+        TextView sliderText = new TextView(getContext());
         LinearLayout.LayoutParams calorieTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        calorieText.setLayoutParams(calorieTextParams);
-        calorieText.setTextSize(MAIN_TEXT_SIZE);
-        calorieText.setTextColor(MAIN_TEXT_COLOR);
-        calorieText.setText(title);
-        calorieText.setMaxLines(MAIN_TEXT_MAX_LINES);
-        calorieText.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        calorieText.setEllipsize(TextUtils.TruncateAt.END);
-        calorieTextLayout.addView(calorieText);
+        sliderText.setLayoutParams(calorieTextParams);
+        sliderText.setTextSize(MAIN_TEXT_SIZE);
+        sliderText.setTextColor(MAIN_TEXT_COLOR);
+        sliderText.setText(title);
+        sliderText.setMaxLines(MAIN_TEXT_MAX_LINES);
+        sliderText.canScrollHorizontally(LinearLayout.HORIZONTAL);
+        sliderText.setEllipsize(TextUtils.TruncateAt.END);
+        sliderTextLayout.addView(sliderText);
 
         tmpEditText = new EditText(getContext());
         editTextList.add(tmpEditText);
-        LinearLayout.LayoutParams calorieSeekBarEditTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        tmpEditText.setLayoutParams(calorieSeekBarEditTextParams);
+        LinearLayout.LayoutParams SliderEditTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        tmpEditText.setLayoutParams(SliderEditTextParams);
         tmpEditText.setTextSize(MAIN_TEXT_SIZE);
         tmpEditText.setTextColor(MAIN_TEXT_COLOR);
         tmpEditText.setHintTextColor(MAIN_TEXT_COLOR);
@@ -113,30 +119,52 @@ public class RecommendationConstraintsFragment extends Fragment {
         tmpEditText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         tmpEditText.setEllipsize(TextUtils.TruncateAt.END);
         tmpEditText.setFocusable(false);
-        calorieTextLayout.addView(tmpEditText);
+        sliderTextLayout.addView(tmpEditText);
 
 
-        constraintsLayout.addView(calorieTextLayout);
+        constraintsLayout.addView(sliderTextLayout);
 
         //calorie seekBar+editText
-        LinearLayout calorieSliderLayout = new LinearLayout(getContext());
+        LinearLayout sliderLayout = new LinearLayout(getContext());
         LinearLayout.LayoutParams calorieSliderContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        calorieSliderLayout.setLayoutParams(calorieSliderContParams);
-        calorieSliderLayout.setOrientation(LinearLayout.HORIZONTAL);
-        calorieSliderLayout.setGravity(Gravity.CENTER_VERTICAL);
+        sliderLayout.setLayoutParams(calorieSliderContParams);
+        sliderLayout.setOrientation(LinearLayout.HORIZONTAL);
+        sliderLayout.setGravity(Gravity.CENTER_VERTICAL);
 
 
         //calorie - seekBar
         tmpSeekBar = new SeekBar(getContext());
         seekBarList.add(tmpSeekBar);
-        LinearLayout.LayoutParams calorieSeekBarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        tmpSeekBar.setLayoutParams(calorieSeekBarParams);
+        LinearLayout.LayoutParams sliderParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        tmpSeekBar.setLayoutParams(sliderParams);
         tmpSeekBar.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        calorieSliderLayout.addView(tmpSeekBar);
+        sliderLayout.addView(tmpSeekBar);
 
         //ajout calorie
-        constraintsLayout.addView(calorieSliderLayout);
+        constraintsLayout.addView(sliderLayout);
     }
+
+    public void addCategories(){
+        LinearLayout calorieTextLayout = new LinearLayout(getContext());
+        LinearLayout.LayoutParams calorieSliderContParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        calorieTextLayout.setLayoutParams(calorieSliderContParams_);
+        calorieTextLayout.setOrientation(LinearLayout.HORIZONTAL);
+        calorieTextLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+        _autoComplete = new AutoCompleteTextView(getContext());
+        LinearLayout.LayoutParams AutoCompleteTextViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        _autoComplete.setLayoutParams(AutoCompleteTextViewParams);
+        _autoComplete.setTextSize(MAIN_TEXT_SIZE);
+        _autoComplete.setTextColor(MAIN_TEXT_COLOR);
+        _autoComplete.setHint("Entrez une catégorie");
+        _autoComplete.setThreshold(0);
+        _autoComplete.setVisibility(View.VISIBLE);
+        _autoComplete.setEllipsize(TextUtils.TruncateAt.END);
+        calorieTextLayout.addView(_autoComplete);
+        constraintsLayout.addView(calorieTextLayout);
+
+    }
+
 
 
 
@@ -208,12 +236,10 @@ public class RecommendationConstraintsFragment extends Fragment {
     }
 
     private void initAutoComplete(View v){
-        _autoComplete = (AutoCompleteTextView) v.findViewById(R.id.autoCompleteTextView);
         //String[] foo = new String[] { "Vins" };
-        _adapter = new ArrayAdapter<String>(v.getContext(),android.R.layout.select_dialog_item,_foodCategories);
+        _adapter = new ArrayAdapter<String>(v.getContext(),R.layout.spinner_item,_foodCategories);
         _autoComplete.setAdapter(_adapter);
         _autoComplete.setThreshold(0);
-        _autoComplete.setVisibility(View.GONE);
     }
 
     private int computeMaxEnergy(){
@@ -271,15 +297,6 @@ public class RecommendationConstraintsFragment extends Fragment {
         }
     }
 
-    private String getRadioButtonName(int id){
-        if( id == _recipe.getId()){
-            return "recipe";
-        }
-        else{
-            return "food";
-        }
-    }
-
     public interface OnItemClickListener {
         public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category);
     }
@@ -301,23 +318,32 @@ public class RecommendationConstraintsFragment extends Fragment {
     }
 
     private boolean checkErrors() {
-        /*
-        if (_autoComplete.getText().toString().isEmpty()) {
-            _autoComplete.setText("None");
-            return false;
-        } else if (_adapter.getCount() == 0 || _adapter.getPosition(_autoComplete.getText().toString()) == -1) {
-            _autoComplete.setError("Enter a valid category");
-            return true;
+        if(isReceipt){
+            if (_autoComplete.getText().toString().isEmpty()) {
+                _autoComplete.setText("None");
+                return false;
+            } else if (_adapter.getCount() == 0 || _adapter.getPosition(_autoComplete.getText().toString()) == -1) {
+                _autoComplete.setError("Enter a valid category");
+                return true;
+            }
         }
-        */
         return false;
-
     }
 
     public void getResults(){
         if(!checkErrors()) {
-            listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
-                    editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),"food","None");//, getRadioButtonName(_radioGroup.getCheckedRadioButtonId()),_autoComplete.getText().toString());
+            String recipeOrFood;
+
+            if(isReceipt){
+                recipeOrFood= "recipe";
+                listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
+                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString());
+            }
+            else{
+                recipeOrFood = "food";
+                listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
+                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,"None");
+            }
         }
     }
 }
