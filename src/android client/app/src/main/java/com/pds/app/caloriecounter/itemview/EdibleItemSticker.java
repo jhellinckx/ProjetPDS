@@ -91,6 +91,9 @@ public class EdibleItemSticker extends CardView {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         cardLayout.setLayoutParams(layoutParams);
         cardLayout.setPadding(CARD_PADDING, CARD_PADDING, CARD_PADDING, CARD_PADDING);
+        if(item.isEaten()){
+            cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+        }
         this.addView(cardLayout);
 
         itemInfosLayout = new EdibleItemInfosLayout(getContext(), this);
@@ -220,9 +223,17 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initExpandableAction(){
-        this.setOnClickListener(new OnClickListener() {
+        cardLayout.setClickable(true);
+        cardLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (item.isEaten()) {
+                    item.notEaten();
+                    cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                }else {
+                    item.eaten();
+                    cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                }
                 container.onExpandItem(item);
             }
         });

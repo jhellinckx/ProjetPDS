@@ -166,7 +166,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     private void initFoodsRecording(){
 
-        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
+        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
 
         LinearLayout addMenuLayout = new LinearLayout(this);
         addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -293,12 +293,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onAddEdibleItem(EdibleItem item){
-        /*JSONObject data = new JSONObject();
-        data.put(FOOD_NAME, item);
-        data.put(HISTORY_DATE, date.getText().toString());
-        int status = (item.isEaten()) ? 1 : 0;
-        data.put(FOOD_IS_EATEN, (1-status));
-        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));*/
     }
 
     @Override
@@ -308,7 +302,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
-
+        JSONObject data = new JSONObject();
+        data.put(FOOD_NAME, item.toJSON());
+        data.put(HISTORY_DATE, date.getText().toString());
+        int status = (item.isEaten()) ? 1 : 0;
+        data.put(FOOD_IS_EATEN, status);
+        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
     }
 
 

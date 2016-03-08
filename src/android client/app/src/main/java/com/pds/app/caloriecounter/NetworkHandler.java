@@ -165,7 +165,9 @@ public class NetworkHandler {
                 _doDispatch(msg, RecommendationActivity.class);
             }else if (request.equals(HISTORY_FOR_DATE_REQUEST)){
                 _doDispatch(msg, DayRecordingActivity.class);
-            } else{
+            }else if (request.equals(CHANGE_EATEN_STATUS_REQUEST)){
+
+            }else{
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
 
             }

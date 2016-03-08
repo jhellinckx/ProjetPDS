@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,14 @@ import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 public class EdibleItemList extends LinearLayout {
     private Map<EdibleItem, View> itemViewMap;
     private EdibleItemActionCallback actionCallback;
+    private List<EdibleItem> items;
     boolean removable = false; boolean addable = false;
     boolean ratable = false; boolean expandable = false;
 
-    public EdibleItemList(Context context, List<EdibleItem> items, EdibleItemActionCallback actionCallback, int... flags){
+    public EdibleItemList(Context context, List<EdibleItem> givenItems, EdibleItemActionCallback actionCallback, int... flags){
         super(context);
         this.actionCallback = actionCallback;
+        this.items = givenItems;
         initLayout();
         initItems(items, flags);
     }
@@ -45,10 +48,19 @@ public class EdibleItemList extends LinearLayout {
             else if(flag == FLAG_EXPANDABLE) expandable = true;
         }
         this.itemViewMap = new LinkedHashMap<>(items.size(), MAP_LOAD_FACTOR);
-
+        List<EdibleItem> checkedItems = new ArrayList<EdibleItem>();
         for(EdibleItem item : items){
-            View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable);
-            this.itemViewMap.put(item, sticker);
+            if(item.isEaten()){
+                checkedItems.add(item);
+            }else {
+                View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable);
+                this.itemViewMap.put(item, sticker);
+                this.addView(sticker);
+            }
+        }
+        for(EdibleItem checkedItem: checkedItems){
+            View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable);
+            this.itemViewMap.put(checkedItem, sticker);
             this.addView(sticker);
         }
     }
@@ -84,6 +96,8 @@ public class EdibleItemList extends LinearLayout {
     }
 
     public void onExpandItem(EdibleItem item){
+        this.removeAllViews();
+        initItems(items);
         actionCallback.onExpandEdibleItem(item);
     }
 
