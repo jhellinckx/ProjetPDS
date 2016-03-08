@@ -20,6 +20,7 @@ public abstract class EdibleItem implements JSONSerializable{
     protected Float    total_sugars;
     protected Float    total_salt;
     protected String   quantity;
+    protected Boolean  isEaten;
     
     public Long getId() {
         return id;
@@ -118,6 +119,18 @@ public abstract class EdibleItem implements JSONSerializable{
         return getProductName();
     }
 
+    public void eaten() {
+        this.isEaten = true;
+    }
+
+    public void notEaten() {
+        this.isEaten = false;
+    }
+
+    public Boolean isEaten() {
+        return isEaten;
+    }
+
     @Override
     public JSONObject toJSON(){
         JSONObject repr = new JSONObject();
@@ -134,6 +147,7 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SUGARS, total_sugars);
         repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
+        repr.put(FOOD_IS_EATEN, isEaten);
         //repr.put(FOOD_IMAGE, image_pic.toJSON());
         return repr;
     }
@@ -151,6 +165,7 @@ public abstract class EdibleItem implements JSONSerializable{
         }
 
         this.quantity = (String) obj.get(FOOD_QUANTITY);
+        this.isEaten = (Boolean) obj.get(FOOD_IS_EATEN);
         /*JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
         EdibleItemImage pic = new EdibleItemImage();
         pic.initFromJSON(img);

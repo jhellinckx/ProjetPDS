@@ -97,6 +97,17 @@ public class HistoryRequestManager implements RequestManager{
 		return data;
 	}
 
+	private JSONObject onChangeEatenStatus(Message msg){
+		User user = _server.getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		Food food = new Food();
+		food.initFromJSON((JSONObject) data.get(FOOD_NAME));
+		int eatenStatus = (int) data.get(FOOD_IS_EATEN);
+		String date = (String) data.get(HISTORY_DATE);
+		_userHistoryDatabase.changeEatenStatus(user, food, date, eatenStatus);
+		return new JSONObject();
+	}
+
 	@Override
 	public JSONObject manageRequest(Message msg){
 		JSONObject received = msg.toJSON();
@@ -111,6 +122,9 @@ public class HistoryRequestManager implements RequestManager{
 		}
 		else if (request.equals(HISTORY_FOR_DATE_REQUEST)){
 			responseData = onHistoryForDateRequest(msg);
+		}
+		else if (request.equals(CHANGE_EATEN_STATUS_REQUEST)){
+			responseData = onChangeEatenStatus(msg);
 		}
 		return responseData;
 	}

@@ -60,7 +60,7 @@ public class EdibleItemList extends LinearLayout {
     }
 
     public void onAddItem(EdibleItem item){
-        makeAddTest();
+        //makeAddTest();
         actionCallback.onAddEdibleItem(item);
 
     }

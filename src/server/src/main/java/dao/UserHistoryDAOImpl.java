@@ -14,11 +14,12 @@ import org.calorycounter.shared.models.User;
 
 public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO Users_history (idUser,idFood,date) VALUES (?, ?, ?)";
-	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood FROM Users_history WHERE idUser = ?";
+	private static final String SQL_INSERT = "INSERT INTO Users_history (idUser,idFood,date,checked) VALUES (?, ?, ?, ?)";
+	private static final String SQL_UPDATE_CHECKED = "UPDATE Users_history SET checked = ? WHERE idUser = ? AND idFood = ? AND date = ?";
+	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood, checked FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ?";
 	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ?";
-	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood FROM Users_history WHERE idUser = ? AND date = ?";
+	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ?";
 
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
@@ -26,7 +27,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	}
 
 	@Override
-	public void addToHistory(Long idUser, Long idFood, String date) throws DAOException {
+	public void addToHistory(Long idUser, Long idFood, String date, int isEaten) throws DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		
@@ -46,7 +47,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 
 	@Override
 	public void addToHistory(User user, Food food, String date) throws DAOException {
-		addToHistory(user.getId(), food.getId(), date);
+		int myInt = (food.isEaten()) ? 1 : 0;
+		addToHistory(user.getId(), food.getId(), date, myInt);
 	}
 
 	@Override
@@ -65,6 +67,12 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			while (resultSet.next()) {
 				Long idFood = (long) resultSet.getInt("idFood");
 				Food food = foodDAO.findById(idFood);
+				int checked = (int) resultSet.getInt("checked");
+				if(checked==1){
+					food.isEaten();
+				}else {
+					food.notEaten();
+				}
 				historyFoods.add(food);
 			}
 		} catch (SQLException e) {
@@ -101,6 +109,12 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			while (resultSet.next()){
 				Long idFood = (long) resultSet.getInt("idFood");
 				Food food = foodDAO.findById(idFood);
+				int checked = (int) resultSet.getInt("checked");
+				if(checked==1){
+					food.isEaten();
+				}else {
+					food.notEaten();
+				}
 				foods.add(food);
 			}
 		} catch (SQLException e) {
@@ -154,5 +168,24 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
 		return historyDate;
+	}
+
+	@Override
+	public void changeEatenStatus(User user, Food food, String date, int status) throws DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_UPDATE_CHECKED, false, status, user.getId(), food.getId(), date );
+			int statut = preparedStatement.executeUpdate();
+			if (statut == 0) {
+				throw new DAOException ("Failed to change checked status");
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			silentClosures(preparedStatement, connection );
+		}
 	}
 }
