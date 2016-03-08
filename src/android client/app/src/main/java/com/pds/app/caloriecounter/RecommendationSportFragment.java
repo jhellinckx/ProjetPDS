@@ -45,7 +45,7 @@ public class RecommendationSportFragment extends Fragment {
     }
 
     public interface OnItemClickListener {
-        public void onNextSportClick(Spinner sports, EditText duration);
+        public void onNextSportClick();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RecommendationSportFragment extends Fragment {
 
     public void nextStep(){
 
-        listener.onNextSportClick(_sports, _duration);
+        listener.onNextSportClick();
     }
 
 }
