@@ -220,9 +220,11 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initExpandableAction(){
-        this.setOnClickListener(new OnClickListener() {
+        cardLayout.setClickable(true);
+        cardLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("CLICK EXPANDABLE", "OK");
                 container.onExpandItem(item);
             }
         });

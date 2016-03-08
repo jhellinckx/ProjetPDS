@@ -166,7 +166,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     private void initFoodsRecording(){
 
-        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE));
+        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
 
         LinearLayout addMenuLayout = new LinearLayout(this);
         addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
