@@ -19,6 +19,7 @@ import com.pds.app.caloriecounter.dayrecording.DailyRecording;
 import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 import com.pds.app.caloriecounter.itemview.SportActionCallback;
 import com.pds.app.caloriecounter.rawlibs.CircularButton;
+import com.pds.app.caloriecounter.utils.EvenSpaceView;
 
 import org.json.simple.JSONObject;
 
@@ -30,6 +31,9 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WID
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_COLOR;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_MAX_LINES;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_SIZE;
+import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_BOTTOM_MARGIN;
+import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_LEFT_MARGIN;
+import static com.pds.app.caloriecounter.GraphicsConstants.Recording.CONTENT_RIGHT_MARGIN;
 import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
@@ -294,12 +298,13 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
         CircularButton validate = new CircularButton(this);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
-        buttonParams.gravity = Gravity.CENTER;
+        buttonParams.gravity = Gravity.RIGHT;
         validate.setLayoutParams(buttonParams);
         validate.setImageResource(R.drawable.ic_check);
         validate.setButtonColor(getResources().getColor(R.color.primary));
         validate.setShadowColor(Color.BLACK);
 
+        validateLayout.addView(new EvenSpaceView(this));
         validateLayout.addView(validate);
         infosContainer.setFooter(validateLayout);
 

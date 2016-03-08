@@ -17,7 +17,7 @@ public final class GraphicsConstants {
     }
 
     public static final class Global{
-        public static final String TITLE_RDI = "APPORTS JOURNALIERS";
+        public static final String TITLE_RDI = "CONSOMMÉ AUJOURD'HUI";
         public static final String TITLE_FOODS = "MENU";
         public static final String TITLE_SPORTS = "ACTIVITES SPORTIVES";
         public static final String TITLE_CALORIES = "Calories";
