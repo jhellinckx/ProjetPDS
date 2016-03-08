@@ -23,6 +23,10 @@ data_char = "@"
 data_start = 2
 delimiter = ";"
 
+images_directory = "raw/db_images"
+image_png_filename = "db_image_{0}"
+nb_images = 6573
+
 articles_names_correction = \
 			{
 				BaseArticle.BRANCH_INDEX_KEY 						: BaseArticle.BRANCH_INDEX_KEY,\
@@ -221,6 +225,9 @@ def insert_items_in_food():
 	cursor.close()
 	cnx.close()
 
+	add_image_path_column_to_food_table()
+	insert_images_path_into_food()
+
 def create_user_table():
 	user_table_command = \
 	"CREATE TABLE User\
@@ -381,71 +388,143 @@ def create_history_table():
 	cursor.close()
 	cnx.close()
 
+def create_colruyt_categories_table():
+	command = (
+		"CREATE TABLE `All_categories` ("
+		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		"category_name VARCHAR(255) NOT NULL,"
+		"table_name VARCHAR(16) NOT NULL,"
+		"UNIQUE(category_name),"
+		"PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+	(username, password)=db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def add_all_colruyt_categories():
+	firstCategories = []
+	select_command = " SELECT `categories` FROM `Food`;"
+	add_category_command = (
+		"INSERT INTO All_categories"
+		"(category_name, table_name)"
+		"VALUES (%s , %s)"
+		)
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password,charset="utf8",use_unicode=True)
+	cursor = cnx.cursor()
+
+	cursor.execute(select_command)
+	for categoriesInfo in cursor:
+		categoriesInfo=categoriesInfo[0].split(",")
+		primaryCat=categoriesInfo[0]
+		secondaryCat=categoriesInfo[1]
+		if primaryCat not in firstCategories:
+			firstCategories.append(primaryCat)
+	for category in firstCategories :	
+		cursor.execute(add_category_command, (category, "Food"))
+
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def add_image_path_column_to_food_table():
+	addColumnToTableCommand = (
+		"ALTER TABLE `Food`"
+		"ADD ("
+		"`image_pic` VARCHAR(255));"
+		)
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	cursor.execute(addColumnToTableCommand)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def get_images_path():
+	images_path = []
+	for i in range(nb_images):
+		images_path.append(images_directory+"/"+image_png_filename.format(i+1))
+	return images_path
+
+def insert_images_path_into_food():
+	images_path = get_images_path()
+	updateImageColumnCommand = (
+		"UPDATE `Food`"
+		"SET `image_pic` = %s"
+		"WHERE `id_food` = %s")
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	for i in range(len(images_path)):
+		args = (images_path[i], i+1)
+		cursor.execute(updateImageColumnCommand, args) 
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def log_create_table(table, create_table_func):
+	sys.stdout.write("Creating " + MAGENTA + table + RESET + " table... ")
+	sys.stdout.flush()
+	create_table_func()
+	sys.stdout.write(GREEN + "OK" + RESET + "\n")
+	sys.stdout.flush()
+
+def log_insert_items(table, add_items_func):
+	sys.stdout.write("Inserting items in " + MAGENTA + table + RESET + " table... ")
+	sys.stdout.flush()
+	add_items_func()
+	sys.stdout.write(GREEN + "OK" + RESET + "\n")
+	sys.stdout.flush()
+
+def log_drop_db(db_name, drop_func):
+	sys.stdout.write("Dropping database " + MAGENTA + db_name + RESET + "... ")
+	sys.stdout.flush()
+	drop_func()
+	sys.stdout.write(GREEN + "OK " + RESET + "\n")
+	sys.stdout.flush()
+
+def log_create_db(db_name, create_func):
+	sys.stdout.write("Creating database " + MAGENTA + db_name + RESET + "... ")
+	sys.stdout.flush()
+	create_func()
+	sys.stdout.write(GREEN + "OK " + RESET + "\n")
+	sys.stdout.flush()
+
+
+
 if __name__ == "__main__" :
 	try:
 		try:
-			sys.stdout.write("Dropping database " + MAGENTA + db_name + RESET + "... ")
-			sys.stdout.flush()
-			drop_db()
-			sys.stdout.write(GREEN + "OK " + RESET + "\n")
-			sys.stdout.flush()
+			log_drop_db(db_name, drop_db)
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 			sys.stdout.flush()
 		finally:
-			sys.stdout.write("Creating database " + MAGENTA + db_name + RESET + "... ")
-			sys.stdout.flush()
-			create_db()
-			sys.stdout.write(GREEN + "OK " + RESET + "\n")
-			sys.stdout.flush()
+			log_create_db(db_name, create_db)
 
-			sys.stdout.write("Creating " + MAGENTA + "Food" + RESET + " table... ")
-			sys.stdout.flush()
-			create_food_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("Food", create_food_table)
+			log_insert_items("Food", insert_items_in_food)
 
-			sys.stdout.write("Inserting items in " + MAGENTA + "Food" + RESET + "... ")
-			sys.stdout.flush()
-			insert_items_in_food()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("User", create_user_table)
 
-			sys.stdout.write("Creating " + MAGENTA + "User" + RESET + " table... ")
-			sys.stdout.flush()
-			create_user_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("UserPreferences", create_user_preferences_table)
 
-			sys.stdout.write("Creating " + MAGENTA + "UserPreferences" + RESET + " table... ")
-			sys.stdout.flush()
-			create_user_preferences_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("CategoriesRatings", create_categories_ratings_table)
 
-			sys.stdout.write("Creating " + MAGENTA + "CategoriesRatings" + RESET + " table... ")
-			sys.stdout.flush()
-			create_categories_ratings_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("Sport", create_sport_table)
+			log_insert_items("Sport", insert_items_in_sport)
 
-			sys.stdout.write("Creating " + MAGENTA + "Sports" + RESET + " table... ")
-			sys.stdout.flush()
-			create_sport_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("History", create_history_table)
 
-			sys.stdout.write("Inserting items in " + MAGENTA + "Sports" + RESET + "... ")
-			sys.stdout.flush()
-			insert_items_in_sport()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+			log_create_table("All_categories", create_colruyt_categories_table)
+			log_insert_items("All_categories", add_all_colruyt_categories)
 
-			sys.stdout.write("Creating " + MAGENTA + "History" + RESET + " table... ")
-			sys.stdout.flush()
-			create_history_table()
-			sys.stdout.write(GREEN + "OK" + RESET + "\n")
-			sys.stdout.flush()
+
 
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")

@@ -32,6 +32,7 @@ results_recipes_filename = "results_jdf_recipes.txt"
 
 post_rdi_url = "http://www.monmenu.fr/s/calculer-calories.html"
 
+details_error_messages_filename = "jdf_errors.txt"
 
 def get_all_tags():
 	structured_response = BeautifulSoup(requests.get(domain + all_tags).content, "lxml")
@@ -92,7 +93,10 @@ def parse_real_name(name):
 class SubCategoryParserWorker(threading.Thread):
 	file_lock = threading.Lock()
 	progress_lock = threading.Lock()
+	error_write_lock = threading.Lock()
+
 	progress = 0
+	done_recipes_names = []
 
 	def __init__(self, main_category, sub_categories):
 		threading.Thread.__init__(self)
@@ -105,12 +109,15 @@ class SubCategoryParserWorker(threading.Thread):
 	def run(self):
 		self.running = True
 		for sub_category in self.sub_categories :
-			self.parseSubCategory(sub_category)
+			try:
+				self.parseSubCategory(sub_category)
+			except Exception as e :
+				SubCategoryParserWorker.writeError(e, sub_category[1])
+
 			SubCategoryParserWorker.progress_lock.acquire()
 			SubCategoryParserWorker.progress -= 1
 			print "[" + self.main_category + "] Finished parsing subcategory \"" + sub_category[0] + "\". " + GREEN + str(SubCategoryParserWorker.progress) + RESET + " subcategories left."  
 			SubCategoryParserWorker.progress_lock.release()
-			return # TO DELETE ------------------------------------
 
 
 	def stop(self):
@@ -144,9 +151,22 @@ class SubCategoryParserWorker(threading.Thread):
 					if recipe_title_tag != None:
 						url_tag = recipe_title_tag.find("a")
 						if "href" in url_tag.attrs :
-							#self.parseRecipe(sub_category, url_tag.attrs["href"])
-							self.parseRecipe(sub_category, "/recette/242289-moussaka") # TO DELETE
-							return # TO DELETE ------------------------------------
+							try:
+								name = " ".join(url_tag.text.split())
+								parsed = False
+								SubCategoryParserWorker.file_lock.acquire()
+								try:
+									if name in SubCategoryParserWorker.done_recipes_names:
+										parsed = True
+								except Exception as e:
+									raise e
+								finally :
+									SubCategoryParserWorker.file_lock.release()
+								if not parsed :
+									self.parseRecipe(sub_category, url_tag.attrs["href"])
+							except Exception as e:
+								SubCategoryParserWorker.writeError(e, url_tag.attrs["href"])
+
 
 	def parseRecipe(self, sub_category, sub_url):
 		url = domain + sub_url
@@ -229,7 +249,7 @@ class SubCategoryParserWorker(threading.Thread):
 
 		self.parseRecipeRDIs(recipe)
 
-		print repr(recipe)
+		SubCategoryParserWorker.saveRecipe(recipe)
 
 	def parseRecipeRDIs(self, recipe):
 		FORM_CONTENT_KEY = "content"
@@ -248,26 +268,27 @@ class SubCategoryParserWorker(threading.Thread):
 			form_data[FORM_PORTIONS_KEY] = recipe[PORTIONS_KEY]
 		structured_response = BeautifulSoup(requests.post(post_rdi_url, data = form_data).content, "lxml")
 		rdis_div = structured_response.find("div",attrs={"class":"grid2 grey rounded-box bordered mt1 pa1"})
-		cal_li = rdis_div.find("li",attrs={"id":"kcal"})
-		if cal_li != None :
-			cal_div = cal_li.find("div")
-			if cal_div != None :
-				recipe[CALORIE_PER_PORTION_KEY] = " ".join(cal_div.text.split())
-		prot_li = rdis_div.find("li",attrs={"id":"proteine"})
-		if prot_li != None :
-			prot_div = prot_li.find("div")
-			if prot_div != None :
-				recipe[PROTEIN_PER_PORTION_KEY] = " ".join(prot_div.text.split())
-		fat_li = rdis_div.find("li",attrs={"id":"lipide"})
-		if fat_li != None :
-			fat_div = fat_li.find("div")
-			if fat_div != None :
-				recipe[FAT_PER_PORTION_KEY] = " ".join(fat_div.text.split())
-		carbo_li = rdis_div.find("li",attrs={"id":"glucide"})
-		if carbo_li != None :
-			carbo_div = carbo_li.find("div")
-			if carbo_div != None :
-				recipe[CARBO_PER_PORTION_KEY] = " ".join(carbo_div.text.split())
+		if rdis_div != None:
+			cal_li = rdis_div.find("li",attrs={"id":"kcal"})
+			if cal_li != None :
+				cal_div = cal_li.find("div")
+				if cal_div != None :
+					recipe[CALORIE_PER_PORTION_KEY] = " ".join(cal_div.text.split())
+			prot_li = rdis_div.find("li",attrs={"id":"proteine"})
+			if prot_li != None :
+				prot_div = prot_li.find("div")
+				if prot_div != None :
+					recipe[PROTEIN_PER_PORTION_KEY] = " ".join(prot_div.text.split())
+			fat_li = rdis_div.find("li",attrs={"id":"lipide"})
+			if fat_li != None :
+				fat_div = fat_li.find("div")
+				if fat_div != None :
+					recipe[FAT_PER_PORTION_KEY] = " ".join(fat_div.text.split())
+			carbo_li = rdis_div.find("li",attrs={"id":"glucide"})
+			if carbo_li != None :
+				carbo_div = carbo_li.find("div")
+				if carbo_div != None :
+					recipe[CARBO_PER_PORTION_KEY] = " ".join(carbo_div.text.split())
 
 
 	@staticmethod
@@ -277,10 +298,28 @@ class SubCategoryParserWorker(threading.Thread):
 			with open(results_recipes_filename, "a") as f:
 				f.write(repr(recipe))
 				f.write("\n")
+				SubCategoryParserWorker.done_recipes_names.append(recipe[NAME_KEY])
 		except Exception as e : 
 			raise e
 		finally:
 			SubCategoryParserWorker.file_lock.release()
+
+	@staticmethod
+	def writeError(e, url):
+		SubCategoryParserWorker.error_write_lock.acquire()
+		try :
+			with open(details_error_messages_filename,"a") as f:
+				f.write(\
+					"-" * 40 \
+					+ "\n" + str(type(e)) + " : " + str(e) + \
+					"\nFOR URL -> " + repr(url) +"\n")
+				f.write(">>> FORMAT <<<\n")
+				traceback.print_exc(file=f)
+				f.write(">>> END FORMAT <<<\n" + "-" *40)
+		except Exception as e:
+			print RED + "UNEXPECTED ERROR OCCURED WHEN WRITING EXCEPTION !!!" + RESET
+		finally:
+			SubCategoryParserWorker.error_write_lock.release()
 
 
 def get_recipes_sub_categories() : 
@@ -302,20 +341,26 @@ def start_parsing_sub_categories():
 	categories = {}
 	with open(sub_categories_filename, "r") as f:
 		categories = ast.literal_eval(f.read())
-	category = (u'Petit d\xe9jeuner', [(u'Boisson brunch', '/recette-boisson-brunch'), (u'Brioche', '/recette-brioche'), (u'Brunch sal\xe9', '/recette-brunch-sale'), (u'Brunch sucr\xe9', '/recette-brunch-sucre'), (u'Confiture', '/recette-confiture'), (u'Pain boulanger', '/recette-pain-boulanger')])
-	worker = SubCategoryParserWorker(category[0], category[1])
-	worker.start()
-	worker.join()
-	# workers = [SubCategoryParserWorker(category, categories[category]) for category in categories]
-	# for worker in workers :
-	# 	worker.start()
-	# for worker in workers:
-	# 	worker.join()
+	try:
+		with open(results_recipes_filename, "r") as f:
+			for line in f:
+				recipe = ast.literal_eval(line.rstrip("\n"))
+				SubCategoryParserWorker.done_recipes_names.append(recipe[NAME_KEY])
+			print "Found " + GREEN + str(len(SubCategoryParserWorker.done_recipes_names)) + RESET + " recipes. Won't HTTP GET those."
+	except IOError as e:
+		print "Starting fresh."
+
+	workers = [SubCategoryParserWorker(category, categories[category]) for category in categories]
+	print "Starting " + RED + str(len(workers)) + RESET + " worker(s)."
+	for worker in workers :
+		worker.start()
+	for worker in workers:
+		worker.join()
 
 
 
 
 if __name__ == "__main__":
-	get_all_tags()
+	#get_all_tags()
 	#get_recipes_sub_categories()
-	#start_parsing_sub_categories()
+	start_parsing_sub_categories()
