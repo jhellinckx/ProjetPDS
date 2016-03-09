@@ -122,19 +122,8 @@ public class InStream implements Runnable{
 		// No error detected, copy the data of the buffer into a byte array and push it in message list.
 		Message msg = new Message(clientChannel.socket(), this._msgDataBuffer.array(), msgSize);
 		if(Constants.SHOW_LOG){
-			// copy item
-			JSONObject obj = new JSONObject(msg.toJSON());
-			if(obj != null){
-				JSONObject data = (JSONObject)obj.get(DATA);
-				if(data.containsKey(FOOD_LIST)){
-					JSONArray jsonFoods = (JSONArray) data.get(FOOD_LIST);
-		            for (int i = 0; i < jsonFoods.size(); i++){
-		                ((JSONObject)jsonFoods.get(i)).put(IMAGE_PIC, "REPLACED_IMAGE_FOR_LOG");
-		            }
-				}
-			}
 			System.out.println(Constants.repr(this) + " " + clientChannel.socket().getRemoteSocketAddress().toString() 
-				+ Constants.IN + obj.toString());
+				+ Constants.IN + msg.toString());
 		}
 		this._controller.addIncomingMessage(msg);
 	}

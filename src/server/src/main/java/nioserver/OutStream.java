@@ -1,10 +1,14 @@
 package nioserver;
 import org.calorycounter.shared.Constants;
+import static org.calorycounter.shared.Constants.network.*;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.io.IOException;
 import java.util.Arrays;
+
 
 public class OutStream implements Runnable{
 	private Boolean _running;
@@ -27,8 +31,23 @@ public class OutStream implements Runnable{
 			" : clientChannel buffer is full.");
 		}
 		if(Constants.SHOW_LOG){
+			// copy item
+			JSONObject obj = new JSONObject(msg.toJSON());
+			if(obj != null){
+				JSONObject data = (JSONObject)obj.get(DATA);
+				if(data.containsKey(FOOD_LIST)){
+					JSONArray jsonFoods = (JSONArray) data.get(FOOD_LIST);
+		            for (int i = 0; i < jsonFoods.size(); i++){
+		            	JSONObject jsonFood = (JSONObject)jsonFoods.get(i);
+		            	if(jsonFood.containsKey(FOOD_IMAGE)){
+		            		JSONObject jsonFoodImage = (JSONObject)jsonFood.get(FOOD_IMAGE);
+		            		jsonFoodImage.put(IMAGE_PIC, "REPLACED_IMAGE_FOR_LOG");
+		            	}
+		            }
+				}
+			}
 			System.out.println(Constants.repr(this) + " " + msg.socket().getRemoteSocketAddress().toString()
-				+ Constants.OUT + msg.toString());
+				+ Constants.OUT + obj.toString());
 		}
 	}
 
