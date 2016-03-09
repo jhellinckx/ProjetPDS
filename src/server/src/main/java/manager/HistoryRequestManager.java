@@ -12,6 +12,7 @@ import static org.calorycounter.shared.Constants.network.*;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Sport;
 
 import dao.FoodDAO;
 import dao.UserHistoryDAO;
@@ -94,7 +95,13 @@ public class HistoryRequestManager implements RequestManager{
 
 			foodData.add(foods.get(i).toJSON());
 		}
+		List<Sport> sports = _userHistoryDatabase.getHistorySportForDate(user, date);
+		JSONArray sportData = new JSONArray();
+		for (int j = 0; j < sports.size(); j++){
+			sportData.add(sports.get(j).toJSON());
+		}
 		data.put(FOOD_LIST, foodData);
+		data.put(SPORT_LIST, sportData);
 		return data;
 	}
 

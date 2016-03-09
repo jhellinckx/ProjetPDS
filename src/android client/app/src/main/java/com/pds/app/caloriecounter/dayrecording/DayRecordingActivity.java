@@ -62,6 +62,7 @@ import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
 import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
 import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
+import static org.calorycounter.shared.Constants.network.SPORT_LIST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -83,6 +84,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
         dailyFoods = new ArrayList<>();
+        dailySports = new ArrayList<Sport>();
         sac = new SportActionCallback() {
             @Override
             public void onRemoveSport(Sport sport) {
@@ -211,10 +213,9 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     private void initSportsRecording(){
-        if(_sportNames.size() != SPORTS_LIST_SIZE){
+        if(_sportNames.size() != SPORTS_LIST_SIZE) {
             send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
         }
-        dailySports = new ArrayList<Sport>();
 
         sportsContainer = new DailyRecording(this, TITLE_SPORTS, new SportList(this, dailySports, sac, _sportNames,  FLAG_REMOVABLE));
 
@@ -374,10 +375,16 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             }
         } else if (request.equals(HISTORY_FOR_DATE_REQUEST)) {
             JSONArray response = (JSONArray) data.get(FOOD_LIST);
+            JSONArray responseSport = (JSONArray) data.get(SPORT_LIST);
             for (int i = 0; i < response.size(); i++){
                 Food f = new Food();
                 f.initFromJSON((JSONObject) response.get(i));
                 dailyFoods.add(f);
+            }
+            for (int j = 0; j < responseSport.size(); j++){
+                Sport s = new Sport();
+                s.initFromJSON((JSONObject) responseSport.get(j));
+                dailySports.add(s);
             }
             runOnUiThread(new Runnable() {
                 @Override
