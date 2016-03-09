@@ -1,16 +1,15 @@
 package org.calorycounter.shared.models;
 
 
+import android.org.apache.commons.codec.binary.Base64;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
 import static org.calorycounter.shared.Constants.network.*;
+
 import org.json.simple.JSONObject;
-import org.apache.commons.codec.binary.Base64;
 import java.io.UnsupportedEncodingException;
-
-
-
 public class EdibleItemImage implements JSONSerializable{
 	private BufferedImage img;
 	private int img_width;
@@ -30,6 +29,7 @@ public class EdibleItemImage implements JSONSerializable{
 		img_height = image.getHeight();
 
 		imgBytes = ((DataBufferByte) img.getData().getDataBuffer()).getData();
+		
 	}
 
 	private void convertByteArrayToIntArray(){
@@ -76,8 +76,8 @@ public class EdibleItemImage implements JSONSerializable{
 
 	@Override
 	public void initFromJSON(JSONObject obj){
-		this.img_width = (int) obj.get(IMAGE_WIDTH);
-		this.img_height = (int) obj.get(IMAGE_HEIGHT);
+		this.img_width = ((Long) obj.get(IMAGE_WIDTH)).intValue();
+		this.img_height = ((Long) obj.get(IMAGE_HEIGHT)).intValue();
 		String encodedString = (String) obj.get(IMAGE_PIC);
 		initImageBytesFromEncodedString(encodedString);
 		convertByteArrayToIntArray();

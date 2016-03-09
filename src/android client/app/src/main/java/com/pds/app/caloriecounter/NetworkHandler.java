@@ -15,6 +15,7 @@ import org.json.simple.parser.ParseException;
 
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.io.Writer;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -322,13 +324,37 @@ public class NetworkHandler {
         }
 
         private void _doRead() throws IOException {
+            int INT_SIZE = 4;
+            byte[] msgLengthBytes = new byte[INT_SIZE];
             try{
-                int msgLength = _inStream.readInt();
+                /* Read int in message header */
+                int bytesRead = 0;
+                int lastRead = 0;
+                while(bytesRead < INT_SIZE && lastRead != -1) {
+                    lastRead = _inStream.read(msgLengthBytes, bytesRead, INT_SIZE - bytesRead);
+                    bytesRead += lastRead;
+                }
+                if(lastRead == -1)
+                    throw new IOException(("Connection closed, last read == -1 for message size header"));
+
+                int msgLength = ByteBuffer.wrap(msgLengthBytes).getInt();
                 byte[] rawMsg = new byte[msgLength];
-                int bytesRead = _inStream.read(rawMsg, 0, msgLength);
-                if(bytesRead != msgLength)
+                bytesRead = 0;
+                lastRead = 0;
+                while(bytesRead < msgLength && lastRead != -1) {
+                    lastRead = _inStream.read(rawMsg, bytesRead, msgLength - bytesRead);
+                    bytesRead += lastRead;
+                }
+                if(lastRead == -1)
+                    throw new IOException(("Connection closed, last read == -1 for raw message"));
+                if(bytesRead != msgLength) {
                     throw new IOException("could not read a message of given size.");
+                }
+
+                Log.d("DOREAD","BEFORE READ");
                 String msg = new String(rawMsg, ENCODING);
+                Log.d("DOREAD","AFTER READ");
+
                 _handler.dispatch((JSONObject)_parser.parse(msg));
             }
             catch(ParseException e){

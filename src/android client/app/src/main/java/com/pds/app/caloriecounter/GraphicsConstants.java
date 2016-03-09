@@ -47,7 +47,7 @@ public final class GraphicsConstants {
         public static final int DONUT_WIDTH = Converter.dp2px(100);
         public static final int DONUT_HEIGHT = Converter.dp2px(100);
 
-        public static final int FLOAT_PRECISION = 4;
+        public static final int FLOAT_PRECISION = 2;
     }
 
     public static final class ProgressSticker {
