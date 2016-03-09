@@ -5,6 +5,13 @@ import android.org.apache.commons.codec.binary.Base64;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -28,7 +35,13 @@ public class EdibleItemImage implements JSONSerializable{
 		img_width = image.getWidth();
 		img_height = image.getHeight();
 
-		imgBytes = ((DataBufferByte) img.getData().getDataBuffer()).getData();
+		try{
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpeg", out);
+			imgBytes = out.toByteArray();
+		} catch (IOException e){
+			System.err.println(e.getMessage());
+		}
 		
 	}
 
@@ -51,6 +64,10 @@ public class EdibleItemImage implements JSONSerializable{
 	private void initImageBytesFromEncodedString(String encodedString){
 		imgBytes = Base64.decodeBase64(encodedString);
 
+	}
+
+	public byte[] getImageBytesArray(){
+		return imgBytes;
 	}
 
 	public int[] getImagesPixels(){
@@ -80,6 +97,6 @@ public class EdibleItemImage implements JSONSerializable{
 		this.img_height = ((Long) obj.get(IMAGE_HEIGHT)).intValue();
 		String encodedString = (String) obj.get(IMAGE_PIC);
 		initImageBytesFromEncodedString(encodedString);
-		convertByteArrayToIntArray();
+		//convertByteArrayToIntArray();
 	}
 }

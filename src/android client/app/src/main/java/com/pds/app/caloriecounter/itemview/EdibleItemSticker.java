@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
@@ -111,8 +112,10 @@ public class EdibleItemSticker extends CardView {
     private void initImage(){
         cardImage = new CircleImageView(getContext());
         EdibleItemImage pic = item.getImagePic();
-        int[] pixels = pic.getImagesPixels();
-        cardImage.setImageBitmap(Bitmap.createBitmap(pixels, pic.getImageWidth(), pic.getImageHeight(), Bitmap.Config.ARGB_8888));
+        byte[] img_bytes = pic.getImageBytesArray();
+        Bitmap bmp;
+        bmp = BitmapFactory.decodeByteArray(img_bytes, 0, img_bytes.length);
+        cardImage.setImageBitmap(bmp);
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         imageParams.setMargins(0, 0, SPACE_BETWEEN_IMAGE_AND_TEXT, 0);
         cardImage.setLayoutParams(imageParams);

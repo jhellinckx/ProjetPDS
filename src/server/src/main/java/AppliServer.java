@@ -71,7 +71,6 @@ public class AppliServer extends AbstractNIOServer{
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase);
 		_managers = new HashMap<>();
-		_foodDatabase.findById(22L);
 		initManagers();
 
 	}
