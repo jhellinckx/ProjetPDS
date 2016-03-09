@@ -6,6 +6,7 @@ import java.awt.image.DataBufferByte;
 
 import static org.calorycounter.shared.Constants.network.*;
 import org.json.simple.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import java.io.UnsupportedEncodingException;
 
 
@@ -42,12 +43,34 @@ public class EdibleItemImage implements JSONSerializable{
 		pixels = pix;
 	}
 
+	private String getEncodedStringOfImageBytes(){
+		byte[] encoded = Base64.encodeBase64(imgBytes);
+		return new String(encoded);
+	}
+
+	private void initImageBytesFromEncodedString(String encodedString){
+		imgBytes = Base64.decodeBase64(encodedString);
+
+	}
+
+	public int[] getImagesPixels(){
+		return pixels;
+	}
+
+	public int getImageHeight(){
+		return img_height;
+	}
+
+	public int getImageWidth(){
+		return img_width;
+	}
+
 	@Override
 	public JSONObject toJSON(){
 		JSONObject obj = new JSONObject();
 		obj.put(IMAGE_WIDTH, img_width);
 		obj.put(IMAGE_HEIGHT, img_height);
-		obj.put(IMAGE_BYTES, imgBytes);
+		obj.put(IMAGE_PIC, getEncodedStringOfImageBytes());
 		return obj;
 	}
 
@@ -55,7 +78,8 @@ public class EdibleItemImage implements JSONSerializable{
 	public void initFromJSON(JSONObject obj){
 		this.img_width = (int) obj.get(IMAGE_WIDTH);
 		this.img_height = (int) obj.get(IMAGE_HEIGHT);
-		this.imgBytes = (byte[]) obj.get(IMAGE_BYTES);
+		String encodedString = (String) obj.get(IMAGE_PIC);
+		initImageBytesFromEncodedString(encodedString);
 		convertByteArrayToIntArray();
 	}
 }
