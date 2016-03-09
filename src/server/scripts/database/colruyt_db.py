@@ -498,6 +498,7 @@ FAT_PER_PORTION_KEY = "portion_fat"
 CARBO_PER_PORTION_KEY = "portion_carbo"
 PROTEIN_PER_PORTION_KEY = "portion_protein"
 
+'''
 def create_recipe_table():
 	recipe_table_command = (
 		"CREATE TABLE `Recipes` ("
@@ -554,8 +555,9 @@ def create_recipe_table():
 	cursor.close()
 	cnx.close()
 
+'''
 def insert_recipes_in_table():
-
+	pass
 
 def log_create_table(table, create_table_func):
 	sys.stdout.write("Creating " + MAGENTA + table + RESET + " table... ")
