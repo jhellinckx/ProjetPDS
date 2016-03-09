@@ -47,7 +47,7 @@ public final class GraphicsConstants {
         public static final int DONUT_WIDTH = Converter.dp2px(100);
         public static final int DONUT_HEIGHT = Converter.dp2px(100);
 
-        public static final int FLOAT_PRECISION = 4;
+        public static final int FLOAT_PRECISION = 2;
     }
 
     public static final class ProgressSticker {
@@ -110,7 +110,7 @@ public final class GraphicsConstants {
         public static final int MAIN_TEXT_MAX_LINES = 1;
         public static final int SECONDARY_TEXT_SIZE = Converter.dp2px(6);
         public static final int SECONDARY_TEXT_COLOR = Color.LTGRAY;
-        public static final int SECONDARY_TEXT_MAX_LINES = 2;
+        public static final int SECONDARY_TEXT_MAX_LINES = 1;
         public static final int ICON_SIZE = Converter.dp2px(20);
         public static final int DELETE_ICON = R.drawable.ic_clear_grey_600_18dp;
         public static final int ADD_ICON = R.drawable.ic_add_green_700_18dp;

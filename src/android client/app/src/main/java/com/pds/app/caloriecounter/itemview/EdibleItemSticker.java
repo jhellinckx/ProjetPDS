@@ -24,6 +24,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
+import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 
 /**
  * Created by jhellinckx on 05/03/16.
@@ -255,7 +256,7 @@ public class EdibleItemSticker extends CardView {
     private String getNutrInfos(){
         String infos = "";
         if(item.getTotalEnergy() != null)
-            infos += Converter.floatToString(item.getTotalEnergy()) + " " + CALORIES_UNIT + ", ";
+            infos += Integer.toString(Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR)) + " " + CALORIES_UNIT + ", ";
         if(item.getTotalProteins() != null)
             infos += Converter.floatToString(item.getTotalProteins()) + " " + DEFAULT_UNIT + " " + TITLE_PROTEINS.toLowerCase() + ", ";
         if(item.getTotalCarbohydrates() != null)

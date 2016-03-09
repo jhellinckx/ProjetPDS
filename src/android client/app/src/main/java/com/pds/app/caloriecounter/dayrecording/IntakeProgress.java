@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.pds.app.caloriecounter.rawlibs.DonutProgress;
@@ -70,11 +71,19 @@ public class IntakeProgress extends DonutProgress {
 
     public void setIntakeProgress(float progress){
         if(progress >= 0) {
+            Log.d("BEFORE: ", Float.toString(progress));
             //intakeProgress = progress;
-            intakeProgress =  Float.parseFloat(String.format("%." + Integer.toString(FLOAT_PRECISION) + "f", progress));
+            intakeProgress =  changeFloatPrecision(progress, FLOAT_PRECISION);
+            Log.d("AFTER: ", Float.toString(intakeProgress));
             setProgress(floatProgressToDonutScale());
             this.setText(Converter.floatToString(intakeProgress) + " " + unit);
         }
+    }
+
+    public float changeFloatPrecision(float f, int i){
+        String floatString = Float.toString(f);
+        String charSeparator = (floatString.contains(".")) ? "." : ",";
+        return Float.parseFloat(String.format("%" + charSeparator + Integer.toString(i) + "f", f));
     }
 
     public void addIntakeProgress(float progress){

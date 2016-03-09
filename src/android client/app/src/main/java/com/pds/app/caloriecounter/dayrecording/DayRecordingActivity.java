@@ -45,6 +45,7 @@ import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
+import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
@@ -239,7 +240,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         if (item.getTotalEnergy() != null) {
             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
             if(calorieProgress != null){
-                calorieProgress.substractIntakeProgress(item.getTotalEnergy());
+                calorieProgress.substractIntakeProgress((float) Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR));
             }
         }
         if(item.getTotalProteins() != null){
@@ -261,7 +262,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         if (item.getTotalEnergy() != null) {
             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
             if(calorieProgress != null){
-                calorieProgress.addIntakeProgress(item.getTotalEnergy());
+                calorieProgress.addIntakeProgress((float) Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR));
             }
         }
         if(item.getTotalProteins() != null){
