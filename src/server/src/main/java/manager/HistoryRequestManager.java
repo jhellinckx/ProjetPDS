@@ -12,6 +12,7 @@ import static org.calorycounter.shared.Constants.network.*;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Sport;
 
 import dao.FoodDAO;
 import dao.UserHistoryDAO;
@@ -94,7 +95,13 @@ public class HistoryRequestManager implements RequestManager{
 
 			foodData.add(foods.get(i).toJSON());
 		}
+		List<Sport> sports = _userHistoryDatabase.getHistorySportForDate(user, date);
+		JSONArray sportData = new JSONArray();
+		for (int j = 0; j < sports.size(); j++){
+			sportData.add(sports.get(j).toJSON());
+		}
 		data.put(FOOD_LIST, foodData);
+		data.put(SPORT_LIST, sportData);
 		return data;
 	}
 
@@ -119,6 +126,15 @@ public class HistoryRequestManager implements RequestManager{
 		return new JSONObject();
 	}
 
+	private JSONObject onDeleteSportHistoryRequest(Message msg){
+		User user = _server.getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		Sport sport = new Sport();
+		sport.initFromJSON((JSONObject) data.get(SPORT_NAME));
+		String date = (String) data.get(HISTORY_DATE);
+		_userHistoryDatabase.deleteSportFromHistory(user, sport, date);
+		return new JSONObject();
+	}
 
 	@Override
 	public JSONObject manageRequest(Message msg){
@@ -141,9 +157,9 @@ public class HistoryRequestManager implements RequestManager{
 		else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
 			responseData = onDeleteFoodHistoryRequest(msg);
 		}
-		/*else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
+		else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
 			responseData = onDeleteSportHistoryRequest(msg);
-		}*/
+		}
 		return responseData;
 	}
 }

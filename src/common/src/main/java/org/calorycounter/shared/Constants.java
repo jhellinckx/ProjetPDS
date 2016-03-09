@@ -114,6 +114,7 @@ public final class Constants {
 		public static final String CHOSEN_SPORT_REQUEST = "r_chosensport";
 		public static final String SPORT_DURATION = "d_sportduration";
 		public static final String SPORT_ENERGY_CONSUMED = "d_sportenergyconsumed";
+		public static final String SPORT_LIST = "d_sportslist";
 
 		/* Personal Data */
 		public static final String UPDATE_DATA_REQUEST = "r_updatedata";
@@ -131,6 +132,7 @@ public final class Constants {
 		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
 		public static final String HISTORY_FOR_DATE_REQUEST = "r_history_for_date";
 		public static final String DELETE_FOOD_HISTORY_REQUEST = "r_delete_food_history";
+		public static final String DELETE_SPORT_HISTORY_REQUEST = "r_delete_sport_history";
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;

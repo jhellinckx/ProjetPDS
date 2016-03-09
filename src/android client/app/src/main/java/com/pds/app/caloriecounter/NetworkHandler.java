@@ -169,7 +169,9 @@ public class NetworkHandler {
 
             }else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
 
-            }else{
+            }else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
+
+            }else {
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
 
             }
