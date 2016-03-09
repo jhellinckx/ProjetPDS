@@ -185,8 +185,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
     }
 
     public void initCategories(){
-        if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
-            send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
+        if(isReceipt){
+            
+        }else {
+            if (!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)) {
+                send(networkJSON(FOOD_CATEGORIES_REQUEST, new JSONObject()));
+            }
         }
     }
 
