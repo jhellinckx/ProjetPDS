@@ -63,6 +63,7 @@ import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
 import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORT_LIST;
+import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -94,6 +95,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                         calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() - sport.getEnergyConsumed());
                     }
                 }
+                JSONObject data = new JSONObject();
+                data.put(SPORT_NAME, sport.toJSON());
+                data.put(HISTORY_DATE, date.getText().toString());
+                dailySports.remove(sport);
+                send(networkJSON(DELETE_SPORT_HISTORY_REQUEST, data));
             }
 
             @Override

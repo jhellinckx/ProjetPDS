@@ -132,6 +132,7 @@ public final class Constants {
 		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
 		public static final String HISTORY_FOR_DATE_REQUEST = "r_history_for_date";
 		public static final String DELETE_FOOD_HISTORY_REQUEST = "r_delete_food_history";
+		public static final String DELETE_SPORT_HISTORY_REQUEST = "r_delete_sport_history";
 
 		/* Recommendation */
 		public static final int RECOMMENDATIONS_REQUIRED = 20;

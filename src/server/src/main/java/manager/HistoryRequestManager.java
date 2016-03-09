@@ -126,6 +126,15 @@ public class HistoryRequestManager implements RequestManager{
 		return new JSONObject();
 	}
 
+	private JSONObject onDeleteSportHistoryRequest(Message msg){
+		User user = _server.getUser(msg);
+		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
+		Sport sport = new Sport();
+		sport.initFromJSON((JSONObject) data.get(SPORT_NAME));
+		String date = (String) data.get(HISTORY_DATE);
+		_userHistoryDatabase.deleteSportFromHistory(user, sport, date);
+		return new JSONObject();
+	}
 
 	@Override
 	public JSONObject manageRequest(Message msg){
@@ -148,9 +157,9 @@ public class HistoryRequestManager implements RequestManager{
 		else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
 			responseData = onDeleteFoodHistoryRequest(msg);
 		}
-		/*else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
+		else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
 			responseData = onDeleteSportHistoryRequest(msg);
-		}*/
+		}
 		return responseData;
 	}
 }

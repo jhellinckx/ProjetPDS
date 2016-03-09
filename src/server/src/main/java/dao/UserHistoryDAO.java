@@ -30,4 +30,6 @@ public interface UserHistoryDAO {
 
 	List<Sport> getHistorySportForDate(User user, String date) throws DAOException;
 
+	void deleteSportFromHistory(User user, Sport sport, String date) throws DAOException;
+
 }
