@@ -306,6 +306,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         JSONObject data = new JSONObject();
         data.put(FOOD_NAME, item.toJSON());
         data.put(HISTORY_DATE, date.getText().toString());
+        dailyFoods.remove(item);
         send(networkJSON(DELETE_FOOD_HISTORY_REQUEST, data));
     }
 
