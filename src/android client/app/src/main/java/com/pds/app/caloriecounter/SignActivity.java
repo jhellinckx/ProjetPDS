@@ -67,7 +67,7 @@ public class SignActivity extends NotifiableActivity {
     public boolean validate(String username, String password, String passwordRepeat){
         boolean valid = true;
         if(username.isEmpty()) {
-            _usernameText.setError("Username cannot be empty");
+            _usernameText.setError("Le nom d'utilisateur ne peut pas être vide");
             valid = false;
         }
         else{
@@ -75,13 +75,13 @@ public class SignActivity extends NotifiableActivity {
         }
 
         if(password.isEmpty()){
-            _passwordText.setError("Password cannot be empty");
+            _passwordText.setError("Le mot de passe ne peut pas être vide");
             valid = false;
         }
         else{
             if(! password.equals(passwordRepeat)){
-                _passwordText.setError("Passwords not matching");
-                _passwordRepeatText.setError("Passwords not matching");
+                _passwordText.setError("Les mots de passe ne coresspondent pas");
+                _passwordRepeatText.setError("Les mots de passe ne coresspondent pas");
                 valid = false;
             }
             else {
@@ -123,14 +123,14 @@ public class SignActivity extends NotifiableActivity {
             if(reason.equals(SIGN_UP_USERNAME_EXISTS)){
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        _usernameText.setError("Username already exists");
+                        _usernameText.setError("Ce nom d'utilisateur existe déjà");
                     }
                 });
             }
             else if(reason.equals(SIGN_UP_ALREADY_CONNECTED)){
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        _usernameText.setError("Username already connected");
+                        _usernameText.setError("Cet utilisateur est déjà connecté");
                     }
                 });
             }
@@ -154,7 +154,7 @@ public class SignActivity extends NotifiableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 _signupButton.setEnabled(true);
-                Toast toast = Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getBaseContext(), "Echec d'enregistrement", Toast.LENGTH_LONG);
                 toast.show();
             }
         });

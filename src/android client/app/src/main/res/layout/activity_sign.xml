@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:hint="Username"
+            android:hint="Nom d&apos;utilisateur"
             style="@style/AppEditText"/>
 
         <!-- Password Label -->
@@ -33,18 +33,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="Password"
+            android:hint="Mot de passe"
            style="@style/AppEditText"/>
 
 
         <EditText android:id="@id/input_password_repeat"
             android:inputType="textPassword"
-            android:hint="Repeat password"
+            android:hint="Répéter mot de passe"
             style="@style/AppEditText"/>
 
         <android.support.v7.widget.AppCompatButton
             style="@style/AppButton"
-            android:text="Sign up"
+            android:text="S&apos;enregistrer"
             android:id="@+id/btn_signup"
             android:layout_weight="1">
         </android.support.v7.widget.AppCompatButton>
@@ -53,7 +53,7 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="24dp"
-            android:text="Already an account ? Log in"
+            android:text="Déjà enregistré? S&apos;identifier"
             android:gravity="center"
             android:textSize="16dip"
             android:layout_weight="1" />

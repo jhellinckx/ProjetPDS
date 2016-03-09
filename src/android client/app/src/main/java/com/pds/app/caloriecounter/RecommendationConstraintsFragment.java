@@ -64,9 +64,9 @@ public class RecommendationConstraintsFragment extends Fragment {
         initInfosLayout();
         //addEnergyLayout();
         addSliderLayout("Calories du jour : ");
-        addSliderLayout("Fat : ");
-        addSliderLayout("Protein : ");
-        addSliderLayout("Carbohydates : ");
+        addSliderLayout("Lipides : ");
+        addSliderLayout("Protéines : ");
+        addSliderLayout("Glucides : ");
         addListenersToSeekBars(view);
         if(isReceipt){
             addCategories();

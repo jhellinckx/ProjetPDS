@@ -74,7 +74,7 @@ public class LogActivity extends NotifiableActivity {
     public boolean validate(String username, String password){
         boolean valid = true;
         if(username.isEmpty()) {
-            _usernameText.setError("Username cannot be empty");
+            _usernameText.setError("Le nom d'utilisateur ne peut pas être vide");
             valid = false;
         }
         else{
@@ -82,7 +82,7 @@ public class LogActivity extends NotifiableActivity {
         }
 
         if(password.isEmpty()){
-            _passwordText.setError("Password cannot be empty");
+            _passwordText.setError("Le mot de passe ne peut pas être vide");
             valid = false;
         }
         else{
@@ -123,7 +123,7 @@ public class LogActivity extends NotifiableActivity {
             if(reason.equals(LOG_IN_ALREADY_CONNECTED)){
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        _usernameText.setError("Username already connected");
+                        _usernameText.setError("Cet utilisateur est déjà connecté");
                     }
                 });
 
@@ -131,14 +131,14 @@ public class LogActivity extends NotifiableActivity {
             else if(reason.equals(LOG_IN_USERNAME_NOT_FOUND)){
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        _usernameText.setError("Username not found");
+                        _usernameText.setError("Ce nom d'utilisateur n'existe pas");
                     }
                 });
             }
             else if(reason.equals(LOG_IN_WRONG_PASSWORD)){
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        _usernameText.setError("Wrong Password");
+                        _usernameText.setError("Mauvais mot de passe");
                     }
                 });
             }
@@ -161,7 +161,7 @@ public class LogActivity extends NotifiableActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 _loginButton.setEnabled(true);
-                Toast toast = Toast.makeText(getBaseContext(), "Log in failed", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getBaseContext(), "Echec d'identification", Toast.LENGTH_LONG);
                 toast.show();
             }
         });
