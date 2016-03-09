@@ -119,6 +119,7 @@ public class HistoryRequestManager implements RequestManager{
 		return new JSONObject();
 	}
 
+
 	@Override
 	public JSONObject manageRequest(Message msg){
 		JSONObject received = msg.toJSON();
@@ -140,6 +141,9 @@ public class HistoryRequestManager implements RequestManager{
 		else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
 			responseData = onDeleteFoodHistoryRequest(msg);
 		}
+		/*else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
+			responseData = onDeleteSportHistoryRequest(msg);
+		}*/
 		return responseData;
 	}
 }

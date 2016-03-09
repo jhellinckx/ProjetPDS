@@ -11,16 +11,19 @@ import static dao.DAOUtilitaire.*;
 
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Sport;
 
 public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO Users_history (idUser,idFood,date,checked) VALUES (?, ?, ?, ?)";
+	private static final String SQL_INSERT = "INSERT INTO Users_history (idUser,idFood,date,checked,is_food_or_sport) VALUES (?, ?, ?, ?, 'Food')";
 	private static final String SQL_UPDATE_CHECKED = "UPDATE Users_history SET checked = ? WHERE idUser = ? AND idFood = ? AND date = ?";
-	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood, checked FROM Users_history WHERE idUser = ?";
-	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ?";
-	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ?";
-	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ?";
+	private static final String SQL_FIND_HISTORY_FOODS = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND is_food_or_sport = 'Food'";
+	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ? AND is_food_or_sport = 'Food'";
+	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ? and is_food_or_sport = 'Food'";
+	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport = 'Food'";
 	private static final String SQL_DELETE = "DELETE FROM Users_history WHERE idUser = ? AND idFood = ? AND date = ?";
+	private static final String SQL_INSERT_SPORT = "INSERT INTO Users_history (idUser,sport_name,date,duration, energy_consumed, checked,is_food_or_sport) VALUES (?, ?, ?, ?, ?, 1, 'Sport')";
+	private static final String SQL_FIND_HISTORY_SPORTS_FOR_DATE = "SELECT sport_name, duration, energy_consumed FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport = 'Sport'";
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -209,5 +212,49 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
         } finally {
             silentClosures( preparedStatement, connexion );
         }
+	}
+
+	@Override
+	public void addSportToHistory(User user, Sport sport, String date) throws DAOException{
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT_SPORT, false, user.getId(), sport.getName(), date, sport.getDuration(), sport.getEnergyConsumed());
+			int statut = preparedStatement.executeUpdate();
+			if (statut == 0) {
+				throw new DAOException ("Failed to create a user food history, no new line added to the DB");
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			silentClosures(preparedStatement, connection );
+		}
+	}
+
+	@Override
+	public List<Sport> getHistorySportForDate(User user, String date) throws DAOException{
+		List<Sport> sports = new ArrayList<>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try{
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_SPORTS_FOR_DATE, false, user.getId(), date);
+			resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()){
+				String sportName = (String) resultSet.getString("sport_name");
+				int duration = (int) resultSet.getInt("duration");
+				Float energyConsumed = (Float) resultSet.getFloat("energy_consumed");
+				Sport sport = new Sport(sportName, duration, energyConsumed);
+				sports.add(sport);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally{
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return sports;
 	}
 }

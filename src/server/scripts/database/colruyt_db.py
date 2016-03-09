@@ -364,26 +364,38 @@ def create_history_table():
 		"CREATE TABLE `Users_history` ("
 		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		"idUser INT UNSIGNED NOT NULL,"
-		"idFood INT UNSIGNED NOT NULL,"
+		"idFood INT UNSIGNED,"
 		"date TEXT NOT NULL,"
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
-
-	history_fk_food_command = (
-		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
-		)
 
 	history_fk_user_command = (
 		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idUser_id_user FOREIGN KEY (idUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE"
 		)
 
-	commands = [history_table_command,history_fk_user_command,history_fk_food_command]
+	commands = [history_table_command,history_fk_user_command]
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
 	for command in commands:
 			cursor.execute(command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def addColumnsToUsers_history():
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	command = "ALTER TABLE `Users_history` ADD (checked INT(1) NOT NULL, is_food_or_sport VARCHAR(5), sport_name VARCHAR(100), duration INT(10), energy_consumed FLOAT(10))"
+	
+	try:
+		cursor.execute(command)
+
+	except mysql.connector.Error as err:
+		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -520,6 +532,7 @@ if __name__ == "__main__" :
 			log_insert_items("Sport", insert_items_in_sport)
 
 			log_create_table("History", create_history_table)
+			log_insert_items("History", addColumnsToUsers_history)
 
 			log_create_table("All_categories", create_colruyt_categories_table)
 			log_insert_items("All_categories", add_all_colruyt_categories)

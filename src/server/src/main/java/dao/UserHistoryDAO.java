@@ -3,6 +3,7 @@ package dao;
 import java.util.List;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Sport;
 
 
 public interface UserHistoryDAO {
@@ -24,5 +25,9 @@ public interface UserHistoryDAO {
 	void changeEatenStatus(User user, Food food, String date, int status) throws DAOException; 
 
 	void deleteFoodFromHistory(User user, Food food, String date) throws DAOException;
+
+	void addSportToHistory(User user, Sport sport, String date) throws DAOException;
+
+	List<Sport> getHistorySportForDate(User user, String date) throws DAOException;
 
 }

@@ -99,6 +99,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 JSONObject request = new JSONObject();
                 request.put(SPORT_NAME, sportName);
                 request.put(SPORT_DURATION, Integer.toString(duration));
+                request.put(HISTORY_DATE, date.getText().toString());
                 send(networkJSON(CHOSEN_SPORT_REQUEST, request));
             }
         };

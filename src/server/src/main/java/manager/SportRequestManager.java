@@ -2,6 +2,7 @@ package manager;
 
 import java.lang.Math;
 import dao.SportsDAO;
+import dao.UserHistoryDAO;
 import nioserver.Message;
 import nioserver.AbstractNIOServer;
 
@@ -18,10 +19,12 @@ public class SportRequestManager implements RequestManager{
 
 	private SportsDAO _sportsDatabase;
 	private AbstractNIOServer _server;
+	private UserHistoryDAO _userHistoryDatabase;
 
-	public SportRequestManager(AbstractNIOServer srv, SportsDAO sdb){
+	public SportRequestManager(AbstractNIOServer srv, SportsDAO sdb, UserHistoryDAO uhb){
 		_server = srv;
 		_sportsDatabase = sdb;
+		_userHistoryDatabase = uhb;
 	}
 
 	private void manageFailure(JSONObject response){
@@ -42,11 +45,13 @@ public class SportRequestManager implements RequestManager{
 		User user = _server.getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String sportName = (String) data.get(SPORT_NAME);
+		String date = (String) data.get(HISTORY_DATE);
 		Float jouleFromSport = 0F; 
 		if(sportName != null){
 			int sportDuration = Integer.parseInt((String) data.get(SPORT_DURATION));
 			jouleFromSport = _sportsDatabase.findJouleByNameAndWeight(sportName, user.getWeight()) * sportDuration;
 			Sport sport = new Sport(sportName, sportDuration, jouleFromSport);
+			_userHistoryDatabase.addSportToHistory(user, sport, date);
 			return sport.toJSON();
 		}else{
 			return response;
