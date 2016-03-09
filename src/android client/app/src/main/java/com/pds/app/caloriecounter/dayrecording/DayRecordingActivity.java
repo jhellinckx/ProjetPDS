@@ -92,7 +92,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 if (sport.getEnergyConsumed() != null) {
                     IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
                     if(calorieProgress != null){
-                        calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() - sport.getEnergyConsumed());
+                        calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() - sport.getEnergyConsumed()/CAL_TO_JOULE_FACTOR);
                     }
                 }
                 JSONObject data = new JSONObject();
@@ -238,7 +238,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             if (sport.getEnergyConsumed() != null){
                 IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
                 if(calorieProgress != null){
-                    calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+sport.getEnergyConsumed());
+                    calorieProgress.setIntakeMax(calorieProgress.getIntakeMax()+sport.getEnergyConsumed()/CAL_TO_JOULE_FACTOR);
                 }
             }
         }
@@ -379,7 +379,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                     runOnUiThread(new Runnable() {
                         public void run() {
                             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
-                            calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() + newSport.getEnergyConsumed());
+                            calorieProgress.setIntakeMax(calorieProgress.getIntakeMax() + newSport.getEnergyConsumed()/CAL_TO_JOULE_FACTOR);
                         }
                     });
                 }
