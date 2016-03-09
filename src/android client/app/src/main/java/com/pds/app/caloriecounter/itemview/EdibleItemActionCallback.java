@@ -9,5 +9,6 @@ public interface EdibleItemActionCallback {
     public void onRemoveEdibleItem(EdibleItem item);
     public void onAddEdibleItem(EdibleItem item);
     public void onRateEdibleItem(EdibleItem item);
+    public void onCheckEdibleItem(EdibleItem item);
     public void onExpandEdibleItem(EdibleItem item);
 }

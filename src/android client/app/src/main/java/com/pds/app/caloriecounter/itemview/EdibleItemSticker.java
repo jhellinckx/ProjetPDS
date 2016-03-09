@@ -58,26 +58,28 @@ public class EdibleItemSticker extends CardView {
     private LinearLayout iconsLayout;
     private EdibleItemList container;
     boolean removable; boolean addable;
-    boolean ratable; boolean expandable;
+    boolean ratable; boolean checkable;
+    boolean expandable;
 
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container){
-        this(context, item, container, false, false, false, false);
+        this(context, item, container, false, false, false, false, false);
     }
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container,
                              boolean removable, boolean addable,
-                             boolean ratable, boolean expandable){
+                             boolean ratable, boolean expandable, boolean  checkable){
         super(context);
         this.container = container;
-        setEdibleItem(item, removable, addable, ratable, expandable);
+        setEdibleItem(item, removable, addable, ratable, expandable, checkable);
     }
 
     public void setEdibleItem(EdibleItem item, boolean removable,
-                              boolean addable, boolean ratable, boolean expandable){
+                              boolean addable, boolean ratable, boolean expandable, boolean checkable){
         this.item = item;
         this.removable = removable; this.addable = addable;
         this.ratable = ratable; this.expandable = expandable;
+        this.checkable = checkable;
         initCard();
         initImage();
         initTexts();
@@ -168,14 +170,15 @@ public class EdibleItemSticker extends CardView {
         if(iconsLayout != null) return;
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
-        if(removable || addable || expandable || ratable) {
+        if(removable || addable || checkable || ratable || expandable) {
             initIconsLayout(w);
             List<View> icons = new ArrayList<>();
             icons.add((removable) ? initClearAction() : initEmptyAction());
+            icons.add((expandable) ? initZoomAction() : initEmptyAction());
             icons.add((addable) ? initAddAction() : initEmptyAction());
             icons.add((ratable) ? initRateAction() : initEmptyAction());
-            if (expandable) {
-                initExpandableAction();
+            if (checkable) {
+                initCheckAction();
             }
             distributeSpace(icons, iconsLayout);
         }
@@ -223,7 +226,20 @@ public class EdibleItemSticker extends CardView {
         return addIcon;
     }
 
-    private void initExpandableAction(){
+    private View initZoomAction(){
+        ImageView zoomIcon = new ImageView(getContext());
+        zoomIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
+        zoomIcon.setImageResource(ZOOM_ICON);
+        zoomIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.onExpandItem(item);
+            }
+        });
+        return zoomIcon;
+    }
+
+    private void initCheckAction(){
         cardLayout.setClickable(true);
         cardLayout.setOnClickListener(new OnClickListener() {
             @Override
@@ -235,7 +251,7 @@ public class EdibleItemSticker extends CardView {
                     item.eaten();
                     cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
                 }
-                container.onExpandItem(item);
+                container.onCheckItem(item);
             }
         });
     }
