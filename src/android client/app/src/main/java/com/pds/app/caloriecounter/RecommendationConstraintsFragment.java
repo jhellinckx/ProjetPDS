@@ -68,9 +68,10 @@ public class RecommendationConstraintsFragment extends Fragment {
         addSliderLayout("Protéines : ");
         addSliderLayout("Glucides : ");
         addListenersToSeekBars(view);
+        addCategories();
+        initAutoComplete(view);
         if(isReceipt){
-            addCategories();
-            initAutoComplete(view);
+
         }
         infosContainer = new DailyRecording(getContext(), TITLE_RECOM_CONSTR, constraintsLayout);
         addFooterButton();
@@ -172,7 +173,7 @@ public class RecommendationConstraintsFragment extends Fragment {
     public void addFooterButton(){
         LinearLayout validateLayout = new LinearLayout(getContext());
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
-        CircularButton validate = new CircularButton(getContext());
+        final CircularButton validate = new CircularButton(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         buttonParams.gravity = Gravity.RIGHT;
         validate.setLayoutParams(buttonParams);
@@ -189,6 +190,7 @@ public class RecommendationConstraintsFragment extends Fragment {
         validate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                validate.setClickable(false);
                 getResults();
 
             }
@@ -342,7 +344,7 @@ public class RecommendationConstraintsFragment extends Fragment {
             else{
                 recipeOrFood = "food";
                 listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
-                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,"None");
+                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString());
             }
         }
     }

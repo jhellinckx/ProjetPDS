@@ -10,19 +10,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.pds.app.caloriecounter.dayrecording.DailyRecording;
+import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
+import com.pds.app.caloriecounter.itemview.EdibleItemList;
+
+import org.calorycounter.shared.models.EdibleItem;
+import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_FOODS;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_CHECKABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVABLE;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RecommendationResultsFragment extends Fragment {
+public class RecommendationResultsFragment extends Fragment implements EdibleItemActionCallback {
 
     private OnItemClickListener listener;
     private int id = 0;
 
     private ArrayList<JSONObject> recommendations;
     private LinearLayout recomList;
+    private LinearLayout stickersLayout;
+    private DailyRecording foodsContainer;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
@@ -71,15 +85,27 @@ public class RecommendationResultsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("ON CREATE VIEW", "CREATING RES FRAG");
-        View view = inflater.inflate(R.layout.fragment_recom_results, container, false);
-        Activity activity = getActivity();
-        initRecommendationList(view, activity);
-
+        View view = inflater.inflate(R.layout.activity_day_recording, container, false);
+        stickersLayout = (LinearLayout) view.findViewById(R.id.day_recording_layout);
+        stickersLayout.setOrientation(LinearLayout.VERTICAL);
+        recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
+        foodsContainer = new DailyRecording(getContext(), "Résultats", new EdibleItemList(getContext(), changeJSONtoEdibleItems(recommendations), this, FLAG_RATABLE, FLAG_EXPANDABLE));
+        stickersLayout.addView(foodsContainer);
         return view;
     }
 
     public interface OnItemClickListener {
         public void restart();
+    }
+
+    private List<EdibleItem> changeJSONtoEdibleItems(List<JSONObject> jsons){
+        List<EdibleItem> foods = new ArrayList<>();
+        for(JSONObject js : jsons){
+            Food f = new Food();
+            f.initFromJSON(js);
+            foods.add(f);
+        }
+        return foods;
     }
 
     @Override
@@ -103,4 +129,27 @@ public class RecommendationResultsFragment extends Fragment {
         listener.restart();
     }
 
+    @Override
+    public void onAddEdibleItem(EdibleItem item){
+    }
+
+    @Override
+    public void onRateEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onExpandEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onCheckEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onRemoveEdibleItem(EdibleItem item){
+
+    }
 }
