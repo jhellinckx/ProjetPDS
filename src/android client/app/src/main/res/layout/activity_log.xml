@@ -21,7 +21,7 @@
 
         <EditText android:id="@id/input_username"
             android:inputType="textPersonName"
-            android:hint="Username"
+            android:hint="Nom d&apos;utilisateur"
             style="@style/AppEditText"/>
 
 
@@ -30,19 +30,19 @@
 
         <EditText android:id="@+id/input_password"
             android:inputType="textPassword"
-            android:hint="Password"
+            android:hint="Mot de passe"
             style="@style/AppEditText"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@id/btn_login"
-            android:text="Log in"
-            style="@style/AppButton"/>
+            style="@style/AppButton"
+            android:text="S&apos;identifier" />
 
         <TextView android:id="@id/link_signup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="No account yet ? Create one"
+            android:text="Pas encore de compte? S&apos;enregistrer"
             android:gravity="center"
             android:textSize="16dip"/>
 
