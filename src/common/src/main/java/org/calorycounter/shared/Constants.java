@@ -199,6 +199,7 @@ public final class Constants {
 		public static final String IMAGE_WIDTH = "d_image_width";
 		public static final String IMAGE_HEIGHT = "d_image_height";
 		public static final String IMAGE_BYTES = "d_image_bytes";
+		public static final String IMAGE_PIC = "d_image_pic";
 
 
 		public static String local_ip(){

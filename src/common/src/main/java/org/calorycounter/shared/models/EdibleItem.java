@@ -148,7 +148,7 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
         repr.put(FOOD_IS_EATEN, isEaten);
-        //repr.put(FOOD_IMAGE, image_pic.toJSON());
+        repr.put(FOOD_IMAGE, image_pic.toJSON());
         return repr;
     }
 
@@ -166,10 +166,10 @@ public abstract class EdibleItem implements JSONSerializable{
 
         this.quantity = (String) obj.get(FOOD_QUANTITY);
         this.isEaten = (Boolean) obj.get(FOOD_IS_EATEN);
-        /*JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
+        JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
         EdibleItemImage pic = new EdibleItemImage();
         pic.initFromJSON(img);
-        this.setImagePic(pic);*/
+        this.setImagePic(pic);
 
     }
 

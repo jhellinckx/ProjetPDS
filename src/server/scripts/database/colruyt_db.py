@@ -479,6 +479,84 @@ def insert_images_path_into_food():
 	cursor.close()
 	cnx.close()
 
+NAME_KEY = "recipe_name"
+IMAGE_URL_KEY = "recipe_image_url"
+URL_KEY = "recipe_url"
+RATING_KEY = "rating"
+NBR_RATINGS_KEY = "n_ratings"
+INGREDIENTS_LIST_KEY = "ingredients_list"
+INGREDIENTS_NAMES_KEY = "ingredients_names"
+PORTIONS_KEY = "portions"
+DIFFICULTY_KEY = "difficulty"
+PREPARATION_TIME_KEY = "prep_time"
+TAGS_KEY = "tags"
+PREPARATION_STEPS_KEY = "prep_steps"
+PRIMARY_CATEGORY_KEY = "primary_category"
+SECONDARY_CATEGORY_KEY = "secondary_category"
+CALORIE_PER_PORTION_KEY = "portion_calorie"
+FAT_PER_PORTION_KEY = "portion_fat"
+CARBO_PER_PORTION_KEY = "portion_carbo"
+PROTEIN_PER_PORTION_KEY = "portion_protein"
+
+def create_recipe_table():
+	recipe_table_command = (
+		"CREATE TABLE `Recipes` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ NAME_KEY + " VARCHAR(255),"
+		+ IMAGE_URL_KEY + " VARCHAR(255),"
+		+ URL_KEY + " VARCHAR(255),"
+		+ RATING_KEY + " FLOAT,"
+		+ NBR_RATINGS_KEY + " INT UNSIGNED,"
+		+ INGREDIENTS_LIST_KEY + " TEXT,"
+		+ PORTIONS_KEY + " INT UNSIGNED,"
+		+ DIFFICULTY_KEY + " VARCHAR(255),"
+		+ PREPARATION_TIME_KEY + " INT UNSIGNED,"
+		+ PREPARATION_STEPS_KEY + " TEXT,"
+		+ CALORIE_PER_PORTION_KEY + " FLOAT,"
+		+ FAT_PER_PORTION_KEY + " FLOAT,"
+		+ CARBO_PER_PORTION_KEY + " FLOAT,"
+		+ PROTEIN_PER_PORTION_KEY + " FLOAT,"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+		+ INGREDIENTS_NAMES_KEY
+		+ TAGS_KEY
+		+ PRIMARY_CATEGORY_KEY
+		+ SECONDARY_CATEGORY_KEY
+
+
+	recipes_table_command = (
+		"CREATE TABLE `Recipes` ("
+		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		NAME_KEY + " VARCHAR(255),"
+		IMAGE_URL_KEY +" VARCHAR(255),"
+		 " VARCHAR(255),"
+		"date TEXT NOT NULL,"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+	history_fk_food_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	history_fk_user_command = (
+		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idUser_id_user FOREIGN KEY (idUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE"
+		)
+
+	commands = [history_table_command,history_fk_user_command,history_fk_food_command]
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	for command in commands:
+			cursor.execute(command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def insert_recipes_in_table():
+
+
 def log_create_table(table, create_table_func):
 	sys.stdout.write("Creating " + MAGENTA + table + RESET + " table... ")
 	sys.stdout.flush()
