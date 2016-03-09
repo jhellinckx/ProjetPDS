@@ -24,6 +24,7 @@ public class EdibleItemList extends LinearLayout {
     private List<EdibleItem> items;
     boolean removable = false; boolean addable = false;
     boolean ratable = false; boolean expandable = false;
+    boolean checkable = false;
 
     public EdibleItemList(Context context, List<EdibleItem> givenItems, EdibleItemActionCallback actionCallback, int... flags){
         super(context);
@@ -46,6 +47,7 @@ public class EdibleItemList extends LinearLayout {
             else if(flag == FLAG_ADDABLE) addable = true;
             else if(flag == FLAG_RATABLE) ratable = true;
             else if(flag == FLAG_EXPANDABLE) expandable = true;
+            else if(flag == FLAG_CHECKABLE) checkable = true;
         }
         this.itemViewMap = new LinkedHashMap<>(items.size(), MAP_LOAD_FACTOR);
         List<EdibleItem> checkedItems = new ArrayList<EdibleItem>();
@@ -53,13 +55,13 @@ public class EdibleItemList extends LinearLayout {
             if(item.isEaten()){
                 checkedItems.add(item);
             }else {
-                View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable);
+                View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
                 this.itemViewMap.put(item, sticker);
                 this.addView(sticker);
             }
         }
         for(EdibleItem checkedItem: checkedItems){
-            View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable);
+            View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable, checkable);
             this.itemViewMap.put(checkedItem, sticker);
             this.addView(sticker);
         }
@@ -77,6 +79,10 @@ public class EdibleItemList extends LinearLayout {
 
     }
 
+    public void onExpandItem(EdibleItem item){
+        actionCallback.onExpandEdibleItem(item);
+    }
+
     public void makeAddTest(){
         EdibleItem item = new Food();
         item.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
@@ -86,7 +92,7 @@ public class EdibleItemList extends LinearLayout {
         item.setTotalProteins(31f);
         item.setId(1000L);
 
-        View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable);
+        View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
         this.itemViewMap.put(item, sticker);
         this.addView(sticker);
     }
@@ -95,10 +101,10 @@ public class EdibleItemList extends LinearLayout {
         actionCallback.onRateEdibleItem(item);
     }
 
-    public void onExpandItem(EdibleItem item){
+    public void onCheckItem(EdibleItem item){
         this.removeAllViews();
         initItems();
-        actionCallback.onExpandEdibleItem(item);
+        actionCallback.onCheckEdibleItem(item);
     }
 
 }

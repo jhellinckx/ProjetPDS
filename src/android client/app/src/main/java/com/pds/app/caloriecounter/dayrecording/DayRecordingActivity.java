@@ -169,7 +169,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     private void initFoodsRecording(){
 
-        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_ADDABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
+        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
 
         LinearLayout addMenuLayout = new LinearLayout(this);
         addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -263,7 +263,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         if (item.getTotalEnergy() != null) {
             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
             if(calorieProgress != null){
-                calorieProgress.addIntakeProgress((float) Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR));
+                calorieProgress.addIntakeProgress((float) Math.round(item.getTotalEnergy() / CAL_TO_JOULE_FACTOR));
             }
         }
         if(item.getTotalProteins() != null){
@@ -323,6 +323,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
+        
+    }
+
+    @Override
+    public void onCheckEdibleItem(EdibleItem item){
         JSONObject data = new JSONObject();
         data.put(FOOD_NAME, item.toJSON());
         data.put(HISTORY_DATE, date.getText().toString());
