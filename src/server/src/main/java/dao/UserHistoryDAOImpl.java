@@ -24,7 +24,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_DELETE = "DELETE FROM Users_history WHERE idUser = ? AND idFood = ? AND date = ?";
 	private static final String SQL_INSERT_SPORT = "INSERT INTO Users_history (idUser,sport_name,date,duration, energy_consumed, checked,is_food_or_sport) VALUES (?, ?, ?, ?, ?, 1, 'Sport')";
 	private static final String SQL_FIND_HISTORY_SPORTS_FOR_DATE = "SELECT sport_name, duration, energy_consumed FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport = 'Sport'";
-	private static final String SQL_DELETE_SPORT = "DELETE FROM Users_history WHERE idUser = ? AND sport_name = ? AND date = ?";
+	private static final String SQL_DELETE_SPORT = "DELETE FROM Users_history WHERE idUser = ? AND sport_name = ? AND duration = ? AND date = ?";
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -267,7 +267,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
         try {
             /* Recuperation d'une connexion depuis la Factory */
         	connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_DELETE_SPORT, false, user.getId(), sport.getName(), date);
+            preparedStatement = initializationPreparedRequest( connexion, SQL_DELETE_SPORT, false, user.getId(), sport.getName(), sport.getDuration(), date);
 
             int statut = preparedStatement.executeUpdate();
             /* Analyse du statut retourne par la requete d'insertion */
