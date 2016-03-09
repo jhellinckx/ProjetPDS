@@ -73,6 +73,7 @@ public class Message{
 			}
 			catch(UnsupportedEncodingException e){
 				System.out.println(Constants.errorMessage(e.getMessage(),this));
+				this._obj = null;
 			}
 		}
 		return this._obj;

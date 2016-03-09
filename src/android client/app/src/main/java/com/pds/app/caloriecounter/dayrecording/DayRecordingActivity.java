@@ -86,6 +86,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
         dailyFoods = new ArrayList<>();
         dailySports = new ArrayList<Sport>();
+
         sac = new SportActionCallback() {
             @Override
             public void onRemoveSport(Sport sport) {
