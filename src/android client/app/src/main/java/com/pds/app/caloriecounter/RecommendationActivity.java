@@ -25,7 +25,7 @@ import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
 
-public class RecommendationActivity extends MenuNavigableActivity implements RecommendationPastFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
+public class RecommendationActivity extends MenuNavigableActivity implements RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
@@ -58,7 +58,9 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         b_=getIntent().getExtras();
         isReceipt = b_.getBoolean("isReceipt");
         maxCal = b_.getFloat("maxCal");
-
+        _productCodes = b_.getStringArrayList("pastFoodCodes");
+        _productDates = b_.getStringArrayList("pastFoodDates");
+        initPastFoodsInRecomData();
         initCategories();
         launchConstraintFragment();
     }
@@ -77,7 +79,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         transaction.commit();
     }
 
-    public void handleMessage(JSONObject msg){
+    public void handleMessage(JSONObject msg) {
         Log.d("SPORTFRAG HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
@@ -127,7 +129,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
     }
 
-    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo, String recipeOrFood, String category){
+    private void addConstraintsToJSON(String energy, String fat, String prot, String carbo, String recipeOrFood, String category) {
         recom_data.put(MAX_ENERGY, energy);
         recom_data.put(MAX_FAT, fat);
         recom_data.put(MAX_PROT, prot);
@@ -144,7 +146,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         send(networkJSON(FOOD_CODE_REQUEST, data));
     }
 
-    public void onNextPastClick(){
+    public void initPastFoodsInRecomData(){
 
         if (!_productCodes.isEmpty()) {
             recom_data.put(PAST_FOODS_LIST, _productCodes);
@@ -154,37 +156,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             recom_data.put(PAST_FOODS_LIST, null);
             recom_data.put(PAST_FOODS_DATES, null);
         }
-
-
-        if (_sportsname.size() == SPORTS_LIST_SIZE){
-            RecommendationSportFragment frag = new RecommendationSportFragment();
-            Bundle b = new Bundle();
-            b.putStringArrayList("names", _sportsname);
-            frag.setArguments(b);
-            replaceFragment(frag, "sport");
-        }
-        else {
-            send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
-        }
     }
-    /*
-    public void onNextSportClick(){
-
-        if(!duration.getText().toString().isEmpty()){
-            recom_data.put(SPORT_NAME, (String) sports.getSelectedItem());
-            recom_data.put(SPORT_DURATION, duration.getText().toString());
-        }
-        else{
-            recom_data.put(SPORT_NAME, null);
-        }
-
-
-        if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
-            send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
-        }
-        send(networkJSON(DATA_REQUEST, new JSONObject()));
-    }
-    */
 
     public void initCategories(){
         if(isReceipt){

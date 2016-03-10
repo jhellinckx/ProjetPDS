@@ -37,7 +37,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, idUser, idFood, date );
+			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, idUser, idFood, date, isEaten );
 			int statut = preparedStatement.executeUpdate();
 			if (statut == 0) {
 				throw new DAOException ("Failed to create a user food history, no new line added to the DB");

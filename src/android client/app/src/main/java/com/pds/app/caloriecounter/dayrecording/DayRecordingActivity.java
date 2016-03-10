@@ -84,9 +84,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private EditText date;
 
     private String gender;
-    private String weight;
-    private String height;
     private static float maxCal;
+    private String current_day;
 
 
     @Override
@@ -130,7 +129,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     private void initDate(){
         Bundle b = getIntent().getExtras();
-        String current_day;
         if (!getIntent().hasExtra("day")){
             current_day = SDFORMAT.format(Calendar.getInstance().getTime());
         }
@@ -341,14 +339,24 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         Log.d("CLICK : ", " ARTICLE");
 
         Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
+
+        ArrayList<String> productCodes = new ArrayList<String>();
+        ArrayList<String> productDates = new ArrayList<String>();
         if(!dailyFoods.isEmpty()){
             for(int i=0 ; i<dailyFoods.size(); ++i){
-                //recommendactivity.putExtra("pastFoods",);
+                if(dailyFoods.get(i) instanceof Food && dailyFoods.get(i).isEaten()){
+                    Food currFood = (Food) dailyFoods.get(i);
+                    productCodes.add(currFood.getCode());
+                    productDates.add(current_day);
+                }
             }
         }
+        recommendactivity.putStringArrayListExtra("pastFoodCodes",productCodes);
+        recommendactivity.putStringArrayListExtra("pastFoodDates",productDates);
         float maxCal = dailyIntakes.get(TITLE_CALORIES).getIntakeMax();
         recommendactivity.putExtra("maxCal",maxCal);
         recommendactivity.putExtra("isReceipt", false);
+
         startActivity(recommendactivity);
     }
 
