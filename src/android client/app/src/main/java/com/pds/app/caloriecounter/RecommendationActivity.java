@@ -227,7 +227,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             Date date = calendar.getTime();
             sendCode(scanContent, SDFORMAT.format(date));
         } else{
-            Toast toast = Toast.makeText(this, "Scan Cancelled", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Scan Annulé", Toast.LENGTH_SHORT);
             toast.show();
         }
     }

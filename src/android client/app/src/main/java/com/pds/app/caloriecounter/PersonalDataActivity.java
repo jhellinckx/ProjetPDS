@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,10 +42,10 @@ import static org.calorycounter.shared.Constants.network.UPDATE_DATA_REQUEST;
 import static org.calorycounter.shared.Constants.network.UPDATE_DATA_WEIGHT;
 import static org.calorycounter.shared.Constants.network.UPDATE_DATA_HEIGHT;
 import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
-import static org.calorycounter.shared.Constants.network.MAN;
-import static org.calorycounter.shared.Constants.network.WOMAN;
-import static org.calorycounter.shared.Constants.network.CHILD;
-import static org.calorycounter.shared.Constants.network.TEEN;
+import static org.calorycounter.shared.Constants.network.DATA_REQUEST;
+import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.DATA;
+
 import static org.calorycounter.shared.Constants.network.networkJSON;
 
 
@@ -60,7 +61,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     private DailyRecording infosContainer = null;
     private LinearLayout infosLayout;
 
-    private static int _height = -1;
+    private static float _height = -1F;
     private static float _weight = -1F;
     private static int id = 0;
     private static int _energy = 0;
@@ -72,6 +73,8 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
+
+        sendDataRequest();
 
         initInfosLayout();
         addAgeBracketLayout();
@@ -88,13 +91,18 @@ public class PersonalDataActivity extends MenuNavigableActivity {
             weightEditText.setText(Float.toString(_weight));
         }
         if (_height >= 0){
-            heightEditText.setText(Integer.toString(_height));
+            heightEditText.setText(Float.toString(_height));
         }
         if(_energy>0){
             calorieSeekBarEditText.setText(Integer.toString(_energy));
             calorieSeekBar.setProgress(_energy);
         }
 
+    }
+
+    private void sendDataRequest(){
+        JSONObject data = new JSONObject();
+        send(networkJSON(DATA_REQUEST, data));
     }
 
     private void initInfosLayout(){
@@ -200,12 +208,10 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketSpinner.setLayoutParams(ageBracketSpinnerParams);
 
         ageBracketSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        int id= 0;
-        initSpinner();
+        //initSpinner();
         ageBracketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                //updateSpinner();
                 updateSeekBarAndText();
             }
 
@@ -316,29 +322,29 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
     private Boolean validate(String height, String weight){
         if(height.length()!=0 && weight.length()!=0){
-            _height = Integer.parseInt(height);
+            _height = Float.parseFloat(height);
             _weight = Float.parseFloat(weight);
-            if(_height < 250 && _height >40){
-                if(_weight < 250. && _weight >35.){
+            if(_height < 250. && _height >40.){
+                if(_weight < 250. && _weight >30.){
                     return true;
                 }else{
-                    showToast("Weight Must be between 35kg and 250kg");
+                    showToast("Le Poids doit se retrouver entre 30kg et 250kg");
                     return false;
                 }
             }else{
-                showToast("Height Must be between 40cm and 250cm");
+                showToast("La Taille doit se trouver entre 40cm et 250cm");
                 return false;
             }
 
         }else if(height.length()==0 && weight.length()!=0){
-            showToast("Height Missing");
+            showToast("Taille manquante");
             return false;
         }else if(height.length()!=0 && weight.length()==0){
-            showToast("Weight Missing");
+            showToast("Poids manquant");
             return false;
         } else {
-            showToast("Height Missing");
-            showToast("Weight Missing");
+            showToast("Taille manquante");
+            showToast("Poids manquant");
             return false;
         }
     }
@@ -439,6 +445,40 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
     @Override
     public void onBackPressed(){
+
+    }
+
+    public void handleMessage(JSONObject msg){
+        Log.d("Personal Acti HANDLE MSG", msg.toString());
+        String request = (String) msg.get(REQUEST_TYPE);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if(request.equals(DATA_REQUEST)){
+            String gender = (String) data.get(UPDATE_DATA_GENDER);
+            genderToSpinerId(gender);
+            initSpinner();
+
+            heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT))) ;
+            weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT))) ;
+        }
+
+    }
+
+    public void genderToSpinerId(String gender){
+        switch (gender){
+            case "C":
+                id = 0;
+                break;
+            case "T":
+                id = 1;
+                break;
+            case "W":
+                id = 2;
+                break;
+            default:
+                id = 3;
+                break;
+
+        }
 
     }
 }
