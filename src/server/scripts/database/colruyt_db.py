@@ -498,31 +498,9 @@ FAT_PER_PORTION_KEY = "portion_fat"
 CARBO_PER_PORTION_KEY = "portion_carbo"
 PROTEIN_PER_PORTION_KEY = "portion_protein"
 
-
-def create_ingredients_table():
-	ingredients_table_command = (
-		"CREATE TABLE `Ingredients` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-		+ "ingredient_name VARCHAR(255),"
-		+ "is_main INT(1),"
-		"  PRIMARY KEY (`id`)"
-    	") ENGINE=InnoDB")
-
-
-def create_tags_table():
-	tags_table_command = (
-		"CREATE TABLE `Tags` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-		+ "tag_name VARCHAR(255),"
-		+ "FOREIGN KEY,"
-		"  PRIMARY KEY (`id`)"
-    	") ENGINE=InnoDB")
-
-def create_categories_table():
-
 def create_recipe_table():
 	recipe_table_command = (
-		"CREATE TABLE `Recipes` ("
+		"CREATE TABLE `Recipe` ("
 		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ NAME_KEY + " VARCHAR(255),"
 		+ IMAGE_URL_KEY + " VARCHAR(255),"
@@ -581,6 +559,62 @@ def create_recipe_table():
 
 def insert_recipes_in_table():
 	pass
+
+def create_ingredients_table():
+	ingredients_table_command = (
+		"CREATE TABLE `Ingredient` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "ingredient_name VARCHAR(255),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+
+def create_tags_table():
+	tags_table_command = (
+		"CREATE TABLE `Tag` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "tag_name VARCHAR(255),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+def create_categories_table():
+	categories_table_command = (
+	"CREATE TABLE `JDFCategorie` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "category_name VARCHAR(255),"
+		+ "is_main INT(1),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+def create_recipesingredients_table():
+	recipesingredients_table_command = (
+		"CREATE TABLE `RecipeIngredients` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
+		+ "FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+def create_recipetags_table():
+	recipesingredients_table_command = (
+		"CREATE TABLE `RecipeTags` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
+		+ "FOREIGN KEY (tag_id) REFERENCES Tag(id),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+def create_recipecategories_table():
+	categories_table_command = (
+	"CREATE TABLE `RecipeCategories` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "category_name VARCHAR(255),"
+		+ "is_main INT(1),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+
+
 
 def log_create_table(table, create_table_func):
 	sys.stdout.write("Creating " + MAGENTA + table + RESET + " table... ")
