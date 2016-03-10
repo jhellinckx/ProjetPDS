@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calorie Counter</string>
+    <string name="app_name">YourMeals</string>
     <string name="id"><u>Identifiant</u></string>
     <string name="age">Catégorie d\'âge: </string>
     <string name="weight">Poids (en kg): </string>
