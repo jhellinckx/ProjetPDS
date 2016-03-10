@@ -61,11 +61,7 @@ public class HistoryRequestManager implements RequestManager{
 	private void manageHistorySuccess(JSONObject data, List<Food> foods, List<String> dates){
 		JSONArray foodsDatesRepr = new JSONArray();
 		for(int i = 0 ; i< foods.size(); ++i){
-			JSONObject foodDateRepr = new JSONObject();
-			foodDateRepr.put(HISTORY_DATE, dates.get(i));
-			foodDateRepr.put(HISTORY_NAME, foods.get(i).getProductName());
-			foodDateRepr.put(FOOD_IMAGE_URL, foods.get(i).getImageUrl());
-			foodsDatesRepr.add(foodDateRepr);
+			foodsDatesRepr.add(foods.get(i).toJSON(false));
 		}
 		data.put(HISTORY_NAMES_DATES, foodsDatesRepr);
 	}
