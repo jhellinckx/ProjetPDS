@@ -131,8 +131,7 @@ public abstract class EdibleItem implements JSONSerializable{
         return isEaten;
     }
 
-    @Override
-    public JSONObject toJSON(){
+    private JSONObject constructJSON(){
         JSONObject repr = new JSONObject();
         repr.put(FOOD_ID, id);
         repr.put(FOOD_URL, url);
@@ -148,7 +147,23 @@ public abstract class EdibleItem implements JSONSerializable{
         repr.put(FOOD_TOTAL_SODIUM, total_salt);
         repr.put(FOOD_QUANTITY, quantity);
         repr.put(FOOD_IS_EATEN, isEaten);
+        
+        return repr;
+    }
+
+    @Override
+    public JSONObject toJSON(){
+        JSONObject repr = constructJSON();
         repr.put(FOOD_IMAGE, image_pic.toJSON());
+        return repr;
+    }
+
+    @Override
+    public JSONObject toJSON(boolean noImage){
+        JSONObject repr = constructJSON();
+        if (noImage){
+            repr.put(FOOD_IMAGE, image_pic.toJSON());
+        }
         return repr;
     }
 
@@ -167,9 +182,11 @@ public abstract class EdibleItem implements JSONSerializable{
         this.quantity = (String) obj.get(FOOD_QUANTITY);
         this.isEaten = (Boolean) obj.get(FOOD_IS_EATEN);
         JSONObject img = (JSONObject) obj.get(FOOD_IMAGE);
-        EdibleItemImage pic = new EdibleItemImage();
-        pic.initFromJSON(img);
-        this.setImagePic(pic);
+        if (img != null){
+            EdibleItemImage pic = new EdibleItemImage();
+            pic.initFromJSON(img);
+            this.setImagePic(pic);
+        }
 
     }
 

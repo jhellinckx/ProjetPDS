@@ -75,6 +75,11 @@ public class Sport implements JSONSerializable{
 	}
 
 	@Override
+	public JSONObject toJSON(boolean noImage){
+		return toJSON();
+	}
+
+	@Override
 	public void initFromJSON(JSONObject obj){
 		this.setName((String) obj.get(SPORT_NAME));
 		this.setDuration(Integer.parseInt((String) obj.get(SPORT_DURATION)));
