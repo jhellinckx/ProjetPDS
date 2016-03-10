@@ -5,6 +5,8 @@ import sys
 import ast
 import requests
 import requests.exceptions
+from binary_to_png import *
+import time
 
 try:
 	import mysql.connector
@@ -22,7 +24,7 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_colruyt"
-db_properties_filename = "../../../src/main/resources/dao.properties"
+db_properties_filename = "../../src/main/resources/dao.properties"
 filename = "raw/images_binary_file.txt"
 delimiter = "€£"
 
@@ -74,47 +76,70 @@ def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherw
 	cursor.close()
 	cnx.close()
 
-def selectInfoFromDbColumn():
-	selectInfoFromFoodCommand = (
+def selectIdsFromDbColumn():
+	selectIdFromFoodCommand = (
 		"SELECT `id_food`"
-		"FROM `Food` ORDER BY id_food ASC;"
-		)
+		"FROM `Food` ORDER BY id_food ASC")
 
-	image_urls = []
+	ids = []
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	sys.stdout.write("Trying to select id from DB ..")
+	try:
+		cursor.execute(selectIdFromFoodCommand)
+		sys.stdout.write(GREEN + " -> OK" + RESET + "\n")
+		for idf in cursor:
+			ids.append(idf[0])
+	except mysql.connector.Error as err:
+		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+
+	return ids
+
+
+
+def selectUrlsFromDbColumn(ids):
+	selectUrlsFromFoodCommand = (
+		"SELECT `image_url`"
+		"FROM `Food`"
+		"WHERE `id_food` = %s")
+
+	image_dict = {}.fromkeys(ids)
 
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
-	sys.stdout.write("Trying to select info from DB ..")
-	try:
-		cursor.execute(selectInfoFromFoodCommand)
-		sys.stdout.write(GREEN + " -> OK" + RESET + "\n")
-		for image_url in cursor:
-			image_urls.append(image_url[0])
-	except mysql.connector.Error as err:
-		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+	sys.stdout.write("Trying to select urls from DB ..")
+	for i in ids:
+		try:
+			args = (i,)
+			cursor.execute(selectUrlsFromFoodCommand, args)
+			image_dict[i] = cursor.fetchone()[0]
+		except mysql.connector.Error as err:
+			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
+	sys.stdout.write(GREEN + " -> OK" + RESET + "\n")
 
-	return image_urls
+	return image_dict
 
 
-def getAllImagesFromUrl(image_urls):
-	images = []
+def getAllImagesFromUrl(image_dict):
 	print "Downloading images (takes overs 25 min for db_colruyt).. "
 	string = "Images Downloaded: {0}"
 	count = 0
 	s = requests.Session()				# http-presistent requests.
-	for image_url in image_urls:
-		try:
-			response = s.get(image_url)
-			images.append(response.content)
-			count += 1
-			if ((count%200) == 0):
-				print(string.format(count))
-		except requests.exceptions.ConnectionError:
-			time.sleep(5)
-			s = requests.Session()
-		
-	return images
+	for i in image_dict:
+		image_downloaded = False
+		while(not image_downloaded):
+			try:
+				response = s.get(image_dict[i])
+				image_dict[i] = (response.content)
+				count += 1
+				image_downloaded = True
+				if ((count%200) == 0):
+					print(string.format(count))
+			except requests.exceptions.ConnectionError:
+				time.sleep(5)
+				s = requests.Session()
 
 def getAllImagesFromFile():
 	images = []
@@ -150,14 +175,10 @@ def updateDb(images, image_urls):
 def execute(with_file):
 	addOrDeleteColumnToTable(True)
 	addOrDeleteColumnToTable(False)
-	image_urls = selectInfoFromDbColumn()
-	print image_urls
-	"""if with_file:
-		images = getAllImagesFromFile() 
-	else: 
-		images = getAllImagesFromUrl(image_urls)
-	
-	updateDb(images, image_urls)"""
+	food_ids = selectIdsFromDbColumn()
+	image_dict = selectUrlsFromDbColumn(food_ids)
+	getAllImagesFromUrl(image_dict)
+	convertImages(image_dict)
 
 
 if __name__ == "__main__":

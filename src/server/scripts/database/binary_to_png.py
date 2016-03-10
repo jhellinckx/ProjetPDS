@@ -24,12 +24,11 @@ def getBinaryImagesFromFile():
 		images = images[:len(images)-1]
 	return images
 
-def convertBinaryToImages(binary_images):
-	images = []
-	for binary_image in binary_images:
-		imagefile = StringIO(binary_image)
-		images.append(Image.open(imagefile))
-	return images
+def convertBinaryToImages(image_dict):
+
+	for i in image_dict:
+		imagefile = StringIO(image_dict[i])
+		image_dict[i] = Image.open(imagefile)
 
 def deleteFilesInDirectory():
 	for f in os.listdir(directory):
@@ -44,26 +43,28 @@ def createDirectory():
 	try:
 		deleteFilesInDirectory()
 		rmdir(directory)
+		mkdir(directory)
 	except OSError as e:
 		mkdir(directory)
 
-def saveImagesAsPNG(images):
-	for i in range(len(images)):
-		f = directory + "/" + png_filename.format(i+1)
-		img = images[i]
+def saveImagesAsPNG(image_dict):
+	for i in image_dict:
+		f = directory + "/" + png_filename.format(i)
+		img = image_dict[i]
 		try:
 			img.save(f, 'jpeg')
 		except IOError:
 			img = Image.open(no_pic_image)
 			img.save(f, 'jpeg')
 
-
+def convertImages(image_dict):
+	convertBinaryToImages(image_dict)
+	createDirectory()
+	saveImagesAsPNG(image_dict)
 
 def execute():
 	binary_images = getBinaryImagesFromFile()
-	images = convertBinaryToImages(binary_images)
-	createDirectory()
-	saveImagesAsPNG(images)
+	convertImages(binary_images)
 	
 
 if __name__ == "__main__":
