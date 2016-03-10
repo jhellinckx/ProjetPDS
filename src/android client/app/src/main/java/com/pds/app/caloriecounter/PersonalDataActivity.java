@@ -82,6 +82,8 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         addWeightLayout();
         addCalorieTextLayout();
         addCalorieLayout();
+        initSpinner();
+
         _energy = computeMaxEnergy();
 
         infosContainer = new DailyRecording(this, TITLE_INFOS, infosLayout);
@@ -97,7 +99,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
             calorieSeekBarEditText.setText(Integer.toString(_energy));
             calorieSeekBar.setProgress(_energy);
         }
-
     }
 
     private void sendDataRequest(){
@@ -452,10 +453,10 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         Log.d("Personal Acti HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
-        if(request.equals(DATA_REQUEST)){
+        if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             genderToSpinerId(gender);
-            initSpinner();
+
 
             heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT))) ;
             weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT))) ;
@@ -471,7 +472,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
             case "T":
                 id = 1;
                 break;
-            case "W":
+            case "F":
                 id = 2;
                 break;
             default:
