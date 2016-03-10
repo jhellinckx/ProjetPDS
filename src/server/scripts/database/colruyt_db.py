@@ -498,7 +498,28 @@ FAT_PER_PORTION_KEY = "portion_fat"
 CARBO_PER_PORTION_KEY = "portion_carbo"
 PROTEIN_PER_PORTION_KEY = "portion_protein"
 
-'''
+
+def create_ingredients_table():
+	ingredients_table_command = (
+		"CREATE TABLE `Ingredients` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "ingredient_name VARCHAR(255),"
+		+ "is_main INT(1),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+
+def create_tags_table():
+	tags_table_command = (
+		"CREATE TABLE `Tags` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "tag_name VARCHAR(255),"
+		+ "FOREIGN KEY,"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+def create_categories_table():
+
 def create_recipe_table():
 	recipe_table_command = (
 		"CREATE TABLE `Recipes` ("
@@ -519,6 +540,8 @@ def create_recipe_table():
 		+ PROTEIN_PER_PORTION_KEY + " FLOAT,"
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
+
+
 
 		+ INGREDIENTS_NAMES_KEY
 		+ TAGS_KEY
@@ -555,7 +578,7 @@ def create_recipe_table():
 	cursor.close()
 	cnx.close()
 
-'''
+
 def insert_recipes_in_table():
 	pass
 
