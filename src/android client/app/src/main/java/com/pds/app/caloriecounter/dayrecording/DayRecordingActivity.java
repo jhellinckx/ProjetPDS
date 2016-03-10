@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.pds.app.caloriecounter.ItemInfoDialog;
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.RecommendationActivity;
@@ -53,8 +56,18 @@ import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
 import static org.calorycounter.shared.Constants.network.FOOD_LIST;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
+import static org.calorycounter.shared.Constants.network.FOOD_QUANTITY;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_CARBOHYDRATES;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_ENERGY;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_FAT;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_PROTEINS;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SATURATED_FAT;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SODIUM;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SUGARS;
 import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
 import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUEST;
+import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_CARBOHYDRATES;
+import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
@@ -182,9 +195,9 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         IntakeProgress calorieIntake = new IntakeProgress(this, 0, maxCal, CALORIES_UNIT);
         dailyIntakes.put(TITLE_CALORIES, calorieIntake);
-        IntakeProgress proteinIntake = new IntakeProgress(this, 0, 40, DEFAULT_UNIT);
+        IntakeProgress proteinIntake = new IntakeProgress(this, 0, HUMAN_DAILY_PROTEINS, DEFAULT_UNIT);
         dailyIntakes.put(TITLE_PROTEINS, proteinIntake);
-        IntakeProgress carboIntake = new IntakeProgress(this, 0, 300, DEFAULT_UNIT);
+        IntakeProgress carboIntake = new IntakeProgress(this, 0, HUMAN_DAILY_CARBOHYDRATES, DEFAULT_UNIT);
         dailyIntakes.put(TITLE_CARBO, carboIntake);
 
         LinearLayout intakesLayout = new LinearLayout(this);
@@ -365,7 +378,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     public void onAddReceipt(){
-        Log.d("CLICK : "," RECEIPT");
+        Log.d("CLICK : ", " RECEIPT");
         Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
         recommendactivity.putExtra("isReceipt", true);
         startActivity(recommendactivity);
@@ -404,7 +417,19 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
-        
+        Bundle b = new Bundle();
+        b.putString(FOOD_NAME, item.getProductName());
+        b.putString(FOOD_QUANTITY, item.getQuantity());
+        b.putFloat(FOOD_TOTAL_ENERGY, item.getTotalEnergy());
+        b.putFloat(FOOD_TOTAL_FAT, item.getTotalFat());
+        b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
+        b.putFloat(FOOD_TOTAL_PROTEINS, item.getTotalProteins());
+        b.putFloat(FOOD_TOTAL_SUGARS, item.getTotalSugars());
+        b.putFloat(FOOD_TOTAL_SODIUM, item.getTotalSalt());
+        b.putFloat(FOOD_TOTAL_CARBOHYDRATES, item.getTotalCarbohydrates());
+        ItemInfoDialog dialog = new ItemInfoDialog();
+        dialog.setArguments(b);
+        dialog.show(getFragmentManager(), "infos");
     }
 
     @Override

@@ -43,25 +43,25 @@ public class ItemInfoDialog extends DialogFragment {
 
     }
 
-    private void initTextView(TextView tv, double num_value){
-        tv.setText(Double.toString(num_value));
+    private void initTextView(TextView tv, float num_value){
+        tv.setText(Float.toString(num_value));
     }
 
     private void initMinorTextView(Bundle b, View v){
-        initTextView((TextView) v.findViewById(R.id.info_insatfat), b.getDouble(FOOD_TOTAL_SATURATED_FAT));
-        initTextView((TextView) v.findViewById(R.id.info_sodium), b.getDouble(FOOD_TOTAL_SODIUM));
-        initTextView((TextView) v.findViewById(R.id.info_sugar), b.getDouble(FOOD_TOTAL_SUGARS));
+        initTextView((TextView) v.findViewById(R.id.info_insatfat), b.getFloat(FOOD_TOTAL_SATURATED_FAT));
+        initTextView((TextView) v.findViewById(R.id.info_sodium), b.getFloat(FOOD_TOTAL_SODIUM));
+        initTextView((TextView) v.findViewById(R.id.info_sugar), b.getFloat(FOOD_TOTAL_SUGARS));
 
     }
 
     private void initMainTextView(Bundle b, View v){
         ((TextView) v.findViewById(R.id.info_name)).setText(b.getString(FOOD_NAME));
         ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
-        int energy = (int) (float) ((b.getDouble(FOOD_TOTAL_ENERGY))/CAL_TO_JOULE_FACTOR);
+        int energy = (int) (float) ((b.getFloat(FOOD_TOTAL_ENERGY))/CAL_TO_JOULE_FACTOR);
         initTextView((TextView) v.findViewById(R.id.info_cal), energy);
-        initTextView((TextView) v.findViewById(R.id.info_prot), b.getDouble(FOOD_TOTAL_PROTEINS));
-        initTextView((TextView) v.findViewById(R.id.info_fat), b.getDouble(FOOD_TOTAL_FAT));
-        initTextView((TextView) v.findViewById(R.id.info_carbo), b.getDouble(FOOD_TOTAL_CARBOHYDRATES));
+        initTextView((TextView) v.findViewById(R.id.info_prot), b.getFloat(FOOD_TOTAL_PROTEINS));
+        initTextView((TextView) v.findViewById(R.id.info_fat), b.getFloat(FOOD_TOTAL_FAT));
+        initTextView((TextView) v.findViewById(R.id.info_carbo), b.getFloat(FOOD_TOTAL_CARBOHYDRATES));
 
     }
 
