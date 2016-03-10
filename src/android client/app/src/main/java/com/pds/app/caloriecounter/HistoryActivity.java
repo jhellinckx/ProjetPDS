@@ -13,13 +13,18 @@ import com.github.mikephil.charting.components.*;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +39,8 @@ public class HistoryActivity extends MenuNavigableActivity {
     private static final String Y_ENERGY_LABEL = "Calories";
     private static final String Y_FAT_LABEL = "Lipides";
     private static final String Y_PROT_LABEL = "Protéines";
+    private static final int QUOTIENT = 100;
+    private static final float AXIS_TEXT_SIZE = 10f;
 
     private FrameLayout historyTable;
     private Context context;
@@ -93,7 +100,6 @@ public class HistoryActivity extends MenuNavigableActivity {
         chart.setData(new BarData(pastDatesToStringList(), castFoodsToBarDataSet()));
         chart.invalidate();
         historyTable.addView(chart);
-        System.out.println("-------------------------****" + past_dates.toString());
 
     }
 
@@ -107,12 +113,13 @@ public class HistoryActivity extends MenuNavigableActivity {
     private void initXAxis(){
         XAxis axis = chart.getXAxis();
         axis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        initAxis(axis, context.getResources().getColor(R.color.primary_dark), 10f);
+        initAxis(axis, context.getResources().getColor(R.color.primary_dark), AXIS_TEXT_SIZE);
     }
 
     private void initYAxis(){
         YAxis axis = chart.getAxisLeft();
-        initAxis(axis, Color.BLUE, 10f);
+        initAxis(axis, Color.BLUE, AXIS_TEXT_SIZE);
+        axis.setValueFormatter(new PercentFormatter());
     }
 
     private void initChartAxis(){
@@ -134,11 +141,19 @@ public class HistoryActivity extends MenuNavigableActivity {
         BarDataSet set1 = new BarDataSet(energy_vals, Y_ENERGY_LABEL);
         BarDataSet set2 = new BarDataSet(fat_vals, Y_FAT_LABEL);
         BarDataSet set3 = new BarDataSet(prot_vals, Y_PROT_LABEL);
+        set1.setValueFormatter(new ItemValueFormatter(CHILD_DAILY_ENERGY/CAL_TO_JOULE_FACTOR));
+        set2.setValueFormatter(new ItemValueFormatter(HUMAN_DAILY_FAT));
+        set3.setValueFormatter(new ItemValueFormatter(HUMAN_DAILY_PROTEINS));
         initAndAddBarToDataSet(set1, data_set, context.getResources().getColor(R.color.primary));
         initAndAddBarToDataSet(set2, data_set, context.getResources().getColor(R.color.yellow_bar));
         initAndAddBarToDataSet(set3, data_set, context.getResources().getColor(R.color.blue_bar));
 
         return data_set;
+    }
+
+    private float infoToPercentage(float info, float max){
+        float quotient = info/max;
+        return quotient*QUOTIENT;
     }
 
     private List<IBarDataSet> castFoodsToBarDataSet(){
@@ -148,9 +163,9 @@ public class HistoryActivity extends MenuNavigableActivity {
         int size = past_items.size();
         for (int i = 0; i < size; i++){
             EdibleItem item = past_items.get(i);
-            y_energy_vals.add(new BarEntry(item.getTotalEnergy()/*/CAL_TO_JOULE_FACTOR*/, i));
-            y_fat_vals.add(new BarEntry(item.getTotalFat(), i));
-            y_prot_vals.add(new BarEntry(item.getTotalProteins(), i));
+            y_energy_vals.add(new BarEntry(infoToPercentage(item.getTotalEnergy(), CHILD_DAILY_ENERGY), i));
+            y_fat_vals.add(new BarEntry(infoToPercentage(item.getTotalFat(), HUMAN_DAILY_FAT), i));
+            y_prot_vals.add(new BarEntry(infoToPercentage(item.getTotalProteins(), HUMAN_DAILY_PROTEINS), i));
         }
         return initIBarDataSet(y_energy_vals, y_fat_vals, y_prot_vals);
     }
@@ -175,5 +190,27 @@ public class HistoryActivity extends MenuNavigableActivity {
             }
         });
         Collections.sort(past_dates);
+    }
+
+    private class ItemValueFormatter implements ValueFormatter{
+
+        private float max;
+        private DecimalFormat mFormat;
+
+        public ItemValueFormatter(float max_factor){
+            max = max_factor;
+            mFormat = new DecimalFormat("###,###,##0.0");
+        }
+
+        private float modifyValue(float value){
+            float multiplication_factor = value/QUOTIENT;
+            return max*multiplication_factor;
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler){
+            float res = modifyValue(value);
+            return mFormat.format(res);
+        }
     }
 }
