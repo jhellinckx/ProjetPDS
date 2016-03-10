@@ -234,8 +234,9 @@ def create_user_table():
 	(id_user INT UNSIGNED NOT NULL AUTO_INCREMENT,\
 	username VARCHAR(60) NOT NULL,\
 	gender VARCHAR(1) NOT NULL,\
-	weight FLOAT,\
+	weight FLOAT NOT NULL,\
 	password VARCHAR(255) NOT NULL,\
+	height FLOAT NOT NULL,\
 	UNIQUE(username),\
 	PRIMARY KEY(id_user)\
 	) ENGINE=INNODB;"

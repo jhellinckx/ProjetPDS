@@ -19,13 +19,14 @@ import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight, password FROM User WHERE username = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight, password FROM User WHERE id_user = ?";
-	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight, password FROM User";
-	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight, password) VALUES (?, ?, ?, ?)";
+	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight, password, height FROM User WHERE username = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight, password, height FROM User WHERE id_user = ?";
+	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight, password, height FROM User";
+	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight, password, height) VALUES (?, ?, ?, ?, ?)";
 	private static final String SQL_DELETE = "DELETE FROM User WHERE username = ?";
     private static final String SQL_UPDATE_WEIGHT = "UPDATE User SET weight = ? WHERE id_user = ?";
     private static final String SQL_UPDATE_GENDER = "UPDATE User SET gender = ? WHERE id_user = ?";
+    private static final String SQL_UPDATE_HEIGHT = "UPDATE User SET height = ? WHERE id_user = ?";
 	
 	UserDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -158,7 +159,7 @@ public class UserDAOImpl implements UserDAO {
         try {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender(), user.getWeight(), user.getPassword());
+            preparedStatement = initializationPreparedRequest( connexion, SQL_INSERT, true, user.getUsername(), user.getGender(), user.getWeight(), user.getPassword(), user.getHeight());
             int statut = preparedStatement.executeUpdate();
             /* Analyse du statut retourne par la requetee d'insertion */
             if ( statut == 0 ) {
@@ -238,6 +239,7 @@ public class UserDAOImpl implements UserDAO {
         user.setGender( resultSet.getString( "gender" ) );
         user.setWeight( resultSet.getFloat( "weight" ) );
         user.setPassword( resultSet.getString( "password" ) );
+        user.setWeight( resultSet.getFloat( "height" ) );
         return user;
     }
 
@@ -317,5 +319,26 @@ public class UserDAOImpl implements UserDAO {
             silentClosures( preparedStatement, connexion );
         }
     } 
+
+    @Override
+    public void updateUserHeight(User user, float height) throws DAOException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_UPDATE_HEIGHT, false, height, user.getId() );
+            int statut = preparedStatement.executeUpdate();
+            /* Analyse du statut retourne par la requetee d'insertion */
+            if ( statut == 0 ) {
+                throw new DAOException( "Failed to create a user, no new line added to the table." );
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( preparedStatement, connexion );
+        }
+    }
 }	
 

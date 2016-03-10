@@ -25,4 +25,6 @@ public interface UserDAO {
 
     void updateUserGender(User user, String gender) throws DAOException;
 
+    void updateUserHeight(User user, float height) throws DAOException;
+
 }

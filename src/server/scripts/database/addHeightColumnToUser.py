@@ -29,14 +29,14 @@ def db_params():
 	f.close()
 	return (username, password)
 
-def addColumnsToUsers_history():
+def addHeightToUser():
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
-	command = "ALTER TABLE `Users_history` ADD (checked INT(1) NOT NULL, is_food_or_sport VARCHAR(5), sport_name VARCHAR(100))"
+	command = "ALTER TABLE `User` ADD (height FLOAT NOT NULL)"
 	
-	sys.stdout.write("Creating " + MAGENTA + "checked, is_food_or_sport & sport_name column" + RESET + " for Users_history... ")
+	sys.stdout.write("Adding " + MAGENTA + "height column" + RESET + " for User... ")
 	try:
 		cursor.execute(command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -50,4 +50,4 @@ def addColumnsToUsers_history():
 
 
 if __name__ == "__main__":
-	addColumnsToUsers_history()
+	addHeightToUser()

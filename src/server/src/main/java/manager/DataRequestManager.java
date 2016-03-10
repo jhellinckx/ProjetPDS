@@ -33,16 +33,18 @@ public class DataRequestManager implements RequestManager{
 		String gender = (String) data.get(UPDATE_DATA_GENDER);
 		gender = getGenderDbId(gender);
 		Float weight = Float.parseFloat( (String) data.get(UPDATE_DATA_WEIGHT));
+		Float height = Float.parseFloat( (String) data.get(UPDATE_DATA_HEIGHT));
 		_userDatabase.updateUserWeight(user, weight);
 		_userDatabase.updateUserGender(user, gender);
+		_userDatabase.updateUserHeight(user, height);
 		return null;
 	}
 
 	private String getGenderDbId(String gender){
 
-		if(gender.equals("Woman")) {return "F";}
-		else if (gender.equals("Man")) {return "M";}
-		else if (gender.equals("Teen")) {return "T";}
+		if(gender.equals("Femme")) {return "F";}
+		else if (gender.equals("Homme")) {return "M";}
+		else if (gender.equals("Adolescent")) {return "T";}
 		else {return "C";}
 	}
 
