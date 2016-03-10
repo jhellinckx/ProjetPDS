@@ -21,12 +21,14 @@ public class User implements JSONSerializable {
     private String    gender;
     private HashMap<EdibleItem, Float> rankedEdibleItems;
     private Float weight;
+    private Float height;
 
     public User() {
         this.id = null;
         this.username = null;
         this.gender = null;
         this.weight = null;
+        this.height = null;
         this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
 
@@ -35,14 +37,16 @@ public class User implements JSONSerializable {
         this.password = pw;
         this.gender = gender;
         this.weight = -1f;
+        this.height = -1f;
         this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
 
-    public User( String username,String pw, String gender, Float weight ) {
+    public User( String username,String pw, String gender, Float weight, Float height ) {
         this.username = username;
         this.password = pw;
         this.gender = gender;
         this.weight = weight;
+        this.height = height;
         this.rankedEdibleItems = new HashMap<EdibleItem, Float>();
     }
 
@@ -104,6 +108,14 @@ public class User implements JSONSerializable {
 
     public float getWeight() {
         return weight;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     public float getMeanRank(){

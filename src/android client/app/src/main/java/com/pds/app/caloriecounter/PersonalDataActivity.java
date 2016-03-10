@@ -39,8 +39,14 @@ import static org.calorycounter.shared.Constants.network.TEEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.UPDATE_DATA_GENDER;
 import static org.calorycounter.shared.Constants.network.UPDATE_DATA_REQUEST;
 import static org.calorycounter.shared.Constants.network.UPDATE_DATA_WEIGHT;
+import static org.calorycounter.shared.Constants.network.UPDATE_DATA_HEIGHT;
 import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
+import static org.calorycounter.shared.Constants.network.MAN;
+import static org.calorycounter.shared.Constants.network.WOMAN;
+import static org.calorycounter.shared.Constants.network.CHILD;
+import static org.calorycounter.shared.Constants.network.TEEN;
 import static org.calorycounter.shared.Constants.network.networkJSON;
+
 
 public class PersonalDataActivity extends MenuNavigableActivity {
 
@@ -299,7 +305,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
                 }
 
                 id = (int) ageBracketSpinner.getSelectedItemId();
-                sendData(ageBracketSpinner.getSelectedItem().toString(), weightEditText.getText().toString());
+                sendData();
 
                 Intent dayRecordingActivity = new Intent(PersonalDataActivity.this, DayRecordingActivity.class);
 
@@ -340,7 +346,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         }
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         final String m = message;
         runOnUiThread(new Runnable() {
             public void run() {
@@ -361,10 +367,11 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         return categories;
     }
 
-    private void sendData(String gender, String weight){
+    private void sendData(){
         JSONObject data = new JSONObject();
-        data.put(UPDATE_DATA_GENDER, gender);
-        data.put(UPDATE_DATA_WEIGHT, weight);
+        data.put(UPDATE_DATA_GENDER, ageBracketSpinner.getSelectedItem().toString());
+        data.put(UPDATE_DATA_WEIGHT, weightEditText.getText().toString());
+        data.put(UPDATE_DATA_HEIGHT, heightEditText.getText().toString());
         send(networkJSON(UPDATE_DATA_REQUEST, data));
 
     }
@@ -373,11 +380,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         ageBracketSpinner.setAdapter(ageAdapter);
         ageBracketSpinner.setSelection(id);
-
-    }
-
-    private void updateSpinner(){
-        //updates the max calorie bar
 
     }
 
