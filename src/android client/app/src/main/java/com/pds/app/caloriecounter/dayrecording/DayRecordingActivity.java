@@ -50,6 +50,7 @@ import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
+import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
 import static org.calorycounter.shared.Constants.network.FOOD_LIST;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
@@ -68,6 +69,9 @@ import static org.calorycounter.shared.Constants.network.SPORT_LIST;
 import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.TEEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE;
+//import static org.calorycounter.shared.Constants.network.RECOMMENDED_FOOD_REQUEST;
+//import static org.calorycounter.shared.Constants.network.FOOD;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -166,7 +170,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         }
         else{
             gender = b.getString("gender");
-            System.out.println(gender);
             maxCal = computeMaxEnergy();
         }
 
@@ -367,6 +370,16 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         startActivity(recommendactivity);
     }
 
+    public void addPotentialRecommendation() {
+
+        Bundle b = getIntent().getExtras();
+        if (!getIntent().hasExtra("selectedItem")) {
+
+        } else {
+            String recomCode = b.getString("selectedItem");
+        }
+    }
+
     @Override
     public void onRemoveEdibleItem(EdibleItem item) {
         if(item.isEaten()) {
@@ -400,6 +413,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         data.put(HISTORY_DATE, date.getText().toString());
         int status = (item.isEaten()) ? 1 : 0;
         data.put(FOOD_IS_EATEN, status);
+        data.put(FOOD_IS_NEW,0);
         if(item.isEaten()){
             substractToProgresses(item);
         }else {

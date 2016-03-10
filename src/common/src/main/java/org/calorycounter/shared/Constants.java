@@ -84,6 +84,8 @@ public final class Constants {
 		public static final String FOOD_QUANTITY = "f_quantity";
 		public static final String FOOD_IS_EATEN = "f_iseaten";
 		public static final String CHANGE_EATEN_STATUS_REQUEST = "r_change_eatenstatus";
+		public static final String FOOD_IS_NEW = "f_isnew";
+
 
 		public static final String FOOD_CODE_REQUEST = "r_foodcode";
 		public static final String FOOD_CODE_RESPONSE = "d_foodcode_res";

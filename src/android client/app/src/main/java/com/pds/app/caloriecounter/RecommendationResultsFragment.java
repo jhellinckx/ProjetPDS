@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,21 +12,26 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.pds.app.caloriecounter.dayrecording.DailyRecording;
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
 
+import org.calorycounter.shared.Constants;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_FOODS;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_ADDABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_CHECKABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVABLE;
+import static org.calorycounter.shared.Constants.date.SDFORMAT;
 import static org.calorycounter.shared.Constants.network.*;
 
 public class RecommendationResultsFragment extends Fragment implements EdibleItemActionCallback {
@@ -89,7 +95,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
         stickersLayout = (LinearLayout) view.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
-        foodsContainer = new DailyRecording(getContext(), "Résultats", new EdibleItemList(getContext(), changeJSONtoEdibleItems(recommendations), this, FLAG_RATABLE, FLAG_EXPANDABLE));
+        foodsContainer = new DailyRecording(getContext(), "Résultats", new EdibleItemList(getContext(), changeJSONtoEdibleItems(recommendations), this, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_ADDABLE));
         stickersLayout.addView(foodsContainer);
         return view;
     }
@@ -131,6 +137,20 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onAddEdibleItem(EdibleItem item){
+        Intent dayRecordingActivity = new Intent(getActivity(), DayRecordingActivity.class);
+        if(item instanceof Food){
+            //add la food a l'history
+            String current_day = SDFORMAT.format(Calendar.getInstance().getTime());
+            JSONObject data = new JSONObject();
+            data.put(FOOD_NAME, item.toJSON(false));
+            data.put(HISTORY_DATE, current_day);
+            data.put(FOOD_IS_EATEN, 0);
+            data.put(FOOD_IS_NEW,1);
+
+            RecommendationActivity ra = (RecommendationActivity) getActivity();
+            ra.send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
+        }
+        getActivity().startActivity(dayRecordingActivity);
     }
 
     @Override

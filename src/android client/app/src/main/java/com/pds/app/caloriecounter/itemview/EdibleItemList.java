@@ -1,8 +1,12 @@
 package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.pds.app.caloriecounter.RecommendationActivity;
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -84,6 +88,7 @@ public class EdibleItemList extends LinearLayout {
     }
 
     public void makeAddTest(){
+
         EdibleItem item = new Food();
         item.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
         item.setProductName("Test add");
@@ -91,10 +96,12 @@ public class EdibleItemList extends LinearLayout {
         item.setTotalEnergy(1000f);
         item.setTotalProteins(31f);
         item.setId(1000L);
+        item.notEaten();
 
         View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
         this.itemViewMap.put(item, sticker);
         this.addView(sticker);
+
     }
 
     public void onRateItem(EdibleItem item){

@@ -111,6 +111,9 @@ public class HistoryRequestManager implements RequestManager{
 		food.initFromJSON((JSONObject) data.get(FOOD_NAME));
 		int eatenStatus =(int) ((long) data.get(FOOD_IS_EATEN));
 		String date = (String) data.get(HISTORY_DATE);
+		if((int) ((long) data.get(FOOD_IS_NEW)) == 1){
+			_userHistoryDatabase.addToHistory(user.getId(), food.getId(), date, eatenStatus);
+		}
 		_userHistoryDatabase.changeEatenStatus(user, food, date, eatenStatus);
 		return new JSONObject();
 	}
