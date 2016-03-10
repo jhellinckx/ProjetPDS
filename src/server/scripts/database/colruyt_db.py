@@ -480,25 +480,6 @@ def insert_images_path_into_food():
 	cursor.close()
 	cnx.close()
 
-NAME_KEY = "recipe_name"
-IMAGE_URL_KEY = "recipe_image_url"
-URL_KEY = "recipe_url"
-RATING_KEY = "rating"
-NBR_RATINGS_KEY = "n_ratings"
-INGREDIENTS_LIST_KEY = "ingredients_list"
-INGREDIENTS_NAMES_KEY = "ingredients_names"
-PORTIONS_KEY = "portions"
-DIFFICULTY_KEY = "difficulty"
-PREPARATION_TIME_KEY = "prep_time"
-TAGS_KEY = "tags"
-PREPARATION_STEPS_KEY = "prep_steps"
-PRIMARY_CATEGORY_KEY = "primary_category"
-SECONDARY_CATEGORY_KEY = "secondary_category"
-CALORIE_PER_PORTION_KEY = "portion_calorie"
-FAT_PER_PORTION_KEY = "portion_fat"
-CARBO_PER_PORTION_KEY = "portion_carbo"
-PROTEIN_PER_PORTION_KEY = "portion_protein"
-
 def create_recipe_table():
 	recipe_table_command = (
 		"CREATE TABLE `Recipe` ("
@@ -510,7 +491,7 @@ def create_recipe_table():
 		+ NBR_RATINGS_KEY + " INT UNSIGNED,"
 		+ INGREDIENTS_LIST_KEY + " TEXT,"
 		+ PORTIONS_KEY + " INT UNSIGNED,"
-		+ DIFFICULTY_KEY + " VARCHAR(255),"
+		+ DIFFICULTY_KEY + " VARCHAR(20),"
 		+ PREPARATION_TIME_KEY + " VARCHAR(10),"
 		+ PREPARATION_STEPS_KEY + " TEXT,"
 		+ CALORIE_PER_PORTION_KEY + " FLOAT,"
@@ -523,21 +504,107 @@ def create_recipe_table():
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
-
-	for recipe in recipes :
-		cursor.execute(command)
-	
+	cursor.execute(recipe_table_command)
 	cnx.commit()
 	cursor.close()
 	cnx.close()
 
+recipe_table_keys = \
+		[
+			NAME_KEY,\
+			IMAGE_URL_KEY,\
+			URL_KEY,\
+			RATING_KEY,\
+			NBR_RATINGS_KEY,\
+			INGREDIENTS_LIST_KEY,\
+			PORTIONS_KEY,\
+			DIFFICULTY_KEY,\
+			PREPARATION_TIME_KEY,\
+			PREPARATION_STEPS_KEY,\
+			CALORIE_PER_PORTION_KEY,\
+			FAT_PER_PORTION_KEY,\
+			CARBO_PER_PORTION_KEY,\
+			PROTEIN_PER_PORTION_KEY,\
+		]
 
 def insert_recipes_in_table():
+	# insert_recipe_command = "INSERT INTO Recipe ("
+	# for key in recipe_table_keys : 
+	# 	insert_recipe_command += key + ", "
+	# insert_recipe_command = insert_recipe_command[:-2] + ") "
+	# insert_recipe_command += "VALUES ("
+	# for key in recipe_table_keys :
+	# 	insert_recipe_command += "%(" + key + ")s, "
+	# insert_recipe_command = insert_recipe_command[:-2] + ") "
+
+	# recipes = []
+	# with open(results_recipes_filename, "r") as f:
+	# 	for line in f:
+	# 		recipes.append(ast.literal_eval(line.rstrip("\n")))
 	
+	# (username, password) = db_params()
+	# cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	# cursor = cnx.cursor()
+	# for recipe in recipes :
+	# 	try:
+	# 		found_keys = []
+	# 		for key in recipe : 
+	# 			found_keys.append(key)
+	# 			if isinstance(recipe[key], list):
+	# 				if len(recipe[key]) == 0:
+	# 					recipe[key] = None
+	# 				else:
+	# 					listString = ""
+	# 					for item in recipe[key]:
+	# 						listString += item + ", "
+	# 					listString = listString[:-2]
+	# 					recipe[key] = listString
+	# 			elif key == RATING_KEY :
+	# 				recipe[key] = float(recipe[key])
+	# 			elif key == NBR_RATINGS_KEY : 
+	# 				pos = recipe[key].find(" ") 
+	# 				if pos != -1:
+	# 					recipe[key] = recipe[key][:pos] + recipe[key][pos+1:]
+	# 				recipe[key] = int(recipe[key])
+	# 			elif key == PORTIONS_KEY :
+	# 				recipe[key] = int(recipe[key])
+	# 			elif key in [CALORIE_PER_PORTION_KEY, PROTEIN_PER_PORTION_KEY, FAT_PER_PORTION_KEY, CARBO_PER_PORTION_KEY] :
+	# 				try:
+	# 					pos = recipe[key].find(",")
+	# 					if pos != -1:
+	# 						recipe[key] = recipe[key][:pos] + recipe[key][pos+1:]
+	# 					recipe[key] = float(recipe[key].split(" ")[0])
+	# 				except UnicodeEncodeError as e:
+	# 					recipe[key] = None
+	# 				except ValueError as e:
+	# 					recipe[key] = None
+	# 		for key in recipe_table_keys:
+	# 			if key not in found_keys:
+	# 				recipe[key] = None
+	# 		cursor.execute(insert_recipe_command, recipe)
+	# 	except Exception as e: 
+	# 		print recipe
+	# 		raise e
+	# cnx.commit()
+	# cursor.close()
+	# cnx.close()
+
 	recipes = []
 	with open(results_recipes_filename, "r") as f:
 		for line in f:
 			recipes.append(ast.literal_eval(line.rstrip("\n")))
+	
+	create_ingredients_table()
+	create_categories_table()
+	create_tags_table()
+	create_recipesingredients_table()
+	create_recipetags_table()
+	create_recipecategories_table()
+
+	ingredients = insert_ingredients_in_table(recipes)
+	categories = insert_categories_in_table(recipes)
+	insert_tags_in_table(recipes, ingredients, categories)
+	
 
 def create_ingredients_table():
 	ingredients_table_command = (
@@ -547,6 +614,81 @@ def create_ingredients_table():
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
 
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(ingredients_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def insert_ingredients_in_table(recipes):
+	ingredients = []
+	for recipe in recipes :
+		for ingredient in recipe[INGREDIENTS_NAMES_KEY]:
+			if ingredient not in ingredients :
+				ingredients.append(ingredient)
+	add_ingredient_command = (
+		"INSERT INTO Ingredient "
+		"(ingredient_name)"
+		"VALUES ('%s')"
+		)
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	for ingredient in ingredients :
+		cursor.execute(add_ingredient_command%ingredient)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def create_categories_table():
+	categories_table_command = (
+	"CREATE TABLE `JDFCategory` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "category_name VARCHAR(255),"
+		+ "is_main INT(1),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(categories_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def insert_categories_in_table(recipes):
+	insert_category_command = (
+		"INSERT INTO JDFCategory "
+		"(category_name, is_main)"
+		"VALUES ('%s', '%s')"
+		)
+	
+	main_categories = []
+	sub_categories = []
+	for recipe in recipes :
+		for key in recipe :
+			if key == PRIMARY_CATEGORY_KEY:
+				if recipe[key] not in main_categories:
+					main_categories.append(recipe[key])
+			elif key == SECONDARY_CATEGORY_KEY:
+				if recipe[key] not in sub_categories:
+					sub_categories.append(recipe[key])
+
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	for category in main_categories :
+		cursor.execute(insert_category_command%(category, 1)) # is_main True !
+	for category in sub_categories :
+		cursor.execute(insert_category_command%(category, 0))
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+	return main_categories + sub_categories
 
 def create_tags_table():
 	tags_table_command = (
@@ -556,14 +698,16 @@ def create_tags_table():
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
 
-def create_categories_table():
-	categories_table_command = (
-	"CREATE TABLE `JDFCategorie` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-		+ "category_name VARCHAR(255),"
-		+ "is_main INT(1),"
-		"  PRIMARY KEY (`id`)"
-    	") ENGINE=InnoDB")
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+	cursor.execute(tags_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+def insert_tags_in_table(recipes, ingredients, categories):
+	pass
 
 def create_recipesingredients_table():
 	recipesingredients_table_command = (
@@ -636,7 +780,7 @@ if __name__ == "__main__" :
 			log_create_db(db_name, create_db)
 
 			log_create_table("Food", create_food_table)
-			log_insert_items("Food", insert_items_in_food)
+			#log_insert_items("Food", insert_items_in_food)
 
 			log_create_table("User", create_user_table)
 
@@ -654,6 +798,7 @@ if __name__ == "__main__" :
 			log_insert_items("All_categories", add_all_colruyt_categories)
 
 			log_create_table("Recipe", create_recipe_table)
+			log_insert_items("Recipe", insert_recipes_in_table)
 
 
 
