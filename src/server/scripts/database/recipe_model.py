@@ -1,6 +1,24 @@
 # -*- coding: UTF-8 -*-
 #!/usr/bin/python
 
+files_dir = "raw/"
+
+domain = "http://cuisine.journaldesfemmes.com"
+all_recipes_categories = "/toutes-les-recettes/"
+all_from_category = "/preferes"
+all_tags = "/s/?f_libelle="
+
+min_ratings = 5
+
+tags_filename = files_dir + "jdf_tags.txt"
+sub_categories_filename = files_dir + "jdf_sub_categories.txt"
+details_error_messages_filename = files_dir + "jdf_errors.txt"
+results_recipes_filename = files_dir + "results_jdf_recipes.txt"
+
+
+post_rdi_url = "http://www.monmenu.fr/s/calculer-calories.html"
+
+
 NAME_KEY = "recipe_name"
 IMAGE_URL_KEY = "recipe_image_url"
 URL_KEY = "recipe_url"

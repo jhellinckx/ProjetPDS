@@ -6,6 +6,7 @@ import ast
 import mysql.connector
 from mysql.connector import errorcode
 from colruyt_models import *
+from recipe_model import *
 
 
 YELLOW = "\033[33m"
@@ -510,7 +511,7 @@ def create_recipe_table():
 		+ INGREDIENTS_LIST_KEY + " TEXT,"
 		+ PORTIONS_KEY + " INT UNSIGNED,"
 		+ DIFFICULTY_KEY + " VARCHAR(255),"
-		+ PREPARATION_TIME_KEY + " INT UNSIGNED,"
+		+ PREPARATION_TIME_KEY + " VARCHAR(10),"
 		+ PREPARATION_STEPS_KEY + " TEXT,"
 		+ CALORIE_PER_PORTION_KEY + " FLOAT,"
 		+ FAT_PER_PORTION_KEY + " FLOAT,"
@@ -519,46 +520,24 @@ def create_recipe_table():
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
 
-
-
-		+ INGREDIENTS_NAMES_KEY
-		+ TAGS_KEY
-		+ PRIMARY_CATEGORY_KEY
-		+ SECONDARY_CATEGORY_KEY
-
-
-	recipes_table_command = (
-		"CREATE TABLE `Recipes` ("
-		"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-		NAME_KEY + " VARCHAR(255),"
-		IMAGE_URL_KEY +" VARCHAR(255),"
-		 " VARCHAR(255),"
-		"date TEXT NOT NULL,"
-		"  PRIMARY KEY (`id`)"
-    	") ENGINE=InnoDB")
-
-	history_fk_food_command = (
-		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idFood_id_food FOREIGN KEY (idFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE"
-		)
-
-	history_fk_user_command = (
-		"ALTER TABLE `Users_history` ADD CONSTRAINT fk_idUser_id_user FOREIGN KEY (idUser) REFERENCES User(id_user) ON DELETE CASCADE ON UPDATE CASCADE"
-		)
-
-	commands = [history_table_command,history_fk_user_command,history_fk_food_command]
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
-	for command in commands:
-			cursor.execute(command)
+	for recipe in recipes :
+		cursor.execute(command)
+	
 	cnx.commit()
 	cursor.close()
 	cnx.close()
 
 
 def insert_recipes_in_table():
-	pass
+	
+	recipes = []
+	with open(results_recipes_filename, "r") as f:
+		for line in f:
+			recipes.append(ast.literal_eval(line.rstrip("\n")))
 
 def create_ingredients_table():
 	ingredients_table_command = (
@@ -673,6 +652,8 @@ if __name__ == "__main__" :
 
 			log_create_table("All_categories", create_colruyt_categories_table)
 			log_insert_items("All_categories", add_all_colruyt_categories)
+
+			log_create_table("Recipe", create_recipe_table)
 
 
 
