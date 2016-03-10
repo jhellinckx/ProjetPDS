@@ -359,6 +359,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         float maxCal = dailyIntakes.get(TITLE_CALORIES).getIntakeMax();
         recommendactivity.putExtra("maxCal",maxCal);
         recommendactivity.putExtra("isReceipt", false);
+        recommendactivity.putExtra("date", current_day);
 
         startActivity(recommendactivity);
     }

@@ -38,6 +38,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
+    private String current_date;
 
 
 
@@ -60,6 +61,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         maxCal = b_.getFloat("maxCal");
         _productCodes = b_.getStringArrayList("pastFoodCodes");
         _productDates = b_.getStringArrayList("pastFoodDates");
+        current_date = b_.getString("date");
         initPastFoodsInRecomData();
         initCategories();
         launchConstraintFragment();
@@ -180,7 +182,13 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             _recommendationsResults.add((JSONObject) jsonFoods.get(i));
         }
         Log.d("RECOM LIST", _recommendationsResults.toString());
-        replaceFragment(new RecommendationResultsFragment(), "results");
+        RecommendationResultsFragment resFrag = new RecommendationResultsFragment();
+
+        Bundle b = new Bundle();
+        b.putString("date", current_date);
+        resFrag.setArguments(b);
+        replaceFragment(resFrag, "results");
+
     }
 
     public ArrayList<JSONObject> recommendationsResults(){

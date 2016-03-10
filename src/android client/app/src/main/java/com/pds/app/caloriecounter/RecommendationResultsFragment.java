@@ -43,6 +43,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
     private LinearLayout recomList;
     private LinearLayout stickersLayout;
     private DailyRecording foodsContainer;
+    private String current_date;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
@@ -97,6 +98,8 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
         foodsContainer = new DailyRecording(getContext(), "Résultats", new EdibleItemList(getContext(), changeJSONtoEdibleItems(recommendations), this, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_ADDABLE));
         stickersLayout.addView(foodsContainer);
+        Bundle b = this.getArguments();
+        current_date = b.getString("date");
         return view;
     }
 
@@ -143,13 +146,16 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
             String current_day = SDFORMAT.format(Calendar.getInstance().getTime());
             JSONObject data = new JSONObject();
             data.put(FOOD_NAME, item.toJSON(false));
-            data.put(HISTORY_DATE, current_day);
+            data.put(HISTORY_DATE, current_date);
             data.put(FOOD_IS_EATEN, 0);
             data.put(FOOD_IS_NEW,1);
 
             RecommendationActivity ra = (RecommendationActivity) getActivity();
             ra.send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
         }
+        Bundle b = new Bundle();
+        b.putString("day", current_date);
+        dayRecordingActivity.putExtras(b);
         getActivity().startActivity(dayRecordingActivity);
     }
 
