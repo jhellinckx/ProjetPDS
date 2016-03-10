@@ -121,7 +121,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private void initDate(){
         Bundle b = getIntent().getExtras();
         String current_day;
-        if (b == null){
+        if (!getIntent().hasExtra("day")){
             current_day = SDFORMAT.format(Calendar.getInstance().getTime());
         }
         else{
@@ -159,7 +159,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         if(getIntent().hasExtra("maxCal")){
             Bundle b=getIntent().getExtras();
             maxCal = b.getInt("maxCal");
-            System.out.println("mmmmmmmmmmmmmmmmmmmm"+maxCal);
         }
         else{
             maxCal = 2000;

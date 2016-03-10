@@ -306,7 +306,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
                 id = (int) ageBracketSpinner.getSelectedItemId();
                 sendData();
-
                 Intent dayRecordingActivity = new Intent(PersonalDataActivity.this, DayRecordingActivity.class);
 
                 dayRecordingActivity.putExtra("maxCal", _energy);

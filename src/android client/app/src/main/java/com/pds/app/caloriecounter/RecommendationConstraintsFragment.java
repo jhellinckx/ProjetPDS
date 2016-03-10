@@ -231,28 +231,8 @@ public class RecommendationConstraintsFragment extends Fragment {
 
     private float computeMaxEnergy(){
         Bundle b = getArguments();
-        //String gender = b.getString("gender");
         float max_energy = b.getFloat("maxCal");
-        System.out.println("ùùùùùùùùùùùùùùùùùù" + max_energy);
         return max_energy;
-        /*
-        switch (gender){
-            case MAN:
-                max_energy = MEN_DAILY_ENERGY;
-                break;
-            case WOMAN:
-                max_energy = WOMEN_DAILY_ENERGY;
-                break;
-            case TEEN:
-                max_energy = TEEN_DAILY_ENERGY;
-                break;
-            default:
-                max_energy = CHILD_DAILY_ENERGY;
-                break;
-
-        }
-        return (int) ((max_energy/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY);
-        */
 
     }
 
