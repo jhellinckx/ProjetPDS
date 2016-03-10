@@ -217,25 +217,10 @@ public class RecommendationConstraintsFragment extends Fragment {
         });
     }
 
-    private void setText(EditText text, int progress){
+    private void setText(EditText text, int progress) {
         text.setText(Integer.toString(progress));
     }
 
-
-    private void initRadioButtons(View v){
-        _radioGroup = (RadioGroup) v.findViewById(R.id.radio_group);
-        _recipe = (RadioButton) v.findViewById(R.id.recipeButton);
-        _radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == _recipe.getId()) {
-                    _autoComplete.setVisibility(View.GONE);
-                } else {
-                    _autoComplete.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-    }
 
     private void initAutoComplete(View v){
         //String[] foo = new String[] { "Vins" };
@@ -244,10 +229,13 @@ public class RecommendationConstraintsFragment extends Fragment {
         _autoComplete.setThreshold(0);
     }
 
-    private int computeMaxEnergy(){
+    private float computeMaxEnergy(){
         Bundle b = getArguments();
-        String gender = b.getString("gender");
-        float max_energy;
+        //String gender = b.getString("gender");
+        float max_energy = b.getFloat("maxCal");
+        System.out.println("ùùùùùùùùùùùùùùùùùù" + max_energy);
+        return max_energy;
+        /*
         switch (gender){
             case MAN:
                 max_energy = MEN_DAILY_ENERGY;
@@ -264,13 +252,14 @@ public class RecommendationConstraintsFragment extends Fragment {
 
         }
         return (int) ((max_energy/CAL_TO_JOULE_FACTOR)/TOTAL_MEAL_PER_DAY);
+        */
 
     }
 
     private SeekBar updateSeekBarAndText(SeekBar bar){
         EditText text = null;
         if (bar == seekBarList.get(0)) {
-            bar.setMax(computeMaxEnergy());
+            bar.setMax((int)computeMaxEnergy());
             text = editTextList.get(0);
         }
         else if (bar == seekBarList.get(1)){

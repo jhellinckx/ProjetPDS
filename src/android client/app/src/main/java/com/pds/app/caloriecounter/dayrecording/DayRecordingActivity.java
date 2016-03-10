@@ -155,7 +155,16 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         dailyIntakes = new LinkedHashMap<>();
         /* Intake placeholders */
-        IntakeProgress calorieIntake = new IntakeProgress(this, 0, 2000, CALORIES_UNIT);
+        int maxCal;
+        if(getIntent().hasExtra("maxCal")){
+            Bundle b=getIntent().getExtras();
+            maxCal = b.getInt("maxCal");
+            System.out.println("mmmmmmmmmmmmmmmmmmmm"+maxCal);
+        }
+        else{
+            maxCal = 2000;
+        }
+        IntakeProgress calorieIntake = new IntakeProgress(this, 0, maxCal, CALORIES_UNIT);
         dailyIntakes.put(TITLE_CALORIES, calorieIntake);
         IntakeProgress proteinIntake = new IntakeProgress(this, 0, 40, DEFAULT_UNIT);
         dailyIntakes.put(TITLE_PROTEINS, proteinIntake);
@@ -249,7 +258,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         if (item.getTotalEnergy() != null) {
             IntakeProgress calorieProgress = dailyIntakes.get(TITLE_CALORIES);
             if(calorieProgress != null){
-                calorieProgress.substractIntakeProgress((float) Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR));
+                calorieProgress.substractIntakeProgress((float) Math.round(item.getTotalEnergy() / CAL_TO_JOULE_FACTOR));
             }
         }
         if(item.getTotalProteins() != null){
@@ -290,13 +299,20 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     public void onAddScan(){
-        Log.d("CLICK : "," SCAN");
+        Log.d("CLICK : ", " SCAN");
     }
 
     public void onAddArticle(){
-        Log.d("CLICK : "," ARTICLE");
+        Log.d("CLICK : ", " ARTICLE");
 
         Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
+        if(!dailyFoods.isEmpty()){
+            for(int i=0 ; i<dailyFoods.size(); ++i){
+                //recommendactivity.putExtra("pastFoods",);
+            }
+        }
+        float maxCal = dailyIntakes.get(TITLE_CALORIES).getIntakeMax();
+        recommendactivity.putExtra("maxCal",maxCal);
         recommendactivity.putExtra("isReceipt", false);
         startActivity(recommendactivity);
     }

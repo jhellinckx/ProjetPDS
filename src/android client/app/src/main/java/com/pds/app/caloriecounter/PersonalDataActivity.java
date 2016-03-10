@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -74,6 +75,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         addWeightLayout();
         addCalorieTextLayout();
         addCalorieLayout();
+        _energy = computeMaxEnergy();
 
         infosContainer = new DailyRecording(this, TITLE_INFOS, infosLayout);
         addFooterButton();
@@ -194,10 +196,20 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketSpinner.setLayoutParams(ageBracketSpinnerParams);
 
         ageBracketSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        //ageBracketSpinner.setEllipsize(TextUtils.TruncateAt.END);
-
         int id= 0;
         initSpinner();
+        ageBracketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                //updateSpinner();
+                updateSeekBarAndText();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
 
         ageBracketTextLayout.addView(ageBracketSpinner);
         infosLayout.addView(ageBracketTextLayout);
@@ -290,6 +302,8 @@ public class PersonalDataActivity extends MenuNavigableActivity {
                 sendData(ageBracketSpinner.getSelectedItem().toString(), weightEditText.getText().toString());
 
                 Intent dayRecordingActivity = new Intent(PersonalDataActivity.this, DayRecordingActivity.class);
+
+                dayRecordingActivity.putExtra("maxCal", _energy);
                 startActivity(dayRecordingActivity);
 
             }
@@ -359,6 +373,11 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         ageBracketSpinner.setAdapter(ageAdapter);
         ageBracketSpinner.setSelection(id);
+
+    }
+
+    private void updateSpinner(){
+        //updates the max calorie bar
 
     }
 
