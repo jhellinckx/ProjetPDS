@@ -22,7 +22,7 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 db_name = "db_colruyt"
-db_properties_filename = "../../src/main/resources/dao.properties"
+db_properties_filename = "../../../src/main/resources/dao.properties"
 filename = "raw/images_binary_file.txt"
 delimiter = "€£"
 
@@ -76,8 +76,8 @@ def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherw
 
 def selectInfoFromDbColumn():
 	selectInfoFromFoodCommand = (
-		"SELECT `image_url`"
-		"FROM `Food`;"
+		"SELECT `id_food`"
+		"FROM `Food` ORDER BY id_food ASC;"
 		)
 
 	image_urls = []
@@ -151,12 +151,13 @@ def execute(with_file):
 	addOrDeleteColumnToTable(True)
 	addOrDeleteColumnToTable(False)
 	image_urls = selectInfoFromDbColumn()
-	if with_file:
+	print image_urls
+	"""if with_file:
 		images = getAllImagesFromFile() 
 	else: 
 		images = getAllImagesFromUrl(image_urls)
 	
-	updateDb(images, image_urls)
+	updateDb(images, image_urls)"""
 
 
 if __name__ == "__main__":
