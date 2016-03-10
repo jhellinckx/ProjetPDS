@@ -38,6 +38,14 @@ public class Food extends EdibleItem{
     }
 
     @Override
+    public JSONObject toJSON(boolean noImage){
+        JSONObject repr = new JSONObject();
+        repr = super.toJSON(noImage);
+        repr.put(FOOD_CODE, code);
+        return repr;
+    }
+
+    @Override
     public void initFromJSON(JSONObject obj){
         super.initFromJSON(obj);
         this.code = (String) obj.get(FOOD_CODE);

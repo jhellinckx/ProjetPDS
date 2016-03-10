@@ -153,6 +153,11 @@ public class User implements JSONSerializable {
     }
 
     @Override
+    public JSONObject toJSON(boolean noImage){
+        return toJSON();
+    }
+
+    @Override
     public void initFromJSON(JSONObject obj){
         this.setUsername((String) obj.get(USERNAME));
         this.setPassword((String) obj.get(PASSWORD));

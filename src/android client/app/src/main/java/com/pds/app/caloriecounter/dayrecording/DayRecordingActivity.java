@@ -353,7 +353,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     @Override
     public void onCheckEdibleItem(EdibleItem item){
         JSONObject data = new JSONObject();
-        data.put(FOOD_NAME, item.toJSON());
+        data.put(FOOD_NAME, item.toJSON(false));
         data.put(HISTORY_DATE, date.getText().toString());
         int status = (item.isEaten()) ? 1 : 0;
         data.put(FOOD_IS_EATEN, status);

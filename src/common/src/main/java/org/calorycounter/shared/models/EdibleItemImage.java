@@ -92,6 +92,11 @@ public class EdibleItemImage implements JSONSerializable{
 	}
 
 	@Override
+	public JSONObject toJSON(boolean noImage){
+		return toJSON();
+	}
+
+	@Override
 	public void initFromJSON(JSONObject obj){
 		this.img_width = ((Long) obj.get(IMAGE_WIDTH)).intValue();
 		this.img_height = ((Long) obj.get(IMAGE_HEIGHT)).intValue();
