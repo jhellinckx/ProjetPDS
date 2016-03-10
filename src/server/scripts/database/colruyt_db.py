@@ -633,8 +633,12 @@ def insert_ingredients_in_table(recipes):
 	insert_ingredient_command = (
 		"INSERT INTO Ingredient "
 		"(ingredient_name)"
-		"VALUES ('%s')"
+		"VALUES (\"%s\")"
 		)
+
+	for i in range(len(ingredients)):
+		ingredients[i] = ingredients[i].lower()
+
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
@@ -643,6 +647,8 @@ def insert_ingredients_in_table(recipes):
 	cnx.commit()
 	cursor.close()
 	cnx.close()
+
+	return ingredients
 
 def create_categories_table():
 	categories_table_command = (
@@ -665,7 +671,7 @@ def insert_categories_in_table(recipes):
 	insert_category_command = (
 		"INSERT INTO JDFCategory "
 		"(category_name, is_main)"
-		"VALUES ('%s', '%s')"
+		"VALUES (\"%s\", \"%s\")"
 		)
 	main_categories = []
 	sub_categories = []
@@ -677,6 +683,11 @@ def insert_categories_in_table(recipes):
 			elif key == SECONDARY_CATEGORY_KEY:
 				if recipe[key] not in sub_categories:
 					sub_categories.append(recipe[key])
+
+	for i in range(len(main_categories)):
+		main_categories[i] = main_categories[i].lower()
+	for i in range(len(sub_categories)):
+		sub_categories[i] = sub_categories[i].lower()
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
@@ -713,12 +724,19 @@ def insert_origins_in_table():
 	"Cuisine belge","Cuisine chinoise","Cuisine espagnole","Cuisine indienne",\
 	"Cuisine anglaise","Cuisine japonaise","Cuisine algérienne","Portugal","Canada",\
 	"Cuisine thailandaise","Cuisine mexicaine"]
+
+	for i in range(len(origins)):
+		origins[i] = origins[i].decode("utf-8")
 	
 	insert_origin_command = (
 		"INSERT INTO Origin "
 		"(origin_name)"
-		"VALUES ('%s')"
+		"VALUES (\"%s\")"
 		)
+
+	for i in range(len(origins)):
+		origins[i] = origins[i].lower()
+
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
@@ -747,7 +765,29 @@ def create_tags_table():
 	cnx.close()
 
 def insert_tags_in_table(recipes, ingredients, categories, origins):
-	pass
+	tags_not_in_table = []
+	tags_in_table = ingredients + categories + origins
+	for recipe in recipes :
+		for tag in recipe[TAGS_KEY]:
+			tag = tag.lower()
+			if tag not in tags_not_in_table:
+				if tag not in tags_in_table:
+					tags_not_in_table.append(tag)
+	
+	insert_tag_command = (
+		"INSERT INTO Tag "
+		"(tag_name)"
+		"VALUES (\"%s\")"
+		)
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	for tag in tags_not_in_table :
+		cursor.execute(insert_tag_command%tag)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
 
 def create_recipesingredients_table():
 	recipesingredients_table_command = (
