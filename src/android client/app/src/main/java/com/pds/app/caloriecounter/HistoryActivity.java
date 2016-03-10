@@ -13,6 +13,7 @@ import com.github.mikephil.charting.components.*;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -30,7 +31,9 @@ import static org.calorycounter.shared.Constants.date.*;
 
 public class HistoryActivity extends MenuNavigableActivity {
 
-    private static final String yLabel = "Calories";
+    private static final String Y_ENERGY_LABEL = "Calories";
+    private static final String Y_FAT_LABEL = "Lipides";
+    private static final String Y_PROT_LABEL = "Protéines";
 
     private FrameLayout historyTable;
     private Context context;
@@ -59,7 +62,7 @@ public class HistoryActivity extends MenuNavigableActivity {
     public void handleMessage(JSONObject msg){
         JSONObject data = (JSONObject) msg.get(DATA);
         JSONArray foodsDatesRepr = (JSONArray) data.get(HISTORY_FOODS_DATES);
-        int size = data.size();
+        int size = foodsDatesRepr.size();
         for (int i = 0; i < size; i++){
             Food food = new Food();
             food.initFromJSON((JSONObject) (((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_FOOD)));
@@ -90,6 +93,7 @@ public class HistoryActivity extends MenuNavigableActivity {
         chart.setData(new BarData(pastDatesToStringList(), castFoodsToBarDataSet()));
         chart.invalidate();
         historyTable.addView(chart);
+        System.out.println("-------------------------****" + past_dates.toString());
 
     }
 
@@ -103,7 +107,7 @@ public class HistoryActivity extends MenuNavigableActivity {
     private void initXAxis(){
         XAxis axis = chart.getXAxis();
         axis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        initAxis(axis, Color.GREEN, 10f);
+        initAxis(axis, context.getResources().getColor(R.color.primary_dark), 10f);
     }
 
     private void initYAxis(){
@@ -116,16 +120,39 @@ public class HistoryActivity extends MenuNavigableActivity {
         initYAxis();
     }
 
-    private BarDataSet castFoodsToBarDataSet(){
-        ArrayList<BarEntry> yVals = new ArrayList<>();
+    private void initAndAddBarToDataSet(BarDataSet set, ArrayList<IBarDataSet> data_set, int color){
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(color);
+        data_set.add(set);
+
+    }
+
+    private List<IBarDataSet> initIBarDataSet(ArrayList<BarEntry> energy_vals,
+                                              ArrayList<BarEntry> fat_vals, ArrayList<BarEntry> prot_vals){
+
+        ArrayList<IBarDataSet> data_set = new ArrayList<>();
+        BarDataSet set1 = new BarDataSet(energy_vals, Y_ENERGY_LABEL);
+        BarDataSet set2 = new BarDataSet(fat_vals, Y_FAT_LABEL);
+        BarDataSet set3 = new BarDataSet(prot_vals, Y_PROT_LABEL);
+        initAndAddBarToDataSet(set1, data_set, context.getResources().getColor(R.color.primary));
+        initAndAddBarToDataSet(set2, data_set, context.getResources().getColor(R.color.yellow_bar));
+        initAndAddBarToDataSet(set3, data_set, context.getResources().getColor(R.color.blue_bar));
+
+        return data_set;
+    }
+
+    private List<IBarDataSet> castFoodsToBarDataSet(){
+        ArrayList<BarEntry> y_energy_vals = new ArrayList<>();
+        ArrayList<BarEntry> y_fat_vals = new ArrayList<>();
+        ArrayList<BarEntry> y_prot_vals = new ArrayList<>();
         int size = past_items.size();
         for (int i = 0; i < size; i++){
             EdibleItem item = past_items.get(i);
-            yVals.add(new BarEntry(item.getTotalEnergy(), i));
+            y_energy_vals.add(new BarEntry(item.getTotalEnergy()/*/CAL_TO_JOULE_FACTOR*/, i));
+            y_fat_vals.add(new BarEntry(item.getTotalFat(), i));
+            y_prot_vals.add(new BarEntry(item.getTotalProteins(), i));
         }
-        BarDataSet set = new BarDataSet(yVals, yLabel);
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        return set;
+        return initIBarDataSet(y_energy_vals, y_fat_vals, y_prot_vals);
     }
 
     private List<String> pastDatesToStringList(){
