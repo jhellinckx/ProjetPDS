@@ -102,7 +102,7 @@ public class RecommendationRequestManager implements RequestManager{
 
 		maxEnergy = maxEnergy + computeJouleFromSport(data);
 		
-		addFoodsToHistory(pastFoods, pastFoodsDates);
+		//addFoodsToHistory(pastFoods, pastFoodsDates);
 		data = recommendItems(pastFoods, maxEnergy, maxFat, maxProt, maxCarbo, category);
 		return data;
 	}
