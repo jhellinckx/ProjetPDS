@@ -157,6 +157,7 @@ public class NetworkHandler {
                 _doDispatch(msg, RecommendationActivity.class);
             }else if (request.equals(DATA_REQUEST)){
                 _doDispatch(msg, PersonalDataActivity.class);
+                _doDispatch(msg, HistoryActivity.class);
             } else if (request.equals(HISTORY_REQUEST)) {
                 _doDispatch(msg, HistoryActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)) {

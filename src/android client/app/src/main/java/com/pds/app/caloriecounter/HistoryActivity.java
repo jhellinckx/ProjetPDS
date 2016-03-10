@@ -47,6 +47,7 @@ public class HistoryActivity extends MenuNavigableActivity {
     private BarChart chart;
     private List<EdibleItem> past_items;
     private List<Date> past_dates;
+    private float max_energy;
 
 
     @Override
@@ -58,38 +59,69 @@ public class HistoryActivity extends MenuNavigableActivity {
         historyTable = (FrameLayout) v.findViewById(R.id.history_layout);
         past_items = new ArrayList<>();
         past_dates = new ArrayList<>();
-        sendHistoryRequest();
+        sendDataRequest();
     }
 
     private void sendHistoryRequest(){
         send(networkJSON(HISTORY_REQUEST, new JSONObject()));
     }
 
+    private float findMaxEnergyForGender(String gender){
+        float energy;
+        switch (gender){
+            case "C":
+                energy = CHILD_DAILY_ENERGY;
+                break;
+            case "M":
+                energy = MEN_DAILY_ENERGY;
+                break;
+            case "W":
+                energy = WOMEN_DAILY_ENERGY;
+                break;
+            default:
+                energy = TEEN_DAILY_ENERGY;
+        }
+        return energy;
+    }
+
     @Override
     public void handleMessage(JSONObject msg){
-        JSONObject data = (JSONObject) msg.get(DATA);
-        JSONArray foodsDatesRepr = (JSONArray) data.get(HISTORY_FOODS_DATES);
-        int size = foodsDatesRepr.size();
-        for (int i = 0; i < size; i++){
-            Food food = new Food();
-            food.initFromJSON((JSONObject) (((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_FOOD)));
-            past_items.add(food);
-            Date date = null;
-            try {
-                date = SDFORMAT.parse((String) ((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_DATE));
-            } catch (java.text.ParseException e){
-                System.err.println(e.getMessage());
-            }
-            past_dates.add(date);
+        String request = (String) msg.get(REQUEST_TYPE);
+        JSONObject data = (JSONObject)msg.get(DATA);
+        if (request.equals(DATA_REQUEST)){
+            String gender = (String) data.get(UPDATE_DATA_GENDER);
+            max_energy = findMaxEnergyForGender(gender);
+            sendHistoryRequest();
         }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                sortDatesAndRelatedFoods();
-                initChart();
+        else if (request.equals(HISTORY_REQUEST)) {
+            JSONArray foodsDatesRepr = (JSONArray) data.get(HISTORY_FOODS_DATES);
+            int size = foodsDatesRepr.size();
+            for (int i = 0; i < size; i++) {
+                Food food = new Food();
+                food.initFromJSON((JSONObject) (((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_FOOD)));
+                past_items.add(food);
+                Date date = null;
+                try {
+                    date = SDFORMAT.parse((String) ((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_DATE));
+                } catch (java.text.ParseException e) {
+                    System.err.println(e.getMessage());
+                }
+                past_dates.add(date);
             }
-        });
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sortDatesAndRelatedFoods();
+                    initChart();
+                }
+            });
+        }
+    }
+
+    private void sendDataRequest(){
+        JSONObject data = new JSONObject();
+        send(networkJSON(DATA_REQUEST, data));
     }
 
     private void initChart(){
@@ -141,7 +173,7 @@ public class HistoryActivity extends MenuNavigableActivity {
         BarDataSet set1 = new BarDataSet(energy_vals, Y_ENERGY_LABEL);
         BarDataSet set2 = new BarDataSet(fat_vals, Y_FAT_LABEL);
         BarDataSet set3 = new BarDataSet(prot_vals, Y_PROT_LABEL);
-        set1.setValueFormatter(new ItemValueFormatter(CHILD_DAILY_ENERGY/CAL_TO_JOULE_FACTOR));
+        set1.setValueFormatter(new ItemValueFormatter(max_energy/CAL_TO_JOULE_FACTOR));
         set2.setValueFormatter(new ItemValueFormatter(HUMAN_DAILY_FAT));
         set3.setValueFormatter(new ItemValueFormatter(HUMAN_DAILY_PROTEINS));
         initAndAddBarToDataSet(set1, data_set, context.getResources().getColor(R.color.primary));
@@ -163,7 +195,7 @@ public class HistoryActivity extends MenuNavigableActivity {
         int size = past_items.size();
         for (int i = 0; i < size; i++){
             EdibleItem item = past_items.get(i);
-            y_energy_vals.add(new BarEntry(infoToPercentage(item.getTotalEnergy(), CHILD_DAILY_ENERGY), i));
+            y_energy_vals.add(new BarEntry(infoToPercentage(item.getTotalEnergy(), max_energy), i));
             y_fat_vals.add(new BarEntry(infoToPercentage(item.getTotalFat(), HUMAN_DAILY_FAT), i));
             y_prot_vals.add(new BarEntry(infoToPercentage(item.getTotalProteins(), HUMAN_DAILY_PROTEINS), i));
         }
