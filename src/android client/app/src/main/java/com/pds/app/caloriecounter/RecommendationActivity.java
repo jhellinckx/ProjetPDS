@@ -25,8 +25,7 @@ import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
 
-public class RecommendationActivity extends MenuNavigableActivity implements RecommendationPastFragment.OnItemClickListener,
-        RecommendationSportFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
+public class RecommendationActivity extends MenuNavigableActivity implements RecommendationPastFragment.OnItemClickListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
@@ -35,6 +34,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
     private ArrayList<String> _productCodes = new ArrayList<String>();
     private ArrayList<String> _productDates = new ArrayList<String>();
     private Boolean isReceipt;
+    private float maxCal;
 
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
@@ -57,6 +57,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         Bundle b_ = new Bundle();
         b_=getIntent().getExtras();
         isReceipt = b_.getBoolean("isReceipt");
+        maxCal = b_.getFloat("maxCal");
 
         initCategories();
         launchConstraintFragment();
@@ -67,9 +68,9 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
         Bundle b = new Bundle();
 
-        b.putString("gender", "genderTest");
         b.putStringArrayList("foodCategories",_foodCategories);
         b.putBoolean("isReceipt", isReceipt);
+        b.putFloat("maxCal", maxCal);
         RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
         constrFrag.setArguments(b);
         transaction.add(R.id.fragment_layout, constrFrag);
@@ -166,9 +167,9 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             send(networkJSON(SPORTS_LIST_REQUEST, new JSONObject()));
         }
     }
-
+    /*
     public void onNextSportClick(){
-        /*
+
         if(!duration.getText().toString().isEmpty()){
             recom_data.put(SPORT_NAME, (String) sports.getSelectedItem());
             recom_data.put(SPORT_DURATION, duration.getText().toString());
@@ -176,13 +177,14 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         else{
             recom_data.put(SPORT_NAME, null);
         }
-        */
+
 
         if(!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)){
             send(networkJSON(FOOD_CATEGORIES_REQUEST,new JSONObject()));
         }
         send(networkJSON(DATA_REQUEST, new JSONObject()));
     }
+    */
 
     public void initCategories(){
         if(isReceipt){

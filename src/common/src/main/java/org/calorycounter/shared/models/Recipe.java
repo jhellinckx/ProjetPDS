@@ -24,6 +24,14 @@ public class Recipe extends EdibleItem {
     }
 
     @Override
+    public JSONObject toJSON(boolean noImage){
+        JSONObject repr = new JSONObject();
+        repr = super.toJSON(noImage);
+        repr.put(INGREDIENTS_LIST, ingredients);
+        return repr;
+    }
+
+    @Override
     public void initFromJSON(JSONObject obj){
         super.initFromJSON(obj);
         this.ingredients = (String) obj.get(INGREDIENTS_LIST);
