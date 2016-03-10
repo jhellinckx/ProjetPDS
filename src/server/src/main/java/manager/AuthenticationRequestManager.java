@@ -36,9 +36,10 @@ public class AuthenticationRequestManager implements RequestManager{
 		responseData.put(USERNAME, username);
 	}
 
-	private void manageLogSuccess(JSONObject responseData, String username){
+	private void manageLogSuccess(JSONObject responseData, User user){
 		responseData.put(LOG_IN_RESPONSE, LOG_IN_SUCCESS);
-		responseData.put(USERNAME, username);
+		responseData.put(USERNAME, user.getUsername());
+		responseData.put(UPDATE_DATA_GENDER, user.getGender());
 	}
 
 	private void manageSignUserAlreadyConnected(JSONObject responseData, String username){
@@ -74,7 +75,7 @@ public class AuthenticationRequestManager implements RequestManager{
 			else{
 				if(validatePassword(usr, password)){
 					server.addClient(username, msg);
-					manageLogSuccess(responseData, username);
+					manageLogSuccess(responseData, usr);
 				}
 				else{
 					manageWrongPassword(responseData, username);

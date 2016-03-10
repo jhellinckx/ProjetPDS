@@ -58,8 +58,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
 
     private LinearLayout stickersLayout;
     private DailyRecording infosContainer = null;
-    private SportActionCallback sac;
-    private CircularButton checkButton;
     private LinearLayout infosLayout;
 
     private static int _height = -1;

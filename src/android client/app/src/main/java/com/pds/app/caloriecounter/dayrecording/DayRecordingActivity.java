@@ -46,6 +46,7 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
 import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
+import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
@@ -53,6 +54,7 @@ import static org.calorycounter.shared.Constants.network.FOOD_LIST;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
 import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUEST;
+import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
@@ -64,6 +66,8 @@ import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQ
 import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORT_LIST;
 import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
+import static org.calorycounter.shared.Constants.network.TEEN_DAILY_ENERGY;
+import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
@@ -78,6 +82,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private SportActionCallback sac;
     private Context context;
     private EditText date;
+
+    private String gender;
+    private String weight;
+    private String height;
+    private static float maxCal;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,17 +162,23 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private void initIntakesRecording(){
         LinearLayout intakesStickersLayout = new LinearLayout(this);
         intakesStickersLayout.setOrientation(LinearLayout.HORIZONTAL);
+        Bundle b = getIntent().getExtras();
+        if (!getIntent().hasExtra("gender")){
+            gender = "M";
+        }
+        else{
+            gender = b.getString("gender");
+            System.out.println(gender);
+            maxCal = computeMaxEnergy();
+        }
 
         dailyIntakes = new LinkedHashMap<>();
         /* Intake placeholders */
-        int maxCal;
+
         if(getIntent().hasExtra("maxCal")){
-            Bundle b=getIntent().getExtras();
-            maxCal = b.getInt("maxCal");
+            maxCal = getIntent().getExtras().getInt("maxCal");
         }
-        else{
-            maxCal = 2000;
-        }
+
         IntakeProgress calorieIntake = new IntakeProgress(this, 0, maxCal, CALORIES_UNIT);
         dailyIntakes.put(TITLE_CALORIES, calorieIntake);
         IntakeProgress proteinIntake = new IntakeProgress(this, 0, 40, DEFAULT_UNIT);
@@ -182,6 +198,26 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
         DailyRecording intakes = new DailyRecording(this, TITLE_RDI, intakesLayout);
         stickersLayout.addView(intakes);
+    }
+
+    private int computeMaxEnergy(){
+        switch (gender){
+            case "C":
+                maxCal = CHILD_DAILY_ENERGY;
+                break;
+            case "T":
+                maxCal = TEEN_DAILY_ENERGY;
+                break;
+            case "W":
+                maxCal = WOMEN_DAILY_ENERGY;
+                break;
+            default:
+                maxCal = MEN_DAILY_ENERGY;
+                break;
+
+        }
+        return (int) ((maxCal/CAL_TO_JOULE_FACTOR));
+
     }
 
     private void initFoodsRecording(){

@@ -24,6 +24,7 @@ public class DataRequestManager implements RequestManager{
 		JSONObject data = new JSONObject();
 		data.put(UPDATE_DATA_GENDER, user.getGender());
 		data.put(UPDATE_DATA_WEIGHT, user.getWeight());
+		data.put(UPDATE_DATA_HEIGHT, user.getHeight());
 		return data;
 	}
 

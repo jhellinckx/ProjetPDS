@@ -22,7 +22,7 @@ public class LogActivity extends NotifiableActivity {
     @Bind(R.id.input_username) EditText _usernameText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.link_signup) TextView _linkSignup;
-
+    private String gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class LogActivity extends NotifiableActivity {
             @Override
             public void onClick(View v) {
                 Intent signActivity = new Intent(getApplicationContext(), SignActivity.class);
-                if(FUCK_DEFAULT_BEHAVIOUR)
+                if (FUCK_DEFAULT_BEHAVIOUR)
                     signActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(signActivity);
             }
@@ -116,7 +116,7 @@ public class LogActivity extends NotifiableActivity {
     public void onLoginResponse(JSONObject data){
         String response = (String) data.get(LOG_IN_RESPONSE);
         if(response.equals(LOG_IN_SUCCESS)){
-            onLoginSuccess();
+            onLoginSuccess(data);
         }
         else if(response.equals(LOG_IN_FAILURE)){
             String reason = (String)data.get(REASON);
@@ -146,10 +146,14 @@ public class LogActivity extends NotifiableActivity {
         }
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(final JSONObject data) {
         runOnUiThread(new Runnable() {
             public void run() {
                 Intent dayRecordingActivity = new Intent(LogActivity.this, DayRecordingActivity.class);
+
+                gender = (String) data.get(UPDATE_DATA_GENDER);
+                dayRecordingActivity.putExtra("gender", gender);
+
                 startActivity(dayRecordingActivity);
                 finish(); // If logged in, only come back to this activity when log out called, not when user presses back
             }

@@ -239,7 +239,7 @@ public class UserDAOImpl implements UserDAO {
         user.setGender( resultSet.getString( "gender" ) );
         user.setWeight( resultSet.getFloat( "weight" ) );
         user.setPassword( resultSet.getString( "password" ) );
-        user.setWeight( resultSet.getFloat( "height" ) );
+        user.setHeight( resultSet.getFloat( "height" ) );
         return user;
     }
 
