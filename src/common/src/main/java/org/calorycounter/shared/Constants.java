@@ -127,8 +127,9 @@ public final class Constants {
 		/* History */ 
 		public static final String HISTORY_REQUEST = "r_history";
 		public static final String HISTORY_NAME = "d_history_name";
+		public static final String HISTORY_FOOD = "d_history_food";
 		public static final String HISTORY_DATE = "d_history_date";
-		public static final String HISTORY_NAMES_DATES = "d_history_dates";
+		public static final String HISTORY_FOODS_DATES = "d_history_dates";
 		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
 		public static final String HISTORY_FOR_DATE_REQUEST = "r_history_for_date";
 		public static final String DELETE_FOOD_HISTORY_REQUEST = "r_delete_food_history";
