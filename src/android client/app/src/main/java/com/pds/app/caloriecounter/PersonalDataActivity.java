@@ -82,7 +82,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         addWeightLayout();
         addCalorieTextLayout();
         addCalorieLayout();
-        initSpinner();
 
         _energy = computeMaxEnergy();
 
@@ -209,7 +208,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketSpinner.setLayoutParams(ageBracketSpinnerParams);
 
         ageBracketSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        //initSpinner();
+        initSpinner();
         ageBracketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -456,7 +455,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             genderToSpinerId(gender);
-
+            initSpinner();
 
             heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT))) ;
             weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT))) ;
