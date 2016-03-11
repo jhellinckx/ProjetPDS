@@ -30,6 +30,12 @@ nb_images = 6573
 
 max_sql_single_insert = 500
 
+# Reciepes variable
+recipes = []
+categories = []
+ingredients = []
+origins = []
+
 
 articles_names_correction = \
 			{
@@ -607,17 +613,16 @@ def insert_recipes_in_table():
 	cnx.commit()
 	cursor.close()
 	cnx.close()
+
+	global recipes
 	recipes = []
 	with open(results_recipes_filename, "r") as f:
 		for line in f:
 			recipes.append(ast.literal_eval(line.rstrip("\n")))
 	
-	create_ingredients_table()
-	create_categories_table()
-	create_origin_table()
-	create_tags_table()
+	
 
-	ingredients = insert_ingredients_in_table(recipes)
+	ingredients = insert_ingredients_in_table()
 	categories = insert_categories_in_table(recipes)
 	origins = insert_origins_in_table()
 	insert_tags_in_table(recipes, ingredients, categories, origins)
@@ -653,7 +658,7 @@ def create_ingredients_table():
 	cursor.close()
 	cnx.close()
 
-def insert_ingredients_in_table(recipes):
+def insert_ingredients_in_table():
 	insert_ingredient_command = (
 		"INSERT INTO Ingredient "
 		"(ingredient_name) VALUES ")
@@ -668,6 +673,9 @@ def insert_ingredients_in_table(recipes):
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
+
+	global recipes
+	global ingredients
 
 	ingredients = []
 	for recipe in recipes :
@@ -689,8 +697,6 @@ def insert_ingredients_in_table(recipes):
 	cnx.commit()
 	cursor.close()
 	cnx.close()
-
-	return ingredients
 
 def create_categories_table():
 	categories_table_command = (
@@ -719,7 +725,7 @@ def create_categories_table():
 	cursor.close()
 	cnx.close()
 
-def insert_categories_in_table(recipes):
+def insert_categories_in_table():
 	insert_category_command = (
 		"INSERT INTO JDFCategory "
 		"(category_name, is_main) VALUES ")
@@ -733,6 +739,8 @@ def insert_categories_in_table(recipes):
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
+
+	global recipes
 
 	main_categories = []
 	sub_categories = []
@@ -763,7 +771,8 @@ def insert_categories_in_table(recipes):
 	cursor.close()
 	cnx.close()
 
-	return main_categories + sub_categories
+	global categories
+	categories = main_categories + sub_categories
 
 def create_origin_table():
 	origin_table_command = (	
@@ -783,6 +792,7 @@ def create_origin_table():
 
 
 def insert_origins_in_table():
+	global origins
 	origins = ["Cuisine italienne","Cuisine américaine","Cuisine marocaine",\
 	"Cuisine belge","Cuisine chinoise","Cuisine espagnole","Cuisine indienne",\
 	"Cuisine anglaise","Cuisine japonaise","Cuisine algérienne","Portugal","Canada",\
@@ -808,7 +818,6 @@ def insert_origins_in_table():
 	cnx.commit()
 	cursor.close()
 	cnx.close()
-	return origins
 
 
 def create_tags_table():
@@ -827,7 +836,11 @@ def create_tags_table():
 	cursor.close()
 	cnx.close()
 
-def insert_tags_in_table(recipes, ingredients, categories, origins):
+def insert_tags_in_table():
+	global recipes
+	global origins
+	global ingredients
+	global categories
 	tags_not_in_table = []
 	tags_in_table = ingredients + categories + origins
 	for recipe in recipes :
@@ -927,6 +940,18 @@ if __name__ == "__main__" :
 
 			log_create_table("Recipe", create_recipe_table)
 			log_insert_items("Recipe", insert_recipes_in_table)
+
+			log_create_table("Ingredient", create_ingredients_table)
+			log_insert_items("Ingredient", insert_ingredients_in_table)
+
+			log_create_table("JDFCategory", create_categories_table)
+			log_insert_items("JDFCategory", insert_categories_in_table)
+
+			log_create_table("Origin", create_origin_table)
+			log_insert_items("Origin", insert_origins_in_table)
+
+			log_create_table("Tag", create_tags_table)
+			log_insert_items("Tag", insert_tags_in_table)
 
 
 
