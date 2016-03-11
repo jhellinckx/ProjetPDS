@@ -14,11 +14,6 @@
             android:title="Profil"
             android:textColor="@color/fontColor"/>
         <item
-            android:id="@+id/nav_recommend"
-            android:icon="@drawable/ic_recommend"
-            android:title="Recommendation"
-            android:textColor="@color/fontColor"/>
-        <item
             android:id="@+id/nav_rating"
             android:icon="@drawable/ic_rating"
             android:title="Notes"
@@ -27,11 +22,6 @@
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
             android:title="Historique"
-            android:textColor="@color/fontColor"/>
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_camera"
-            android:title="Scanner code barre"
             android:textColor="@color/fontColor"/>
         <item
             android:id="@+id/nav_calendar"

@@ -90,19 +90,10 @@ public abstract class MenuNavigableActivity extends NotifiableActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            Intent cameractivity = new Intent(MenuNavigableActivity.this, ScanningActivity.class);
-
-            startActivity(cameractivity);
-        } else if (id == R.id.nav_data) {
+        if (id == R.id.nav_data) {
             Intent dataactivity = new Intent(MenuNavigableActivity.this, PersonalDataActivity.class);
 
             startActivity(dataactivity);
-
-        } else if (id == R.id.nav_recommend) {
-            Intent recommendactivity = new Intent(MenuNavigableActivity.this, RecommendationActivity.class);
-
-            startActivity(recommendactivity);
 
         } else if (id == R.id.nav_rating) {
             Intent ratingactivity = new Intent(MenuNavigableActivity.this, RatingActivity.class);
