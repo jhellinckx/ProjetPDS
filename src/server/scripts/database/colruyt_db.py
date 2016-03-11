@@ -550,11 +550,12 @@ def insert_recipes_in_table():
 	with open(results_recipes_filename, "r") as f:
 		for line in f:
 			recipes.append(ast.literal_eval(line.rstrip("\n")))
-	
+
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
+	
 	i = 0
 	insert = False
 	to_insert_recipes = []
@@ -614,21 +615,6 @@ def insert_recipes_in_table():
 	cursor.close()
 	cnx.close()
 
-	global recipes
-	recipes = []
-	with open(results_recipes_filename, "r") as f:
-		for line in f:
-			recipes.append(ast.literal_eval(line.rstrip("\n")))
-	
-	
-
-	ingredients = insert_ingredients_in_table()
-	categories = insert_categories_in_table(recipes)
-	origins = insert_origins_in_table()
-	insert_tags_in_table(recipes, ingredients, categories, origins)
-
-
-
 def create_ingredients_table():
 	ingredients_table_command = (
 		"CREATE TABLE `Ingredient` ("
@@ -659,6 +645,11 @@ def create_ingredients_table():
 	cnx.close()
 
 def insert_ingredients_in_table():
+	global recipes
+	recipes = []
+	with open(results_recipes_filename, "r") as f:
+		for line in f:
+			recipes.append(ast.literal_eval(line.rstrip("\n")))
 	insert_ingredient_command = (
 		"INSERT INTO Ingredient "
 		"(ingredient_name) VALUES ")
@@ -674,7 +665,6 @@ def insert_ingredients_in_table():
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
-	global recipes
 	global ingredients
 
 	ingredients = []
@@ -732,7 +722,7 @@ def insert_categories_in_table():
 	category_value = "(\"%s\", \"%s\")"
 		
 	recipes_categories_binding_command = (
-		"INSERT INTO RecipeIngredients"
+		"INSERT INTO RecipeCategories"
 		" (recipe_id, ingredient_id) VALUES ")
 	recipe_category_value = "((SELECT id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
 	
@@ -782,10 +772,22 @@ def create_origin_table():
 		"  PRIMARY KEY (`id`)"
     	") ENGINE=InnoDB")
 
+	recipesorigins_table_command = (
+	"CREATE TABLE `RecipeOrigins` ("
+		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_id INT UNSIGNED,"
+		+ "origin_id INT UNSIGNED,"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
+		+ "FOREIGN KEY (origin_id) REFERENCES Origin(id),"
+		"  PRIMARY KEY (`id`)"
+    	") ENGINE=InnoDB")
+
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 	cursor.execute(origin_table_command)
+	cnx.commit()
+	cursor.execute(recipesorigins_table_command)
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -952,7 +954,6 @@ if __name__ == "__main__" :
 
 			log_create_table("Tag", create_tags_table)
 			log_insert_items("Tag", insert_tags_in_table)
-
 
 
 	except mysql.connector.Error as err:
