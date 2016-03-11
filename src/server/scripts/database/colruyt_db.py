@@ -723,7 +723,7 @@ def insert_categories_in_table():
 		
 	recipes_categories_binding_command = (
 		"INSERT INTO RecipeCategories"
-		" (recipe_id, ingredient_id) VALUES ")
+		" (recipe_id, category_id) VALUES ")
 	recipe_category_value = "((SELECT id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
 	
 	(username, password) = db_params()
@@ -801,7 +801,7 @@ def insert_origins_in_table():
 	"Cuisine thailandaise","Cuisine mexicaine"]
 
 	for i in range(len(origins)):
-		origins[i] = origins[i].decode("utf-8")
+		origins[i] = origins[i].decode("utf-8").lower()
 	
 	insert_origin_command = (
 		"INSERT INTO Origin "
@@ -809,8 +809,41 @@ def insert_origins_in_table():
 		"VALUES (\"%s\")"
 		)
 
-	for i in range(len(origins)):
-		origins[i] = origins[i].lower()
+	recipes_origins_binding_command = (
+		"INSERT INTO RecipeOrigins"
+		" (recipe_id, ingredient_id) VALUES ")
+	recipe_category_value = "((SELECT id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
+	
+	(username, password) = db_params()
+	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
+	cursor = cnx.cursor()
+
+	global recipes
+
+	main_categories = []
+	sub_categories = []
+	for recipe in recipes :
+		recipe_category_insert_values = ""
+		recipe_category_binding_vales = ""
+		for key in recipe :
+			if key == PRIMARY_CATEGORY_KEY:
+				if recipe[key] not in main_categories:
+					main_categories.append(recipe[key])
+					recipe_category_insert_values += category_value%(recipe[key], 1) + ", "
+					recipe_category_binding_vales += recipe_category_value %{"recipe_url":recipe[URL_KEY], "category_name":recipe[key]} +" ,"
+
+			elif key == SECONDARY_CATEGORY_KEY:
+				if recipe[key] not in sub_categories:
+					sub_categories.append(recipe[key])
+					recipe_category_insert_values += category_value%(recipe[key], 0) + ", "
+					recipe_category_binding_vales += recipe_category_value %{"recipe_url":recipe[URL_KEY], "category_name":recipe[key]} +" ,"
+
+		if len(recipe_category_insert_values) != 0 :
+			command = insert_category_command + recipe_category_insert_values[:-2]
+			cursor.execute(command)
+		if len(recipe_category_binding_vales) != 0 :
+			command = recipes_origins_binding_command + recipe_category_binding_vales[:-2]
+			cursor.execute(command ,multi=True)
 
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
