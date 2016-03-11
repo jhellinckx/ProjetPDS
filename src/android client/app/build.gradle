@@ -46,6 +46,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.shehabic.droppy:Droppy:0.5.1@aar'
-    compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
+    //compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
 }
 

@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.github.mikephil.charting.charts.LineChart;
+//import com.github.mikephil.charting.charts.LineChart;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,7 +21,7 @@ public class HistoryActivity extends MenuNavigableActivity {
 
     private LinearLayout historyTable;
     private Context context;
-    private LineChart chart;
+    //private LineChart chart;
 
 
     @Override
@@ -36,8 +36,8 @@ public class HistoryActivity extends MenuNavigableActivity {
 
     private void initChart(){
 
-        chart = new LineChart(context);
-        historyTable.addView(chart);
+        //chart = new LineChart(context);
+        //historyTable.addView(chart);
 
     }
 }
