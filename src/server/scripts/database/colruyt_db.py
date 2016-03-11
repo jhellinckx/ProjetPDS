@@ -213,8 +213,15 @@ def insert_items_in_food():
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, password=password,database=db_name)
 	cursor = cnx.cursor()
+	num_articles = sum(1 for line in open(details_results_filename, "r"))
 	with open(details_results_filename, "r") as f:
-		for line in f:
+		articles = []
+		i = 0
+		insert = False
+		for line in f:	
+			if i % max_sql_single_insert == 0 or i == num_articles - 1:
+				insert = True
+			i += 1
 			article = ast.literal_eval(line.rstrip("\n"))
 			for key in article:
 				if isinstance(article[key], list):
@@ -235,7 +242,13 @@ def insert_items_in_food():
 						article[key] = float(maybe_float.replace(',','.'))
 					except ValueError:
 						article[key] = None
-			cursor.execute(article_insert_command, article)
+			articles.append(article)
+			if insert :
+				cursor.executemany(article_insert_command, articles)
+				articles = []
+				sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(i)/num_articles)*100))
+				sys.stdout.flush()
+				insert = False
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -753,7 +766,7 @@ def insert_categories_in_table():
 	recipes_categories_binding_command = (
 		"INSERT INTO RecipeCategories"
 		" (recipe_id, category_id) VALUES ")
-	recipe_category_value = "((SELECT recipe_id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT category_id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
+	recipe_category_value = "(\"%s\", \"%s\")"
 	
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
@@ -761,37 +774,51 @@ def insert_categories_in_table():
 
 	global recipes
 
-	main_categories = []
-	sub_categories = []
-	for recipe in recipes :
-		recipe_category_binding_vales = ""
+	main_categories = {}
+	sub_categories = {}
+	insert_bindings = []
+	db_id=1
+	i=0
+	insert = False
 
+	for recipe in recipes :
+		if i % max_sql_single_insert == 0 or i == len(recipes) - 1 :
+			insert = True
+		i+=1
+		recipe_id = None
+		cursor.execute("SELECT recipe_id from Recipe WHERE recipe_url='%s'"%recipe[URL_KEY])
+		for (db_recipe_id) in cursor :
+			recipe_id = db_recipe_id[0]
+		if recipe_id == None :
+			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")
 		for key in recipe :
 			if key == PRIMARY_CATEGORY_KEY:
 				if recipe[key] not in main_categories:
-					main_categories.append(recipe[key])
-					recipe_category_insert_values += category_value%(recipe[key], 1) + ", "
-				recipe_category_binding_vales += recipe_category_value %{"recipe_url":recipe[URL_KEY], "category_name":recipe[key]} +" ,"
+					main_categories[recipe[key]] = db_id
+					db_id+=1
+					cursor.execute(insert_category_command + category_value%(recipe[key], 1))
+				insert_bindings.append((recipe_id,main_categories[recipe[key]]))
 
 			elif key == SECONDARY_CATEGORY_KEY:
 				if recipe[key] not in sub_categories:
-					sub_categories.append(recipe[key])
-					recipe_category_insert_values += category_value%(recipe[key], 0) + ", "
-				recipe_category_binding_vales += recipe_category_value %{"recipe_url":recipe[URL_KEY], "category_name":recipe[key]} +" ,"
-
-		if len(recipe_category_insert_values) != 0 :
-			command = insert_category_command + recipe_category_insert_values[:-2]
-			cursor.execute(command)
-		if len(recipe_category_binding_vales) != 0 :
-			command = recipes_categories_binding_command + recipe_category_binding_vales[:-2]
-			cursor.execute(command ,multi=True)
+					sub_categories[recipe[key]] = db_id
+					db_id+=1
+					cursor.execute(insert_category_command + category_value%(recipe[key], 0))
+				insert_bindings.append((recipe_id, sub_categories[recipe[key]]))
+		if insert and len(insert_bindings) > 0 :
+			cursor.executemany(recipes_categories_binding_command + recipe_category_value, insert_bindings)
+			insert_bindings = []
+			insert = False
+			sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(i)/len(recipes))*100))
+			sys.stdout.flush()
+	
 
 	cnx.commit()
 	cursor.close()
 	cnx.close()
 
 	global categories
-	categories = main_categories + sub_categories
+	categories = main_categories.keys() + sub_categories.keys()
 
 def create_origin_table():
 	origin_table_command = (	
@@ -840,26 +867,46 @@ def insert_origins_in_table():
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
+
+	origins_id = {}
+	db_id = 1
 	for origin in origins :
+		origins_id[origin] = db_id
+		db_id += 1
 		cursor.execute(insert_origin_command%origin)
 	cnx.commit()
 
 	recipes_origins_binding_command = (
 		"INSERT INTO RecipeOrigins"
 		" (recipe_id, origin_id) VALUES ")
-	recipe_origin_value = "((SELECT id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT id from Origin WHERE origin_name=\"%(origin_name)s\"))"
+	recipe_origin_value = "(\"%s\", \"%s\")"
 	
 	global recipes
+	insert_bindings = []
+	i=0
+	insert = False
 	for recipe in recipes :
-		recipe_origin_binding_value = ""
+		if i % max_sql_single_insert == 0 or i == len(recipes) - 1 :
+			insert = True
+		i+=1
+		recipe_id = None
+		cursor.execute("SELECT recipe_id from Recipe WHERE recipe_url='%s'"%recipe[URL_KEY])
+		for (db_recipe_id) in cursor :
+			recipe_id = db_recipe_id[0]
+		if recipe_id == None :
+			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")	
 		for key in recipe :
 			if key == TAGS_KEY:
+				recipe[key] = map(unicode.lower,recipe[key])
 				for tag in recipe[key]:
 					if tag in origins :
-						recipe_origin_binding_value += recipe_origin_value %{"recipe_url":recipe[URL_KEY], "origin_name":tag}
-		if len(recipe_origin_binding_value) != 0 :
-			command = recipes_origins_binding_command + recipe_origin_binding_value
-			cursor.execute(command ,multi=True)
+						insert_bindings.append((recipe_id, origins_id[origin]))
+		if insert and len(insert_bindings) > 0 :
+			cursor.executemany(recipes_origins_binding_command + recipe_origin_value, insert_bindings)
+			insert_bindings = []
+			insert = False
+			sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(i)/len(recipes))*100))
+			sys.stdout.flush()
 	cnx.commit()	
 	cursor.close()
 	cnx.close()
@@ -970,7 +1017,7 @@ if __name__ == "__main__" :
 			log_create_db(db_name, create_db)
 
 			log_create_table("Food", create_food_table)
-			#log_insert_items("Food", insert_items_in_food)
+			log_insert_items("Food", insert_items_in_food)
 
 			log_create_table("User", create_user_table)
 
@@ -991,10 +1038,10 @@ if __name__ == "__main__" :
 			log_insert_items("Recipe", insert_recipes_in_table)
 
 			log_create_table("Ingredient", create_ingredients_table)
-			log_insert_items("Ingredient", insert_ingredients_in_table)
+			#log_insert_items("Ingredient", insert_ingredients_in_table)
 
 			log_create_table("JDFCategory", create_categories_table)
-			log_insert_items("JDFCategory", insert_categories_in_table)
+			#log_insert_items("JDFCategory", insert_categories_in_table)
 
 			log_create_table("Origin", create_origin_table)
 			log_insert_items("Origin", insert_origins_in_table)
