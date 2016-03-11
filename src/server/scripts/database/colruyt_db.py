@@ -8,6 +8,7 @@ from mysql.connector import errorcode
 from colruyt_models import *
 from recipe_model import *
 import time
+import copy
 
 YELLOW = "\033[33m"
 MAGENTA = "\033[35m"
@@ -33,7 +34,8 @@ nb_images = 6573
 
 max_sql_single_insert = 500
 
-# Reciepes variable
+# Recipes variable
+min_ratings = 10
 recipes = []
 categories = []
 ingredients = []
@@ -549,23 +551,37 @@ def insert_recipes_in_table():
 		insert_values_commmand += "%(" + key + ")s" + ", "
 	insert_values_commmand = insert_values_commmand[:-2] + ") "
 
-	recipes = []
+	recipes_from_file = []
 	with open(results_recipes_filename, "r") as f:
 		for line in f:
-			recipes.append(ast.literal_eval(line.rstrip("\n")))
+			recipes_from_file.append(ast.literal_eval(line.rstrip("\n")))
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
-
+	global recipes
+	recipes = []
 	inserted_urls = []
 	i = 0
 	insert = False
 	to_insert_recipes = []
-	for recipe in recipes :
-		if i % max_sql_single_insert == 0 or i == len(recipes) - 1:
+	for recipe in recipes_from_file :
+		insert_recipe = False
+		if i % max_sql_single_insert == 0 or i == len(recipes_from_file) - 1:
 			insert = True
 		i += 1
+		# ADD RECIPE OR NOT
+		pos = recipe[NBR_RATINGS_KEY].find(" ") 
+		if pos != -1:
+			recipe[NBR_RATINGS_KEY] = recipe[NBR_RATINGS_KEY][:pos] + recipe[NBR_RATINGS_KEY][pos+1:]
+		recipe[NBR_RATINGS_KEY] = int(recipe[NBR_RATINGS_KEY])
+		url = recipe[URL_KEY]
+		n_rating = recipe[NBR_RATINGS_KEY]
+		if url not in inserted_urls and n_rating >= min_ratings:
+			insert_recipe = True
+			recipes.append(copy.deepcopy(recipe))
+			inserted_urls.append(url)
+
 		try:
 			found_keys = []
 			for key in recipe : 
@@ -581,11 +597,6 @@ def insert_recipes_in_table():
 						recipe[key] = listString
 				elif key == RATING_KEY :
 					recipe[key] = float(recipe[key])
-				elif key == NBR_RATINGS_KEY : 
-					pos = recipe[key].find(" ") 
-					if pos != -1:
-						recipe[key] = recipe[key][:pos] + recipe[key][pos+1:]
-					recipe[key] = int(recipe[key])
 				elif key == PORTIONS_KEY :
 					recipe[key] = int(recipe[key])
 				elif key in [CALORIE_PER_PORTION_KEY, PROTEIN_PER_PORTION_KEY, FAT_PER_PORTION_KEY, CARBO_PER_PORTION_KEY] :
@@ -603,19 +614,18 @@ def insert_recipes_in_table():
 			for key in recipe_table_keys:
 				if key not in found_keys:
 					recipe[key] = None
-			url = recipe[URL_KEY]
-			if url not in inserted_urls:
+			if insert_recipe :
 				to_insert_recipes.append(recipe)
-				inserted_urls.append(url)
 			if insert :
 				insert_command = insert_recipe_command + insert_values_commmand 
 				cursor.executemany(insert_command,to_insert_recipes)
 				insert = False
 				to_insert_recipes = []
-
+				sys.stdout.write(clear_line + log_text + "[%d%%]" % int((float(i)/len(recipes_from_file))*100))
+				sys.stdout.flush()
 		except Exception as e: 
 			#print recipe
-			print insert_command
+			#print insert_command
 			raise e
 	cnx.commit()
 	cursor.close()
@@ -652,10 +662,10 @@ def create_ingredients_table():
 
 def insert_ingredients_in_table():
 	global recipes
-	recipes = []
-	with open(results_recipes_filename, "r") as f:
-		for line in f:
-			recipes.append(ast.literal_eval(line.rstrip("\n")))
+	# recipes = []
+	# with open(results_recipes_filename, "r") as f:
+	# 	for line in f:
+	# 		recipes.append(ast.literal_eval(line.rstrip("\n")))
 	insert_ingredient_command = (
 		"INSERT INTO Ingredient "
 		"(ingredient_name) VALUES ")
@@ -675,11 +685,10 @@ def insert_ingredients_in_table():
 	global log_text
 	db_id = 1
 	ingredients = {}
+	insert_bindings = []
 	insert = False
 	recipe_ingredient_binding_values = ""
 	i=0
-	#t0 = time.time()
-	sys.stdout.flush()
 	for recipe in recipes :
 		if i % max_sql_single_insert == 0 or i == len(recipes) - 1 :
 			insert = True
@@ -697,16 +706,13 @@ def insert_ingredients_in_table():
 				ingredients[ingredient] = db_id
 				db_id += 1
 				cursor.execute(insert_ingredient_command + ingredient_value%ingredient)
-			recipe_ingredient_binding_values += recipe_ingredient_value%(recipe_id,ingredients[ingredient]) + ", "
-		if insert and len(recipe_ingredient_binding_values) > 0 :
-			command = recipes_ingredients_binding_command + recipe_ingredient_binding_values[:-2]
-			#print command
-			cursor.execute(command)
+			insert_bindings.append((recipe_id,ingredients[ingredient]))
+		if insert and len(insert_bindings) > 0 :
+			cursor.executemany(recipes_ingredients_binding_command + recipe_ingredient_value,insert_bindings)
+			insert_bindings = []
 			sys.stdout.write(clear_line + log_text + "[%d%%]" % int((float(i)/len(recipes))*100))
 			sys.stdout.flush()
-			recipe_ingredient_binding_values = ""
 			insert = False
-	#print time.time()-t0
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -758,8 +764,8 @@ def insert_categories_in_table():
 	main_categories = []
 	sub_categories = []
 	for recipe in recipes :
-		recipe_category_insert_values = ""
 		recipe_category_binding_vales = ""
+
 		for key in recipe :
 			if key == PRIMARY_CATEGORY_KEY:
 				if recipe[key] not in main_categories:
