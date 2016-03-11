@@ -10,16 +10,26 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 
+import com.pds.app.caloriecounter.dayrecording.DailyRecording;
+import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
+import com.pds.app.caloriecounter.itemview.EdibleItemList;
+import com.pds.app.caloriecounter.itemview.RatingEdibleItemList;
+
+import org.calorycounter.shared.models.EdibleItem;
+import org.calorycounter.shared.models.Food;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
 
 
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
 import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.models.EdibleItemImage;
 
-public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener{
+public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback{
 
     private static final int NB_RATINGS = 9;
 
@@ -27,8 +37,10 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private Button _validButton;
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
-    private ArrayList<String> names;
+    private ArrayList<EdibleItem> names;
     private ArrayList<EdibleItemImage> images;
+    //private LinearLayout stickersLayout;
+    //private DailyRecording foodsContainer;
 
 
 
@@ -46,16 +58,20 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         _validButton = (Button) v.findViewById(R.id.rating_button);
         urls = new ArrayList<String>();
         ratings = new ArrayList<Float>();
-        names = new ArrayList<String>();
+        names = new ArrayList<EdibleItem>();
         images = new ArrayList<>();
         gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
         initializer(names);
-        initializer(images);
         getUrlsFromServer();
-
     }
+
+    /*private void initAll(){
+        System.out.println(names.size());
+        foodsContainer = new DailyRecording(this, "Résultats", new RatingEdibleItemList(this, names, this, FLAG_RATABLE));
+        stickersLayout.addView(foodsContainer);
+    }*/
 
     private void addListenerGridView(){
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,7 +82,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putString("url", urls.get(position));
-                bundle.putString("name", names.get(position));
+                bundle.putString("name", names.get(position).getProductName());
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
@@ -144,21 +160,31 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
-                    urls.set(i, (String) data.get(FOOD_IMAGE_URL + String.valueOf(i)));
-                    names.set(i, (String) data.get(FOOD_NAME + String.valueOf(i)));
-                    EdibleItemImage img = new EdibleItemImage();
-                    img.initFromJSON((JSONObject) data.get(FOOD_IMAGE + String.valueOf(i)));
-                    images.set(i,img);
+                    EdibleItem item = new Food();
+                    item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
+                    names.set(i, item);
+                    System.out.println(item.getProductName());
                 }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, names));
+                        addListenerGridView();
+                        addListenerButton();
+                        //initAll();
+                    }
+                });
+
             }
-        }
+        }/*
         runOnUiThread(new Runnable() {
             public void run() {
-                gridView.setAdapter(new ImageAdapter(RatingActivity.this, urls));
+                gridView.setAdapter(new ImageAdapter(RatingActivity.this, names));
                 addListenerGridView();
                 addListenerButton();
             }
-        });
+        });*/
     }
 
 
@@ -169,6 +195,30 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
         System.out.println("------------------request for random unranked foods SENT -------------------");
         return new ArrayList<String>();
+    }
+
+    @Override
+    public void onAddEdibleItem(EdibleItem item){
+    }
+
+    @Override
+    public void onRateEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onExpandEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onCheckEdibleItem(EdibleItem item){
+
+    }
+
+    @Override
+    public void onRemoveEdibleItem(EdibleItem item){
+
     }
 
 }

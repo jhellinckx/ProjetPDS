@@ -80,5 +80,10 @@
     </style>
     <style name="AppThemeCC.DroppyMenuItemIcon" parent="Droppy.DroppyMenuItemIcon">
     </style>
+    <style name="foodRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/star_filled_gold</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:maxHeight">48dip</item>
+    </style>
 
 </resources>

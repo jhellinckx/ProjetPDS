@@ -2,6 +2,8 @@ package com.pds.app.caloriecounter;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +14,24 @@ import android.widget.RatingBar;
 
 import com.squareup.picasso.Picasso;
 
+import org.calorycounter.shared.models.EdibleItem;
+import org.calorycounter.shared.models.EdibleItemImage;
+
 import java.util.ArrayList;
 
 public class ImageAdapter extends BaseAdapter {
     private Context _Context;
-    private ArrayList<String> _urls;
+    private ArrayList<EdibleItem> _items;
     private ArrayList<View> _views;
 
-    public ImageAdapter(Context c, ArrayList<String> urls) {
+    public ImageAdapter(Context c, ArrayList<EdibleItem> items) {
         _Context = c;
-        _urls = urls;
+        _items = items;
         _views = new ArrayList<>();
     }
 
     public int getCount() {
-        return _urls.size();
+        return _items.size();
     }
 
     public Object getItem(int position) {
@@ -45,12 +50,10 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null) {
             grid = inflater.inflate(R.layout.grid_singlefood, null);
             ImageView imageView = (ImageView) grid.findViewById(R.id.grid_imageView);
-            Picasso.with(this._Context)
-                    .load(_urls.get(position))
-                    .tag("tag")
-                    .resize(330,330)
-                    .transform(new RoundedTransformation(100, 0,12))
-                    .into(imageView);
+            byte[] img_bytes = _items.get(position).getImagePic().getImageBytesArray();
+            Bitmap bmp;
+            bmp = BitmapFactory.decodeByteArray(img_bytes, 0, img_bytes.length);
+            imageView.setImageBitmap(bmp);
             _views.add(grid);
 
         } else {

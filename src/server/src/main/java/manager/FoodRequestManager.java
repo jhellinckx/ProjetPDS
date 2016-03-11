@@ -102,8 +102,7 @@ public class FoodRequestManager implements RequestManager{
 		else{
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
 			for(int i=0 ; i<foods.size() ; ++i){ //ajout de chaque url au JSON
-				responseData.put(FOOD_IMAGE_URL+String.valueOf(i), foods.get(i).getImageUrl());
-				responseData.put(FOOD_NAME+String.valueOf(i), foods.get(i).getProductName());
+				responseData.put(FOOD_NAME+String.valueOf(i), foods.get(i).toJSON());
 			}
 		}
 	}
