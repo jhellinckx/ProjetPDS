@@ -15,6 +15,9 @@ GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
 
+log_text = ""
+clear_line = "\r\x1b[K"
+
 db_name = "db_colruyt"
 db_encoding = "utf8"
 db_properties_filename = "../../src/main/resources/dao.properties"
@@ -492,7 +495,7 @@ def insert_images_path_into_food():
 def create_recipe_table():
 	recipe_table_command = (
 		"CREATE TABLE `Recipe` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ NAME_KEY + " VARCHAR(255),"
 		+ IMAGE_URL_KEY + " VARCHAR(255),"
 		+ URL_KEY + " VARCHAR(255),"
@@ -507,7 +510,7 @@ def create_recipe_table():
 		+ FAT_PER_PORTION_KEY + " FLOAT,"
 		+ CARBO_PER_PORTION_KEY + " FLOAT,"
 		+ PROTEIN_PER_PORTION_KEY + " FLOAT,"
-		"  PRIMARY KEY (`id`)"
+		"  PRIMARY KEY (`recipe_id`)"
     	") ENGINE=InnoDB")
 
 	(username, password) = db_params()
@@ -555,7 +558,7 @@ def insert_recipes_in_table():
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
-	
+	inserted_urls = []
 	i = 0
 	insert = False
 	to_insert_recipes = []
@@ -596,11 +599,14 @@ def insert_recipes_in_table():
 					except ValueError as e:
 						recipe[key] = None
 				if isinstance(recipe[key],str) or isinstance(recipe[key],unicode):
-					recipe[key] = recipe[key].replace("\"","'")
+					recipe[key] = recipe[key].replace("\"","'").replace("\r","")
 			for key in recipe_table_keys:
 				if key not in found_keys:
 					recipe[key] = None
-			to_insert_recipes.append(recipe)
+			url = recipe[URL_KEY]
+			if url not in inserted_urls:
+				to_insert_recipes.append(recipe)
+				inserted_urls.append(url)
 			if insert :
 				insert_command = insert_recipe_command + insert_values_commmand 
 				cursor.executemany(insert_command,to_insert_recipes)
@@ -618,19 +624,19 @@ def insert_recipes_in_table():
 def create_ingredients_table():
 	ingredients_table_command = (
 		"CREATE TABLE `Ingredient` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "ingredient_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "ingredient_name VARCHAR(255),"
-		"  PRIMARY KEY (`id`)"
+		"  PRIMARY KEY (`ingredient_id`)"
     	") ENGINE=InnoDB")
 
 	recipesingredients_table_command = (
 		"CREATE TABLE `RecipeIngredients` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_ingredient_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "recipe_id INT UNSIGNED,"
 		+ "ingredient_id INT UNSIGNED,"
-		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
-		+ "FOREIGN KEY (ingredient_id) REFERENCES Ingredient(id),"
-		"  PRIMARY KEY (`id`)"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),"
+		+ "FOREIGN KEY (ingredient_id) REFERENCES Ingredient(ingredient_id),"
+		"  PRIMARY KEY (`recipe_ingredient_id`)"
 		" "
     	") ENGINE=InnoDB")
 
@@ -659,31 +665,48 @@ def insert_ingredients_in_table():
 	recipes_ingredients_binding_command = (
 		"INSERT INTO RecipeIngredients"
 		" (recipe_id, ingredient_id) VALUES ")
-	recipe_ingredient_value = "((SELECT id from Recipe WHERE recipe_url=%(recipe_url)s), (SELECT id from Ingredient WHERE ingredient_name=%(ingredient_name)s))"
+	recipe_ingredient_value = "(\"%s\", \"%s\")"
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
 	global ingredients
-
-	ingredients = []
+	global log_text
+	db_id = 1
+	ingredients = {}
+	insert = False
+	recipe_ingredient_binding_values = ""
+	i=0
+	#t0 = time.time()
+	sys.stdout.flush()
 	for recipe in recipes :
-		recipe_ingredient_insert_values = "" 
-		recipe_ingredient_binding_values = ""
+		if i % max_sql_single_insert == 0 or i == len(recipes) - 1 :
+			insert = True
+		i += 1
+		#Get id
+		recipe_id = None
+		cursor.execute("SELECT recipe_id from Recipe WHERE recipe_url='%s'"%recipe[URL_KEY])
+		for (db_recipe_id) in cursor :
+			recipe_id = db_recipe_id[0]
+		if recipe_id == None :
+			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")
 		for ingredient in recipe[INGREDIENTS_NAMES_KEY]:
 			ingredient = ingredient.lower()
 			if ingredient not in ingredients :
-				ingredients.append(ingredient)
-				recipe_ingredient_insert_values += ingredient_value%ingredient + ", "
-			recipe_ingredient_binding_values += recipe_ingredient_value %{"recipe_url":recipe[URL_KEY], "ingredient_name":ingredient} +" ,"
-		if len(recipe_ingredient_insert_values) != 0 :
-			command = insert_ingredient_command + recipe_ingredient_insert_values[:-2]
-			cursor.execute(command)
-		if len(recipe_ingredient_binding_values) != 0 :
+				ingredients[ingredient] = db_id
+				db_id += 1
+				cursor.execute(insert_ingredient_command + ingredient_value%ingredient)
+			recipe_ingredient_binding_values += recipe_ingredient_value%(recipe_id,ingredients[ingredient]) + ", "
+		if insert and len(recipe_ingredient_binding_values) > 0 :
 			command = recipes_ingredients_binding_command + recipe_ingredient_binding_values[:-2]
-			cursor.execute(command ,multi=True)
-
+			#print command
+			cursor.execute(command)
+			sys.stdout.write(clear_line + log_text + "[%d%%]" % int((float(i)/len(recipes))*100))
+			sys.stdout.flush()
+			recipe_ingredient_binding_values = ""
+			insert = False
+	#print time.time()-t0
 	cnx.commit()
 	cursor.close()
 	cnx.close()
@@ -691,19 +714,19 @@ def insert_ingredients_in_table():
 def create_categories_table():
 	categories_table_command = (
 	"CREATE TABLE `JDFCategory` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "category_name VARCHAR(255),"
 		+ "is_main INT(1),"
-		"  PRIMARY KEY (`id`)"
+		"  PRIMARY KEY (`category_id`)"
     	") ENGINE=InnoDB")
 	recipescategories_table_command = (
 	"CREATE TABLE `RecipeCategories` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_category_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "recipe_id INT UNSIGNED,"
 		+ "category_id INT UNSIGNED,"
-		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
-		+ "FOREIGN KEY (category_id) REFERENCES JDFCategory(id),"
-		"  PRIMARY KEY (`id`)"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),"
+		+ "FOREIGN KEY (category_id) REFERENCES JDFCategory(category_id),"
+		"  PRIMARY KEY (`recipe_category_id`)"
     	") ENGINE=InnoDB")
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
@@ -724,7 +747,7 @@ def insert_categories_in_table():
 	recipes_categories_binding_command = (
 		"INSERT INTO RecipeCategories"
 		" (recipe_id, category_id) VALUES ")
-	recipe_category_value = "((SELECT id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
+	recipe_category_value = "((SELECT recipe_id from Recipe WHERE recipe_url=\"%(recipe_url)s\"), (SELECT category_id from JDFCategory WHERE category_name=\"%(category_name)s\"))"
 	
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
@@ -767,19 +790,19 @@ def insert_categories_in_table():
 def create_origin_table():
 	origin_table_command = (	
 	"CREATE TABLE `Origin` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "origin_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "origin_name VARCHAR(255),"
-		"  PRIMARY KEY (`id`)"
+		"  PRIMARY KEY (`origin_id`)"
     	") ENGINE=InnoDB")
 
 	recipesorigins_table_command = (
 	"CREATE TABLE `RecipeOrigins` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_origin_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "recipe_id INT UNSIGNED,"
 		+ "origin_id INT UNSIGNED,"
-		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
-		+ "FOREIGN KEY (origin_id) REFERENCES Origin(id),"
-		"  PRIMARY KEY (`id`)"
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),"
+		+ "FOREIGN KEY (origin_id) REFERENCES Origin(origin_id),"
+		"  PRIMARY KEY (`recipe_origin_id`)"
     	") ENGINE=InnoDB")
 
 	(username, password) = db_params()
@@ -805,7 +828,7 @@ def insert_origins_in_table():
 	
 	insert_origin_command = (
 		"INSERT INTO Origin "
-		"(origin_name) VALUES (\"%s\")"
+		"(origin_name) VALUES (\"%s\")")
 
 	#Already insert origins
 	(username, password) = db_params()
@@ -839,9 +862,9 @@ def insert_origins_in_table():
 def create_tags_table():
 	tags_table_command = (
 		"CREATE TABLE `Tag` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "tag_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 		+ "tag_name VARCHAR(255),"
-		"  PRIMARY KEY (`id`)"
+		"  PRIMARY KEY (`tag_id`)"
     	") ENGINE=InnoDB")
 
 	(username, password) = db_params()
@@ -891,37 +914,41 @@ def create_recipetags_table():
 
 def create_recipeorigins_table():
 	pass
-	
-
-
-
 
 def log_create_table(table, create_table_func):
-	sys.stdout.write("Creating " + MAGENTA + table + RESET + " table... ")
+	global log_text
+	log_text = "Creating " + MAGENTA + table + RESET + " table... "
+	sys.stdout.write(log_text)
 	sys.stdout.flush()
 	create_table_func()
-	sys.stdout.write(GREEN + "OK" + RESET + "\n")
+	sys.stdout.write(clear_line + log_text + GREEN + "OK" + RESET + "\n")
 	sys.stdout.flush()
 
 def log_insert_items(table, add_items_func):
-	sys.stdout.write("Inserting items in " + MAGENTA + table + RESET + " table... ")
+	global log_text
+	log_text = "Inserting items in " + MAGENTA + table + RESET + " table... "
+	sys.stdout.write(log_text)
 	sys.stdout.flush()
 	add_items_func()
-	sys.stdout.write(GREEN + "OK" + RESET + "\n")
+	sys.stdout.write(clear_line + log_text + GREEN + "OK" + RESET + "\n")
 	sys.stdout.flush()
 
 def log_drop_db(db_name, drop_func):
-	sys.stdout.write("Dropping database " + MAGENTA + db_name + RESET + "... ")
+	global log_text
+	log_text = "Dropping database " + MAGENTA + db_name + RESET + "... "
+	sys.stdout.write(log_text)
 	sys.stdout.flush()
 	drop_func()
-	sys.stdout.write(GREEN + "OK " + RESET + "\n")
+	sys.stdout.write(clear_line + log_text + GREEN + "OK " + RESET + "\n")
 	sys.stdout.flush()
 
 def log_create_db(db_name, create_func):
-	sys.stdout.write("Creating database " + MAGENTA + db_name + RESET + "... ")
+	global log_text
+	log_text = "Creating database " + MAGENTA + db_name + RESET + "... "
+	sys.stdout.write(log_text)
 	sys.stdout.flush()
 	create_func()
-	sys.stdout.write(GREEN + "OK " + RESET + "\n")
+	sys.stdout.write(clear_line + log_text + GREEN + "OK " + RESET + "\n")
 	sys.stdout.flush()
 
 

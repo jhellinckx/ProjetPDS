@@ -40,7 +40,6 @@ def db_params():
 	return (username, password)
 
 def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherwise add
-
 	addColumnToTableCommand = (
 		"ALTER TABLE `Food`"
 		"ADD ("
