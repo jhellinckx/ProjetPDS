@@ -79,13 +79,15 @@ public class InStream implements Runnable{
 		this._msgSizeBuffer.clear();
 		int bytesRead = 0;
 		int msgSize = 0; 
+		int lastRead = 0;
 		try{
 			/* 	Put the 4 first bytes of the message in a dedicated buffer.
 				These bytes should contain the size of the message. */
-			while(_msgSizeBuffer.remaining() > 0 && bytesRead != -1){
-				bytesRead = clientChannel.read(this._msgSizeBuffer);
+			while(_msgSizeBuffer.remaining() > 0 && bytesRead < INT_SIZE && lastRead != -1){
+				lastRead = clientChannel.read(this._msgSizeBuffer);
+				bytesRead += lastRead;
 			}
-			if(bytesRead == -1){
+			if(lastRead == -1){
 				// Client clean-closed the connection.
 				this._disconnect(clientChannel);
 				return;
@@ -96,8 +98,10 @@ public class InStream implements Runnable{
 			// Read n (msgSize) bytes, where n = size of the message which is thus given in the 4 bytes header.
 			this._msgDataBuffer.limit(msgSize);
 			bytesRead = 0;
-			while(_msgDataBuffer.remaining()>0 && bytesRead != -1){
-				bytesRead = clientChannel.read(this._msgDataBuffer);
+			lastRead = 0;
+			while(_msgDataBuffer.remaining() > 0 && bytesRead < msgSize && lastRead != -1){
+				lastRead = clientChannel.read(this._msgDataBuffer);
+				bytesRead += lastRead;
 			}
 			if(bytesRead == -1){
 				this._disconnect(clientChannel);

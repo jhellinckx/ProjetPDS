@@ -470,6 +470,7 @@ public class NetworkHandler {
                 byte[] rawMsg = msg.toString().getBytes(ENCODING);
                 _outStream.writeInt(rawMsg.length);
                 _outStream.write(rawMsg, 0, rawMsg.length);
+                _outStream.flush();
             }
             catch(UnsupportedEncodingException e){
                 Log.d("Listener",e.getMessage());
