@@ -360,7 +360,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         ArrayList<String> productDates = new ArrayList<String>();
         if(!dailyFoods.isEmpty()){
             for(int i=0 ; i<dailyFoods.size(); ++i){
-                if(dailyFoods.get(i) instanceof Food && dailyFoods.get(i).isEaten()){
+                if(dailyFoods.get(i) instanceof Food){
                     Food currFood = (Food) dailyFoods.get(i);
                     productCodes.add(currFood.getCode());
                     productDates.add(current_day);
