@@ -37,9 +37,9 @@ max_sql_single_insert = 500
 # Recipes variable
 min_ratings = 10
 recipes = []
-categories = []
-ingredients = []
-origins = []
+categories = {}
+ingredients = {}
+origins = {}
 
 
 articles_names_correction = \
@@ -818,7 +818,7 @@ def insert_categories_in_table():
 	cnx.close()
 
 	global categories
-	categories = main_categories.keys() + sub_categories.keys()
+	categories ={k: v for d in [main_categories, sub_categories] for k, v in d.items()}
 
 def create_origin_table():
 	origin_table_command = (	
@@ -875,12 +875,12 @@ def insert_origins_in_table():
 		db_id += 1
 		cursor.execute(insert_origin_command%origin)
 	cnx.commit()
-
+	
+	origins = origins_id
 	recipes_origins_binding_command = (
 		"INSERT INTO RecipeOrigins"
 		" (recipe_id, origin_id) VALUES ")
 	recipe_origin_value = "(\"%s\", \"%s\")"
-	
 	global recipes
 	insert_bindings = []
 	i=0
@@ -895,12 +895,12 @@ def insert_origins_in_table():
 			recipe_id = db_recipe_id[0]
 		if recipe_id == None :
 			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")	
+		recipe[TAGS_KEY] = map(unicode.lower,recipe[TAGS_KEY])
 		for key in recipe :
 			if key == TAGS_KEY:
-				recipe[key] = map(unicode.lower,recipe[key])
 				for tag in recipe[key]:
 					if tag in origins :
-						insert_bindings.append((recipe_id, origins_id[origin]))
+						insert_bindings.append((recipe_id, origins_id[tag]))
 		if insert and len(insert_bindings) > 0 :
 			cursor.executemany(recipes_origins_binding_command + recipe_origin_value, insert_bindings)
 			insert_bindings = []
@@ -920,53 +920,77 @@ def create_tags_table():
 		"  PRIMARY KEY (`tag_id`)"
     	") ENGINE=InnoDB")
 
+	recipesingredients_table_command = (
+		"CREATE TABLE `RecipeTags` ("
+		+ "recipe_tag_id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+		+ "recipe_id INT UNSIGNED, "
+		+ "tag_id INT UNSIGNED, "
+		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),"
+		+ "FOREIGN KEY (tag_id) REFERENCES Tag(tag_id),"
+		"  PRIMARY KEY (`recipe_tag_id`)"
+    	") ENGINE=InnoDB")
+
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 	cursor.execute(tags_table_command)
 	cnx.commit()
+	cursor.execute(recipesingredients_table_command)
+	cnx.commit()
 	cursor.close()
 	cnx.close()
 
 def insert_tags_in_table():
-	global recipes
-	global origins
-	global ingredients
-	global categories
-	tags_not_in_table = []
-	tags_in_table = ingredients + categories + origins
-	for recipe in recipes :
-		for tag in recipe[TAGS_KEY]:
-			tag = tag.lower()
-			if tag not in tags_not_in_table:
-				if tag not in tags_in_table:
-					tags_not_in_table.append(tag)
-	
+
 	insert_tag_command = (
 		"INSERT INTO Tag "
 		"(tag_name)"
 		"VALUES (\"%s\")"
 		)
+	insert_recipetag_command = "INSERT INTO RecipeTags (recipe_id, tag_id) VALUES (\"%s\",\"%s\")"
+
+
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
-	for tag in tags_not_in_table :
-		cursor.execute(insert_tag_command%tag)
+
+	global recipes
+	global origins
+	global ingredients
+	global categories
+	insert_bindings = []
+	tags_in_tables = {k: v for d in [origins, ingredients, categories] for k, v in d.items()}
+	tags_not_yet_in_table = {}
+	i=0
+	db_id = 1
+	insert = False
+	for recipe in recipes :
+		if i % max_sql_single_insert == 0 or i == len(recipes) - 1 :
+			insert = True
+		i+=1
+		recipe_id = None
+		cursor.execute("SELECT recipe_id from Recipe WHERE recipe_url='%s'"%recipe[URL_KEY])
+		for (db_recipe_id) in cursor :
+			recipe_id = db_recipe_id[0]
+		if recipe_id == None :
+			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")	
+		recipe[TAGS_KEY] = map(unicode.lower, recipe[TAGS_KEY])
+		for tag in recipe[TAGS_KEY]:
+			if tag not in tags_in_tables :
+				if tag not in tags_not_yet_in_table:
+					tags_not_yet_in_table[tag] = db_id
+					cursor.execute(insert_tag_command%tag)
+					db_id += 1
+				insert_bindings.append((recipe_id, tags_not_yet_in_table[tag]))
+		if insert:
+			cursor.executemany(insert_recipetag_command, insert_bindings)
+			insert_bindings = []
+			insert = False
+			sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(i)/len(recipes))*100))
+			sys.stdout.flush()
 	cnx.commit()
 	cursor.close()
 	cnx.close()
-
-def create_recipetags_table():
-	recipesingredients_table_command = (
-		"CREATE TABLE `RecipeTags` ("
-		+ "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-		+ "FOREIGN KEY (recipe_id) REFERENCES Recipe(id),"
-		+ "FOREIGN KEY (tag_id) REFERENCES Tag(id),"
-		"  PRIMARY KEY (`id`)"
-    	") ENGINE=InnoDB")
-
-def create_recipeorigins_table():
-	pass
 
 def log_create_table(table, create_table_func):
 	global log_text
@@ -1008,6 +1032,7 @@ def log_create_db(db_name, create_func):
 
 if __name__ == "__main__" :
 	try:
+		t0 = time.time()
 		try:
 			log_drop_db(db_name, drop_db)
 		except mysql.connector.Error as err:
@@ -1038,17 +1063,19 @@ if __name__ == "__main__" :
 			log_insert_items("Recipe", insert_recipes_in_table)
 
 			log_create_table("Ingredient", create_ingredients_table)
-			#log_insert_items("Ingredient", insert_ingredients_in_table)
+			log_insert_items("Ingredient", insert_ingredients_in_table)
 
 			log_create_table("JDFCategory", create_categories_table)
-			#log_insert_items("JDFCategory", insert_categories_in_table)
+			log_insert_items("JDFCategory", insert_categories_in_table)
 
 			log_create_table("Origin", create_origin_table)
 			log_insert_items("Origin", insert_origins_in_table)
 
 			log_create_table("Tag", create_tags_table)
 			log_insert_items("Tag", insert_tags_in_table)
-
+		
+		sys.stdout.write("Database script completed in " + YELLOW + str(time.time() - t0).split(",")[0].split(".")[0] + RESET + " seconds.\n")
+		sys.stdout.flush()
 
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
