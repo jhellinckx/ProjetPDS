@@ -12,6 +12,7 @@ import nioserver.Message;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
+import org.calorycounter.shared.models.EdibleItem;
 import items.CategoryRating;
 
 import manager.*;
@@ -73,7 +74,7 @@ public class AppliServer extends AbstractNIOServer{
 		_recipeDatabase = _daoFactory.getRecipeDAO();
 
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
-		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase);
+		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase, _recipeDatabase);
 		_managers = new HashMap<>();
 		initManagers();
 

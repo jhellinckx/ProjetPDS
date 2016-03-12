@@ -69,7 +69,8 @@ public class FoodDAOImpl implements FoodDAO {
                 preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt);
             }else{
                 category=category+'%';
-                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt, category);            }
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt, category);
+            }
             resultSet = preparedStatement.executeQuery();
             while ( resultSet.next() ) {
                 foods.add(map(resultSet));
