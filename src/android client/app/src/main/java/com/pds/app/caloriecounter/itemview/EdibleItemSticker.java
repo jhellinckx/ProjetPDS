@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.pds.app.caloriecounter.R;
 import com.pds.app.caloriecounter.utils.Converter;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
-import com.squareup.picasso.Picasso;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.EdibleItemImage;
@@ -58,7 +57,8 @@ public class EdibleItemSticker extends CardView {
     private CircleImageView cardImage;
     private LinearLayout textLayout;
     private LinearLayout itemInfosLayout;
-    private LinearLayout iconsLayout;
+    private LinearLayout iconsRightLayout;
+    private LinearLayout iconsLeftLayout;
     private EdibleItemList container;
     boolean removable; boolean addable;
     boolean ratable; boolean checkable;
@@ -109,7 +109,8 @@ public class EdibleItemSticker extends CardView {
         itemInfosLayout.setLayoutParams(infosLayoutParams);
         cardLayout.addView(itemInfosLayout);
 
-        iconsLayout = null; // Will be initialized in initActions()
+        iconsRightLayout = null; // Will be initialized in initActions()
+        iconsLeftLayout = null;
     }
 
     private void initImage(){
@@ -161,31 +162,50 @@ public class EdibleItemSticker extends CardView {
         itemInfosLayout.addView(textLayout);
     }
 
-    private void initIconsLayout(int w){
-        itemInfosLayout.getLayoutParams().width = w - ICON_SIZE; // Crucial - makes space on the card for the icon layout
-        iconsLayout = new LinearLayout(getContext());
-        iconsLayout.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        iconsLayout.setLayoutParams(iconsLayoutParams);
-        cardLayout.addView(iconsLayout);
+    private void initIconsLayout(int w, boolean addLeft, boolean addRight){
+        itemInfosLayout.getLayoutParams().width = w - (((addLeft?1:0)+(addRight?1:0))*ICON_SIZE); // Crucial - makes space on the card for the icon layout
+        if(addLeft){
+            iconsLeftLayout = new LinearLayout(getContext());
+            iconsLeftLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            iconsLeftLayout.setLayoutParams(iconsLayoutParams);
+            cardLayout.removeView(itemInfosLayout);
+            cardLayout.addView(iconsLeftLayout);
+            cardLayout.addView(itemInfosLayout);
+        }
+        if(addRight) {
+            iconsRightLayout = new LinearLayout(getContext());
+            iconsRightLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            iconsRightLayout.setLayoutParams(iconsLayoutParams);
+            cardLayout.addView(iconsRightLayout);
+        }
 
     }
 
     private void initActions(int w, int h){
-        if(iconsLayout != null) return;
+        if(iconsRightLayout != null || iconsLeftLayout != null) return;
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
         if(removable || addable || checkable || ratable || expandable) {
-            initIconsLayout(w);
-            List<View> icons = new ArrayList<>();
-            icons.add((removable) ? initClearAction() : initEmptyAction());
-            icons.add((expandable) ? initZoomAction() : initEmptyAction());
-            icons.add((addable) ? initAddAction() : initEmptyAction());
-            icons.add((ratable) ? initRateAction() : initEmptyAction());
+            boolean addRightLayout = removable || addable || ratable;
+            boolean addLeftLayout = expandable;
+            initIconsLayout(w, addLeftLayout, addRightLayout);
+            if(addRightLayout){
+                List<View> rightIcons = new ArrayList<>();
+                rightIcons.add((removable) ? initClearAction() : initEmptyAction());
+                rightIcons.add((addable) ? initAddAction() : initEmptyAction());
+                rightIcons.add((ratable) ? initRateAction() : initEmptyAction());
+                distributeSpace(rightIcons, iconsRightLayout);
+            }
+            if(addLeftLayout){
+                List<View> leftIcons = new ArrayList<>();
+                leftIcons.add((expandable) ? initZoomAction() : initEmptyAction());
+                distributeSpace(leftIcons, iconsLeftLayout);
+            }
             if (checkable) {
                 initCheckAction();
             }
-            distributeSpace(icons, iconsLayout);
         }
     }
 
