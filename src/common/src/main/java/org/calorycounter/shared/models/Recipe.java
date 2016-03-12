@@ -2,9 +2,15 @@ package org.calorycounter.shared.models;
 
 import static org.calorycounter.shared.Constants.network.*;
 import org.json.simple.JSONObject;
+import java.util.List;
 
 public class Recipe extends EdibleItem {
 	private String ingredients;
+    private int subCategoryId;
+    private List<Integer> ingredientsIds;
+    private List<Integer> tagIds;
+    private int originId;
+
 
 
 	public String getIngredients(){
@@ -14,6 +20,39 @@ public class Recipe extends EdibleItem {
 	public void setIngredients(String ingren){
 		this.ingredients = ingren;
 	}
+
+    public void setSubCategoryId(int subCatId){
+        this.subCategoryId = subCatId;
+    }
+
+    public int getSubCategoryId(){
+        return subCategoryId;
+    }
+
+    public List<Integer> getIngredientsIds() {
+        return ingredientsIds;
+    }
+
+    public void setIngredientsIds(List<Integer> ingIds){
+        this.ingredientsIds = ingIds;
+    }
+
+    public List<Integer> getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds(List<Integer> tagIds){
+        this.tagIds = tagIds;
+    }
+
+    public int getOriginId(){ //If origin_id = 0 , means NO ORIGIN
+        return originId;
+    }
+
+    public void setOriginId(int orgId){
+        this.originId = orgId;
+    }
+
 
 	@Override
     public JSONObject toJSON(){
