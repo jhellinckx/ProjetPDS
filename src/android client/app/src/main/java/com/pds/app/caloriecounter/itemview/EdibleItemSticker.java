@@ -89,9 +89,9 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initCard(){
+        this.setPreventCornerOverlap(false);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         this.setLayoutParams(cardParams);
-
         cardLayout = new LinearLayout(getContext());
         cardLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -265,14 +265,14 @@ public class EdibleItemSticker extends CardView {
     }
 
     private void initCheckAction(){
-        cardLayout.setClickable(true);
-        cardLayout.setOnClickListener(new OnClickListener() {
+        this.setClickable(true);
+        this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (item.isEaten()) {
                     item.notEaten();
                     cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
-                }else {
+                } else {
                     item.eaten();
                     cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
                 }
