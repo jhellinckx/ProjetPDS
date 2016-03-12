@@ -15,14 +15,14 @@ import org.calorycounter.shared.models.Recipe;
 
 public class RecipeDAOImpl implements RecipeDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_NAME = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_name = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_id = ?";
+	private static final String SQL_SELECT_BY_NAME = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_name = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_id = ?";
 	private static final String SQL_SELECT_SUB_CAT_BY_ID = "SELECT C.category_id FROM RecipeCategories C, JDFCategory J WHERE C.recipe_id = ? AND C.category_id = J.category_id AND J.is_main = 0";
 	private static final String SQL_SELECT_ORIGIN_BY_ID = "SELECT origin_id FROM RecipeOrigins WHERE recipe_id = ?";
 	private static final String SQL_SELECT_INGREDIENTS_IDS = "SELECT ingredient_id FROM RecipeIngredients WHERE recipe_id = ?";
 	private static final String SQL_SELECT_TAG_IDS = "SELECT tag_id FROM RecipeTags WHERE recipe_id = ?";
-    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
-    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
 
  	private static final String SQL_SELECT_LESS_THAN_LEVELS_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT = 
     "SELECT category_name, CBUserPredictions.prediction, Recipe.recipe_id, Recipe.recipe_name, 
@@ -241,6 +241,7 @@ public class RecipeDAOImpl implements RecipeDAO {
         recipe.setTotalProteins(resultSet.getFloat( "portion_protein" ) )  ;
         recipe.setTotalCarbohydrates(resultSet.getFloat( "portion_carbo" )  );
         recipe.notEaten();
+        recipe.setImagePath(resultSet.getString("image_pic"));
         return recipe;
 	}
 

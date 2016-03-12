@@ -7,8 +7,8 @@ from os import rmdir
 
 
 filename = "raw/images_binary_file.txt"
-directory = "raw/db_images"
-png_filename = "db_image_{0}"
+directory = "raw/db_images_recipes"
+png_filename = "db_recipe_image_{0}"
 delimiter = "€£"
 no_pic_image = "raw/nopic.jpg"
 
