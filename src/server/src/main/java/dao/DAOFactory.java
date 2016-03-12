@@ -138,4 +138,8 @@ public class DAOFactory {
     public AllCategoriesDAO getAllCategoriesDAO() {
         return new AllCategoriesDAOImpl( this );
     }
+
+    public RecipeDAO getRecipeDAO() {
+        return new RecipeDAOImpl(this);
+    }
 }
