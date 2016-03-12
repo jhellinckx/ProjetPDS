@@ -64,8 +64,8 @@ public class RecommendationRequestManager implements RequestManager{
 	private JSONObject recommendItems(List<Food> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
-		_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
-		recommendedFoods = _recommenderSystem.recommendItems();
+		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
+		//recommendedFoods = _recommenderSystem.recommendItems();
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
 			jsonFoods.add(recommendedFoods.get(i).toJSON());
