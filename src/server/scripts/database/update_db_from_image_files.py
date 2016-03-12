@@ -22,8 +22,8 @@ RESET = "\033[0m"
 
 db_name = "db_colruyt"
 db_properties_filename = "../../src/main/resources/dao.properties"
-directory = "raw/db_images"
-png_filename = "db_image_{0}"
+directory = "raw/db_images_recipes"
+png_filename = "db_recipe_image_{0}"
 nb_items = 6573
 
 def db_params():
@@ -41,13 +41,13 @@ def db_params():
 
 def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherwise add
 	addColumnToTableCommand = (
-		"ALTER TABLE `Food`"
+		"ALTER TABLE `Recipe`"
 		"ADD ("
 		"`image_pic` VARCHAR(255));"
 		)
 
 	deleteColumnsFromTableCommand = (
-		"ALTER TABLE `Food` "
+		"ALTER TABLE `Recipe` "
 		"DROP `image_pic`;"
 		)
 
@@ -63,7 +63,7 @@ def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherw
 	cursor = cnx.cursor()
 
 	# Add or delete columns to the Food table
-	sys.stdout.write(printName + " columns to table Food.. ")
+	sys.stdout.write(printName + " columns to table Recipe.. ")
 	try:
 		cursor.execute(command)
 		sys.stdout.write(GREEN + "OK" + RESET + "\n")
@@ -83,9 +83,9 @@ def getImagesPath():
 def updateDb(images_path):
 
 	updateImageColumnCommand = (
-		"UPDATE `Food`"
+		"UPDATE `Recipe`"
 		"SET `image_pic` = %s"
-		"WHERE `id_food` = %s")
+		"WHERE `recipe_id` = %s")
 	(username,password) = db_params()
 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
 	cursor = cnx.cursor()
