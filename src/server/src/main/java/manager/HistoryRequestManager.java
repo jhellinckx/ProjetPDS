@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import nioserver.Message;
 import nioserver.AbstractNIOServer;
+import util.ImageLoader;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -59,6 +60,7 @@ public class HistoryRequestManager implements RequestManager{
 	}
 
 	private void manageHistorySuccess(JSONObject data, List<Food> foods, List<String> dates){
+		loadImages(foods);
 		JSONArray foodsDatesRepr = new JSONArray();
 		for(int i = 0 ; i< foods.size(); ++i){
 			JSONObject foodDateRepr = new JSONObject();
@@ -67,6 +69,10 @@ public class HistoryRequestManager implements RequestManager{
 			foodsDatesRepr.add(foodDateRepr);
 		}
 		data.put(HISTORY_FOODS_DATES, foodsDatesRepr);
+	}
+
+	private void loadImages(List<Food> foods){
+		ImageLoader.loadImages(foods);
 	}
 
 	private JSONObject onHistoryRequest(Message msg){
@@ -89,6 +95,7 @@ public class HistoryRequestManager implements RequestManager{
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String date = (String) data.get(HISTORY_DATE);
 		List<Food> foods = _userHistoryDatabase.getHistoryFoodForDate(user, date);
+		loadImages(foods);
 		JSONArray foodData = new JSONArray();
 		for (int i = 0; i < foods.size(); i++){
 

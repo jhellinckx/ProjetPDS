@@ -12,6 +12,7 @@ public abstract class EdibleItem implements JSONSerializable{
     protected String    productName;
     protected String    image_url;
     protected EdibleItemImage image_pic;
+    protected String    image_path;
     protected Float    total_energy;
     protected Float    total_fat;
     protected Float    total_proteins;
@@ -56,6 +57,14 @@ public abstract class EdibleItem implements JSONSerializable{
 
     public void setImagePic( EdibleItemImage img ){
         this.image_pic = img;
+    }
+
+    public void setImagePath( String path ){
+        this.image_path = path;
+    }
+
+    public String getImagePath(){
+        return image_path;
     }
 
     public Float getTotalEnergy() {

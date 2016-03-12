@@ -11,6 +11,8 @@ import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
 import recommender.KnowledgeBasedFilter;
 
+import util.ImageLoader;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -63,11 +65,16 @@ public class RecommendationRequestManager implements RequestManager{
 		}
 	}
 
+	private void loadImages(List<Food> foods){
+		ImageLoader.loadImages(foods);
+	}
+
 	private JSONObject recommendItems(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
 		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		//recommendedFoods = _recommenderSystem.recommendItems();
+		loadImages(recommendedFoods);
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
 			jsonFoods.add(recommendedFoods.get(i).toJSON());
