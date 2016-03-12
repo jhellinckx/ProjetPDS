@@ -13,7 +13,8 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationExceptio
 
 public class AllCategoriesDAOImpl implements AllCategoriesDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_CATEGORIES = "SELECT category_name FROM All_categories WHERE table_name = ?";
+	private static final String SQL_SELECT_CATEGORIES = "SELECT category_name FROM All_categories";
+    private static final String SQL_SELECT_RECIPE_CATEGORIES = "SELECT category_name FROM JDFCategory WHERE is_main = 1";
 
 	AllCategoriesDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -22,15 +23,15 @@ public class AllCategoriesDAOImpl implements AllCategoriesDAO {
 
 	@Override
 	public List<String> getAllFoodCategories() throws DAOException {
-		return getAllCategories("Food");
+		return getAllCategories(SQL_SELECT_CATEGORIES);
 	}
 
 	@Override
 	public List<String> getAllRecipeCategories() throws DAOException {
-		return getAllCategories("Recipe");
+		return getAllCategories(SQL_SELECT_RECIPE_CATEGORIES);
 	}
 	
-	private List<String> getAllCategories(String recipeOrFood){
+	private List<String> getAllCategories(String sqlQuery){
 		List<String> categories = new ArrayList<String>();
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;
@@ -39,7 +40,7 @@ public class AllCategoriesDAOImpl implements AllCategoriesDAO {
         try {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_CATEGORIES, false, recipeOrFood );
+            preparedStatement = initializationPreparedRequest( connexion, sqlQuery, false);
             resultSet = preparedStatement.executeQuery();
             /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
             while ( resultSet.next() ) {

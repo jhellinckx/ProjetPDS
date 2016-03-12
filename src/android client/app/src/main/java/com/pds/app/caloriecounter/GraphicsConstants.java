@@ -115,7 +115,7 @@ public final class GraphicsConstants {
         public static final int DELETE_ICON = R.drawable.ic_clear_grey_600_18dp;
         public static final int ADD_ICON = R.drawable.ic_add_green_700_18dp;
         public static final int RATE_ICON = R.drawable.ic_star_rate_amber_a200_18dp;
-        public static final int ZOOM_ICON = R.drawable.ic_zoom_in_blue_900_18dp;
+        public static final int ZOOM_ICON = R.drawable.ic_search_grey_600_18dp;
     }
 
     public static final class ItemList{

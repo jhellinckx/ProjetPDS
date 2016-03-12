@@ -993,6 +993,27 @@ def insert_tags_in_table():
 	cursor.close()
 	cnx.close()
 
+def create_userpredictions_table():
+	userpredictions_table_command = \
+	"CREATE TABLE CBUserPredictions\
+	(prediction_id INT UNSIGNED NOT NULL AUTO_INCREMENT,\
+	user_id INT UNSIGNED,\
+	recipe_id INT UNSIGNED,\
+	prediction FLOAT,\
+	FOREIGN KEY (user_id) REFERENCES User (id_user),\
+	FOREIGN KEY (recipe_id) REFERENCES Recipe (recipe_id),\
+	PRIMARY KEY(prediction_id)\
+	) ENGINE=INNODB;"
+
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	cursor.execute(userpredictions_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+
 def log_create_table(table, create_table_func):
 	global log_text
 	log_text = "Creating " + MAGENTA + table + RESET + " table... "
@@ -1036,6 +1057,7 @@ if __name__ == "__main__" :
 		t0 = time.time()
 		try:
 			log_drop_db(db_name, drop_db)
+			pass
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 			sys.stdout.flush()
@@ -1074,6 +1096,8 @@ if __name__ == "__main__" :
 
 			log_create_table("Tag", create_tags_table)
 			log_insert_items("Tag", insert_tags_in_table)
+
+			log_create_table("CBUserPredictions", create_userpredictions_table)
 		
 		sys.stdout.write("Database script completed in " + YELLOW + str(time.time() - t0).split(",")[0].split(".")[0] + RESET + " seconds.\n")
 		sys.stdout.flush()
