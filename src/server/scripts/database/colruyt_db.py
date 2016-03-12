@@ -995,7 +995,7 @@ def insert_tags_in_table():
 
 def create_userpredictions_table():
 	userpredictions_table_command = \
-	"CREATE TABLE UserPredictions\
+	"CREATE TABLE CBUserPredictions\
 	(prediction_id INT UNSIGNED NOT NULL AUTO_INCREMENT,\
 	user_id INT UNSIGNED,\
 	recipe_id INT UNSIGNED,\
@@ -1097,7 +1097,7 @@ if __name__ == "__main__" :
 			log_create_table("Tag", create_tags_table)
 			log_insert_items("Tag", insert_tags_in_table)
 
-			log_create_table("UserPredictions", create_userpredictions_table)
+			log_create_table("CBUserPredictions", create_userpredictions_table)
 		
 		sys.stdout.write("Database script completed in " + YELLOW + str(time.time() - t0).split(",")[0].split(".")[0] + RESET + " seconds.\n")
 		sys.stdout.flush()
