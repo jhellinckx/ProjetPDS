@@ -18,22 +18,6 @@ GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
 
-domain = "http://cuisine.journaldesfemmes.com"
-all_recipes_categories = "/toutes-les-recettes/"
-all_from_category = "/preferes"
-all_tags = "/s/?f_libelle="
-
-min_ratings = 5
-
-tags_filename = "jdf_tags.txt"
-sub_categories_filename = "jdf_sub_categories.txt"
-
-results_recipes_filename = "results_jdf_recipes.txt"
-
-post_rdi_url = "http://www.monmenu.fr/s/calculer-calories.html"
-
-details_error_messages_filename = "jdf_errors.txt"
-
 def get_all_tags():
 	structured_response = BeautifulSoup(requests.get(domain + all_tags).content, "lxml")
 	tags = {}
