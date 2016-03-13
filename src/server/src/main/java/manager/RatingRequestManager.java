@@ -32,22 +32,6 @@ public class RatingRequestManager implements RequestManager{
 		_categoryRatingDatabase = crdb;
 	}
 
-	private void insertRatingsToTable(List<String> categories, float rank, Message msg) throws DAOException{
-		for(String category : categories){
-			CategoryRating categoryRating = _categoryRatingDatabase.findRatedCategory(_server.getUser(msg), category);
-			float newRating; int timesRated;
-			if(categoryRating == null){
-				newRating = rank;
-				timesRated = 1;
-			}
-			else{
-				newRating = (categoryRating.rating() * categoryRating.timesRated() + rank) / (categoryRating.timesRated() + 1);
-				timesRated = categoryRating.timesRated() + 1;
-			}
-			_categoryRatingDatabase.addRatingForCategory(_server.getUser(msg), category, newRating, timesRated);
-		}
-	}
-
 	private void addRatingsToDB(JSONObject data, Message msg){
 		String currUrl;
 		double currRank;
@@ -58,13 +42,6 @@ public class RatingRequestManager implements RequestManager{
 			
 			Food currFood = _foodDatabase.findByUrl(currUrl);
 			_userprefDatabase.create(_server.getUser(msg).getId(),currFood.getId(), rank);
-			try{
-				ArrayList<String> categories =  _categoryRatingDatabase.findCategoriesForFood(currFood);
-				insertRatingsToTable(categories, rank, msg);
-				
-			}catch(DAOException e){
-				System.out.println(Constants.errorMessage(e.getMessage(), this));
-			}
 		}
 	}
 
