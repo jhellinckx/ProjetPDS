@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import org.calorycounter.shared.Constants;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
     private LinearLayout stickersLayout;
     private DailyRecording foodsContainer;
     private String current_date;
+    private Boolean isReceipt;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
@@ -95,11 +98,14 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
         View view = inflater.inflate(R.layout.activity_day_recording, container, false);
         stickersLayout = (LinearLayout) view.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
+        Bundle b = this.getArguments();
+        current_date = b.getString("date");
+        isReceipt = b.getBoolean("isReceipt");
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
         foodsContainer = new DailyRecording(getContext(), "Résultats", new EdibleItemList(getContext(), changeJSONtoEdibleItems(recommendations), this, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_ADDABLE));
         stickersLayout.addView(foodsContainer);
-        Bundle b = this.getArguments();
-        current_date = b.getString("date");
+
+
         return view;
     }
 
@@ -109,10 +115,18 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     private List<EdibleItem> changeJSONtoEdibleItems(List<JSONObject> jsons){
         List<EdibleItem> foods = new ArrayList<>();
-        for(JSONObject js : jsons){
-            Food f = new Food();
-            f.initFromJSON(js);
-            foods.add(f);
+        if(isReceipt){
+            for (JSONObject js : jsons) {
+                Recipe r = new Recipe();
+                r.initFromJSON(js);
+                foods.add(r);
+            }
+        }else {
+            for (JSONObject js : jsons) {
+                Food f = new Food();
+                f.initFromJSON(js);
+                foods.add(f);
+            }
         }
         return foods;
     }
@@ -141,18 +155,21 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
     @Override
     public void onAddEdibleItem(EdibleItem item){
         Intent dayRecordingActivity = new Intent(getActivity(), DayRecordingActivity.class);
-        if(item instanceof Food){
-            //add la food a l'history
-            String current_day = SDFORMAT.format(Calendar.getInstance().getTime());
-            JSONObject data = new JSONObject();
-            data.put(FOOD_NAME, item.toJSON(false));
-            data.put(HISTORY_DATE, current_date);
-            data.put(FOOD_IS_EATEN, 0);
-            data.put(FOOD_IS_NEW,1);
 
-            RecommendationActivity ra = (RecommendationActivity) getActivity();
-            ra.send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
+        //add la food a l'history
+        String current_day = SDFORMAT.format(Calendar.getInstance().getTime());
+        JSONObject data = new JSONObject();
+        data.put(FOOD_NAME, item.toJSON(false));
+        data.put(HISTORY_DATE, current_date);
+        data.put(FOOD_IS_EATEN, 0);
+        data.put(FOOD_IS_NEW,1);
+        if(item instanceof Food) {
+            data.put(RECIPE_OR_FOOD, "food");
+        }else{
+            data.put(RECIPE_OR_FOOD, "recipe");
         }
+        RecommendationActivity ra = (RecommendationActivity) getActivity();
+        ra.send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
         Bundle b = new Bundle();
         b.putString("day", current_date);
         dayRecordingActivity.putExtras(b);

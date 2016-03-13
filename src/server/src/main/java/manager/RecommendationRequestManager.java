@@ -4,13 +4,16 @@ import static org.calorycounter.shared.Constants.network.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import nioserver.Message;
 import nioserver.AbstractNIOServer;
 
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
 import recommender.KnowledgeBasedFilter;
-
+import recommender.ContentBasedWorker;
 import util.ImageLoader;
 
 import org.json.simple.JSONObject;
@@ -26,9 +29,9 @@ import dao.FoodDAO;
 import dao.SportsDAO;
 import dao.UserHistoryDAO;
 import dao.RecipeDAO;
+import dao.CBUserPredictionsDAO;
 
 public class RecommendationRequestManager implements RequestManager{
-
 	private User user;
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
@@ -38,8 +41,11 @@ public class RecommendationRequestManager implements RequestManager{
 	private UserDAO _userDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 	private RecipeDAO _recipeDatabase;
+	private CBUserPredictionsDAO _predictionsDatabase;
 
-	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao){
+	private Map<Long, List<Long>> _userRatings;
+
+	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao, CBUserPredictionsDAO preddao){
 		_server = srv;
 		_foodDatabase = fdb;
 		_sportsDatabase = sdb;
@@ -48,6 +54,8 @@ public class RecommendationRequestManager implements RequestManager{
 		_userDatabase = udb;
 		_userHistoryDatabase = uhdb;
 		_recipeDatabase = rdao;
+		_predictionsDatabase = preddao;
+		_userRatings = Collections.synchronizedMap(new LinkedHashMap<Long, List<Long>>());
 	}
 
 	private List<EdibleItem> changeTypeOfListToFood(List<String> pastFoodsCodes){
@@ -81,6 +89,9 @@ public class RecommendationRequestManager implements RequestManager{
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
 		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		//recommendedFoods = _recommenderSystem.recommendItems();
+		if(recommendedFoods.size()>10){
+			recommendedFoods = new ArrayList<Food>(recommendedFoods.subList(0,10));
+		}
 		loadImages(recommendedFoods);
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
@@ -94,7 +105,9 @@ public class RecommendationRequestManager implements RequestManager{
 	private JSONObject recommendRecipes(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Recipe> recommendedRecipes = _knowledgeBased.recommendRecipe(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
-		// ADD CB HERE
+		if(recommendedRecipes.size()>10){
+			recommendedRecipes = new ArrayList<Recipe>(recommendedRecipes.subList(0,10));
+		}
 		loadRecipeImages(recommendedRecipes);
 		JSONArray jsonRecipe = new JSONArray();
 		for(int i=0; i<Math.min(recommendedRecipes.size(),10);i++){
@@ -151,4 +164,33 @@ public class RecommendationRequestManager implements RequestManager{
 		}
 		return data;
 	}
+
+	public void notifyNewRating(Long userID, Long recipeID){
+		synchronized(_userRatings){
+			if(_userRatings.containsKey(userID)){
+				_userRatings.get(userID).add(recipeID);
+			}
+			else{
+				List<Long> ids = new ArrayList<Long>();
+				ids.add(recipeID); 
+				_userRatings.put(userID, ids);
+			}
+			_userRatings.notify();
+		}	
+	}
+
+	public Map.Entry<Long, List<Long>> requestNewRatings(){
+		synchronized(_userRatings){
+			while(_userRatings.isEmpty()){
+				try{
+					_userRatings.wait();	
+				}
+				catch(InterruptedException e){}
+			}
+			Map.Entry<Long, List<Long>> entry = _userRatings.entrySet().iterator().next();
+			_userRatings.remove(entry.getKey());
+			return entry;
+		}
+	}
+
 }

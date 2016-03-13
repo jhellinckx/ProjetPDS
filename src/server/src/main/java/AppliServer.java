@@ -27,6 +27,7 @@ import dao.UserHistoryDAO;
 import dao.DAOException;
 import dao.AllCategoriesDAO;
 import dao.RecipeDAO;
+import dao.CBUserPredictionsDAO;
 
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
@@ -52,6 +53,7 @@ public class AppliServer extends AbstractNIOServer{
 	private UserHistoryDAO _userHistoryDatabase;
 	private AllCategoriesDAO _categoriesDatabase;
 	private RecipeDAO _recipeDatabase;
+	private CBUserPredictionsDAO _predictionsDatabase;
 
 	/* Recommendations fields */
 	private KnowledgeBasedFilter _knowledgeBased;
@@ -72,6 +74,7 @@ public class AppliServer extends AbstractNIOServer{
 		_userHistoryDatabase = _daoFactory.getUserHistoryDAO();
 		_categoriesDatabase = _daoFactory.getAllCategoriesDAO();
 		_recipeDatabase = _daoFactory.getRecipeDAO();
+		_predictionsDatabase = _daoFactory.getCBPredictionsDAO();
 
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase, _recipeDatabase);
@@ -82,12 +85,12 @@ public class AppliServer extends AbstractNIOServer{
 	private void initManagers(){
 		AuthenticationRequestManager arm = new AuthenticationRequestManager(_userDatabase, this);
 		FoodRequestManager frm = new FoodRequestManager(_foodDatabase, this, _userprefDatabase);
-		RatingRequestManager rrm = new RatingRequestManager(this, _recipeDatabase, _userprefDatabase, _categoryRatingDatabase);
 		DataRequestManager drm = new DataRequestManager(this, _userDatabase);
 		HistoryRequestManager hrm = new HistoryRequestManager(this, _foodDatabase, _userHistoryDatabase, _recipeDatabase);
 		SportRequestManager srm = new SportRequestManager(this,_sportsDatabase, _userHistoryDatabase);
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
-			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase, _recipeDatabase);
+			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase, _recipeDatabase, _predictionsDatabase);
+		RatingRequestManager rrm = new RatingRequestManager(this, _foodDatabase, _userprefDatabase, rerm);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
 		RecipeRequestManager recrm = new RecipeRequestManager(_recipeDatabase, this, _userprefDatabase);
 

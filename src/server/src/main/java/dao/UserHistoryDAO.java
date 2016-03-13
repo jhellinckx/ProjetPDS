@@ -4,6 +4,7 @@ import java.util.List;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Sport;
+import org.calorycounter.shared.models.Recipe;
 
 
 public interface UserHistoryDAO {
@@ -32,4 +33,15 @@ public interface UserHistoryDAO {
 
 	void deleteSportFromHistory(User user, Sport sport, String date) throws DAOException;
 
+	void addRecipeToHistory( User user, Recipe recipe , String date) throws DAOException;
+
+	void addRecipeToHistory( User user, Recipe recipe, String date, int isEaten) throws DAOException;
+
+	void deleteRecipeFromHistory(User user, Recipe recipe, String date) throws DAOException;
+
+	void changeRecipeEatenStatus(User user, Recipe recipe, String date, int status) throws DAOException;
+
+	List<Recipe> getHistoryRecipeForDate(User user, String date) throws DAOException;
+
+	List<Recipe> getHistoryRecipes(User user) throws DAOException;
 }

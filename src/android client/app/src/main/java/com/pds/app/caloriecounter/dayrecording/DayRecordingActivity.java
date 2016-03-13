@@ -70,6 +70,7 @@ import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUES
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_CARBOHYDRATES;
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
+import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
@@ -84,6 +85,7 @@ import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_RE
 import static org.calorycounter.shared.Constants.network.TEEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE;
+import static org.calorycounter.shared.Constants.network.RECIPE_LIST;
 //import static org.calorycounter.shared.Constants.network.RECOMMENDED_FOOD_REQUEST;
 //import static org.calorycounter.shared.Constants.network.FOOD;
 import static org.calorycounter.shared.Constants.network.networkJSON;
@@ -410,8 +412,13 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             addToProgresses(item);
         }
         JSONObject data = new JSONObject();
-        data.put(FOOD_NAME, item.toJSON());
+        data.put(FOOD_NAME, item.toJSON(false));
         data.put(HISTORY_DATE, date.getText().toString());
+        if(item instanceof Food) {
+            data.put(RECIPE_OR_FOOD, "food");
+        }else{
+            data.put(RECIPE_OR_FOOD, "recipe");
+        }
         dailyFoods.remove(item);
         send(networkJSON(DELETE_FOOD_HISTORY_REQUEST, data));
     }
@@ -429,14 +436,20 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     public void onExpandEdibleItem(EdibleItem item){
         Bundle b = new Bundle();
         b.putString(FOOD_NAME, item.getProductName());
-        b.putString(FOOD_QUANTITY, item.getQuantity());
+
         b.putFloat(FOOD_TOTAL_ENERGY, item.getTotalEnergy());
         b.putFloat(FOOD_TOTAL_FAT, item.getTotalFat());
-        b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
         b.putFloat(FOOD_TOTAL_PROTEINS, item.getTotalProteins());
-        b.putFloat(FOOD_TOTAL_SUGARS, item.getTotalSugars());
-        b.putFloat(FOOD_TOTAL_SODIUM, item.getTotalSalt());
         b.putFloat(FOOD_TOTAL_CARBOHYDRATES, item.getTotalCarbohydrates());
+        if(item instanceof Food){
+            b.putString(FOOD_QUANTITY, item.getQuantity());
+            b.putFloat(FOOD_TOTAL_SUGARS, item.getTotalSugars());
+            b.putFloat(FOOD_TOTAL_SODIUM, item.getTotalSalt());
+            b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
+            b.putString(RECIPE_OR_FOOD, "food");
+        }else{
+            b.putString(RECIPE_OR_FOOD, "recipe");
+        }
         ItemInfoDialog dialog = new ItemInfoDialog();
         dialog.setArguments(b);
         dialog.show(getFragmentManager(), "infos");
@@ -454,6 +467,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             substractToProgresses(item);
         }else {
             addToProgresses(item);
+        }
+        if(item instanceof Food){
+            data.put(RECIPE_OR_FOOD, "food");
+        }else{
+            data.put(RECIPE_OR_FOOD, "recipe");
         }
         send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
     }
@@ -497,6 +515,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         } else if (request.equals(HISTORY_FOR_DATE_REQUEST)) {
             JSONArray response = (JSONArray) data.get(FOOD_LIST);
             JSONArray responseSport = (JSONArray) data.get(SPORT_LIST);
+            JSONArray responseRecipe = (JSONArray) data.get(RECIPE_LIST);
             for (int i = 0; i < response.size(); i++){
                 Food f = new Food();
                 f.initFromJSON((JSONObject) response.get(i));
@@ -506,6 +525,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
                 Sport s = new Sport();
                 s.initFromJSON((JSONObject) responseSport.get(j));
                 dailySports.add(s);
+            }
+            for (int k = 0; k < responseRecipe.size(); k++) {
+                Recipe r = new Recipe();
+                r.initFromJSON((JSONObject) responseRecipe.get(k));
+                dailyFoods.add(r);
             }
             runOnUiThread(new Runnable() {
                 @Override

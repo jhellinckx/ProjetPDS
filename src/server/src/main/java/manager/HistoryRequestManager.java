@@ -83,7 +83,7 @@ public class HistoryRequestManager implements RequestManager{
 			recipes = new ArrayList<>();
 		}
 		else{
-			recipes = new ArrayList<>();
+			recipes = _userHistoryDatabase.getHistoryRecipeForDate(user, date);
 		}
 		return recipes;
 	}
@@ -128,10 +128,16 @@ public class HistoryRequestManager implements RequestManager{
 		List<Food> foods = getFoodsFromDatabase(date);
 		List<Recipe> recipes = getRecipesFromDatabase(date);
 		loadImages(foods);
+		loadImages(recipes);
 		JSONArray foodData = new JSONArray();
 		for (int i = 0; i < foods.size(); i++){
 
 			foodData.add(foods.get(i).toJSON());
+		}
+		JSONArray recipeData = new JSONArray();
+		for (int k = 0; k < recipes.size(); k++){
+
+			recipeData.add(recipes.get(k).toJSON());
 		}
 		List<Sport> sports = _userHistoryDatabase.getHistorySportForDate(user, date);
 		JSONArray sportData = new JSONArray();
@@ -140,30 +146,49 @@ public class HistoryRequestManager implements RequestManager{
 		}
 		data.put(FOOD_LIST, foodData);
 		data.put(SPORT_LIST, sportData);
+		data.put(RECIPE_LIST, recipeData);
 		return data;
 	}
 
 	private JSONObject onChangeEatenStatus(Message msg){
 		User user = _server.getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
-		Food food = new Food();
-		food.initFromJSON((JSONObject) data.get(FOOD_NAME));
 		int eatenStatus =(int) ((long) data.get(FOOD_IS_EATEN));
 		String date = (String) data.get(HISTORY_DATE);
-		if((int) ((long) data.get(FOOD_IS_NEW)) == 1){
-			_userHistoryDatabase.addToHistory(user.getId(), food.getId(), date, eatenStatus);
+		String recipeOrFood = (String) data.get(RECIPE_OR_FOOD);
+		if(recipeOrFood.equals("food")) {
+			Food food = new Food();
+			food.initFromJSON((JSONObject) data.get(FOOD_NAME));
+			if((int) ((long) data.get(FOOD_IS_NEW)) == 1){
+				_userHistoryDatabase.addToHistory(user.getId(), food.getId(), date, eatenStatus);
+			}
+			_userHistoryDatabase.changeEatenStatus(user, food, date, eatenStatus);
+		}else{
+			Recipe recipe = new Recipe();
+			recipe.initFromJSON((JSONObject) data.get(FOOD_NAME));
+			if((int) ((long) data.get(FOOD_IS_NEW)) == 1){
+				_userHistoryDatabase.addRecipeToHistory(user, recipe, date, eatenStatus);
+			}
+			_userHistoryDatabase.changeRecipeEatenStatus(user, recipe, date, eatenStatus);
 		}
-		_userHistoryDatabase.changeEatenStatus(user, food, date, eatenStatus);
 		return new JSONObject();
 	}
+
 
 	private JSONObject onDeleteFoodHistoryRequest(Message msg){
 		User user = _server.getUser(msg);
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
-		Food food = new Food();
-		food.initFromJSON((JSONObject) data.get(FOOD_NAME));
 		String date = (String) data.get(HISTORY_DATE);
-		_userHistoryDatabase.deleteFoodFromHistory(user, food, date);
+		String recipeOrFood = (String) data.get(RECIPE_OR_FOOD);
+		if(recipeOrFood.equals("food")){
+			Food food = new Food();
+			food.initFromJSON((JSONObject) data.get(FOOD_NAME));
+			_userHistoryDatabase.deleteFoodFromHistory(user, food, date);
+		}else{
+			Recipe recipe = new Recipe();
+			recipe.initFromJSON((JSONObject) data.get(FOOD_NAME));
+			_userHistoryDatabase.deleteRecipeFromHistory(user, recipe, date);
+		}
 		return new JSONObject();
 	}
 

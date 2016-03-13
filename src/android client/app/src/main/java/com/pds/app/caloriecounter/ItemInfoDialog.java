@@ -51,12 +51,12 @@ public class ItemInfoDialog extends DialogFragment {
         initTextView((TextView) v.findViewById(R.id.info_insatfat), b.getFloat(FOOD_TOTAL_SATURATED_FAT));
         initTextView((TextView) v.findViewById(R.id.info_sodium), b.getFloat(FOOD_TOTAL_SODIUM));
         initTextView((TextView) v.findViewById(R.id.info_sugar), b.getFloat(FOOD_TOTAL_SUGARS));
+        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
 
     }
 
     private void initMainTextView(Bundle b, View v){
         ((TextView) v.findViewById(R.id.info_name)).setText(b.getString(FOOD_NAME));
-        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
         int energy = (int) (float) ((b.getFloat(FOOD_TOTAL_ENERGY))/CAL_TO_JOULE_FACTOR);
         initTextView((TextView) v.findViewById(R.id.info_cal), energy);
         initTextView((TextView) v.findViewById(R.id.info_prot), b.getFloat(FOOD_TOTAL_PROTEINS));
@@ -66,8 +66,9 @@ public class ItemInfoDialog extends DialogFragment {
     }
 
     private void initTextViews(Bundle b, View v){
-        initMainTextView(b,v);
-        initMinorTextView(b, v);
-
+        initMainTextView(b, v);
+        if(b.getString(RECIPE_OR_FOOD).equals("food")) {
+            initMinorTextView(b, v);
+        }
     }
 }
