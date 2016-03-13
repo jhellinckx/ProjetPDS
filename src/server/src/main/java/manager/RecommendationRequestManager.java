@@ -25,6 +25,7 @@ import dao.UserDAO;
 import dao.FoodDAO;
 import dao.SportsDAO;
 import dao.UserHistoryDAO;
+import dao.RecipeDAO;
 
 public class RecommendationRequestManager implements RequestManager{
 
@@ -36,8 +37,9 @@ public class RecommendationRequestManager implements RequestManager{
 	private KnowledgeBasedFilter _knowledgeBased;
 	private UserDAO _userDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
+	private RecipeDAO _recipeDatabase;
 
-	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb){
+	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao){
 		_server = srv;
 		_foodDatabase = fdb;
 		_sportsDatabase = sdb;
@@ -45,6 +47,7 @@ public class RecommendationRequestManager implements RequestManager{
 		_knowledgeBased = kb;
 		_userDatabase = udb;
 		_userHistoryDatabase = uhdb;
+		_recipeDatabase = rdao;
 	}
 
 	private List<EdibleItem> changeTypeOfListToFood(List<String> pastFoodsCodes){
@@ -69,6 +72,10 @@ public class RecommendationRequestManager implements RequestManager{
 		ImageLoader.loadImages(foods);
 	}
 
+	private void loadRecipeImages(List<Recipe> recipes){
+		ImageLoader.loadImages(recipes);
+	}
+
 	private JSONObject recommendItems(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
@@ -84,6 +91,19 @@ public class RecommendationRequestManager implements RequestManager{
 		return sendData;
 	}
 
+	private JSONObject recommendRecipes(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
+		_knowledgeBased.updateUser(user);
+		ArrayList<Recipe> recommendedRecipes = _knowledgeBased.recommendRecipe(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
+		// ADD CB HERE
+		loadRecipeImages(recommendedRecipes);
+		JSONArray jsonRecipe = new JSONArray();
+		for(int i=0; i<Math.min(recommendedRecipes.size(),10);i++){
+			jsonRecipe.add(recommendedRecipes.get(i).toJSON());
+		}
+		JSONObject sendData = new JSONObject();
+		sendData.put(RECOMMENDED_FOOD_LIST, jsonRecipe);
+		return sendData;
+	}
 	private Float computeJouleFromSport(JSONObject data){
 		String sportName = (String) data.get(SPORT_NAME);
 		Float jouleFromSport = 0F; 
@@ -95,6 +115,14 @@ public class RecommendationRequestManager implements RequestManager{
 		return jouleFromSport;
 	}
 
+	private void addRecipesToPasstMeals(List<EdibleItem> pastMeals, List<String> pastRecipeIds){
+		if(pastRecipeIds != null){
+			for(String recipeId : pastRecipeIds){
+				pastMeals.add(_recipeDatabase.findById(Integer.parseInt(recipeId)));
+			}
+		}
+	}
+
 	@Override
 	public JSONObject manageRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
@@ -102,17 +130,25 @@ public class RecommendationRequestManager implements RequestManager{
 		String category = (String) data.get(FOOD_CATEGORY);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
 		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
-		List<EdibleItem> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
+		List<String> pastRecipesIds = (List<String>) data.get(PAST_RECIPES_LIST);
+		List<String> pastRecipesDates = (List<String>) data.get(PAST_RECIPES_DATES);
+		List<EdibleItem> pastMeals = changeTypeOfListToFood(pastFoodsCodes);
+		addRecipesToPasstMeals(pastMeals, pastRecipesIds);
+		String recipeOrFood = (String) data.get(RECIPE_OR_FOOD);
 		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
 		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
 		Float maxFat = Float.parseFloat( (String) data.get(MAX_FAT));
 		Float maxProt = Float.parseFloat( (String) data.get(MAX_PROT));
 		Float maxCarbo = Float.parseFloat( (String) data.get(MAX_CARBOHYDRATES));
 
-		maxEnergy = maxEnergy + computeJouleFromSport(data);
+		//maxEnergy = maxEnergy + computeJouleFromSport(data); Its done in dayRecording
 		
-		//addFoodsToHistory(pastFoods, pastFoodsDates);
-		data = recommendItems(pastFoods, maxEnergy, maxFat, maxProt, maxCarbo, category);
+		//addFoodsToHistory(pastFoods, pastFoodsDates); Its done in dayRecording
+		if(recipeOrFood.equals("food")){
+			data = recommendItems(pastMeals, maxEnergy, maxFat, maxProt, maxCarbo, category);
+		}else{
+			data = recommendRecipes(pastMeals, maxEnergy/CAL_TO_JOULE_FACTOR, maxFat, maxProt, maxCarbo, category);
+		}
 		return data;
 	}
 }

@@ -30,9 +30,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
     private static ArrayList<String> _foodCategories = new ArrayList<String>();
+    private static ArrayList<String> _recipeCategories = new ArrayList<>();
     private ArrayList<String> _productNames = new ArrayList<String>();
     private ArrayList<String> _productCodes = new ArrayList<String>();
     private ArrayList<String> _productDates = new ArrayList<String>();
+    private ArrayList<String> _recipeIds = new ArrayList<String>();
+    private ArrayList<String> _recipeDates = new ArrayList<>();
     private Boolean isReceipt;
     private float maxCal;
 
@@ -61,6 +64,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         maxCal = b_.getFloat("maxCal");
         _productCodes = b_.getStringArrayList("pastFoodCodes");
         _productDates = b_.getStringArrayList("pastFoodDates");
+        _recipeIds = b_.getStringArrayList("pastRecipeIds");
+        _recipeDates = b_.getStringArrayList("pastRecipeDates");
         current_date = b_.getString("date");
         initPastFoodsInRecomData();
         initCategories();
@@ -71,8 +76,11 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
         FragmentTransaction transaction = manager.beginTransaction();
 
         Bundle b = new Bundle();
-
-        b.putStringArrayList("foodCategories",_foodCategories);
+        if(!isReceipt){
+            b.putStringArrayList("categoriesNames",_foodCategories);
+        }else{
+            b.putStringArrayList("categoriesNames", _recipeCategories);
+        }
         b.putBoolean("isReceipt", isReceipt);
         b.putFloat("maxCal", maxCal);
         RecommendationConstraintsFragment constrFrag = new RecommendationConstraintsFragment();
@@ -107,7 +115,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
                 _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
             launchConstraintFragment();
-        } else if(request.equals(FOOD_CODE_REQUEST)){
+        } else if(request.equals(RECIPE_CATEGORIES_REQUEST)) {
+            for (int i = 0; i < data.size(); i++) {
+                _recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
+            }
+            launchConstraintFragment();
+        }else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
                 String product_name = (String) data.get(FOOD_NAME);
@@ -154,6 +167,10 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             recom_data.put(PAST_FOODS_LIST, _productCodes);
             recom_data.put(PAST_FOODS_DATES, _productDates);
         }
+        if (!_recipeIds.isEmpty()){
+            recom_data.put(PAST_RECIPES_LIST, _recipeIds);
+            recom_data.put(PAST_RECIPES_DATES, _recipeDates);
+        }
         else {
             recom_data.put(PAST_FOODS_LIST, null);
             recom_data.put(PAST_FOODS_DATES, null);
@@ -162,7 +179,9 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
     public void initCategories(){
         if(isReceipt){
-            
+            if (! (_recipeCategories.size() == RECIPE_CATEGORIES_SIZE)){
+                send(networkJSON(RECIPE_CATEGORIES_REQUEST, new JSONObject()));
+            }
         }else {
             if (!(_foodCategories.size() == FOOD_CATEGORIES_SIZE)) {
                 send(networkJSON(FOOD_CATEGORIES_REQUEST, new JSONObject()));

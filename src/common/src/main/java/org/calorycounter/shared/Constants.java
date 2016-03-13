@@ -135,8 +135,10 @@ public final class Constants {
 		public static final String HISTORY_REQUEST = "r_history";
 		public static final String HISTORY_NAME = "d_history_name";
 		public static final String HISTORY_FOOD = "d_history_food";
+		public static final String HISTORY_RECIPE = "d_history_recipe";
 		public static final String HISTORY_DATE = "d_history_date";
-		public static final String HISTORY_FOODS_DATES = "d_history_dates";
+		public static final String HISTORY_FOODS_DATES = "d_history_dates_f";
+		public static final String HISTORY_RECIPES_DATES = "d_history_dates_r";
 		public static final String FOOD_CODE_REQUEST_HISTORY = "r_history_code";
 		public static final String HISTORY_FOR_DATE_REQUEST = "r_history_for_date";
 		public static final String DELETE_FOOD_HISTORY_REQUEST = "r_delete_food_history";
@@ -151,6 +153,11 @@ public final class Constants {
 		public static final String PAST_FOODS_LIST = "d_past_foodslist";
 		public static final String PAST_FOODS_DATES = "d_past_foodsdates";
 
+		/* Past Recipe */
+		public static final String PAST_RECIPES_LIST = "d_past_recipeslist";
+		public static final String PAST_RECIPES_DATES = "d_past_recipesdates";
+		public static final int RECIPE_CATEGORIES_SIZE = 10;
+
 		/* Recommendation Constraints */
 		public static final String MAX_ENERGY = "d_maxenergy";
 		public static final String MAX_FAT = "d_maxfat";
@@ -161,6 +168,9 @@ public final class Constants {
 		/* Recipe */
 		public static final String INGREDIENTS_LIST = "d_ingredients_list";
 
+		/* Items */
+		public static final String ITEM_LIST = "d_item_list";
+		
 		/*
 		Human's daily intake requirements
 		Info's from : http://www.mydailyintake.net/daily-intake-levels/
