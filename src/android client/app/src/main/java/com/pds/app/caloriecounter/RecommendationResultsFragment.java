@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,6 +48,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
     private DailyRecording foodsContainer;
     private String current_date;
     private Boolean isReceipt;
+    private FragmentActivity myContext;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
@@ -133,6 +135,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onAttach(Context context) {
+        myContext=(FragmentActivity) context;
         super.onAttach(context);
         if (context instanceof OnItemClickListener) {
             listener = (OnItemClickListener) context;
@@ -183,7 +186,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
-        /*
+
         Bundle b = new Bundle();
         b.putString(FOOD_NAME, item.getProductName());
 
@@ -202,8 +205,8 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
         }
         ItemInfoDialog dialog = new ItemInfoDialog();
         dialog.setArguments(b);
-        dialog.show(getFragmentManager(), "infos");
-        */
+        dialog.show(myContext.getFragmentManager(), "infos");
+
 
     }
 
