@@ -2,6 +2,7 @@ package dao;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.AbstractMap;
 import recommender.RecipePrediction;
 import static dao.DAOUtilitaire.*;
 
@@ -94,7 +95,27 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 	}
 
 	public List<Map.Entry<Float, Float>> getNeighboursInUserProfileLimitK(Long recipe_id, Long user_id, int k){
-		return new ArrayList<Map.Entry<Float, Float>>();
+		Connection connexion = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		List<Map.Entry<Float, Float>> neighbours = new ArrayList<Map.Entry<Float, Float>>();
+		try {
+        	connexion = _daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest(connexion, SQL_SELECT_K_NEAREST_NEIGHBOURS_IN_USER_PROFILE, false, recipe_id, recipe_id, user_id, k);
+           	resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+            	neighbours.add(mapNeighbour(resultSet));
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( preparedStatement, connexion );
+        }
+		return neighbours;
+	}
+
+	private Map.Entry<Float, Float> mapNeighbour(ResultSet result)throws SQLException{
+		return new AbstractMap.SimpleEntry<>(result.getFloat("rank"), result.getFloat("similarity"));
 	}
 
 	private RecipePrediction mapPrediction(ResultSet result)throws SQLException{

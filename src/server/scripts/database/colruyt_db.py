@@ -1124,6 +1124,7 @@ class SimilaritySuperComputer :
 				weighted_similarity = ingredients_sim*LAMBDA_INGR+tags_sim*LAMBDA_TAG+origin_sim*LAMBDA_ORIGIN+sub_cat_sim*LAMBDA_SUB_CAT
 				values = (i+1, j+1, weighted_similarity)
 				cursor.execute(SimilaritySuperComputer.recipe_similarity_insert_command%values)
+			cnx.commit()
 			cnx.close()
 		except Exception as e:
 			print i
@@ -1240,13 +1241,13 @@ if __name__ == "__main__" :
 			log_create_table("CBUserPredictions", create_userpredictions_table)
 
 			
-			log_create_table("UserPreferences", create_user_preferences_table)
+			log_create_table("User_Preferences", create_user_preferences_table)
 
 
-			"""
+			
 			log_create_table("RecipeSimilarity", create_recipe_similarity_table)
 			log_insert_items("RecipeSimilarity", insert_recipe_similarity_in_table)
-			"""
+			
 		sys.stdout.write("Database script completed in " + YELLOW + str(time.time() - t0).split(",")[0].split(".")[0] + RESET + " seconds.\n")
 		sys.stdout.flush()
 
