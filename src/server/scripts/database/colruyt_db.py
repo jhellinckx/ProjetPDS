@@ -10,6 +10,10 @@ from recipe_model import *
 import time
 import copy
 import math
+from multiprocessing.dummy import Pool as ThreadPool
+from mysql.connector.pooling import MySQLConnectionPool
+from mysql.connector import connect
+import threading
 
 YELLOW = "\033[33m"
 MAGENTA = "\033[35m"
@@ -50,6 +54,7 @@ ingredients = {}
 origins = {}
 
 ORIGIN_KEY = "origin"
+NUMBER_OF_THREADS = 10
 
 
 articles_names_correction = \
@@ -1050,51 +1055,106 @@ def create_recipe_similarity_table():
 	cursor.close()
 	cnx.close()
 
+# def insert_recipe_similarity_in_table():
+# 	(username,password) = db_params()
+# 	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+# 	cursor = cnx.cursor()
 
-def list_similarity(first_list, second_list):
-	common = 0
-	for item in first_list : 
-		if item in second_list :
-			common += 1
-	if common == 0 :
-		return 0
-	return float(common) / (math.sqrt(len(first_list)) * math.sqrt(len(second_list)))
-
-def single_item_similarity(first_item, second_item):
-	return first_item == second_item
+# 	operations = (len(recipes)**2 + len(recipes))/2
+# 	op=0
+# 	for i in range(len(recipes)):
+# 		for j in range(i+1, len(recipes)):
+# 			op+=1
+# 			ingredients_sim = list_similarity(recipes[i][INGREDIENTS_NAMES_KEY], recipes[j][INGREDIENTS_NAMES_KEY])
+# 			tags_sim = list_similarity(recipes[i][TAGS_KEY], recipes[j][TAGS_KEY])
+# 			origin_sim = single_item_similarity(recipes[i][ORIGIN_KEY], recipes[j][ORIGIN_KEY])
+# 			sub_cat_sim = single_item_similarity(recipes[i][SECONDARY_CATEGORY_KEY], recipes[j][SECONDARY_CATEGORY_KEY])
+# 			weighted_similarity = ingredients_sim*LAMBDA_INGR+tags_sim*LAMBDA_TAG+origin_sim*LAMBDA_ORIGIN+sub_cat_sim*LAMBDA_SUB_CAT
+# 			values = (i+1, j+1, weighted_similarity)
+# 			cursor.execute(recipe_similarity_insert_command%values)
+# 		sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(op)/operations)*100))
+# 		sys.stdout.flush()
+# 		cnx.commit()
+# 	cursor.close()
+# 	cnx.close()
 
 def insert_recipe_similarity_in_table():
-	global recipes
+	SimilaritySuperComputer().start()
+
+class SimilaritySuperComputer :
+	lock = threading.Lock()
+	op=0
+	operations = 0
+	pool=None
 	recipe_similarity_insert_command = \
 	"INSERT INTO RecipeSimilarity\
 	 (first_recipe_id, second_recipe_id, similarity)\
 	 VALUES (\"%s\",\"%s\",\"%s\")"
 
-	(username,password) = db_params()
-	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
-	cursor = cnx.cursor()
+	def __init__(self):
+		(username,password) = db_params()
+		SimilaritySuperComputer.pool = MySQLConnectionPool(pool_size=NUMBER_OF_THREADS, user=username,database=db_name,password=password)
+		SimilaritySuperComputer.operations = (len(recipes)**2 + len(recipes))/2
+		SimilaritySuperComputer.op = 0
 
-	operations = (len(recipes)**2 + len(recipes))/2
-	op=0
-	for i in range(len(recipes)):
-		for j in range(i+1, len(recipes)):
-			op+=1
-			ingredients_sim = list_similarity(recipes[i][INGREDIENTS_NAMES_KEY], recipes[j][INGREDIENTS_NAMES_KEY])
-			tags_sim = list_similarity(recipes[i][TAGS_KEY], recipes[j][TAGS_KEY])
-			origin_sim = single_item_similarity(recipes[i][ORIGIN_KEY], recipes[j][ORIGIN_KEY])
-			sub_cat_sim = single_item_similarity(recipes[i][SECONDARY_CATEGORY_KEY], recipes[j][SECONDARY_CATEGORY_KEY])
-			weighted_similarity = ingredients_sim*LAMBDA_INGR+tags_sim*LAMBDA_TAG+origin_sim*LAMBDA_ORIGIN+sub_cat_sim*LAMBDA_SUB_CAT
-			values = (i+1, j+1, weighted_similarity)
-			cursor.execute(recipe_similarity_insert_command%values)
-		sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(op)/operations)*100))
+	@staticmethod
+	def progress(op):
+		SimilaritySuperComputer.lock.acquire()
+		SimilaritySuperComputer.op += op
+		sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(SimilaritySuperComputer.op)/SimilaritySuperComputer.operations)*100))
 		sys.stdout.flush()
-		cnx.commit()
-	cursor.close()
-	cnx.close()
+		SimilaritySuperComputer.lock.release()
+
+	def start(self):
+		recipes_ids = [i for i in range(len(recipes))]
+		pool = ThreadPool(NUMBER_OF_THREADS)
+		pool.map(self.compute_similarity, recipes_ids)
+		pool.close()
+		pool.join()
+
+	def compute_similarity(self, i):
+		try:
+			cnx = SimilaritySuperComputer.pool.get_connection()
+			cursor = cnx.cursor()
+			for j in range(i+1, len(recipes)):
+				ingredients_sim = self.list_similarity(recipes[i][INGREDIENTS_NAMES_KEY], recipes[j][INGREDIENTS_NAMES_KEY])
+				tags_sim = self.list_similarity(recipes[i][TAGS_KEY], recipes[j][TAGS_KEY])
+				origin_sim = self.single_item_similarity(recipes[i][ORIGIN_KEY], recipes[j][ORIGIN_KEY])
+				sub_cat_sim = self.single_item_similarity(recipes[i][SECONDARY_CATEGORY_KEY], recipes[j][SECONDARY_CATEGORY_KEY])
+				weighted_similarity = ingredients_sim*LAMBDA_INGR+tags_sim*LAMBDA_TAG+origin_sim*LAMBDA_ORIGIN+sub_cat_sim*LAMBDA_SUB_CAT
+				values = (i+1, j+1, weighted_similarity)
+				cursor.execute(SimilaritySuperComputer.recipe_similarity_insert_command%values)
+			cnx.close()
+		except Exception as e:
+			print i
+		SimilaritySuperComputer.progress(len(recipes)-(i+1))
+
+	def list_similarity(self, first_list, second_list):
+		common = 0
+		for item in first_list : 
+			if item in second_list :
+				common += 1
+		if common == 0 :
+			return 0
+		return float(common) / (math.sqrt(len(first_list)) * math.sqrt(len(second_list)))
+
+	def single_item_similarity(self, first_item, second_item):
+		return first_item == second_item
 
 
-
-
+# class Computer:
+# 	lock = threading.Lock()
+# 	def start(self):
+# 		ids=[i for i in range(1000)]
+# 		pool = ThreadPool(4)
+# 		pool.map(self.compute_func,ids)
+# 		pool.close()
+# 		pool.join()
+# 		print "FINISHED"
+# 	def compute_func(self, i):
+# 		Computer.lock.acquire()
+# 		print i 
+# 		Computer.lock.release()
 
 def log_create_table(table, create_table_func):
 	global log_text
@@ -1138,7 +1198,7 @@ if __name__ == "__main__" :
 	try:
 		t0 = time.time()
 		try:
-			#log_drop_db(db_name, drop_db)
+			log_drop_db(db_name, drop_db)
 			pass
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
