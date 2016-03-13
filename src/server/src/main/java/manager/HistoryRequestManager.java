@@ -80,7 +80,7 @@ public class HistoryRequestManager implements RequestManager{
 	private List<Recipe> getRecipesFromDatabase(String date){		// Change this when Users_history adapted to recipes.
 		List<Recipe> recipes;
 		if (date == null){
-			recipes = new ArrayList<>();
+			recipes = _userHistoryDatabase.getHistoryRecipes(user);
 		}
 		else{
 			recipes = _userHistoryDatabase.getHistoryRecipeForDate(user, date);
@@ -109,11 +109,13 @@ public class HistoryRequestManager implements RequestManager{
 		List<Food> foods = getFoodsFromDatabase(null);
 		List<Recipe> recipes = getRecipesFromDatabase(null);
 
-		List<String> dates = _userHistoryDatabase.getHistoryDates(user);		// Need to change this if we want to map an item to a date.
+		List<String> foodates = _userHistoryDatabase.getHistoryDates(user);
+		List<String> recipedates = _userHistoryDatabase.getHistoryRecipeDates(user);
 
 		//Make JSON response
-		if(foods.size() == dates.size()){
-			manageHistorySuccess(data, foods, dates, HISTORY_FOOD, HISTORY_FOODS_DATES);
+		if(foods.size() == foodates.size() && recipes.size() == recipedates.size()){
+			manageHistorySuccess(data, foods, foodates, HISTORY_FOOD, HISTORY_FOODS_DATES);
+			manageHistorySuccess(data, recipes, recipedates, HISTORY_RECIPE, HISTORY_RECIPES_DATES);
 			return data;
 		}
 		else{
