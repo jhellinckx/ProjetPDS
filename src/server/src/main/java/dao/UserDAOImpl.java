@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import items.Random_user_generator;
 
 public class UserDAOImpl implements UserDAO {
@@ -51,7 +52,7 @@ public class UserDAOImpl implements UserDAO {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
 
-                user.setRankedEdibleItems(userPrefDao.findFoodsAndRankForUser(user));
+                user.setRankedEdibleItems(userPrefDao.findRecipesAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -79,8 +80,7 @@ public class UserDAOImpl implements UserDAO {
             if ( resultSet.next() ) {
                 user = map( resultSet );
                 userPrefDao = this.daoFactory.getUserPrefDAO();
-
-                user.setRankedEdibleItems(userPrefDao.findFoodsAndRankForUser(user));
+                user.setRankedEdibleItems(userPrefDao.findRecipesAndRankForUser(user));
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -219,7 +219,7 @@ public class UserDAOImpl implements UserDAO {
             Iterator it = user.getRankedEdibleItems().entrySet().iterator();
             while(it.hasNext()){
                 Map.Entry entry = (Map.Entry)it.next();
-                userPrefDao.create(user, (Food)entry.getKey(), (float)entry.getValue());
+                userPrefDao.create(user, (Recipe)entry.getKey(), (float)entry.getValue());
             }
     	}  catch (NullPointerException e) {
 	    }

@@ -59,14 +59,14 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private ArrayList<Float> ratings;
     private ArrayList<EdibleItemImage> images;
     private LinearLayout stickersLayout;
-    //private DailyRecording foodsContainer;
-    private DailyRecording ratingContainer;
     private Context context;
-    private List<EdibleItem> foodsToBeRated;
+    private ArrayList<EdibleItem> foodsToBeRated;
     private Spinner categoriesSpinner = null;
     private LinearLayout ratingFoodsLayout;
     private static ArrayList<String> recipeCategories = new ArrayList<String>();
     private int id;
+    private DailyRecording ratingContainer;
+    private Boolean init=true;
 
 
 
@@ -76,20 +76,9 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         }
     }
 
-    private void initRatingFoodsLayout(){
-        ratingFoodsLayout = new LinearLayout(this);
-        LinearLayout.LayoutParams textContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        ratingFoodsLayout.setLayoutParams(textContParams);
-        ratingFoodsLayout.setOrientation(LinearLayout.VERTICAL);
-        ratingFoodsLayout.setGravity(Gravity.CENTER_VERTICAL);
-
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
 
         v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
@@ -105,18 +94,15 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         //gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
-        initializer(foodsToBeRated);
         //getUrlsFromServer();
         */
+        //initializer(foodsToBeRated);
         context= v.getContext();
 
-        //initRatingFoodsLayout();
 
-        //ratingContainer = new DailyRecording(this, "Foods", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
         addHeader();
-        addFoodListLayout();
         sendRecipeCategoriesRequest();
-        //addFooterButton();
+
     }
 
     private void sendRecipeCategoriesRequest() {
@@ -169,7 +155,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     private void addFoodListLayout(){
 
-        DailyRecording ratingContainer = new DailyRecording(this, "FOODS", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
+        ratingContainer = new DailyRecording(this, "FOODS", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
 
         LinearLayout validateLayout = new LinearLayout(this);
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -187,23 +173,21 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         ratingContainer.setFooter(validateLayout);
 
         stickersLayout.addView(ratingContainer);
-    }
 
-    private void addListenerGridView(){
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                //position defines which food in urls
-                RateFoodDialogFragment frag = new RateFoodDialogFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt("position", position);
-                bundle.putString("url", urls.get(position));
-                bundle.putString("name", foodsToBeRated.get(position).getProductName());
-                frag.setArguments(bundle);
-                frag.show(getFragmentManager(), "titletest");
+        validateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                sendFoodsToBeRatedRequest();
 
             }
+
         });
+    }
+
+    private void updateAddFoodListLayout(){
+        stickersLayout.removeView(ratingContainer);
+        addFoodListLayout();
     }
 
     private void addListenerButton(){
@@ -275,24 +259,25 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
+                foodsToBeRated = new ArrayList<>();
+                initializer(foodsToBeRated);
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     EdibleItem item = new Recipe();
                     item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
-                    //foodsToBeRated.set(i, item);
-                    foodsToBeRated.add(item);
+                    foodsToBeRated.set(i, item);
                     System.out.println(item.getProductName());
                 }
-                /*
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, foodsToBeRated));
-                        addListenerGridView();
-                        addListenerButton();
-                        //initAll();
+                        if(init){
+                            addFoodListLayout();
+                            init=false;
+                        }else{
+                            updateAddFoodListLayout();
+                        }
                     }
                 });
-                */
 
             }
         }

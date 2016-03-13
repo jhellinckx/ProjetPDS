@@ -6,8 +6,8 @@ import items.CategoryRating;
 
 import org.json.simple.JSONObject;
 import org.calorycounter.shared.models.User;
-import org.calorycounter.shared.models.Food;
-import dao.FoodDAO;
+import org.calorycounter.shared.models.Recipe;
+import dao.RecipeDAO;
 import dao.UserPrefDAO;
 import dao.CategoryRatingDAO;
 import dao.DAOException;
@@ -21,13 +21,13 @@ import java.util.ArrayList;
 public class RatingRequestManager implements RequestManager{
 
 	private AbstractNIOServer _server;
-	private FoodDAO _foodDatabase;
+	private RecipeDAO _recipeDatabase;
 	private UserPrefDAO _userprefDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
 
-	public RatingRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserPrefDAO updb, CategoryRatingDAO crdb){
+	public RatingRequestManager(AbstractNIOServer srv, RecipeDAO rdb, UserPrefDAO updb, CategoryRatingDAO crdb){
 		_server = srv;
-		_foodDatabase = fdb;
+		_recipeDatabase = rdb;
 		_userprefDatabase = updb;
 		_categoryRatingDatabase = crdb;
 	}
@@ -40,8 +40,8 @@ public class RatingRequestManager implements RequestManager{
 			currRank = (double) data.get(FOOD_RATING+String.valueOf(i));
 			float rank = (float) currRank;
 			
-			Food currFood = _foodDatabase.findByUrl(currUrl);
-			_userprefDatabase.create(_server.getUser(msg).getId(),currFood.getId(), rank);
+			//Recipe currRecipe = _recipeDatabase.findByUrl(currUrl);
+			//_userprefDatabase.create(_server.getUser(msg).getId(),currRecipe.getId(), rank);
 		}
 	}
 

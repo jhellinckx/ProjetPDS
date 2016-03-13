@@ -303,7 +303,7 @@ def create_user_preferences_table():
 	"CREATE TABLE User_preferences("
 	"id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
 	"numUser INT UNSIGNED NOT NULL,"
-	"numFood INT UNSIGNED NOT NULL,"
+	"numRecipe INT(10) UNSIGNED NOT NULL,"
 	"rank DECIMAL(2,1) NOT NULL,"
 	"PRIMARY KEY (id)"
 	")ENGINE=INNODB;")
@@ -314,7 +314,7 @@ def create_user_preferences_table():
 
 	food_id_foreign_key_command = (
 	"ALTER TABLE User_preferences "
-	"ADD CONSTRAINT fk_numFood_idFood FOREIGN KEY (numFood) REFERENCES Food(id_food) ON DELETE CASCADE ON UPDATE CASCADE;")
+	"ADD CONSTRAINT fk_numRecipe_idRecipe FOREIGN KEY (numRecipe) REFERENCES Recipe(recipe_id) ON DELETE CASCADE ON UPDATE CASCADE;")
 
 	(username, password) = db_params()
 	cnx = mysql.connector.connect(user=username, password=password,database=db_name)
@@ -1211,8 +1211,6 @@ if __name__ == "__main__" :
 
 			log_create_table("User", create_user_table)
 
-			log_create_table("UserPreferences", create_user_preferences_table)
-
 			log_create_table("CategoriesRatings", create_categories_ratings_table)
 
 			log_create_table("Sport", create_sport_table)
@@ -1240,6 +1238,8 @@ if __name__ == "__main__" :
 			log_insert_items("Tag", insert_tags_in_table)
 
 			log_create_table("CBUserPredictions", create_userpredictions_table)
+
+			log_create_table("UserPreferences", create_user_preferences_table)
 
 
 
