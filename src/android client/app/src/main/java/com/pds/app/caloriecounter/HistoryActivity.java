@@ -21,14 +21,17 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.calorycounter.shared.Constants.network.*;
@@ -45,9 +48,44 @@ public class HistoryActivity extends MenuNavigableActivity {
     private FrameLayout historyTable;
     private Context context;
     private BarChart chart;
-    private List<EdibleItem> past_items;
-    private List<Date> past_dates;
+    private HashMap<Date, IntakeTuple> past_intakes;
     private float max_energy;
+
+    private final class IntakeTuple{
+        private float energy;
+        private float fat;
+        private float proteins;
+
+        public IntakeTuple(){
+            energy = 0;
+            proteins = 0;
+            fat = 0;
+        }
+
+        public float getEnergy() {
+            return energy;
+        }
+
+        public void addToEnergy(float energy) {
+            this.energy += energy;
+        }
+
+        public float getFat() {
+            return fat;
+        }
+
+        public void addToFat(float fat) {
+            this.fat += fat;
+        }
+
+        public float getProteins() {
+            return proteins;
+        }
+
+        public void addToProteins(float protein) {
+            this.proteins += protein;
+        }
+    }
 
 
     @Override
@@ -57,8 +95,7 @@ public class HistoryActivity extends MenuNavigableActivity {
         context = getBaseContext();
 
         historyTable = (FrameLayout) v.findViewById(R.id.history_layout);
-        past_items = new ArrayList<>();
-        past_dates = new ArrayList<>();
+        past_intakes = new HashMap<>();
         sendDataRequest();
     }
 
@@ -95,24 +132,12 @@ public class HistoryActivity extends MenuNavigableActivity {
         }
         else if (request.equals(HISTORY_REQUEST)) {
             JSONArray foodsDatesRepr = (JSONArray) data.get(HISTORY_FOODS_DATES);
-            int size = foodsDatesRepr.size();
-            for (int i = 0; i < size; i++) {
-                Food food = new Food();
-                food.initFromJSON((JSONObject) (((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_FOOD)));
-                past_items.add(food);
-                Date date = null;
-                try {
-                    date = SDFORMAT.parse((String) ((JSONObject) foodsDatesRepr.get(i)).get(HISTORY_DATE));
-                } catch (java.text.ParseException e) {
-                    System.err.println(e.getMessage());
-                }
-                past_dates.add(date);
-            }
+            JSONArray recipesDatesRepr = (JSONArray) data.get(HISTORY_RECIPES_DATES);
+            initPastIntakes(foodsDatesRepr, recipesDatesRepr);
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sortDatesAndRelatedFoods();
                     initChart();
                 }
             });
@@ -124,12 +149,72 @@ public class HistoryActivity extends MenuNavigableActivity {
         send(networkJSON(DATA_REQUEST, data));
     }
 
+    private void retrieveDates(JSONArray datesRepr){
+        int size = datesRepr.size();
+        for (int i = 0; i < size; i++){
+            String date = (String) ((JSONObject) datesRepr.get(i)).get(HISTORY_DATE);
+            try {
+                past_intakes.put(SDFORMAT.parse(date), new IntakeTuple());
+            } catch(ParseException e){
+                System.err.println(e.getMessage());
+            }
+        }
+    }
+
+    private void updateTuple(IntakeTuple tuple, EdibleItem item){
+        tuple.addToEnergy(item.getTotalEnergy());
+        tuple.addToFat(item.getTotalFat());
+        tuple.addToProteins(item.getTotalProteins());
+    }
+
+    private Recipe initRecipeItem(JSONObject o){
+        Recipe recipe = new Recipe();
+        recipe.initFromJSON(o);
+        return recipe;
+    }
+
+    private Food initFoodItem(JSONObject o){
+        Food food = new Food();
+        food.initFromJSON(o);
+        return food;
+    }
+
+    private void updateIntakes(JSONArray itemsRepr){
+        int size = itemsRepr.size();
+        for (int i = 0; i < size; i++){
+            JSONObject obj = (JSONObject) itemsRepr.get(i);
+            EdibleItem item;
+            if (obj.get(HISTORY_FOOD) == null){
+                JSONObject o = (JSONObject) obj.get(HISTORY_RECIPE);
+                item = initRecipeItem(o);
+            } else{
+                JSONObject o = (JSONObject) obj.get(HISTORY_FOOD);
+                item = initFoodItem(o);
+            }
+            try{
+                Date date = SDFORMAT.parse((String) obj.get(HISTORY_DATE));
+                IntakeTuple tuple = past_intakes.get(date);
+                updateTuple(tuple, item);
+            } catch(ParseException e){
+                System.err.println(e.getMessage());
+            }
+        }
+    }
+
+    private void initPastIntakes(JSONArray foodsDatesRepr, JSONArray recipesDatesRepr){
+        retrieveDates(foodsDatesRepr);
+        retrieveDates(recipesDatesRepr);
+        updateIntakes(foodsDatesRepr);
+        updateIntakes(recipesDatesRepr);
+    }
+
     private void initChart(){
 
         chart = new BarChart(context);
         chart.setLogEnabled(false);
         initChartAxis();
-        chart.setData(new BarData(pastDatesToStringList(), castFoodsToBarDataSet()));
+        List<String> dates = pastDatesToStringList();
+        chart.setData(new BarData(dates, castIntakesTupleToBarDataSet(dates)));
         chart.invalidate();
         historyTable.addView(chart);
 
@@ -188,43 +273,33 @@ public class HistoryActivity extends MenuNavigableActivity {
         return quotient*QUOTIENT;
     }
 
-    private List<IBarDataSet> castFoodsToBarDataSet(){
+    private List<IBarDataSet> castIntakesTupleToBarDataSet(List<String> dates){
         ArrayList<BarEntry> y_energy_vals = new ArrayList<>();
         ArrayList<BarEntry> y_fat_vals = new ArrayList<>();
         ArrayList<BarEntry> y_prot_vals = new ArrayList<>();
-        int size = past_items.size();
-        for (int i = 0; i < size; i++){
-            EdibleItem item = past_items.get(i);
-            y_energy_vals.add(new BarEntry(infoToPercentage(item.getTotalEnergy(), max_energy), i));
-            y_fat_vals.add(new BarEntry(infoToPercentage(item.getTotalFat(), HUMAN_DAILY_FAT), i));
-            y_prot_vals.add(new BarEntry(infoToPercentage(item.getTotalProteins(), HUMAN_DAILY_PROTEINS), i));
+        int size = dates.size();
+        for(int i = 0; i < size; i++){
+            try {
+                IntakeTuple intake = past_intakes.get(SDFORMAT.parse(dates.get(i)));
+                y_energy_vals.add(new BarEntry(infoToPercentage(intake.getEnergy(), max_energy), i));
+                y_fat_vals.add(new BarEntry(infoToPercentage(intake.getFat(), HUMAN_DAILY_FAT), i));
+                y_prot_vals.add(new BarEntry(infoToPercentage(intake.getProteins(), HUMAN_DAILY_PROTEINS), i));
+            }catch (ParseException e){
+                System.err.println(e.getMessage());
+            }
         }
         return initIBarDataSet(y_energy_vals, y_fat_vals, y_prot_vals);
     }
 
     private List<String> pastDatesToStringList(){
         List<String> dates = new ArrayList<>();
-        for (Date past_date : past_dates){
+        for (Date past_date : past_intakes.keySet()){
             dates.add(SDFORMAT.format(past_date));
         }
         return dates;
     }
 
-    private void sortDatesAndRelatedFoods(){
-        Collections.sort(past_items, new Comparator<EdibleItem>() {
-            @Override
-            public int compare(EdibleItem item_1, EdibleItem item_2) {
-                int index_1 = past_items.indexOf(item_1);
-                int index_2 = past_items.indexOf(item_2);
-                Date date_1 = past_dates.get(index_1);
-                Date date_2 = past_dates.get(index_2);
-                return (date_1.compareTo(date_2));
-            }
-        });
-        Collections.sort(past_dates);
-    }
-
-    private class ItemValueFormatter implements ValueFormatter{
+    private final class ItemValueFormatter implements ValueFormatter{
 
         private float max;
         private DecimalFormat mFormat;
