@@ -63,7 +63,7 @@ public class RecipeRequestManager implements RequestManager{
 
 	private List<Long> generateRandomRecipeIds(int nb, Message msg,  List<Long> recipeIds){
 		Random r = new Random();
-		int min = 1, max = recipeIds.size();
+		int min = 0, max = recipeIds.size();
 		/*
 		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
@@ -74,19 +74,16 @@ public class RecipeRequestManager implements RequestManager{
 
 		Arrays.sort(alreadyRankedIds);//Sort needed for random with excluded values
 		*/
-		recipeIds = new ArrayList<Long>();
-		Long id = 0l;
+		List<Long> randomRecipeIds = new ArrayList<Long>();
 		for(int i=0 ; i<nb ; ++i){
-			//Long id = new Long(getRandomWithExclusion(r,min,max, alreadyRankedIds));
-			id+=1l;
-			System.out.println("ATTEMPT TO ADD NEW RECIPE : id = "+String.valueOf(id));
-			if(!recipeIds.contains(id) && !_recipeDatabase.findById((int)(long)id).getImageUrl().isEmpty()){
-				System.out.println("NEW RECIPE ADDED");
-				recipeIds.add(id);
+			int idIndex = getRandomWithExclusion(r,min,max);
+			Long id = recipeIds.get(idIndex);
+			if(!randomRecipeIds.contains(id) && !_recipeDatabase.findById((int)(long)id).getImageUrl().isEmpty()){
+				randomRecipeIds.add(id);
 			}
 			//else{i-=1;}
 		}
-		return recipeIds;
+		return randomRecipeIds;
 	}  
 
 	private int getRandomWithExclusion(Random rnd, int start, int end, int... exclude) {
@@ -116,7 +113,6 @@ public class RecipeRequestManager implements RequestManager{
 	private JSONObject onRandomUnrankedRecipesForCategoryRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String categoryName = (String) data.get(RECIPE_CATEGORY);
-		System.out.println("-----------------------: " + categoryName);
 		List<Long> recipeIds = _recipeDatabase.getRecipeIdsByCategory(categoryName);
 		
 		recipeIds = generateRandomRecipeIds(NUMBER_RANDOM_FOODS, msg, recipeIds);
