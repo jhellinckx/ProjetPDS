@@ -34,6 +34,7 @@ import com.shehabic.droppy.DroppyMenuPopup;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -248,9 +249,11 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 foodsToBeRated = new ArrayList<>();
                 initializer(foodsToBeRated);
+
+                JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     EdibleItem item = new Recipe();
-                    item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
+                    item.initFromJSON((JSONObject) jsonRecipes.get(i));
                     foodsToBeRated.set(i, item);
                     System.out.println(item.getProductName());
                 }
@@ -296,7 +299,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private void initSpinner(){
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         categoriesSpinner.setAdapter(ageAdapter);
-        categoriesSpinner.setSelection(id);
+        //categoriesSpinner.setSelection(id);
 
     }
 
