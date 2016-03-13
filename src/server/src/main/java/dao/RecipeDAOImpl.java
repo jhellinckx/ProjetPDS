@@ -22,7 +22,7 @@ public class RecipeDAOImpl implements RecipeDAO {
 	private static final String SQL_SELECT_INGREDIENTS_IDS = "SELECT ingredient_id FROM RecipeIngredients WHERE recipe_id = ?";
 	private static final String SQL_SELECT_TAG_IDS = "SELECT tag_id FROM RecipeTags WHERE recipe_id = ?";
     private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
-    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT Recipe.recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe JOIN RecipeCategories ON RecipeCategories.recipe_id = Recipe.recipe_id JOIN JDFCategory on RecipeCategories.category_id = JDFCategory.category_id WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? AND JDFCategory.category_name = ? ORDER BY portion_calorie DESC";
 
  	private static final String SQL_SELECT_LESS_THAN_LEVELS_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT = 
     "SELECT category_name, CBUserPredictions.prediction, Recipe.recipe_id, Recipe.recipe_name,"+
@@ -54,6 +54,11 @@ public class RecipeDAOImpl implements RecipeDAO {
 	RecipeDAOImpl(DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
 	}
+
+	private static final String SQL_TEST = 
+	"SELECT category_name, Recipe.recipe_id FROM JDFCategory"+
+	"JOIN RecipeCategories on RecipeCategories.category_id=JDFCategory.category_id"+
+	"JOIN Recipe ON Recipe.recipe_id = RecipeCategories.recipe_id";
 
 	@Override
 	public Recipe findByName(String recipeName) throws DAOException {
