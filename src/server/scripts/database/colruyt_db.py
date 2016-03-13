@@ -433,7 +433,7 @@ def addColumnsToUsers_history():
 	cnx = mysql.connector.connect(user=username, database=db_name, password=password)
 	cursor = cnx.cursor()
 
-	command = "ALTER TABLE `Users_history` ADD (checked INT(1) NOT NULL, is_food_or_sport VARCHAR(5), sport_name VARCHAR(100), duration INT(10), energy_consumed FLOAT(10))"
+	command = "ALTER TABLE `Users_history` ADD (checked INT(1) NOT NULL, is_food_or_sport_or_recipe VARCHAR(6), idRecipe INT UNSIGNED, sport_name VARCHAR(100), duration INT(10), energy_consumed FLOAT(10))"
 	
 	try:
 		cursor.execute(command)

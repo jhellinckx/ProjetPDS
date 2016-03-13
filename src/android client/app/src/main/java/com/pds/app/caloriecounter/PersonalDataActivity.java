@@ -74,7 +74,6 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
 
-        sendDataRequest();
 
         initInfosLayout();
         addAgeBracketLayout();
@@ -82,6 +81,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         addWeightLayout();
         addCalorieTextLayout();
         addCalorieLayout();
+        sendDataRequest();
 
         _energy = computeMaxEnergy();
 
@@ -126,7 +126,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         secondaryText.setLayoutParams(heightTextParams);
         secondaryText.setTextSize(MAIN_TEXT_SIZE);
         secondaryText.setTextColor(MAIN_TEXT_COLOR);
-        secondaryText.setText("Taille: ");
+        secondaryText.setText("Taille : ");
         secondaryText.setMaxLines(MAIN_TEXT_MAX_LINES);
         secondaryText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         secondaryText.setEllipsize(TextUtils.TruncateAt.END);
@@ -161,7 +161,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         weightText.setLayoutParams(weightTextParams);
         weightText.setTextSize(MAIN_TEXT_SIZE);
         weightText.setTextColor(MAIN_TEXT_COLOR);
-        weightText.setText("Poids: ");
+        weightText.setText("Poids : ");
         weightText.setMaxLines(MAIN_TEXT_MAX_LINES);
         weightText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         weightText.setEllipsize(TextUtils.TruncateAt.END);
@@ -197,7 +197,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketText.setLayoutParams(ageBracketTextParams);
         ageBracketText.setTextSize(MAIN_TEXT_SIZE);
         ageBracketText.setTextColor(MAIN_TEXT_COLOR);
-        ageBracketText.setText("Catégorie d'âge: ");
+        ageBracketText.setText("Catégorie d'âge : ");
         ageBracketText.setMaxLines(MAIN_TEXT_MAX_LINES);
         ageBracketText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         ageBracketText.setEllipsize(TextUtils.TruncateAt.END);
@@ -208,7 +208,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketSpinner.setLayoutParams(ageBracketSpinnerParams);
 
         ageBracketSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        initSpinner();
+        //initSpinner();
         ageBracketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -291,13 +291,14 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         buttonParams.gravity = Gravity.RIGHT;
         validate.setLayoutParams(buttonParams);
-        validate.setImageResource(R.drawable.ic_check);
+        validate.setImageResource(R.drawable.ic_done_white_24dp);
         validate.setButtonColor(getResources().getColor(R.color.primary));
         validate.setShadowColor(Color.BLACK);
 
         validateLayout.addView(new EvenSpaceView(this));
         validateLayout.addView(validate);
         infosContainer.setFooter(validateLayout);
+
 
         stickersLayout.addView(infosContainer);
 
@@ -449,7 +450,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     }
 
     public void handleMessage(JSONObject msg){
-        Log.d("Personal Acti HANDLE MSG", msg.toString());
+        Log.d("PersoActi HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){

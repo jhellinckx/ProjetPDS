@@ -12,6 +12,7 @@ import static dao.DAOUtilitaire.*;
 
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Recipe;
 
 public class UserPrefDAOImpl implements UserPrefDAO {
 	private DAOFactory daoFactory;
@@ -60,6 +61,15 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 			foods.addAll(findFoodsForUserAndRank(user,rank));
 		}
 		return foods;
+	}
+
+	@Override
+	public List<Recipe> findRecipesForUser(User user){
+		List<Recipe> recipes = new ArrayList<Recipe>();
+		for(float rank = 0.0f; rank<5.0f ; rank+= 0.5f){
+			recipes.addAll(findRecipesForUserAndRank(user,rank));
+		}
+		return recipes;
 	}
 	
 	@Override
@@ -132,6 +142,32 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
 		return rankedFood;
+	}
+
+	@Override
+	public List<Recipe> findRecipesForUserAndRank( User user, float rank ) throws DAOException {
+		List<Recipe> rankedRecipe = new ArrayList<Recipe>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		RecipeDAO recipeDAO = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_DE_APPRECIATED_FOOD, false, user.getId(), rank );
+			resultSet = preparedStatement.executeQuery();
+			recipeDAO = this.daoFactory.getRecipeDAO();
+			while (resultSet.next()) {
+				Long idRecipe = (long) resultSet.getInt("numFood");
+				Recipe recipe = recipeDAO.findById( (int)(long)idRecipe );
+				rankedRecipe.add(recipe);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return rankedRecipe;
 	}
 
 	@Override

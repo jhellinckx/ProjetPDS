@@ -174,9 +174,12 @@ public class NetworkHandler {
 
             }else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
 
-            }else {
+            }else if (request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)) {
+                _doDispatch(msg, RatingActivity.class);
+            }else if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
+                _doDispatch(msg, RatingActivity.class);
+            } else{
                 throw new UnsupportedOperationException("Unknown request : " + request.toString());
-
             }
         }catch(IOException e){
 

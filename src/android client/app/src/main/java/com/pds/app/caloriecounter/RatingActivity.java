@@ -4,28 +4,48 @@ package com.pds.app.caloriecounter;
 
 
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.pds.app.caloriecounter.dayrecording.DailyRecording;
+import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import com.pds.app.caloriecounter.itemview.RatingEdibleItemList;
+import com.pds.app.caloriecounter.rawlibs.CircularButton;
+import com.pds.app.caloriecounter.utils.EvenSpaceView;
+import com.shehabic.droppy.DroppyClickCallbackInterface;
+import com.shehabic.droppy.DroppyMenuPopup;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
+import java.util.List;
 
 
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_HEIGHT;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WIDTH;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_COLOR;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_MAX_LINES;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_SIZE;
 import static org.calorycounter.shared.Constants.network.*;
 import org.calorycounter.shared.models.EdibleItemImage;
 
@@ -37,10 +57,16 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private Button _validButton;
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
-    private ArrayList<EdibleItem> names;
     private ArrayList<EdibleItemImage> images;
-    //private LinearLayout stickersLayout;
+    private LinearLayout stickersLayout;
     //private DailyRecording foodsContainer;
+    private DailyRecording ratingContainer;
+    private Context context;
+    private List<EdibleItem> foodsToBeRated;
+    private Spinner categoriesSpinner = null;
+    private LinearLayout ratingFoodsLayout;
+    private static ArrayList<String> recipeCategories = new ArrayList<String>();
+    private int id;
 
 
 
@@ -50,28 +76,118 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         }
     }
 
+    private void initRatingFoodsLayout(){
+        ratingFoodsLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams textContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        ratingFoodsLayout.setLayoutParams(textContParams);
+        ratingFoodsLayout.setOrientation(LinearLayout.VERTICAL);
+        ratingFoodsLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
-        _validButton = (Button) v.findViewById(R.id.rating_button);
+        //v = getLayoutInflater().inflate(R.layout.activity_rating,frameLayout);
+
+        v = getLayoutInflater().inflate(R.layout.activity_day_recording,frameLayout);
+        stickersLayout = (LinearLayout) v.findViewById(R.id.day_recording_layout);
+        stickersLayout.setOrientation(LinearLayout.VERTICAL);
+        foodsToBeRated = new ArrayList<>();
+
+        /*
+        //_validButton = (Button) v.findViewById(R.id.rating_button);
         urls = new ArrayList<String>();
         ratings = new ArrayList<Float>();
         names = new ArrayList<EdibleItem>();
         images = new ArrayList<>();
-        gridView = (GridView) findViewById(R.id.gridView);
+        //gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
-        initializer(names);
-        getUrlsFromServer();
+        initializer(foodsToBeRated);
+        //getUrlsFromServer();
+        */
+        context= v.getContext();
+
+        //initRatingFoodsLayout();
+
+        //ratingContainer = new DailyRecording(this, "Foods", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
+        addHeader();
+        addFoodListLayout();
+        sendRecipeCategoriesRequest();
+        //addFooterButton();
     }
 
-    /*private void initAll(){
-        System.out.println(names.size());
-        foodsContainer = new DailyRecording(this, "Résultats", new RatingEdibleItemList(this, names, this, FLAG_RATABLE));
-        stickersLayout.addView(foodsContainer);
-    }*/
+    private void sendRecipeCategoriesRequest() {
+        JSONObject data = new JSONObject();
+        send(networkJSON(RECIPE_CATEGORIES_REQUEST_FROM_RATING, data));
+    }
+
+    private void addHeader() {
+
+        LinearLayout categorieTextLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams categorieTextContParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        categorieTextLayout.setLayoutParams(categorieTextContParams);
+        categorieTextLayout.setOrientation(LinearLayout.HORIZONTAL);
+        categorieTextLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+        //Age Bracket - texte
+        TextView categorieText = new TextView(this);
+        LinearLayout.LayoutParams categorieTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        categorieText.setLayoutParams(categorieTextParams);
+        categorieText.setTextSize(MAIN_TEXT_SIZE);
+        categorieText.setTextColor(MAIN_TEXT_COLOR);
+        categorieText.setText("Catégorie de Recettes : ");
+        categorieText.setMaxLines(MAIN_TEXT_MAX_LINES);
+        categorieText.canScrollHorizontally(LinearLayout.HORIZONTAL);
+        categorieText.setEllipsize(TextUtils.TruncateAt.END);
+        categorieTextLayout.addView(categorieText);
+
+        categoriesSpinner = new Spinner(this);
+        LinearLayout.LayoutParams categoriesSpinnerParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        categoriesSpinner.setLayoutParams(categoriesSpinnerParams);
+
+        categoriesSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
+        //initSpinner();
+        categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                //updateSeekBarAndText();
+                sendFoodsToBeRatedRequest();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+
+        categorieTextLayout.addView(categoriesSpinner);
+        stickersLayout.addView(categorieTextLayout);
+    }
+
+    private void addFoodListLayout(){
+
+        DailyRecording ratingContainer = new DailyRecording(this, "FOODS", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
+
+        LinearLayout validateLayout = new LinearLayout(this);
+        validateLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        CircularButton validateButton = new CircularButton(this);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
+        buttonParams.gravity = Gravity.RIGHT;
+        validateButton.setLayoutParams(buttonParams);
+        validateButton.setImageResource(R.drawable.ic_done_white_24dp);
+        validateButton.setButtonColor(getResources().getColor(R.color.primary));
+        validateButton.setShadowColor(Color.BLACK);
+
+        validateLayout.addView(new EvenSpaceView(this));
+        validateLayout.addView(validateButton);
+        ratingContainer.setFooter(validateLayout);
+
+        stickersLayout.addView(ratingContainer);
+    }
 
     private void addListenerGridView(){
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,7 +198,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putString("url", urls.get(position));
-                bundle.putString("name", names.get(position).getProductName());
+                bundle.putString("name", foodsToBeRated.get(position).getProductName());
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
@@ -134,7 +250,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         //Picasso p = Picasso.with(RatingActivity.this);
         //p.cancelTag("tag");
         resetRatings();
-        getUrlsFromServer();
+        //getUrlsFromServer();
     }
 
     @Override
@@ -153,38 +269,40 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
 
     public void handleMessage(JSONObject msg){
-        Log.d("RATINGACTIVITY HANDLE MSG", msg.toString());
+        Log.d("RateACTI HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
-        if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+        if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
-                    EdibleItem item = new Food();
+                    EdibleItem item = new Recipe();
                     item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
-                    names.set(i, item);
+                    //foodsToBeRated.set(i, item);
+                    foodsToBeRated.add(item);
                     System.out.println(item.getProductName());
                 }
-
+                /*
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, names));
+                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, foodsToBeRated));
                         addListenerGridView();
                         addListenerButton();
                         //initAll();
                     }
                 });
+                */
 
             }
-        }/*
-        runOnUiThread(new Runnable() {
-            public void run() {
-                gridView.setAdapter(new ImageAdapter(RatingActivity.this, names));
-                addListenerGridView();
-                addListenerButton();
+        }
+        if(request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)){
+            System.out.println("---------------------------ok");
+            for(int i=0; i<data.size(); i++) {
+                recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-        });*/
+            initSpinner();
+        }
     }
 
 
@@ -195,6 +313,26 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
         System.out.println("------------------request for random unranked foods SENT -------------------");
         return new ArrayList<String>();
+    }
+
+    private void initSpinner(){
+        ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
+        categoriesSpinner.setAdapter(ageAdapter);
+        categoriesSpinner.setSelection(id);
+
+    }
+
+    private ArrayList<String> createCategoriesList(){
+        ArrayList<String> categories = new ArrayList<String>();
+        for(String category : recipeCategories)
+        categories.add(category);
+        return categories;
+    }
+
+    private void sendFoodsToBeRatedRequest(){
+        JSONObject data = new JSONObject();
+        data.put(RECIPE_CATEGORY, categoriesSpinner.getSelectedItem().toString());
+        send(networkJSON(RANDOM_RECIPES_FOR_CATEGORY_REQUEST, data));
     }
 
     @Override

@@ -10,6 +10,8 @@ public interface RecipeDAO {
 		
 	public Recipe findById (int id ) throws DAOException;
 
+	public List<Recipe> findByIds( List<Long> ids );
+
 	public List<Recipe> findRecipeWithLessThanLevels(float energy, float fat, float proteins, float carbohydrates, String category) throws DAOException;
 	
 

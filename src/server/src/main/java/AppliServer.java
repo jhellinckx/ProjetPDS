@@ -89,12 +89,13 @@ public class AppliServer extends AbstractNIOServer{
 			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase, _recipeDatabase);
 		RatingRequestManager rrm = new RatingRequestManager(this, _foodDatabase, _userprefDatabase, rerm);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
+		RecipeRequestManager recrm = new RecipeRequestManager(_recipeDatabase, this, _userprefDatabase);
 
-		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm);
+		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm, recrm);
 	}
 
 	private void initMap(AuthenticationRequestManager arm, FoodRequestManager frm, RatingRequestManager rrm, DataRequestManager drm, 
-		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm, CategoriesRequestManager crm){
+		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm, CategoriesRequestManager crm, RecipeRequestManager recrm){
 
 		_managers.put(LOG_IN_REQUEST, arm);
 		_managers.put(SIGN_UP_REQUEST, arm);
@@ -111,9 +112,11 @@ public class AppliServer extends AbstractNIOServer{
 		_managers.put(RECOMMEND_REQUEST, rerm);
 		_managers.put(FOOD_CATEGORIES_REQUEST, crm);
 		_managers.put(RECIPE_CATEGORIES_REQUEST, crm);
+		_managers.put(RECIPE_CATEGORIES_REQUEST_FROM_RATING, crm);
 		_managers.put(CHANGE_EATEN_STATUS_REQUEST, hrm);
 		_managers.put(DELETE_FOOD_HISTORY_REQUEST, hrm);
 		_managers.put(DELETE_SPORT_HISTORY_REQUEST, hrm);
+		_managers.put(RANDOM_RECIPES_FOR_CATEGORY_REQUEST, recrm);
 	}
 
 	public User getUser(Message msg){
