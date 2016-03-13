@@ -21,14 +21,15 @@ import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.EdibleItemImage;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ImageAdapter extends BaseAdapter {
     private Context _Context;
-    private ArrayList<EdibleItem> _items;
+    private List<EdibleItem> _items;
     private ArrayList<View> _views;
 
-    public ImageAdapter(Context c, ArrayList<EdibleItem> items) {
+    public ImageAdapter(Context c, List<EdibleItem> items) {
         _Context = c;
         _items = items;
         _views = new ArrayList<>();

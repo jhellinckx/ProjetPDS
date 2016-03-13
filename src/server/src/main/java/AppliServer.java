@@ -11,7 +11,6 @@ import nioserver.Message;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
-import org.calorycounter.shared.models.Recipe;
 import items.CategoryRating;
 
 import manager.*;
@@ -25,7 +24,6 @@ import dao.CategoryRatingDAO;
 import dao.UserHistoryDAO;
 import dao.DAOException;
 import dao.AllCategoriesDAO;
-import dao.RecipeDAO;
 
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
@@ -50,7 +48,6 @@ public class AppliServer extends AbstractNIOServer{
 	private CategoryRatingDAO _categoryRatingDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 	private AllCategoriesDAO _categoriesDatabase;
-	private RecipeDAO _recipeDatabase;
 
 	/* Recommendations fields */
 	private KnowledgeBasedFilter _knowledgeBased;
@@ -89,12 +86,13 @@ public class AppliServer extends AbstractNIOServer{
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
 			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
+		RecipeRequestManager recrm = new RecipeRequestManager(_recipeDatabase, this, _userprefDatabase);
 
-		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm);
+		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm, recrm);
 	}
 
 	private void initMap(AuthenticationRequestManager arm, FoodRequestManager frm, RatingRequestManager rrm, DataRequestManager drm, 
-		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm, CategoriesRequestManager crm){
+		HistoryRequestManager hrm, SportRequestManager srm, RecommendationRequestManager rerm, CategoriesRequestManager crm, RecipeRequestManager recrm){
 
 		_managers.put(LOG_IN_REQUEST, arm);
 		_managers.put(SIGN_UP_REQUEST, arm);
@@ -111,9 +109,11 @@ public class AppliServer extends AbstractNIOServer{
 		_managers.put(RECOMMEND_REQUEST, rerm);
 		_managers.put(FOOD_CATEGORIES_REQUEST, crm);
 		_managers.put(RECIPE_CATEGORIES_REQUEST, crm);
+		_managers.put(RECIPE_CATEGORIES_REQUEST_FROM_RATING, crm);
 		_managers.put(CHANGE_EATEN_STATUS_REQUEST, hrm);
 		_managers.put(DELETE_FOOD_HISTORY_REQUEST, hrm);
 		_managers.put(DELETE_SPORT_HISTORY_REQUEST, hrm);
+		_managers.put(RANDOM_RECIPES_FOR_CATEGORY_REQUEST, recrm);
 	}
 
 	public User getUser(Message msg){

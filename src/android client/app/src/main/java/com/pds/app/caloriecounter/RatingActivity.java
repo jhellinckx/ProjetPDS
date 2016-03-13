@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -55,7 +56,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private Button _validButton;
     private ArrayList<String> urls;
     private ArrayList<Float> ratings;
-    private ArrayList<EdibleItem> names;
     private ArrayList<EdibleItemImage> images;
     private LinearLayout stickersLayout;
     //private DailyRecording foodsContainer;
@@ -64,6 +64,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private List<EdibleItem> foodsToBeRated;
     private Spinner categoriesSpinner = null;
     private LinearLayout ratingFoodsLayout;
+    private static ArrayList<String> recipeCategories = new ArrayList<String>();
+    private int id;
 
 
 
@@ -102,7 +104,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         //gridView = (GridView) findViewById(R.id.gridView);
         initializer(ratings);
         initializer(urls);
-        initializer(names);
+        initializer(foodsToBeRated);
         //getUrlsFromServer();
         */
         context= v.getContext();
@@ -112,7 +114,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         //ratingContainer = new DailyRecording(this, "Foods", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
         addHeader();
         addFoodListLayout();
+        sendRecipeCategoriesRequest();
         //addFooterButton();
+    }
+
+    private void sendRecipeCategoriesRequest() {
+        JSONObject data = new JSONObject();
+        send(networkJSON(RECIPE_CATEGORIES_REQUEST_FROM_RATING, data));
     }
 
     private void addHeader() {
@@ -145,6 +153,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 //updateSeekBarAndText();
+                sendFoodsToBeRatedRequest();
             }
 
             @Override
@@ -188,7 +197,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putString("url", urls.get(position));
-                bundle.putString("name", names.get(position).getProductName());
+                bundle.putString("name", foodsToBeRated.get(position).getProductName());
                 frag.setArguments(bundle);
                 frag.show(getFragmentManager(), "titletest");
 
@@ -268,14 +277,14 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     EdibleItem item = new Food();
                     item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
-                    names.set(i, item);
+                    foodsToBeRated.set(i, item);
                     System.out.println(item.getProductName());
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, names));
+                        gridView.setAdapter(new ImageAdapter(RatingActivity.this, foodsToBeRated));
                         addListenerGridView();
                         addListenerButton();
                         //initAll();
@@ -283,6 +292,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 });
 
             }
+        }
+        if(request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)){
+            System.out.println("---------------------------ok");
+            for(int i=0; i<data.size(); i++) {
+                recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
+            }
+            initSpinner();
         }
     }
 
@@ -296,31 +312,24 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         return new ArrayList<String>();
     }
 
-    public void addFooterButton(){
-        LinearLayout validateLayout = new LinearLayout(this);
-        validateLayout.setOrientation(LinearLayout.HORIZONTAL);
-        CircularButton validate = new CircularButton(this);
-        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
-        buttonParams.gravity = Gravity.RIGHT;
-        validate.setLayoutParams(buttonParams);
-        validate.setImageResource(R.drawable.ic_done_white_24dp);
-        validate.setButtonColor(getResources().getColor(R.color.primary));
-        validate.setShadowColor(Color.BLACK);
+    private void initSpinner(){
+        ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
+        categoriesSpinner.setAdapter(ageAdapter);
+        categoriesSpinner.setSelection(id);
 
-        validateLayout.addView(new EvenSpaceView(this));
-        validateLayout.addView(validate);
-        ratingContainer.setFooter(validateLayout);
+    }
 
-        stickersLayout.addView(ratingContainer);
+    private ArrayList<String> createCategoriesList(){
+        ArrayList<String> categories = new ArrayList<String>();
+        for(String category : recipeCategories)
+        categories.add(category);
+        return categories;
+    }
 
-        validate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-
-        });
+    private void sendFoodsToBeRatedRequest(){
+        JSONObject data = new JSONObject();
+        data.put(RECIPE_CATEGORY, categoriesSpinner.getSelectedItem().toString());
+        send(networkJSON(RANDOM_RECIPES_FOR_CATEGORY_REQUEST, data));
     }
 
     @Override
