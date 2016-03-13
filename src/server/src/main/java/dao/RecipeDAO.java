@@ -6,10 +6,13 @@ import org.calorycounter.shared.models.Recipe;
 
 public interface RecipeDAO {
 
-	Recipe findByName ( String recipeName ) throws DAOException;
+	public Recipe findByName ( String recipeName ) throws DAOException;
 		
-	Recipe findById (int id ) throws DAOException;
+	public Recipe findById (int id ) throws DAOException;
 
-	List<Recipe> findRecipeWithLessThanLevels(float energy, float fat, float proteins, float carbohydrates, String category) throws DAOException;
-		
-	}
+	public List<Recipe> findRecipeWithLessThanLevels(float energy, float fat, float proteins, float carbohydrates, String category) throws DAOException;
+	
+
+	public List<Recipe> findRecipeWithLessThanLevelsOrderByPredictionsWithLimit(float energy, float fat, float proteins, float carbohydrates, int limit, int user_id, String category);
+
+}
