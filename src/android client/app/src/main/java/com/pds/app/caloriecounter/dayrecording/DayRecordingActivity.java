@@ -34,6 +34,7 @@ import com.shehabic.droppy.animations.DroppyFadeInAnimation;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.Sport;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -353,25 +354,36 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     public void onAddArticle(){
         Log.d("CLICK : ", " ARTICLE");
+        startNewRecomActivityWithInfos(false);
+    }
 
+    private void startNewRecomActivityWithInfos(Boolean isReceipt){
         Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
 
         ArrayList<String> productCodes = new ArrayList<String>();
+        ArrayList<String> recipeIds = new ArrayList<String>();
         ArrayList<String> productDates = new ArrayList<String>();
+        ArrayList<String> recipeDates = new ArrayList<String>();
         if(!dailyFoods.isEmpty()){
             for(int i=0 ; i<dailyFoods.size(); ++i){
                 if(dailyFoods.get(i) instanceof Food){
                     Food currFood = (Food) dailyFoods.get(i);
                     productCodes.add(currFood.getCode());
                     productDates.add(current_day);
+                }else{
+                    Recipe currRecipie = (Recipe) dailyFoods.get(i);
+                    recipeIds.add(Long.toString(currRecipie.getId()));
+                    recipeDates.add(current_day);
                 }
             }
         }
         recommendactivity.putStringArrayListExtra("pastFoodCodes",productCodes);
         recommendactivity.putStringArrayListExtra("pastFoodDates",productDates);
+        recommendactivity.putStringArrayListExtra("pastRecipeIds",recipeIds);
+        recommendactivity.putStringArrayListExtra("pastRecipeDates",recipeDates);
         float maxCal = dailyIntakes.get(TITLE_CALORIES).getIntakeMax();
         recommendactivity.putExtra("maxCal",maxCal);
-        recommendactivity.putExtra("isReceipt", false);
+        recommendactivity.putExtra("isReceipt", isReceipt);
         recommendactivity.putExtra("date", current_day);
 
         startActivity(recommendactivity);
@@ -379,9 +391,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     public void onAddReceipt(){
         Log.d("CLICK : ", " RECEIPT");
-        Intent recommendactivity = new Intent(DayRecordingActivity.this, RecommendationActivity.class);
-        recommendactivity.putExtra("isReceipt", true);
-        startActivity(recommendactivity);
+        startNewRecomActivityWithInfos(true);
     }
 
     public void addPotentialRecommendation() {

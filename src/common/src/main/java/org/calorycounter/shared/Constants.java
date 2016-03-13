@@ -147,6 +147,11 @@ public final class Constants {
 		public static final String PAST_FOODS_LIST = "d_past_foodslist";
 		public static final String PAST_FOODS_DATES = "d_past_foodsdates";
 
+		/* Past Recipe */
+		public static final String PAST_RECIPES_LIST = "d_past_recipeslist";
+		public static final String PAST_RECIPES_DATES = "d_past_recipesdates";
+		public static final int RECIPE_CATEGORIES_SIZE = 10;
+
 		/* Recommendation Constraints */
 		public static final String MAX_ENERGY = "d_maxenergy";
 		public static final String MAX_FAT = "d_maxfat";

@@ -87,7 +87,7 @@ public class AppliServer extends AbstractNIOServer{
 		HistoryRequestManager hrm = new HistoryRequestManager(this, _foodDatabase, _userHistoryDatabase);
 		SportRequestManager srm = new SportRequestManager(this,_sportsDatabase, _userHistoryDatabase);
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
-			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase);
+			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase, _recipeDatabase);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
 
 		initMap(arm, frm, rrm, drm, hrm, srm, rerm, crm);
