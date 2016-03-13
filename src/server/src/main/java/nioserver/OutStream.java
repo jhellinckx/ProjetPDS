@@ -45,6 +45,8 @@ public class OutStream implements Runnable{
 
 				} else if (data.containsKey(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
 					filterMessage(data, RANDOM_RECIPES_FOR_CATEGORY_REQUEST);
+				} else if (data.containsKey(RECIPE_LIST)){
+					filterMessage(data, RECIPE_LIST);
 				}
 			}
 			System.out.println(Constants.repr(this) + " " + msg.socket().getRemoteSocketAddress().toString()

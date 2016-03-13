@@ -13,12 +13,12 @@ import android.widget.TextView;
 
 import static org.calorycounter.shared.Constants.network.*;
 
-import com.squareup.picasso.Picasso;
-
 /**
  * Created by aurelien on 25/02/16.
  */
 public class ItemInfoDialog extends DialogFragment {
+
+    private static final String PORTION = " Personnes";
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -47,12 +47,12 @@ public class ItemInfoDialog extends DialogFragment {
         tv.setText(Float.toString(num_value));
     }
 
-    private void initMinorTextView(Bundle b, View v){
-        initTextView((TextView) v.findViewById(R.id.info_insatfat), b.getFloat(FOOD_TOTAL_SATURATED_FAT));
-        initTextView((TextView) v.findViewById(R.id.info_sodium), b.getFloat(FOOD_TOTAL_SODIUM));
-        initTextView((TextView) v.findViewById(R.id.info_sugar), b.getFloat(FOOD_TOTAL_SUGARS));
-        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
+    private void initMinorTextViewForRecipe(Bundle b, View v){
+        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY) + PORTION);
+    }
 
+    private void initMinorTextView(Bundle b, View v){
+        ((TextView) v.findViewById(R.id.info_quantity)).setText(b.getString(FOOD_QUANTITY));
     }
 
     private void initMainTextView(Bundle b, View v){
@@ -69,6 +69,8 @@ public class ItemInfoDialog extends DialogFragment {
         initMainTextView(b, v);
         if(b.getString(RECIPE_OR_FOOD).equals("food")) {
             initMinorTextView(b, v);
+        }else{
+            initMinorTextViewForRecipe(b, v);
         }
     }
 }
