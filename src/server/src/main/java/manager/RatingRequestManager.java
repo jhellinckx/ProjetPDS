@@ -23,25 +23,29 @@ public class RatingRequestManager implements RequestManager{
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
 	private UserPrefDAO _userprefDatabase;
-	private CategoryRatingDAO _categoryRatingDatabase;
+	private RecommendationRequestManager _recomManager;
 
-	public RatingRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserPrefDAO updb, CategoryRatingDAO crdb){
+	public RatingRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserPrefDAO updb, RecommendationRequestManager rm){
 		_server = srv;
 		_foodDatabase = fdb;
 		_userprefDatabase = updb;
-		_categoryRatingDatabase = crdb;
+		_recomManager = rm;
 	}
 
 	private void addRatingsToDB(JSONObject data, Message msg){
 		String currUrl;
 		double currRank;
 		for(int i = 0 ; i < data.size()/2 ; ++i){
+			User usr = _server.getUser(msg);
 			currUrl = (String) data.get(FOOD_IMAGE_URL+String.valueOf(i));
 			currRank = (double) data.get(FOOD_RATING+String.valueOf(i));
 			float rank = (float) currRank;
 			
 			Food currFood = _foodDatabase.findByUrl(currUrl);
-			_userprefDatabase.create(_server.getUser(msg).getId(),currFood.getId(), rank);
+			_userprefDatabase.create(usr.getId(),currFood.getId(), rank);
+
+			//TODO INSTEAD OF FOOD ID NEED RECIPE ID
+			_recomManager.notifyNewRating(usr.getId(), currFood.getId());
 		}
 	}
 
