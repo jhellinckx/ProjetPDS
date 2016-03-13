@@ -462,6 +462,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
             b.putString(RECIPE_OR_FOOD, "food");
         }else{
+            b.putString(FOOD_QUANTITY, item.getQuantity());
             b.putString(RECIPE_OR_FOOD, "recipe");
         }
         ItemInfoDialog dialog = new ItemInfoDialog();
