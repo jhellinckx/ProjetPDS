@@ -1,6 +1,7 @@
 package dao;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import recommender.RecipePrediction;
 import static dao.DAOUtilitaire.*;
 
@@ -16,7 +17,14 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 	public static final String SQL_UPDATE_PREDICTION = 
 	"INSERT INTO CBUserPredictions (prediction_id, user_id, recipe_id, prediction) VALUES (?, ?, ?, ?)"+
 	" ON DUPLICATE KEY UPDATE prediction=VALUES(prediction)";
-
+	public static final String SQL_SELECT_K_NEAREST_NEIGHBOURS_IN_USER_PROFILE =
+	"SELECT rank, similarity FROM User_Preferences "+
+	"JOIN RecipeSimilarity ON "+
+	"(RecipeSimilarity.first_recipe_id=User_Preferences.numRecipe AND RecipeSimilarity.second_recipe_id=?) "+
+	"OR (RecipeSimilarity.second_recipe_id=User_Preferences.numRecipe AND RecipeSimilarity.first_recipe_id=?) "+
+	"WHERE User_Preferences.numUser=? "+
+	"ORDER BY RecipeSimilarity.similarity DESC"+
+	"LIMIT ?";
 	private DAOFactory _daoFactory;
 
 	CBUserPredictionsDAOImpl(DAOFactory fac){
@@ -83,6 +91,10 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
         } finally {
             silentClosures( preparedStatement, connexion );
         }
+	}
+
+	public List<Map.Entry<Float, Float>> getNeighboursInUserProfileLimitK(Long recipe_id, Long, user_id, int k){
+		return new ArrayList<Map.Entry<Float, Float>>();
 	}
 
 	private RecipePrediction mapPrediction(ResultSet result)throws SQLException{
