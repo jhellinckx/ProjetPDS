@@ -22,14 +22,16 @@ public class OutStream implements Runnable{
 	private void _write(Message msg) throws IOException {		
 		SocketChannel clientChannel = msg.socket().getChannel();
 		ByteBuffer buffer = msg.raw();
-		clientChannel.write(buffer);
-		if(buffer.remaining() > 0){
-			// Socket buffer is full; try to send the message later by pushing it at the end of queue.
-			buffer.flip();
-			this._controller.addOutgoingMessage(msg);
-			throw new IOException("could not write message to "+Constants.repr(clientChannel)+
-			" : clientChannel buffer is full.");
+		while(buffer.remaining() > 0){
+			clientChannel.write(buffer);
 		}
+		// if(buffer.remaining() > 0){
+		// 	// Socket buffer is full; try to send the message later by pushing it at the end of queue.
+		// 	buffer.flip();
+		// 	this._controller.addOutgoingMessage(msg);
+		// 	throw new IOException("could not write message to "+Constants.repr(clientChannel)+
+		// 	" : clientChannel buffer is full.");
+		// }
 		if(Constants.SHOW_LOG){
 			// copy item
 			JSONObject obj = new JSONObject(msg.toJSON());
