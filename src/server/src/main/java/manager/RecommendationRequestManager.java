@@ -81,6 +81,9 @@ public class RecommendationRequestManager implements RequestManager{
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
 		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		//recommendedFoods = _recommenderSystem.recommendItems();
+		if(recommendedFoods.size()>10){
+			recommendedFoods = new ArrayList<Food>(recommendedFoods.subList(0,10));
+		}
 		loadImages(recommendedFoods);
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
@@ -94,7 +97,9 @@ public class RecommendationRequestManager implements RequestManager{
 	private JSONObject recommendRecipes(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Recipe> recommendedRecipes = _knowledgeBased.recommendRecipe(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
-		// ADD CB HERE
+		if(recommendedRecipes.size()>10){
+			recommendedRecipes = new ArrayList<Recipe>(recommendedRecipes.subList(0,10));
+		}
 		loadRecipeImages(recommendedRecipes);
 		JSONArray jsonRecipe = new JSONArray();
 		for(int i=0; i<Math.min(recommendedRecipes.size(),10);i++){

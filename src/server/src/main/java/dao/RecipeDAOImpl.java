@@ -158,7 +158,7 @@ public class RecipeDAOImpl implements RecipeDAO {
             resultSet = preparedStatement.executeQuery();
             while ( resultSet.next() ) {
             	Recipe recipe = map(resultSet);
-            	addAllOtherInfos(recipe);
+            	//addAllOtherInfos(recipe);
                 recipes.add(recipe);
             }
         } catch ( SQLException e ) {
