@@ -8,7 +8,6 @@ import nioserver.Message;
 import nioserver.AbstractNIOServer;
 
 import org.json.simple.JSONObject;
-import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Recipe;
 
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Arrays;
+import util.ImageLoader;
 
 import static org.calorycounter.shared.Constants.network.*;
 
@@ -25,41 +25,12 @@ public class RecipeRequestManager implements RequestManager{
 	private RecipeDAO _recipeDatabase;
 	private UserPrefDAO _userprefDatabase;
 	private AbstractNIOServer _server;
-	private FoodDAO _foodDatabase;
 
 	public RecipeRequestManager(RecipeDAO rdb, AbstractNIOServer srv, UserPrefDAO uprfdao ){
 		_recipeDatabase = rdb;
 		_userprefDatabase = uprfdao;
 		_server = srv;
 	}
-
-	private void manageFailure(JSONObject responseData){
-		responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_FAILURE);
-		responseData.put(REASON, FOOD_CODE_NOT_FOUND);
-	}
-
-	private void manageSuccess(JSONObject responseData, Food food){
-		responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
-		responseData.put(FOOD_NAME,food.getProductName());
-		responseData.put(FOOD_IMAGE_URL,food.getImageUrl());
-	}
-
-	private JSONObject onFoodcodeRequest(Message msg){
-		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
-		String code = (String) data.get(FOOD_CODE);
-		JSONObject responseData = new JSONObject();
-		Food food = _foodDatabase.findByCode(code);
-		if(food == null){
-			manageFailure(responseData);
-		}
-		else{
-			manageSuccess(responseData, food);
-		}
-
-		return responseData;
-	}
-
-
 
 	private List<Long> generateRandomRecipeIds(int nb, Message msg,  List<Long> recipeIds){
 		Random r = new Random();
@@ -105,7 +76,7 @@ public class RecipeRequestManager implements RequestManager{
 		else{
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
 			for(int i=0 ; i<recipes.size() ; ++i){ //ajout de chaque url au JSON
-				responseData.put(FOOD_NAME+String.valueOf(i), recipes.get(i).toJSON(false));
+				responseData.put(FOOD_NAME+String.valueOf(i), recipes.get(i).toJSON());
 			}
 		}
 	}
@@ -117,7 +88,7 @@ public class RecipeRequestManager implements RequestManager{
 		
 		recipeIds = generateRandomRecipeIds(NUMBER_RANDOM_FOODS, msg, recipeIds);
 		List<Recipe> recipes = _recipeDatabase.findByIds(recipeIds);
-		System.out.println(recipes.size());
+		loadRecipeImages(recipes);
 		
 		JSONObject responseData = new JSONObject();
 		makeJSON_onRandomUnrankedRecipesForCategoryRequest(recipes, responseData);
@@ -125,15 +96,16 @@ public class RecipeRequestManager implements RequestManager{
 		return responseData;
 	}
 
+	private void loadRecipeImages(List<Recipe> recipes){
+		ImageLoader.loadImages(recipes);
+	}
+
 	@Override
 	public JSONObject manageRequest(Message msg){
 		JSONObject response = msg.toJSON();
 		String request = (String) response.get(REQUEST_TYPE);
 		JSONObject responseData = null;
-		if (request.equals(FOOD_CODE_REQUEST)){
-			responseData = onFoodcodeRequest(msg);
-		}
-		else if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
+		if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
 			responseData = onRandomUnrankedRecipesForCategoryRequest(msg);
 		}
 		return responseData;

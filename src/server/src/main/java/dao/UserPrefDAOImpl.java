@@ -9,21 +9,20 @@ import java.util.List;
 import java.util.HashMap;
 import static dao.DAOUtilitaire.*;
 
-
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Recipe;
 
 public class UserPrefDAOImpl implements UserPrefDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO User_preferences (numUser,numFood,rank) VALUES (?,?,?)";
-	private static final String SQL_FIND_USER_DE_APPRECIATED_FOOD = "SELECT numFood FROM User_preferences WHERE numUser = ? and rank = ?";
-	private static final String SQL_FIND_USERS_APPRECIATING_FOOD = "SELECT numUser FROM User_preferences WHERE numFood = ?";
-	private static final String SQL_DELETE = "DELETE FROM User_preferences WHERE numUser = ? AND numFood = ? AND rank = ?";
-	private static final String SQL_UPDATE = "UPDATE User_preferences SET numFood = ? WHERE numUser = ?";
+	private static final String SQL_INSERT = "INSERT INTO User_preferences (numUser,numRecipe,rank) VALUES (?,?,?)";
+	private static final String SQL_FIND_USER_DE_APPRECIATED_FOOD = "SELECT numRecipe FROM User_preferences WHERE numUser = ? and rank = ?";
+	private static final String SQL_FIND_USERS_APPRECIATING_FOOD = "SELECT numUser FROM User_preferences WHERE numRecipe = ?";
+	private static final String SQL_DELETE = "DELETE FROM User_preferences WHERE numUser = ? AND numRecipe = ? AND rank = ?";
+	private static final String SQL_UPDATE = "UPDATE User_preferences SET numRecipe = ? WHERE numUser = ?";
 
-	private static final String	SQL_FIND_USER_RANK = "SELECT numFood, rank FROM User_preferences WHERE numUser = ?";
-	private static final String SQL_FIND_FOOD_RANK = "SELECT rank FROM User_preferences WHERE numFood = ?";
+	private static final String	SQL_FIND_USER_RANK = "SELECT numRecipe, rank FROM User_preferences WHERE numUser = ?";
+	private static final String SQL_FIND_FOOD_RANK = "SELECT rank FROM User_preferences WHERE numRecipe = ?";
 	
 	UserPrefDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -31,13 +30,13 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	
 
 	@Override
-	public void create(Long id_user, Long id_food, float rank) throws IllegalArgumentException, DAOException {
+	public void create(Long id_user, Long id_recipe, float rank) throws IllegalArgumentException, DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, id_user, id_food, rank );
+			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, id_user, id_recipe, rank );
 			int statut = preparedStatement.executeUpdate();
 			if (statut == 0) {
 				throw new DAOException ("Failed to create a user preference, no new line added to the DB");
@@ -50,8 +49,8 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 
 	@Override
-	public void create(User user, Food food, float rank) throws IllegalArgumentException, DAOException {
-		create(user.getId(), food.getId(), rank);
+	public void create(User user, Recipe recipe, float rank) throws IllegalArgumentException, DAOException {
+		create(user.getId(), recipe.getId(), rank);
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 	
 	@Override
-	public List<User> findUsersAppreciating(Food food) throws DAOException {
+	public List<User> findUsersAppreciating(Recipe recipe) throws DAOException {
 		List<User> usersAppreciatingFood = new ArrayList<User>();
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -82,7 +81,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USERS_APPRECIATING_FOOD, false, food.getId() );
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USERS_APPRECIATING_FOOD, false, recipe.getId() );
 			resultSet = preparedStatement.executeQuery();
 			userDAO = this.daoFactory.getUserDAO();
 			while (resultSet.next()) {
@@ -100,24 +99,51 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	
 
 	@Override
-	public void delete(User user, Food food, float rank) throws IllegalArgumentException, DAOException {
-	Connection connection = null;
-    PreparedStatement preparedStatement = null;
+	public void delete(User user, Recipe recipe, float rank) throws IllegalArgumentException, DAOException {
+		Connection connection = null;
+	    PreparedStatement preparedStatement = null;
 
-    try {
-        connection = daoFactory.getConnection();
-        preparedStatement = initializationPreparedRequest( connection, SQL_DELETE, false, user.getId(), food.getId(), rank);
-        int statut = preparedStatement.executeUpdate();
-        if ( statut == 0 ) {
-            throw new DAOException( "Failed to delete the user preference, no modifications to the table." );
-        }
-    } catch ( SQLException e ) {
-        throw new DAOException( e );
-    } finally {
-        silentClosures( preparedStatement, connection );
-    }
+	    try {
+	        connection = daoFactory.getConnection();
+	        preparedStatement = initializationPreparedRequest( connection, SQL_DELETE, false, user.getId(), recipe.getId(), rank);
+	        int statut = preparedStatement.executeUpdate();
+	        if ( statut == 0 ) {
+	            throw new DAOException( "Failed to delete the user preference, no modifications to the table." );
+	        }
+	    } catch ( SQLException e ) {
+	        throw new DAOException( e );
+	    } finally {
+	        silentClosures( preparedStatement, connection );
+	    }
     }
 	
+
+	@Override
+	public List<Recipe> findRecipesForUserAndRank( User user, float rank ) throws DAOException {
+		List<Recipe> rankedRecipe = new ArrayList<Recipe>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		RecipeDAO recipeDAO = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_DE_APPRECIATED_FOOD, false, user.getId(), rank );
+			resultSet = preparedStatement.executeQuery();
+			recipeDAO = this.daoFactory.getRecipeDAO();
+			while (resultSet.next()) {
+				Long idRecipe = (long) resultSet.getInt("numRecipe");
+				Recipe recipe = recipeDAO.findById( (int)(long)idRecipe );
+				rankedRecipe.add(recipe);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return rankedRecipe;
+	}
+
 	@Override
 	public List<Food> findFoodsForUserAndRank( User user, float rank ) throws DAOException {
 		List<Food> rankedFood = new ArrayList<Food>();
@@ -145,29 +171,51 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 
 	@Override
-	public List<Recipe> findRecipesForUserAndRank( User user, float rank ) throws DAOException {
-		List<Recipe> rankedRecipe = new ArrayList<Recipe>();
+	public List<Float> findRankForRecipe(Recipe recipe) throws DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		RecipeDAO recipeDAO = null;
-		
+		ArrayList<Float> rankList = new ArrayList<Float>();
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_DE_APPRECIATED_FOOD, false, user.getId(), rank );
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_FOOD_RANK, false, recipe.getId() );
 			resultSet = preparedStatement.executeQuery();
-			recipeDAO = this.daoFactory.getRecipeDAO();
 			while (resultSet.next()) {
-				Long idRecipe = (long) resultSet.getInt("numFood");
-				Recipe recipe = recipeDAO.findById( (int)(long)idRecipe );
-				rankedRecipe.add(recipe);
+				float rank = (float) resultSet.getFloat("rank");
+				rankList.add(rank);
 			}
 		} catch (SQLException e) {
 			throw new DAOException (e);
 		} finally {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
-		return rankedRecipe;
+		return rankList ;
+	}
+
+	@Override
+	public HashMap findRecipesAndRankForUser(User user) throws DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		RecipeDAO recipeDAO = null;
+		HashMap m = new HashMap();
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_USER_RANK, false, user.getId() );
+			resultSet = preparedStatement.executeQuery();
+			recipeDAO = this.daoFactory.getRecipeDAO();
+			while (resultSet.next()) {
+				Long idRecipe = (long) resultSet.getInt("numRecipe");
+				Recipe recipe = recipeDAO.findById((int)(long)idRecipe);
+				float rank = (float) resultSet.getFloat("rank"); 
+				m.put(recipe,rank);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return m ;
 	}
 
 	@Override

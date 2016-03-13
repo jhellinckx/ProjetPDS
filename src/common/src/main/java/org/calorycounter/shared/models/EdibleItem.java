@@ -160,6 +160,7 @@ public abstract class EdibleItem implements JSONSerializable{
     @Override
     public JSONObject toJSON(){
         JSONObject repr = constructJSON();
+        System.out.println("IMAGE PIC :"+image_pic);
         repr.put(FOOD_IMAGE, image_pic.toJSON());
         return repr;
     }

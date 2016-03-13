@@ -381,6 +381,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     }
 
     private void initSpinner(){
+        System.out.println("init spiner :::::::");
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         ageBracketSpinner.setAdapter(ageAdapter);
         ageBracketSpinner.setSelection(id);
@@ -456,11 +457,11 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             genderToSpinerId(gender);
-            initSpinner();
 
             heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT))) ;
             weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT))) ;
         }
+        initSpinner();
 
     }
 

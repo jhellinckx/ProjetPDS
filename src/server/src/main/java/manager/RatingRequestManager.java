@@ -7,6 +7,7 @@ import items.CategoryRating;
 import org.json.simple.JSONObject;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import dao.FoodDAO;
 import dao.UserPrefDAO;
 import dao.CategoryRatingDAO;
@@ -23,6 +24,7 @@ public class RatingRequestManager implements RequestManager{
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
 	private UserPrefDAO _userprefDatabase;
+	private CategoryRatingDAO _categoryRatingDatabase;
 	private RecommendationRequestManager _recomManager;
 
 	public RatingRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserPrefDAO updb, RecommendationRequestManager rm){
