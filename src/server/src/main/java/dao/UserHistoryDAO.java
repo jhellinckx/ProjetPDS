@@ -44,4 +44,6 @@ public interface UserHistoryDAO {
 	List<Recipe> getHistoryRecipeForDate(User user, String date) throws DAOException;
 
 	List<Recipe> getHistoryRecipes(User user) throws DAOException;
+
+	List<String> getHistoryRecipeDates(User user) throws DAOException;
 }

@@ -31,7 +31,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_DELETE_RECIPE = "DELETE FROM Users_history WHERE idUser = ? AND idRecipe = ? AND date = ?";
 	private static final String SQL_UPDATE_CHECKED_RECIPE = "UPDATE Users_history SET checked = ? WHERE idUser = ? AND idRecipe = ? AND date = ?";
 	private static final String SQL_FIND_HISTORY_RECIPES_FOR_DATE = "SELECT idRecipe, checked FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Recipe'";
-
+	private static final String SQL_FIND_HISTORY_RECIPE_DATES = "SELECT date FROM Users_history WHERE idUser = ? AND is_food_or_sport_or_recipe = 'Recipe'";
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -136,8 +136,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		return foods;
 	}
 
-	@Override
-	public List<String> getHistoryDates(User user) throws DAOException {
+	private List<String> getDates(User user, String query) throws DAOException{
 		List<String> historyDates = new ArrayList<String>();
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -145,7 +144,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_HISTORY_DATES, false, user.getId() );
+			preparedStatement = initializationPreparedRequest( connection, query, false, user.getId() );
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				String date = resultSet.getString("date");
@@ -157,6 +156,19 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 			silentClosures( resultSet, preparedStatement, connection );
 		}
 		return historyDates;
+
+	}
+
+	@Override
+	public List<String> getHistoryDates(User user) throws DAOException {
+		String query = SQL_FIND_HISTORY_DATES;
+		return getDates(user, query);
+	}
+
+	@Override
+	public List<String> getHistoryRecipeDates(User user) throws DAOException{
+		String query = SQL_FIND_HISTORY_RECIPE_DATES;
+		return getDates(user, query);
 	}
 
 	@Override
