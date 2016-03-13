@@ -167,6 +167,7 @@ public final class Constants {
 
 		/* Recipe */
 		public static final String INGREDIENTS_LIST = "d_ingredients_list";
+		public static final String RECIPE_LIST = "d_recipeslist";
 
 		/* Items */
 		public static final String ITEM_LIST = "d_item_list";

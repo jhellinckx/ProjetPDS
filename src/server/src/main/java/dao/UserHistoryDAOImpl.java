@@ -26,11 +26,11 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_INSERT_SPORT = "INSERT INTO Users_history (idUser,sport_name,date,duration, energy_consumed, checked,is_food_or_sport_or_recipe) VALUES (?, ?, ?, ?, ?, 1, 'Sport')";
 	private static final String SQL_FIND_HISTORY_SPORTS_FOR_DATE = "SELECT sport_name, duration, energy_consumed FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Sport'";
 	private static final String SQL_DELETE_SPORT = "DELETE FROM Users_history WHERE idUser = ? AND sport_name = ? AND duration = ? AND date = ?";
-	
+	private static final String SQL_FIND_HISTORY_RECIPES = "SELECT idRecipe, checked FROM Users_history WHERE idUser = ? AND is_food_or_sport_or_recipe = 'Recipe'";
 	private static final String SQL_INSERT_RECIPE = "INSERT INTO Users_history (idUser,date,checked,is_food_or_sport_or_recipe, idRecipe) VALUES (?, ?, ?, 'Recipe', ?)";
 	private static final String SQL_DELETE_RECIPE = "DELETE FROM Users_history WHERE idUser = ? AND idRecipe = ? AND date = ?";
 	private static final String SQL_UPDATE_CHECKED_RECIPE = "UPDATE Users_history SET checked = ? WHERE idUser = ? AND idRecipe = ? AND date = ?";
-	private static final String SQL_FIND_HISTORY_RECIPES_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Food'";
+	private static final String SQL_FIND_HISTORY_RECIPES_FOR_DATE = "SELECT idRecipe, checked FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Recipe'";
 
 
 	UserHistoryDAOImpl( DAOFactory daoFactory ) {
@@ -291,12 +291,17 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	@Override
 	public void addRecipeToHistory(User user, Recipe recipe, String date) throws DAOException {
 		int myInt = (recipe.isEaten()) ? 1 : 0;
+		addRecipeToHistory(user, recipe, date, myInt);
+	}
+
+	@Override
+	public void addRecipeToHistory(User user, Recipe recipe, String date, int isEaten) throws DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		
 		try {
 			connection = daoFactory.getConnection();
-			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT_RECIPE, false, user.getId(), date, myInt, recipe.getId());
+			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT_RECIPE, false, user.getId(), date, isEaten, recipe.getId());
 			int statut = preparedStatement.executeUpdate();
 			if (statut == 0) {
 				throw new DAOException ("Failed to create a user food history, no new line added to the DB");
@@ -347,5 +352,69 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		} finally {
 			silentClosures(preparedStatement, connection );
 		}
+	}
+
+	@Override
+	public List<Recipe> getHistoryRecipeForDate(User user, String date) throws DAOException{
+		List<Recipe> recipes = new ArrayList<>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		RecipeDAO recipeDAO = null;
+
+		try{
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_RECIPES_FOR_DATE, false, user.getId(), date);
+			resultSet = preparedStatement.executeQuery();
+			recipeDAO = this.daoFactory.getRecipeDAO();
+			while (resultSet.next()){
+				int idRecipe = (int) resultSet.getInt("idRecipe");
+				Recipe recipe = recipeDAO.findById(idRecipe);
+				int checked = (int) resultSet.getInt("checked");
+				if(checked==1){
+					recipe.eaten();
+				}else{
+					recipe.notEaten();
+				}
+				recipes.add(recipe);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally{
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return recipes;
+	}
+
+	@Override
+	public List<Recipe> getHistoryRecipes(User user) throws DAOException {
+		List<Recipe> historyRecipes = new ArrayList<Recipe>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		RecipeDAO recipeDAO = null;
+		
+		try {
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest( connection, SQL_FIND_HISTORY_RECIPES, false, user.getId() );
+			resultSet = preparedStatement.executeQuery();
+			recipeDAO = this.daoFactory.getRecipeDAO();
+			while (resultSet.next()) {
+				int idRecipe = (int) resultSet.getInt("idRecipe");
+				Recipe recipe = recipeDAO.findById(idRecipe);
+				int checked = (int) resultSet.getInt("checked");
+				if(checked==1){
+					recipe.isEaten();
+				}else {
+					recipe.notEaten();
+				}
+				historyRecipes.add(recipe);
+			}
+		} catch (SQLException e) {
+			throw new DAOException (e);
+		} finally {
+			silentClosures( resultSet, preparedStatement, connection );
+		}
+		return historyRecipes;
 	}
 }

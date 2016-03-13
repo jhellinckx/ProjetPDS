@@ -205,6 +205,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
 
         Bundle b = new Bundle();
         b.putString("date", current_date);
+        b.putBoolean("isReceipt", isReceipt);
         resFrag.setArguments(b);
         replaceFragment(resFrag, "results");
 
