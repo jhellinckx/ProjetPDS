@@ -34,6 +34,7 @@ import com.shehabic.droppy.DroppyMenuPopup;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ import org.calorycounter.shared.models.EdibleItemImage;
 
 public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback{
 
-    private static final int NB_RATINGS = 9;
+    private static final int NB_RATINGS = NUMBER_RANDOM_FOODS;
 
     private GridView gridView;
     private Button _validButton;
@@ -85,18 +86,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
         foodsToBeRated = new ArrayList<>();
 
-        /*
-        //_validButton = (Button) v.findViewById(R.id.rating_button);
-        urls = new ArrayList<String>();
-        ratings = new ArrayList<Float>();
-        names = new ArrayList<EdibleItem>();
-        images = new ArrayList<>();
-        //gridView = (GridView) findViewById(R.id.gridView);
-        initializer(ratings);
-        initializer(urls);
-        //getUrlsFromServer();
-        */
-        //initializer(foodsToBeRated);
         context= v.getContext();
 
 
@@ -135,7 +124,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categoriesSpinner.setLayoutParams(categoriesSpinnerParams);
 
         categoriesSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        //initSpinner();
         categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -261,9 +249,11 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 foodsToBeRated = new ArrayList<>();
                 initializer(foodsToBeRated);
+
+                JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
                     EdibleItem item = new Recipe();
-                    item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
+                    item.initFromJSON((JSONObject) jsonRecipes.get(i));
                     foodsToBeRated.set(i, item);
                     System.out.println(item.getProductName());
                 }
@@ -286,7 +276,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             for(int i=0; i<data.size(); i++) {
                 recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            initSpinner();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initSpinner();
+                }
+            });
+
         }
     }
 
@@ -303,7 +299,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private void initSpinner(){
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         categoriesSpinner.setAdapter(ageAdapter);
-        categoriesSpinner.setSelection(id);
+        //categoriesSpinner.setSelection(id);
 
     }
 

@@ -8,6 +8,7 @@ import nioserver.Message;
 import nioserver.AbstractNIOServer;
 
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Recipe;
 
@@ -34,7 +35,7 @@ public class RecipeRequestManager implements RequestManager{
 
 	private List<Long> generateRandomRecipeIds(int nb, Message msg,  List<Long> recipeIds){
 		Random r = new Random();
-		int min = 0, max = recipeIds.size();
+		int min = 0, max = recipeIds.size()-1;
 		/*
 		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
@@ -75,9 +76,12 @@ public class RecipeRequestManager implements RequestManager{
 		}
 		else{
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
+			JSONArray jsonRecipes = new JSONArray();
 			for(int i=0 ; i<recipes.size() ; ++i){ //ajout de chaque url au JSON
-				responseData.put(FOOD_NAME+String.valueOf(i), recipes.get(i).toJSON());
+				//responseData.put(FOOD_NAME+String.valueOf(i), recipes.get(i).toJSON());
+				jsonRecipes.add(recipes.get(i).toJSON());
 			}
+			responseData.put(FOOD_NAME, jsonRecipes);
 		}
 	}
 
