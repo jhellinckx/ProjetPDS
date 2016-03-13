@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import com.pds.app.caloriecounter.rawlibs.DonutProgress;
 import com.pds.app.caloriecounter.utils.Converter;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+
 import static com.pds.app.caloriecounter.GraphicsConstants.Progress.*;
 /**
  * Created by jhellinckx on 03/03/16.
@@ -83,7 +87,22 @@ public class IntakeProgress extends DonutProgress {
     public float changeFloatPrecision(float f, int i){
         String floatString = Float.toString(f);
         String charSeparator = (floatString.contains(".")) ? "." : ",";
-        return Float.parseFloat(String.format("%" + charSeparator + Integer.toString(i) + "f", f));
+        System.out.println("CHAR SEPARATOR: "+charSeparator);
+        System.out.println(String.format("%" + "." + Integer.toString(i) + "f", f));
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat format = new DecimalFormat("0.#");
+        format.setDecimalFormatSymbols(symbols);
+        float fl;
+        try {
+            fl = format.parse(floatString).floatValue();
+        }catch( ParseException e){
+            fl = 0.0f;
+        }
+
+        //return Float.parseFloat(String.format("%" + "." + Integer.toString(i) + "f", f));
+        return fl;
     }
 
     public void addIntakeProgress(float progress){
