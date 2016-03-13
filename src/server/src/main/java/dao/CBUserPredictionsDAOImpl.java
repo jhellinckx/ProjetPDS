@@ -93,7 +93,7 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
         }
 	}
 
-	public List<Map.Entry<Float, Float>> getNeighboursInUserProfileLimitK(Long recipe_id, Long, user_id, int k){
+	public List<Map.Entry<Float, Float>> getNeighboursInUserProfileLimitK(Long recipe_id, Long user_id, int k){
 		return new ArrayList<Map.Entry<Float, Float>>();
 	}
 
