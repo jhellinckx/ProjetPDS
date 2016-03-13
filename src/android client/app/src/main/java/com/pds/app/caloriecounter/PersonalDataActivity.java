@@ -208,7 +208,12 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         ageBracketSpinner.setLayoutParams(ageBracketSpinnerParams);
 
         ageBracketSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        //initSpinner();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                initSpinner();
+            }
+        });
         ageBracketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -453,15 +458,26 @@ public class PersonalDataActivity extends MenuNavigableActivity {
     public void handleMessage(JSONObject msg){
         Log.d("PersoActi HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
-        JSONObject data = (JSONObject)msg.get(DATA);
+        final JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){
             String gender = (String) data.get(UPDATE_DATA_GENDER);
             genderToSpinerId(gender);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT)));
+                    weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT)));
+                }
+            });
 
-            heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT))) ;
-            weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT))) ;
         }
-        initSpinner();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                initSpinner();
+            }
+        });
+
 
     }
 
