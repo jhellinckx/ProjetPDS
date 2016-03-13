@@ -9,6 +9,7 @@ import nioserver.AbstractNIOServer;
 import org.json.simple.JSONObject;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
+import util.ImageLoader;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -56,11 +57,16 @@ public class FoodRequestManager implements RequestManager{
 		return responseData;
 	}
 
+	private void loadImages(List<Food> foods){
+		ImageLoader.loadImages(foods);
+	}
+
 	private JSONObject onRandomUnrankedFoodsRequest(Message msg){
 		JSONObject responseData = new JSONObject();
 		ArrayList<Long> foodIds = new ArrayList<Long>();
 		generateRandomFoodIds(NUMBER_RANDOM_FOODS, msg, foodIds);//populate array foodIds
 		List<Food> foods = _foodDatabase.findByIds(foodIds);
+		loadImages(foods);
 		makeJSON_onRandomUnrankedFoodRequest(foods, responseData);
 		return responseData;
 	}

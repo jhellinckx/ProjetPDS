@@ -15,12 +15,41 @@ import org.calorycounter.shared.models.Recipe;
 
 public class RecipeDAOImpl implements RecipeDAO {
 	private DAOFactory daoFactory;
-	private static final String SQL_SELECT_BY_NAME = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_name = ?";
-	private static final String SQL_SELECT_BY_ID = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_id = ?";
+	private static final String SQL_SELECT_BY_NAME = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_name = ?";
+	private static final String SQL_SELECT_BY_ID = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_id = ?";
 	private static final String SQL_SELECT_SUB_CAT_BY_ID = "SELECT C.category_id FROM RecipeCategories C, JDFCategory J WHERE C.recipe_id = ? AND C.category_id = J.category_id AND J.is_main = 0";
 	private static final String SQL_SELECT_ORIGIN_BY_ID = "SELECT origin_id FROM RecipeOrigins WHERE recipe_id = ?";
 	private static final String SQL_SELECT_INGREDIENTS_IDS = "SELECT ingredient_id FROM RecipeIngredients WHERE recipe_id = ?";
 	private static final String SQL_SELECT_TAG_IDS = "SELECT tag_id FROM RecipeTags WHERE recipe_id = ?";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
+    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT recipe_id, recipe_name, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE portion_calorie BETWEEN 0 AND ? AND portion_fat <= ? AND portion_protein <= ? AND portion_carbo <= ? ORDER BY portion_calorie DESC";
+
+ 	private static final String SQL_SELECT_LESS_THAN_LEVELS_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT = 
+    "SELECT category_name, CBUserPredictions.prediction, Recipe.recipe_id, Recipe.recipe_name,"+
+    "recipe_image_url, recipe_url, image_pic, ingredients_list,"+
+    "Recipe.portion_calorie, Recipe.portion_fat, Recipe.portion_carbo, Recipe.portion_protein"+
+    "FROM CBUserPredictions"+
+    "JOIN Recipe ON Recipe.recipe_id=CBUserPredictions.recipe_id"+
+    "WHERE CBUserPredictions.user_id=? AND portion_calorie BETWEEN 0 AND ?"+
+    "AND portion_fat BETWEEN 0 AND ? AND portion_protein BETWEEN 0 AND ?"+
+    "AND portion_carbo BETWEEN 0 AND ?"+
+    "ORDER BY CBUserPredictions.prediction DESC, Recipe.portion_calorie DESC"+
+    "LIMIT ?";
+
+    private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT = 
+    "SELECT category_name, CBUserPredictions.prediction, Recipe.recipe_id, Recipe.recipe_name,"+
+    "recipe_image_url, recipe_url, image_pic, ingredients_list,"+
+    "Recipe.portion_calorie, Recipe.portion_fat, Recipe.portion_carbo, Recipe.portion_protein"+
+    "FROM CBUserPredictions"+
+    "JOIN Recipe ON Recipe.recipe_id=CBUserPredictions.recipe_id"+ 
+    "JOIN RecipeCategories ON RecipeCategories.recipe_id=CBUserPredictions.recipe_id"+
+    "JOIN JDFCategory ON JDFCategory.category_id=RecipeCategories.category_id"+
+    "AND JDFCategory.is_main=1 AND JDFCategory.category_name='?'"+
+    "WHERE CBUserPredictions.user_id=? AND portion_calorie BETWEEN 0 AND ?"+
+    "AND portion_fat BETWEEN 0 AND ? AND portion_protein BETWEEN 0 AND ?"+
+    "AND portion_carbo BETWEEN 0 AND ?"+
+    "ORDER BY CBUserPredictions.prediction DESC, Recipe.portion_calorie DESC"+
+    "LIMIT ?";
 
 	RecipeDAOImpl(DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
@@ -77,6 +106,72 @@ public class RecipeDAOImpl implements RecipeDAO {
 
         return recipe;
 	}
+
+	@Override
+	public List<Recipe> findByIds( List<Long> ids ){
+        List<Recipe> recipeList = new ArrayList<Recipe>();
+        for(int i = 0 ; i<ids.size() ; ++i){
+            recipeList.add(findById((int) (long) ids.get(i)));
+        }
+        return recipeList;
+    }
+
+	@Override
+	public List<Recipe> findRecipeWithLessThanLevelsOrderByPredictionsWithLimit(float energy, float fat, float proteins, float carbohydrates, int limit, int user_id, String category){
+		List<Recipe> recipes = new ArrayList<Recipe>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connexion = daoFactory.getConnection();
+            if(category.equals("None")){
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT, false, user_id, energy, fat, proteins, carbohydrates,limit);
+            }else{
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY_ORDER_BY_CB_PREDICTIONS_WITH_LIMIT, false, category, user_id, energy, fat, proteins, carbohydrates, limit);
+            }
+            resultSet = preparedStatement.executeQuery();
+            while ( resultSet.next() ) {
+            	Recipe recipe = map(resultSet);
+            	addAllOtherInfos(recipe);
+                recipes.add(recipe);
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return recipes;
+    }
+	
+
+	@Override
+    public List<Recipe> findRecipeWithLessThanLevels(float energy, float fat, float proteins, float carbohydrates, String category) throws DAOException {
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connexion = daoFactory.getConnection();
+            if(category.equals("None")){
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, carbohydrates);
+            }else{
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, carbohydrates, category);
+            }
+            resultSet = preparedStatement.executeQuery();
+            while ( resultSet.next() ) {
+            	Recipe recipe = map(resultSet);
+            	addAllOtherInfos(recipe);
+                recipes.add(recipe);
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return recipes;
+    }
 
 	private void addSubCategory(Recipe recipe) {
 		Connection connexion = null;
@@ -181,6 +276,7 @@ public class RecipeDAOImpl implements RecipeDAO {
         recipe.setTotalProteins(resultSet.getFloat( "portion_protein" ) )  ;
         recipe.setTotalCarbohydrates(resultSet.getFloat( "portion_carbo" )  );
         recipe.notEaten();
+        recipe.setImagePath(resultSet.getString("image_pic"));
         return recipe;
 	}
 

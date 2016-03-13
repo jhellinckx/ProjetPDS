@@ -69,7 +69,8 @@ public class FoodDAOImpl implements FoodDAO {
                 preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt);
             }else{
                 category=category+'%';
-                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt, category);            }
+                preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY, false, energy, fat, proteins, saturatedFat, carbohydrates, sugars, salt, category);
+            }
             resultSet = preparedStatement.executeQuery();
             while ( resultSet.next() ) {
                 foods.add(map(resultSet));
@@ -194,9 +195,7 @@ public class FoodDAOImpl implements FoodDAO {
         food.setTotalSalt(resultSet.getFloat( "salt_100g" )  );
         food.setQuantity(resultSet.getString( "quantity" ));
         food.notEaten();
-        String filename = resultSet.getString( "image_pic" );
-        EdibleItemImage img = new EdibleItemImage(ImageConverter.getBufferedImageFromFile(filename));
-        food.setImagePic(img);
+        food.setImagePath(resultSet.getString( "image_pic" ));
         return food;
     }
 }

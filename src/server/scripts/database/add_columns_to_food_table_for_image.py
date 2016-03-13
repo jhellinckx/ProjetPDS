@@ -78,8 +78,8 @@ def addOrDeleteColumnToTable(delete): #if boolean delete is True, deletes otherw
 
 def selectIdsFromDbColumn():
 	selectIdFromFoodCommand = (
-		"SELECT `id_food`"
-		"FROM `Food` ORDER BY id_food ASC")
+		"SELECT `recipe_id`"
+		"FROM `Recipe` ORDER BY recipe_id ASC")
 
 	ids = []
 	(username,password) = db_params()
@@ -100,9 +100,9 @@ def selectIdsFromDbColumn():
 
 def selectUrlsFromDbColumn(ids):
 	selectUrlsFromFoodCommand = (
-		"SELECT `image_url`"
-		"FROM `Food`"
-		"WHERE `id_food` = %s")
+		"SELECT `recipe_image_url`"
+		"FROM `Recipe`"
+		"WHERE `recipe_id` = %s")
 
 	image_dict = {}.fromkeys(ids)
 
@@ -173,8 +173,6 @@ def updateDb(images, image_urls):
 
 
 def execute(with_file):
-	addOrDeleteColumnToTable(True)
-	addOrDeleteColumnToTable(False)
 	food_ids = selectIdsFromDbColumn()
 	image_dict = selectUrlsFromDbColumn(food_ids)
 	getAllImagesFromUrl(image_dict)

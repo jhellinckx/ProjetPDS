@@ -11,11 +11,15 @@ import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
 import recommender.KnowledgeBasedFilter;
 
+import util.ImageLoader;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.EdibleItem;
+import org.calorycounter.shared.models.Recipe;
 
 import dao.UserDAO;
 import dao.FoodDAO;
@@ -43,8 +47,8 @@ public class RecommendationRequestManager implements RequestManager{
 		_userHistoryDatabase = uhdb;
 	}
 
-	private List<Food> changeTypeOfListToFood(List<String> pastFoodsCodes){
-		List<Food> pastFoods = new ArrayList<Food>();
+	private List<EdibleItem> changeTypeOfListToFood(List<String> pastFoodsCodes){
+		List<EdibleItem> pastFoods = new ArrayList<EdibleItem>();
 		if(pastFoodsCodes != null){
 			for(String foodCode : pastFoodsCodes){
 				pastFoods.add(_foodDatabase.findByCode(foodCode));
@@ -61,11 +65,16 @@ public class RecommendationRequestManager implements RequestManager{
 		}
 	}
 
-	private JSONObject recommendItems(List<Food> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
+	private void loadImages(List<Food> foods){
+		ImageLoader.loadImages(foods);
+	}
+
+	private JSONObject recommendItems(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
 		ArrayList<Food> recommendedFoods = _knowledgeBased.recommend(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
 		//_recommenderSystem.updateData(recommendedFoods, new ArrayList<User>(_userDatabase.findAllUsers()), user, 10);
 		//recommendedFoods = _recommenderSystem.recommendItems();
+		loadImages(recommendedFoods);
 		JSONArray jsonFoods = new JSONArray();
 		for(int i=0; i<Math.min(recommendedFoods.size(),10);i++){
 			jsonFoods.add(recommendedFoods.get(i).toJSON());
@@ -93,7 +102,7 @@ public class RecommendationRequestManager implements RequestManager{
 		String category = (String) data.get(FOOD_CATEGORY);
 		List<String> pastFoodsCodes = (List<String>) data.get(PAST_FOODS_LIST);
 		List<String> pastFoodsDates = (List<String>) data.get(PAST_FOODS_DATES);
-		List<Food> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
+		List<EdibleItem> pastFoods = changeTypeOfListToFood(pastFoodsCodes);
 		Float maxEnergy = Float.parseFloat( (String) data.get(MAX_ENERGY));
 		maxEnergy = maxEnergy * CAL_TO_JOULE_FACTOR;
 		Float maxFat = Float.parseFloat( (String) data.get(MAX_FAT));

@@ -9,6 +9,7 @@ from colruyt_models import *
 from recipe_model import *
 import time
 import copy
+import math
 
 YELLOW = "\033[33m"
 MAGENTA = "\033[35m"
@@ -34,12 +35,21 @@ nb_images = 6573
 
 max_sql_single_insert = 500
 
+
+LAMBDA_INGR = 5
+LAMBDA_TAG = 5
+LAMBDA_ORIGIN = 10
+LAMBDA_SUB_CAT = 7
+
 # Recipes variable
 min_ratings = 10
 recipes = []
+recipes_ids = {}
 categories = {}
 ingredients = {}
 origins = {}
+
+ORIGIN_KEY = "origin"
 
 
 articles_names_correction = \
@@ -897,11 +907,15 @@ def insert_origins_in_table():
 		if recipe_id == None :
 			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")	
 		recipe[TAGS_KEY] = map(unicode.lower,recipe[TAGS_KEY])
-		for key in recipe :
-			if key == TAGS_KEY:
-				for tag in recipe[key]:
-					if tag in origins :
-						insert_bindings.append((recipe_id, origins_id[tag]))
+		found = False
+		key=TAGS_KEY
+		for tag in recipe[key]:
+			if tag in origins :
+				recipe[ORIGIN_KEY] = tag
+				found = True
+				insert_bindings.append((recipe_id, origins_id[tag]))
+		if not found : 
+			recipe[ORIGIN_KEY] = None
 		if insert and len(insert_bindings) > 0 :
 			cursor.executemany(recipes_origins_binding_command + recipe_origin_value, insert_bindings)
 			insert_bindings = []
@@ -976,6 +990,7 @@ def insert_tags_in_table():
 		if recipe_id == None :
 			raise IOError("SHOULD NOT HAPPEN : RECIPE URL NOT FOUND IN DB")	
 		recipe[TAGS_KEY] = map(unicode.lower, recipe[TAGS_KEY])
+		updated_tags = []
 		for tag in recipe[TAGS_KEY]:
 			if tag not in tags_in_tables :
 				if tag not in tags_not_yet_in_table:
@@ -983,6 +998,8 @@ def insert_tags_in_table():
 					cursor.execute(insert_tag_command%tag)
 					db_id += 1
 				insert_bindings.append((recipe_id, tags_not_yet_in_table[tag]))
+				updated_tags.append(tag)
+		recipe[TAGS_KEY] = updated_tags
 		if insert:
 			cursor.executemany(insert_recipetag_command, insert_bindings)
 			insert_bindings = []
@@ -1012,6 +1029,71 @@ def create_userpredictions_table():
 	cnx.commit()
 	cursor.close()
 	cnx.close()
+
+def create_recipe_similarity_table():
+	recipe_similarity_table_command = \
+	"CREATE TABLE RecipeSimilarity\
+	(sim_id INT UNSIGNED NOT NULL AUTO_INCREMENT,\
+	first_recipe_id INT UNSIGNED,\
+	second_recipe_id INT UNSIGNED,\
+	similarity FLOAT,\
+	FOREIGN KEY (first_recipe_id) REFERENCES Recipe (recipe_id),\
+	FOREIGN KEY (second_recipe_id) REFERENCES Recipe (recipe_id),\
+	PRIMARY KEY(sim_id)\
+	) ENGINE=INNODB;"
+
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+	cursor.execute(recipe_similarity_table_command)
+	cnx.commit()
+	cursor.close()
+	cnx.close()
+
+
+def list_similarity(first_list, second_list):
+	common = 0
+	for item in first_list : 
+		if item in second_list :
+			common += 1
+	if common == 0 :
+		return 0
+	return float(common) / (math.sqrt(len(first_list)) * math.sqrt(len(second_list)))
+
+def single_item_similarity(first_item, second_item):
+	return first_item == second_item
+
+def insert_recipe_similarity_in_table():
+	global recipes
+	recipe_similarity_insert_command = \
+	"INSERT INTO RecipeSimilarity\
+	 (first_recipe_id, second_recipe_id, similarity)\
+	 VALUES (\"%s\",\"%s\",\"%s\")"
+
+	(username,password) = db_params()
+	cnx = mysql.connector.connect(user=username,database=db_name,password=password)
+	cursor = cnx.cursor()
+
+	operations = (len(recipes)**2 + len(recipes))/2
+	op=0
+	for i in range(len(recipes)):
+		for j in range(i+1, len(recipes)):
+			op+=1
+			ingredients_sim = list_similarity(recipes[i][INGREDIENTS_NAMES_KEY], recipes[j][INGREDIENTS_NAMES_KEY])
+			tags_sim = list_similarity(recipes[i][TAGS_KEY], recipes[j][TAGS_KEY])
+			origin_sim = single_item_similarity(recipes[i][ORIGIN_KEY], recipes[j][ORIGIN_KEY])
+			sub_cat_sim = single_item_similarity(recipes[i][SECONDARY_CATEGORY_KEY], recipes[j][SECONDARY_CATEGORY_KEY])
+			weighted_similarity = ingredients_sim*LAMBDA_INGR+tags_sim*LAMBDA_TAG+origin_sim*LAMBDA_ORIGIN+sub_cat_sim*LAMBDA_SUB_CAT
+			values = (i+1, j+1, weighted_similarity)
+			cursor.execute(recipe_similarity_insert_command%values)
+		sys.stdout.write(clear_line + log_text + "[%d%%]"%int((float(op)/operations)*100))
+		sys.stdout.flush()
+		cnx.commit()
+	cursor.close()
+	cnx.close()
+
+
+
 
 
 def log_create_table(table, create_table_func):
@@ -1056,7 +1138,7 @@ if __name__ == "__main__" :
 	try:
 		t0 = time.time()
 		try:
-			log_drop_db(db_name, drop_db)
+			#log_drop_db(db_name, drop_db)
 			pass
 		except mysql.connector.Error as err:
 			sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
@@ -1098,6 +1180,11 @@ if __name__ == "__main__" :
 			log_insert_items("Tag", insert_tags_in_table)
 
 			log_create_table("CBUserPredictions", create_userpredictions_table)
+
+
+
+			log_create_table("RecipeSimilarity", create_recipe_similarity_table)
+			log_insert_items("RecipeSimilarity", insert_recipe_similarity_in_table)
 		
 		sys.stdout.write("Database script completed in " + YELLOW + str(time.time() - t0).split(",")[0].split(".")[0] + RESET + " seconds.\n")
 		sys.stdout.flush()
@@ -1105,10 +1192,5 @@ if __name__ == "__main__" :
 	except mysql.connector.Error as err:
 		sys.stdout.write(RED + "FAILED : %s"%err + RESET + "\n")
 		sys.stdout.flush()
-
-
-
-
-
 
 
