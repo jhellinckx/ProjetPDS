@@ -460,13 +460,15 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         String request = (String) msg.get(REQUEST_TYPE);
         final JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(DATA_REQUEST) && (double) data.get(UPDATE_DATA_HEIGHT) != -1.0){
-            String gender = (String) data.get(UPDATE_DATA_GENDER);
-            genderToSpinerId(gender);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    String gender = (String) data.get(UPDATE_DATA_GENDER);
+                    genderToSpinerId(gender);
+                    ageBracketSpinner.setId(id);
                     heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT)));
                     weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT)));
+
                 }
             });
 
