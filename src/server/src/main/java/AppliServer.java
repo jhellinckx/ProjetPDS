@@ -8,6 +8,7 @@ import org.calorycounter.shared.Constants;
 
 import nioserver.AbstractNIOServer;
 import nioserver.Message;
+import nioserver.ServerShutdownHook;
 
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
@@ -155,9 +156,15 @@ public class AppliServer extends AbstractNIOServer{
 		removeClient(msg);
 	}
 
+	public void stop(){
+		super.stop();
+		((RecommendationRequestManager)_managers.get(RECOMMEND_REQUEST)).stopWorkers();
+	}
+
 	public static void main(String[] args){
 		try{
 			AppliServer appserver = new AppliServer();
+			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
 			appserver.run();
 		} 
 		catch(Exception e){

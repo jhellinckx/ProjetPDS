@@ -106,7 +106,6 @@ public abstract class AbstractNIOServer{
 	public void run(){
 		this.setRunning();
 		_controller.startStreams();
-		Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(this, this._controller)));
 		System.out.println("Server " + Constants.color.GREEN + host() + Constants.color.RESET
 			+" launched. Listening on port " + Constants.color.YELLOW + Integer.toString(port()) + Constants.color.RESET + ".");
 		this.listen();
@@ -128,7 +127,6 @@ public abstract class AbstractNIOServer{
 		synchronized(this._running){
 			this._running = false;
 		}
-		this._controller.wakeupIn();
 		this._controller.stopStreams();
 	}
 

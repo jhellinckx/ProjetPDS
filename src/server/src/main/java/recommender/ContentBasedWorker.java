@@ -9,34 +9,39 @@ import java.util.LinkedHashMap;
 import dao.CBUserPredictionsDAO;
 
 public class ContentBasedWorker implements Runnable{
-	private static final int K_NUMBER_OF_NEIGHBOURS = 3; //Value retrieved from article, seems to be the best
-
 	private Boolean _run;
 	private RecommendationRequestManager _manager;
 	private CBUserPredictionsDAO _predictionsDatabase;
+	private int _nbrNeighbours;
 
-	public ContentBasedWorker(RecommendationRequestManager m, CBUserPredictionsDAO predDB){
+	public ContentBasedWorker(RecommendationRequestManager m, CBUserPredictionsDAO predDB, int k){
 		_manager = m;
 		_predictionsDatabase = predDB;
+		_nbrNeighbours = k;
+		_run = false;
 	}
 
 	@Override
 	public void run(){
 		setRunning();
-		while(isRunning()){
-			Map.Entry<Long, List<Long>> userRatings = _manager.requestNewRatings();
-			_predictionsDatabase.removePredictions(userRatings.getValue());
-			List<RecipePrediction> predictions = _predictionsDatabase.getAllPredictionsForUser(userRatings.getKey());
-			for(RecipePrediction pred : predictions){
-				computePrediction(pred);
+		try{
+			while(isRunning()){
+				Map.Entry<Long, List<Long>> userRatings = _manager.requestNewRatings();
+				_predictionsDatabase.removePredictions(userRatings.getValue());
+				List<RecipePrediction> predictions = _predictionsDatabase.getAllPredictionsForUser(userRatings.getKey());
+				for(RecipePrediction pred : predictions){
+					computePrediction(pred);
+				}
+				_predictionsDatabase.updatePredictions(predictions);
 			}
-			_predictionsDatabase.updatePredictions(predictions);
 		}
+		catch(InterruptedException e){}
+		System.out.println("Worker stopped");
 	}
 
 	/* Entry = Rating, Similarity */
 	private void computePrediction(RecipePrediction pred){
-		List<Map.Entry<Float, Float>> neighbours = _predictionsDatabase.getNeighboursInUserProfileLimitK(pred.getRecipeID(), pred.getUserID(), K_NUMBER_OF_NEIGHBOURS);
+		List<Map.Entry<Float, Float>> neighbours = _predictionsDatabase.getNeighboursInUserProfileLimitK(pred.getRecipeID(), pred.getUserID(), _nbrNeighbours);
 		float similaritiesSum = 0;
 		float similaritiesSumWeighted = 0;
 		for(Map.Entry<Float, Float> neighbour : neighbours){
@@ -48,6 +53,12 @@ public class ContentBasedWorker implements Runnable{
 		}
 		else{
 			pred.setPrediction(similaritiesSumWeighted / similaritiesSum);
+		}
+	}
+
+	public void stop(){
+		synchronized(_run){
+			_run = false;
 		}
 	}
 

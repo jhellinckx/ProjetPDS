@@ -32,6 +32,9 @@ import dao.RecipeDAO;
 import dao.CBUserPredictionsDAO;
 
 public class RecommendationRequestManager implements RequestManager{
+	private static final int K_NUMBER_OF_NEIGHBOURS = 3; //Value retrieved from article, seems to be the best
+	private static final int NBR_WORKERS = 2;
+
 	private User user;
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
@@ -43,6 +46,9 @@ public class RecommendationRequestManager implements RequestManager{
 	private RecipeDAO _recipeDatabase;
 	private CBUserPredictionsDAO _predictionsDatabase;
 
+	private Boolean _runWorkers;
+	private List<ContentBasedWorker> _workers;
+	private List<Thread> _workerThreads;
 	private Map<Long, List<Long>> _userRatings;
 
 	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao, CBUserPredictionsDAO preddao){
@@ -56,6 +62,10 @@ public class RecommendationRequestManager implements RequestManager{
 		_recipeDatabase = rdao;
 		_predictionsDatabase = preddao;
 		_userRatings = Collections.synchronizedMap(new LinkedHashMap<Long, List<Long>>());
+		_workers = new ArrayList<>();
+		_workerThreads = new ArrayList<>();
+		_runWorkers = false;
+		startWorkers();
 	}
 
 	private List<EdibleItem> changeTypeOfListToFood(List<String> pastFoodsCodes){
@@ -165,6 +175,43 @@ public class RecommendationRequestManager implements RequestManager{
 		return data;
 	}
 
+	public boolean workersRunning(){
+		synchronized(_runWorkers){
+			return _runWorkers;
+		}
+	}
+
+	public void startWorkers(){
+		synchronized(_runWorkers){
+			_runWorkers = true;
+		}
+		for(int i = 0; i < NBR_WORKERS; ++i){
+			ContentBasedWorker worker = new ContentBasedWorker(this, _predictionsDatabase, K_NUMBER_OF_NEIGHBOURS);
+			_workers.add(worker);
+			Thread thread = new Thread(worker);
+			_workerThreads.add(thread);
+			thread.start();
+		}
+	}
+
+	public void stopWorkers(){
+		for(ContentBasedWorker worker : _workers){
+			worker.stop();
+		}
+		synchronized(_runWorkers){
+			_runWorkers = false;
+		}
+		synchronized(_userRatings){
+			_userRatings.notifyAll();
+		}
+		for(Thread workerThread : _workerThreads){
+			try{
+				workerThread.join();
+			}
+			catch(InterruptedException e){}
+		}
+	}
+
 	public void notifyNewRating(Long userID, Long recipeID){
 		synchronized(_userRatings){
 			if(_userRatings.containsKey(userID)){
@@ -179,13 +226,16 @@ public class RecommendationRequestManager implements RequestManager{
 		}	
 	}
 
-	public Map.Entry<Long, List<Long>> requestNewRatings(){
+	public Map.Entry<Long, List<Long>> requestNewRatings() throws InterruptedException{
 		synchronized(_userRatings){
-			while(_userRatings.isEmpty()){
+			while(_userRatings.isEmpty() && workersRunning()){
 				try{
 					_userRatings.wait();	
 				}
 				catch(InterruptedException e){}
+			}
+			if(!workersRunning()){
+				throw new InterruptedException();
 			}
 			Map.Entry<Long, List<Long>> entry = _userRatings.entrySet().iterator().next();
 			_userRatings.remove(entry.getKey());

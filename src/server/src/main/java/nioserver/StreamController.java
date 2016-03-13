@@ -34,6 +34,12 @@ public class StreamController{
 	public void stopStreams(){
 		this._inStream.stop();
 		this._outStream.stop();
+		wakeupIn(); wakeupOut();
+		try{
+			_inThread.join();
+			_outThread.join();
+		}
+		catch(InterruptedException e){}
 	}
 
 	public InStream inStream() { return this._inStream; }
