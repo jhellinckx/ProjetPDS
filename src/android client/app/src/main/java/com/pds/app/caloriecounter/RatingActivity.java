@@ -51,7 +51,7 @@ import org.calorycounter.shared.models.EdibleItemImage;
 
 public class RatingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback{
 
-    private static final int NB_RATINGS = 9;
+    private static final int NB_RATINGS = NUMBER_RANDOM_FOODS;
 
     private GridView gridView;
     private Button _validButton;
@@ -85,18 +85,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
         foodsToBeRated = new ArrayList<>();
 
-        /*
-        //_validButton = (Button) v.findViewById(R.id.rating_button);
-        urls = new ArrayList<String>();
-        ratings = new ArrayList<Float>();
-        names = new ArrayList<EdibleItem>();
-        images = new ArrayList<>();
-        //gridView = (GridView) findViewById(R.id.gridView);
-        initializer(ratings);
-        initializer(urls);
-        //getUrlsFromServer();
-        */
-        //initializer(foodsToBeRated);
         context= v.getContext();
 
 
@@ -286,7 +274,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             for(int i=0; i<data.size(); i++) {
                 recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            initSpinner();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initSpinner();
+                }
+            });
+
         }
     }
 

@@ -97,6 +97,7 @@ public class IntakeProgress extends DonutProgress {
         float fl;
         try {
             fl = format.parse(floatString).floatValue();
+            fl = (float)Math.floor((double)fl*100)/100;
         }catch( ParseException e){
             fl = 0.0f;
         }
