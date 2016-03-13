@@ -38,19 +38,29 @@ public class OutStream implements Runnable{
 			if(obj != null){
 				JSONObject data = (JSONObject)obj.get(DATA);
 				if(data.containsKey(FOOD_LIST)){
-					JSONArray jsonFoods = (JSONArray) data.get(FOOD_LIST);
-		            for (int i = 0; i < jsonFoods.size(); i++){
-		            	JSONObject jsonFood = (JSONObject)jsonFoods.get(i);
-		            	if(jsonFood.containsKey(FOOD_IMAGE)){
-		            		JSONObject jsonFoodImage = (JSONObject)jsonFood.get(FOOD_IMAGE);
-		            		jsonFoodImage.put(IMAGE_PIC, "REPLACED_IMAGE_FOR_LOG");
-		            	}
-		            }
+					filterMessage(data, FOOD_LIST);
+				}
+				else if (data.containsKey(RECOMMENDED_FOOD_LIST)){
+					filterMessage(data, RECOMMENDED_FOOD_LIST);
+
+				} else if (data.containsKey(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
+					filterMessage(data, RANDOM_RECIPES_FOR_CATEGORY_REQUEST);
 				}
 			}
 			System.out.println(Constants.repr(this) + " " + msg.socket().getRemoteSocketAddress().toString()
 				+ Constants.OUT + obj.toString());
 		}
+	}
+
+	private void filterMessage(JSONObject data, String request){
+		JSONArray jsonItems = (JSONArray) data.get(request);
+			for (int i = 0; i < jsonItems.size(); i++){
+		    	JSONObject jsonItem = (JSONObject)jsonItems.get(i);
+		        if(jsonItem.containsKey(FOOD_IMAGE)){
+		        	JSONObject jsonItemImage = (JSONObject)jsonItem.get(FOOD_IMAGE);
+		           	jsonItemImage.put(IMAGE_PIC, "REPLACED_IMAGE_FOR_LOG");
+		        }
+		    }
 	}
 
 	public void run(){
