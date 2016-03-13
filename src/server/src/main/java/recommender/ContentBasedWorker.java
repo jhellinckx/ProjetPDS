@@ -23,7 +23,17 @@ public class ContentBasedWorker implements Runnable{
 		setRunning();
 		while(isRunning()){
 			Map.Entry<Long, List<Long>> userRatings = _manager.requestNewRatings();
+			_predictionsDatabase.removePredictions(userRatings.getValue());
+			List<RecipePrediction> predictions = _predictionsDatabase.getAllPredictionsForUser(userRatings.getKey());
+			for(RecipePrediction pred : predictions){
+				computePrediction(pred);
+			}
+			_predictionsDatabase.updatePredictions(predictions);
 		}
+	}
+
+	private void computePrediction(RecipePrediction pred){
+
 	}
 
 	public void setRunning(){
