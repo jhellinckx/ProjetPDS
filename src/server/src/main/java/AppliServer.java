@@ -77,7 +77,6 @@ public class AppliServer extends AbstractNIOServer{
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase, _recipeDatabase);
 		_managers = new HashMap<>();
 		initManagers();
-
 	}
 
 	private void initManagers(){
