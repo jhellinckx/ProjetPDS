@@ -13,7 +13,7 @@ import nioserver.AbstractNIOServer;
 import recommender.RecommenderSystem;
 import recommender.NearestNeighborStrategy;
 import recommender.KnowledgeBasedFilter;
-
+import recommender.ContentBasedWorker;
 import util.ImageLoader;
 
 import org.json.simple.JSONObject;
@@ -29,6 +29,7 @@ import dao.FoodDAO;
 import dao.SportsDAO;
 import dao.UserHistoryDAO;
 import dao.RecipeDAO;
+import dao.CBUserPredictionsDAO;
 
 public class RecommendationRequestManager implements RequestManager{
 	private User user;
@@ -40,10 +41,11 @@ public class RecommendationRequestManager implements RequestManager{
 	private UserDAO _userDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 	private RecipeDAO _recipeDatabase;
+	private CBUserPredictionsDAO _predictionsDatabase;
 
 	private Map<Long, List<Long>> _userRatings;
 
-	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao){
+	public RecommendationRequestManager(AbstractNIOServer srv, FoodDAO fdb, SportsDAO sdb, RecommenderSystem rs, KnowledgeBasedFilter kb, UserDAO udb, UserHistoryDAO uhdb, RecipeDAO rdao, CBUserPredictionsDAO preddao){
 		_server = srv;
 		_foodDatabase = fdb;
 		_sportsDatabase = sdb;
@@ -52,6 +54,7 @@ public class RecommendationRequestManager implements RequestManager{
 		_userDatabase = udb;
 		_userHistoryDatabase = uhdb;
 		_recipeDatabase = rdao;
+		_predictionsDatabase = preddao;
 		_userRatings = Collections.synchronizedMap(new LinkedHashMap<Long, List<Long>>());
 	}
 

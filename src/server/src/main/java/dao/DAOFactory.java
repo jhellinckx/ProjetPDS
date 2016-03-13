@@ -142,4 +142,8 @@ public class DAOFactory {
     public RecipeDAO getRecipeDAO() {
         return new RecipeDAOImpl(this);
     }
+
+    public CBUserPredictionsDAO getCBPredictionsDAO(){
+        return new CBUserPredictionsDAOImpl(this);
+    }
 }
