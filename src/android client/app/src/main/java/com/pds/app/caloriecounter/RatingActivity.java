@@ -123,7 +123,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categoriesSpinner.setLayoutParams(categoriesSpinnerParams);
 
         categoriesSpinner.canScrollHorizontally(LinearLayout.HORIZONTAL);
-        //initSpinner();
         categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {

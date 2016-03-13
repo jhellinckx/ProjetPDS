@@ -34,7 +34,7 @@ public class RecipeRequestManager implements RequestManager{
 
 	private List<Long> generateRandomRecipeIds(int nb, Message msg,  List<Long> recipeIds){
 		Random r = new Random();
-		int min = 0, max = recipeIds.size();
+		int min = 0, max = recipeIds.size()-1;
 		/*
 		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
