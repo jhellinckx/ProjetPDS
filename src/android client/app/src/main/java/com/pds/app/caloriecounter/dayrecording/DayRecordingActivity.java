@@ -39,9 +39,14 @@ import org.calorycounter.shared.models.Sport;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -240,44 +245,53 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private void initFoodsRecording(){
 
         DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Date current_date = new Date();
+        try {
+            current_date = format.parse(current_day);
+        }catch(ParseException ex){
+            ex.printStackTrace();
+        }
+        
+        if(current_date.after(Calendar.getInstance().getTime()) || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){
+            LinearLayout addMenuLayout = new LinearLayout(this);
+            addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        LinearLayout addMenuLayout = new LinearLayout(this);
-        addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
+            CircularButton openDropdown = new CircularButton(this);
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
+            buttonParams.gravity = Gravity.RIGHT;
+            openDropdown.setLayoutParams(buttonParams);
+            openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
+            openDropdown.setButtonColor(getResources().getColor(R.color.primary));
+            openDropdown.setShadowColor(Color.BLACK);
 
-        CircularButton openDropdown = new CircularButton(this);
-        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
-        buttonParams.gravity = Gravity.RIGHT;
-        openDropdown.setLayoutParams(buttonParams);
-        openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
-        openDropdown.setButtonColor(getResources().getColor(R.color.primary));
-        openDropdown.setShadowColor(Color.BLACK);
+            addMenuLayout.addView(new EvenSpaceView(this));
+            addMenuLayout.addView(openDropdown);
+            foodsContainer.setFooter(addMenuLayout);
 
-        addMenuLayout.addView(new EvenSpaceView(this));
-        addMenuLayout.addView(openDropdown);
-        foodsContainer.setFooter(addMenuLayout);
 
+            DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(this, openDropdown);
+            droppyBuilder.fromMenu(R.menu.foodslist_dropdown_add)
+                    .setOnClick(new DroppyClickCallbackInterface() {
+                        @Override
+                        public void call(View v, int id) {
+                            String menuId = getResources().getResourceName(id).split("/")[1];
+                            Log.d("MENU : ", menuId);
+                            if (menuId.equals("addfood_scan"))
+                                onAddScan();
+                            else if (menuId.equals("addfood_article"))
+                                onAddArticle();
+                            else if (menuId.equals("addfood_receipt"))
+                                onAddReceipt();
+
+                        }
+                    })
+                    .setPopupAnimation(new DroppyFadeInAnimation())
+                    .setXOffset(5)
+                    .setYOffset(5)
+                    .build();
+        }
         stickersLayout.addView(foodsContainer);
-
-        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(this, openDropdown);
-        droppyBuilder.fromMenu(R.menu.foodslist_dropdown_add)
-                .setOnClick(new DroppyClickCallbackInterface() {
-                    @Override
-                    public void call(View v, int id) {
-                        String menuId = getResources().getResourceName(id).split("/")[1];
-                        Log.d("MENU : ",menuId);
-                        if(menuId.equals("addfood_scan"))
-                            onAddScan();
-                        else if(menuId.equals("addfood_article"))
-                            onAddArticle();
-                        else if(menuId.equals("addfood_receipt"))
-                            onAddReceipt();
-
-                    }
-                })
-                .setPopupAnimation(new DroppyFadeInAnimation())
-                .setXOffset(5)
-                .setYOffset(5)
-                .build();
     }
 
     private void initSportsRecording(){
