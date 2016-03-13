@@ -56,9 +56,15 @@ public class EdibleItemList extends LinearLayout {
         this.itemViewMap = new LinkedHashMap<>(items.size(), MAP_LOAD_FACTOR);
         List<EdibleItem> checkedItems = new ArrayList<EdibleItem>();
         for(EdibleItem item : items){
+            if(item instanceof Food ){
+                ratable=false;
+            }else{
+                ratable=true;
+            }
             if(item.isEaten()){
                 checkedItems.add(item);
             }else {
+
                 View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
                 this.itemViewMap.put(item, sticker);
                 this.addView(sticker);

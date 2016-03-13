@@ -331,7 +331,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         RateFoodDialogFragment frag = new RateFoodDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putLong("id", item.getId());
-        bundle.putString("url", item.getImageUrl());
         bundle.putString("name", item.getProductName());
         frag.setArguments(bundle);
         frag.show(getFragmentManager(), "titletest");
