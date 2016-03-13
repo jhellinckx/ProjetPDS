@@ -40,7 +40,7 @@ public class RecommendationConstraintsFragment extends Fragment {
     private RadioGroup _radioGroup;
     private AutoCompleteTextView _autoComplete;
     private ArrayAdapter<String> _adapter;
-    private ArrayList<String> _foodCategories;
+    private ArrayList<String> _categoriesNames;
     private LinearLayout stickersLayout;
 
     private LinearLayout constraintsLayout;
@@ -59,7 +59,7 @@ public class RecommendationConstraintsFragment extends Fragment {
         stickersLayout = (LinearLayout) view.findViewById(R.id.day_recording_layout);
         stickersLayout.setOrientation(LinearLayout.VERTICAL);
         Bundle b = this.getArguments();
-        _foodCategories = b.getStringArrayList("foodCategories");
+        _categoriesNames = b.getStringArrayList("categoriesNames");
         isReceipt = b.getBoolean("isReceipt");
         initInfosLayout();
         //addEnergyLayout();
@@ -70,9 +70,6 @@ public class RecommendationConstraintsFragment extends Fragment {
         addListenersToSeekBars(view);
         addCategories();
         initAutoComplete(view);
-        if(isReceipt){
-
-        }
         infosContainer = new DailyRecording(getContext(), TITLE_RECOM_CONSTR, constraintsLayout);
         addFooterButton();
 
@@ -224,7 +221,7 @@ public class RecommendationConstraintsFragment extends Fragment {
 
     private void initAutoComplete(View v){
         //String[] foo = new String[] { "Vins" };
-        _adapter = new ArrayAdapter<String>(v.getContext(),R.layout.spinner_item,_foodCategories);
+        _adapter = new ArrayAdapter<String>(v.getContext(),R.layout.spinner_item,_categoriesNames);
         _autoComplete.setAdapter(_adapter);
         _autoComplete.setThreshold(0);
     }

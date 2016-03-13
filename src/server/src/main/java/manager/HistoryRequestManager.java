@@ -1,6 +1,7 @@
 package manager;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.lang.Math;
 
 import org.json.simple.JSONObject;
@@ -12,23 +13,28 @@ import util.ImageLoader;
 import static org.calorycounter.shared.Constants.network.*;
 
 import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.Sport;
 
 import dao.FoodDAO;
 import dao.UserHistoryDAO;
+import dao.RecipeDAO;
 
 public class HistoryRequestManager implements RequestManager{
 
 	private User user;
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
+	private RecipeDAO _recipeDatabase;
 	private UserHistoryDAO _userHistoryDatabase;
 
-	public HistoryRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserHistoryDAO uhdb){
+	public HistoryRequestManager(AbstractNIOServer srv, FoodDAO fdb, UserHistoryDAO uhdb, RecipeDAO rdb){
 		_server = srv;
 		_foodDatabase = fdb;
 		_userHistoryDatabase = uhdb;
+		_recipeDatabase = rdb;
 	}
 
 	private void manageCodeFailure(JSONObject responseData){
@@ -59,30 +65,55 @@ public class HistoryRequestManager implements RequestManager{
 		return responseData;
 	}
 
-	private void manageHistorySuccess(JSONObject data, List<Food> foods, List<String> dates){
-		loadImages(foods);
-		JSONArray foodsDatesRepr = new JSONArray();
-		for(int i = 0 ; i< foods.size(); ++i){
-			JSONObject foodDateRepr = new JSONObject();
-			foodDateRepr.put(HISTORY_FOOD, foods.get(i).toJSON(false));
-			foodDateRepr.put(HISTORY_DATE, dates.get(i));
-			foodsDatesRepr.add(foodDateRepr);
+	private List<Food> getFoodsFromDatabase(String date){
+		List<Food> foods;
+		if (date == null){
+			foods = _userHistoryDatabase.getHistoryFoods(user);
 		}
-		data.put(HISTORY_FOODS_DATES, foodsDatesRepr);
+		else{
+			foods = _userHistoryDatabase.getHistoryFoodForDate(user, date);
+		}
+
+		return foods;
 	}
 
-	private void loadImages(List<Food> foods){
-		ImageLoader.loadImages(foods);
+	private List<Recipe> getRecipesFromDatabase(String date){		// Change this when Users_history adapted to recipes.
+		List<Recipe> recipes;
+		if (date == null){
+			recipes = new ArrayList<>();
+		}
+		else{
+			recipes = new ArrayList<>();
+		}
+		return recipes;
+	}
+
+	private void manageHistorySuccess(JSONObject data, List<? extends EdibleItem> items, List<String> dates, String constante, String type){
+		loadImages(items);
+		JSONArray itemsDatesRepr = new JSONArray();
+		for(int i = 0 ; i< items.size(); ++i){
+			JSONObject itemDateRepr = new JSONObject();
+			itemDateRepr.put(constante, items.get(i).toJSON(false));
+			itemDateRepr.put(HISTORY_DATE, dates.get(i));
+			itemsDatesRepr.add(itemDateRepr);
+		}
+		data.put(type, itemsDatesRepr);
+	}
+
+	private void loadImages(List<? extends EdibleItem> items){
+		ImageLoader.loadImages(items);
 	}
 
 	private JSONObject onHistoryRequest(Message msg){
 		JSONObject data = new JSONObject();
-		List<Food> foods = _userHistoryDatabase.getHistoryFoods(user);
-		List<String> dates = _userHistoryDatabase.getHistoryDates(user);
+		List<Food> foods = getFoodsFromDatabase(null);
+		List<Recipe> recipes = getRecipesFromDatabase(null);
+
+		List<String> dates = _userHistoryDatabase.getHistoryDates(user);		// Need to change this if we want to map an item to a date.
 
 		//Make JSON response
 		if(foods.size() == dates.size()){
-			manageHistorySuccess(data, foods, dates);
+			manageHistorySuccess(data, foods, dates, HISTORY_FOOD, HISTORY_FOODS_DATES);
 			return data;
 		}
 		else{
@@ -94,7 +125,8 @@ public class HistoryRequestManager implements RequestManager{
 	private JSONObject onHistoryForDateRequest(Message msg){
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String date = (String) data.get(HISTORY_DATE);
-		List<Food> foods = _userHistoryDatabase.getHistoryFoodForDate(user, date);
+		List<Food> foods = getFoodsFromDatabase(date);
+		List<Recipe> recipes = getRecipesFromDatabase(date);
 		loadImages(foods);
 		JSONArray foodData = new JSONArray();
 		for (int i = 0; i < foods.size(); i++){
