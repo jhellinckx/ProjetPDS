@@ -8,10 +8,11 @@
 
 
 
-    <ImageView
+    <com.pds.app.caloriecounter.utils.SquareImageView
         android:id="@+id/grid_imageView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
 
 
     <RatingBar

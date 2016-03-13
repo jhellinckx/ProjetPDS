@@ -34,6 +34,9 @@ public class Food extends EdibleItem{
         JSONObject repr = new JSONObject();
         repr = super.toJSON();
         repr.put(FOOD_CODE, code);
+        repr.put(FOOD_TOTAL_SODIUM, total_salt);
+        repr.put(FOOD_TOTAL_SUGARS, total_sugars);
+        repr.put(FOOD_TOTAL_SATURATED_FAT, total_saturated_fat);
         return repr;
     }
 
@@ -42,6 +45,9 @@ public class Food extends EdibleItem{
         JSONObject repr = new JSONObject();
         repr = super.toJSON(noImage);
         repr.put(FOOD_CODE, code);
+        repr.put(FOOD_TOTAL_SODIUM, total_salt);
+        repr.put(FOOD_TOTAL_SUGARS, total_sugars);
+        repr.put(FOOD_TOTAL_SATURATED_FAT, total_saturated_fat);
         return repr;
     }
 
@@ -49,5 +55,20 @@ public class Food extends EdibleItem{
     public void initFromJSON(JSONObject obj){
         super.initFromJSON(obj);
         this.code = (String) obj.get(FOOD_CODE);
+    }
+
+    public void initFloatValuesFromFloat(JSONObject obj) throws ClassCastException{        // From Android, the values send are Double, this method handles this case.
+        super.initFloatValuesFromFloat(obj);
+        this.total_saturated_fat = (Float) obj.get(FOOD_TOTAL_SATURATED_FAT);
+        this.total_sugars = (Float) obj.get(FOOD_TOTAL_SUGARS);
+        this.total_salt = (Float) obj.get(FOOD_TOTAL_SODIUM);
+    }
+
+    public void initFloatValuesFromDouble(JSONObject obj){
+        super.initFloatValuesFromDouble(obj);
+        this.total_saturated_fat = ((Double) obj.get(FOOD_TOTAL_SATURATED_FAT)).floatValue();
+        this.total_sugars = ((Double) obj.get(FOOD_TOTAL_SUGARS)).floatValue();
+        this.total_salt = ((Double) obj.get(FOOD_TOTAL_SODIUM)).floatValue();
+
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.HashMap;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 
 public interface UserPrefDAO {
 	
@@ -12,12 +13,16 @@ public interface UserPrefDAO {
 	void create(Long id_user, Long id_food, float rank) throws IllegalArgumentException, DAOException;
 	
 	List<Food> findFoodsForUser(User user);
+
+	List<Recipe> findRecipesForUser(User user);
 	
 	List<User> findUsersAppreciating( Food food ) throws DAOException;
 
 	List<Float> findRankForFood(Food food) throws DAOException;
 
 	List<Food> findFoodsForUserAndRank( User user, float rank ) throws DAOException;
+
+	List<Recipe> findRecipesForUserAndRank( User user, float rank ) throws DAOException;
 
 	HashMap findFoodsAndRankForUser(User user) throws DAOException;
 	
