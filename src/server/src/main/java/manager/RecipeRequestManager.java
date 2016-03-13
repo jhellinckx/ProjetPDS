@@ -10,6 +10,7 @@ import nioserver.AbstractNIOServer;
 import org.json.simple.JSONObject;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.User;
+import org.calorycounter.shared.models.Recipe;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -60,22 +61,32 @@ public class RecipeRequestManager implements RequestManager{
 
 
 
-	private void generateRandomRecipeIds(int nb, Message msg,  ArrayList<Long> foodIds){
+	private List<Long> generateRandomRecipeIds(int nb, Message msg,  List<Long> recipeIds){
 		Random r = new Random();
-		int min = 1, max = TOTAL_FOODS_IN_DB;
+		int min = 1, max = recipeIds.size();
+		/*
 		ArrayList<Food> foods = new ArrayList(_userprefDatabase.findFoodsForUser(_server.getUser(msg)));
 		int[] alreadyRankedIds = new int[foods.size()];
 
 		for(int j=0 ; j<foods.size(); ++j){
 			alreadyRankedIds[j] = foods.get(j).getId().intValue();
 		}
+
 		Arrays.sort(alreadyRankedIds);//Sort needed for random with excluded values
+		*/
+		recipeIds = new ArrayList<Long>();
+		Long id = 0l;
 		for(int i=0 ; i<nb ; ++i){
-			Long id = new Long(getRandomWithExclusion(r,min,max, alreadyRankedIds));
-			if(!foodIds.contains(id) && !_foodDatabase.findById(id).getImageUrl().isEmpty()){
-				foodIds.add(id);
-			}else{i-=1;}
+			//Long id = new Long(getRandomWithExclusion(r,min,max, alreadyRankedIds));
+			id+=1l;
+			System.out.println("ATTEMPT TO ADD NEW RECIPE : id = "+String.valueOf(id));
+			if(!recipeIds.contains(id) && !_recipeDatabase.findById((int)(long)id).getImageUrl().isEmpty()){
+				System.out.println("NEW RECIPE ADDED");
+				recipeIds.add(id);
+			}
+			//else{i-=1;}
 		}
+		return recipeIds;
 	}  
 
 	private int getRandomWithExclusion(Random rnd, int start, int end, int... exclude) {
@@ -89,15 +100,15 @@ public class RecipeRequestManager implements RequestManager{
 	    return random;
 	}
 
-	private void makeJSON_onRandomUnrankedRecipesForCategoryRequest(List<Food> foods, JSONObject responseData){
-		if(foods.size() == 0){
+	private void makeJSON_onRandomUnrankedRecipesForCategoryRequest(List<Recipe> recipes, JSONObject responseData){
+		if(recipes.size() == 0){
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_FAILURE);
 			responseData.put(REASON, RANDOM_UNRANKED_FOODS_NOT_FOUND);
 		}
 		else{
 			responseData.put(RANDOM_UNRANKED_FOODS_RESPONSE, RANDOM_UNRANKED_FOODS_SUCCESS);
-			for(int i=0 ; i<foods.size() ; ++i){ //ajout de chaque url au JSON
-				responseData.put(FOOD_NAME+String.valueOf(i), foods.get(i).toJSON());
+			for(int i=0 ; i<recipes.size() ; ++i){ //ajout de chaque url au JSON
+				responseData.put(FOOD_NAME+String.valueOf(i), recipes.get(i).toJSON(false));
 			}
 		}
 	}
@@ -106,13 +117,14 @@ public class RecipeRequestManager implements RequestManager{
 		JSONObject data = (JSONObject) msg.toJSON().get(DATA);
 		String categoryName = (String) data.get(RECIPE_CATEGORY);
 		System.out.println("-----------------------: " + categoryName);
-		/*
-		List<Long> recipeIds = _recipeDatabase.getRecipeIdsByCategory(String categoryName);
-		generateRandomRecipeIds(NUMBER_RANDOM_FOODS, msg, recipeIds);
+		List<Long> recipeIds = _recipeDatabase.getRecipeIdsByCategory(categoryName);
+		
+		recipeIds = generateRandomRecipeIds(NUMBER_RANDOM_FOODS, msg, recipeIds);
 		List<Recipe> recipes = _recipeDatabase.findByIds(recipeIds);
-		*/
+		System.out.println(recipes.size());
+		
 		JSONObject responseData = new JSONObject();
-		//makeJSON_onRandomUnrankedRecipesForCategoryRequest(recipes, respondeData);
+		makeJSON_onRandomUnrankedRecipesForCategoryRequest(recipes, responseData);
 		
 		return responseData;
 	}

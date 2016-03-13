@@ -33,6 +33,7 @@ import com.shehabic.droppy.DroppyMenuPopup;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -271,16 +272,17 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         Log.d("RateACTI HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
         JSONObject data = (JSONObject)msg.get(DATA);
-        if(request.equals(RANDOM_UNRANKED_FOODS_REQUEST)){
+        if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
                 for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
-                    EdibleItem item = new Food();
+                    EdibleItem item = new Recipe();
                     item.initFromJSON((JSONObject) data.get(FOOD_NAME + String.valueOf(i)));
-                    foodsToBeRated.set(i, item);
+                    //foodsToBeRated.set(i, item);
+                    foodsToBeRated.add(item);
                     System.out.println(item.getProductName());
                 }
-
+                /*
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -290,6 +292,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                         //initAll();
                     }
                 });
+                */
 
             }
         }
