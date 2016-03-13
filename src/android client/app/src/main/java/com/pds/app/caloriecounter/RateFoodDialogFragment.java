@@ -18,12 +18,12 @@ import com.squareup.picasso.Picasso;
 
 public class RateFoodDialogFragment extends DialogFragment {
 
-    private int _position;
+    private long _id;
 
     // This interface allows event callbacks to RatingActivity.
 
     public interface RateFoodDialogListener{
-        public void onDialogPositiveClick(DialogFragment dialog, int pos, float rating);
+        public void onDialogPositiveClick(DialogFragment dialog, long id, float rating);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -64,7 +64,7 @@ public class RateFoodDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 RatingBar ratingBar = (RatingBar) ((AlertDialog) dialog).findViewById(R.id.ratingBar);
-                _listener.onDialogPositiveClick(RateFoodDialogFragment.this, _position, ratingBar.getRating());
+                _listener.onDialogPositiveClick(RateFoodDialogFragment.this, _id, ratingBar.getRating());
             }
         });
 
@@ -75,7 +75,8 @@ public class RateFoodDialogFragment extends DialogFragment {
             }
 
         });
-        _position = b.getInt("position");
+
+        _id = b.getLong("id");
 
         Dialog dialog = builder.create();
         return dialog;

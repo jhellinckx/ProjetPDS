@@ -226,11 +226,17 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog, int position, float rating){
-        View v = (View) gridView.getItemAtPosition(position);
-        RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
-        rbar.setRating(rating);
-        ratings.set(position, rating);
+    public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
+        //View v = (View) gridView.getItemAtPosition(position);
+        //RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
+        //rbar.setRating(rating);
+        //ratings.set(position, rating);
+        System.out.println("===============rated !");
+
+        JSONObject data = new JSONObject();
+        data.put(FOOD_ID, id);
+        data.put(FOOD_RATING, rating);
+        send(networkJSON(SEND_RATINGS_REQUEST, data));
     }
 
     @Override
@@ -322,7 +328,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     @Override
     public void onRateEdibleItem(EdibleItem item){
-
+        RateFoodDialogFragment frag = new RateFoodDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", item.getId());
+        bundle.putString("url", item.getImageUrl());
+        bundle.putString("name", item.getProductName());
+        frag.setArguments(bundle);
+        frag.show(getFragmentManager(), "titletest");
     }
 
     @Override

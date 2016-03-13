@@ -9,6 +9,7 @@ import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
 import dao.FoodDAO;
+import dao.RecipeDAO;
 import dao.UserPrefDAO;
 import dao.CategoryRatingDAO;
 import dao.DAOException;
@@ -23,6 +24,7 @@ public class RatingRequestManager implements RequestManager{
 
 	private AbstractNIOServer _server;
 	private FoodDAO _foodDatabase;
+	private RecipeDAO _recipeDatabase;
 	private UserPrefDAO _userprefDatabase;
 	private CategoryRatingDAO _categoryRatingDatabase;
 	private RecommendationRequestManager _recomManager;
@@ -35,20 +37,13 @@ public class RatingRequestManager implements RequestManager{
 	}
 
 	private void addRatingsToDB(JSONObject data, Message msg){
-		String currUrl;
-		double currRank;
-		for(int i = 0 ; i < data.size()/2 ; ++i){
-			User usr = _server.getUser(msg);
-			currUrl = (String) data.get(FOOD_IMAGE_URL+String.valueOf(i));
-			currRank = (double) data.get(FOOD_RATING+String.valueOf(i));
-			float rank = (float) currRank;
-			
-			Food currFood = _foodDatabase.findByUrl(currUrl);
-			_userprefDatabase.create(usr.getId(),currFood.getId(), rank);
-
-			//TODO INSTEAD OF FOOD ID NEED RECIPE ID
-			_recomManager.notifyNewRating(usr.getId(), currFood.getId());
-		}
+		User usr = _server.getUser(msg);
+		Long id = (Long) data.get(FOOD_ID);
+		double ratingD = (double) data.get(FOOD_RATING);
+		float rating = (float) ratingD;
+		//Recipe recipe = _recipeDatabase.findById(id);
+		_userprefDatabase.create(usr.getId(), id, rating);
+		_recomManager.notifyNewRating(usr.getId(), id);
 	}
 
 	@Override
