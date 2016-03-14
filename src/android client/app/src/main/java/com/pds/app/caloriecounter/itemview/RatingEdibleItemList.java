@@ -71,6 +71,11 @@ public class RatingEdibleItemList extends LinearLayout {
         }
     }
 
+    public void setRatingBar(EdibleItem item, float rating){
+        RatingEdibleItemSticker sticker = (RatingEdibleItemSticker) itemViewMap.get(item);
+        sticker.setRatingBar(rating);
+    }
+
     public void onRemoveItem(EdibleItem item){
         this.removeView(itemViewMap.get(item));
         itemViewMap.remove(item);

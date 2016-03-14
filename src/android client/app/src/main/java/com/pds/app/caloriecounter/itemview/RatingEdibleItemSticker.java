@@ -3,11 +3,19 @@ package com.pds.app.caloriecounter.itemview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Shader;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -75,6 +83,9 @@ public class RatingEdibleItemSticker extends CardView {
     private LinearLayout itemInfosLayout;
     private LinearLayout iconsLayout;
     private RatingEdibleItemList container;
+    private RatingBar secondaryRatingBar;
+    private View ratingBarView;
+    private boolean ratingBarAlreadyRated = false;
     boolean removable; boolean addable;
     boolean ratable; boolean checkable;
     boolean expandable;
@@ -160,17 +171,10 @@ public class RatingEdibleItemSticker extends CardView {
         mainText.setEllipsize(TextUtils.TruncateAt.END);
         textLayout.addView(mainText);
 
-        //RatingBar secondaryRatingBar = new RatingBar(getContext(), null, android.R.attr.ratingBarStyleSmall);
-        //RatingBar secondaryRatingBar = (RatingBar) this.findViewById(R.id.my_rating_bar);
-        RatingBar secondaryRatingBar = new RatingBar(getContext());
-        LinearLayout.LayoutParams secParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        secondaryRatingBar.setLayoutParams(secParams);
-        //secondaryRatingBar.setStepSize(0.5f);
-        secondaryRatingBar.setNumStars(5);
-        secondaryRatingBar.setRating(0f);
-        secondaryRatingBar.setProgressDrawable(getResources().getDrawable(R.drawable.tiny_star_filled_gold));
-        //secondaryRatingBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.tiny_star_empty_gold));
-        textLayout.addView(secondaryRatingBar);
+        final LayoutInflater layoutInflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ratingBarView = layoutInflater.inflate(R.layout.tiny_rating_bar, null);
+        secondaryRatingBar = (RatingBar) ratingBarView.findViewById(R.id.ratingBar);
 
         itemInfosLayout.addView(textLayout);
     }
@@ -286,5 +290,14 @@ public class RatingEdibleItemSticker extends CardView {
             }
         });
         return rateIcon;
+    }
+
+    public void setRatingBar(float rating){
+        if(!ratingBarAlreadyRated){
+            textLayout.addView(ratingBarView);
+            ratingBarAlreadyRated = true;
+        }
+        secondaryRatingBar.setRating(rating);
+
     }
 }
