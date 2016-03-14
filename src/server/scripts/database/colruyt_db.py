@@ -1094,7 +1094,7 @@ class SimilaritySuperComputer :
 	def __init__(self):
 		(username,password) = db_params()
 		SimilaritySuperComputer.pool = MySQLConnectionPool(pool_size=NUMBER_OF_THREADS, user=username,database=db_name,password=password)
-		SimilaritySuperComputer.operations = (len(recipes)**2 + len(recipes))/2
+		SimilaritySuperComputer.operations = len(recipes)**2
 		SimilaritySuperComputer.op = 0
 
 	@staticmethod
@@ -1116,7 +1116,7 @@ class SimilaritySuperComputer :
 		try:
 			cnx = SimilaritySuperComputer.pool.get_connection()
 			cursor = cnx.cursor()
-			for j in range(i+1, len(recipes)):
+			for j in range(len(recipes)):
 				ingredients_sim = self.list_similarity(recipes[i][INGREDIENTS_NAMES_KEY], recipes[j][INGREDIENTS_NAMES_KEY])
 				tags_sim = self.list_similarity(recipes[i][TAGS_KEY], recipes[j][TAGS_KEY])
 				origin_sim = self.single_item_similarity(recipes[i][ORIGIN_KEY], recipes[j][ORIGIN_KEY])
@@ -1128,7 +1128,7 @@ class SimilaritySuperComputer :
 			cnx.close()
 		except Exception as e:
 			print i
-		SimilaritySuperComputer.progress(len(recipes)-(i+1))
+		SimilaritySuperComputer.progress(len(recipes))
 
 	def list_similarity(self, first_list, second_list):
 		common = 0

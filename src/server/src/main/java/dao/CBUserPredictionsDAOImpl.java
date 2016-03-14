@@ -22,11 +22,12 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 	"SELECT rank, similarity FROM User_Preferences "+
 	"JOIN RecipeSimilarity ON "+
 	"(RecipeSimilarity.first_recipe_id=User_Preferences.numRecipe AND RecipeSimilarity.second_recipe_id=?) "+
-	"OR (RecipeSimilarity.second_recipe_id=User_Preferences.numRecipe AND RecipeSimilarity.first_recipe_id=?) "+
 	"WHERE User_Preferences.numUser=? "+
-	"ORDER BY RecipeSimilarity.similarity DESC"+
-	"LIMIT ?";
+	"ORDER BY RecipeSimilarity.similarity " +
+	" LIMIT ?";
+
 	private DAOFactory _daoFactory;
+
 
 	CBUserPredictionsDAOImpl(DAOFactory fac){
 		_daoFactory = fac;

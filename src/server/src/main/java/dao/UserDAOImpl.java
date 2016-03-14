@@ -29,6 +29,10 @@ public class UserDAOImpl implements UserDAO {
     private static final String SQL_UPDATE_GENDER = "UPDATE User SET gender = ? WHERE id_user = ?";
     private static final String SQL_UPDATE_HEIGHT = "UPDATE User SET height = ? WHERE id_user = ?";
 	
+    private static final String SQL_INSERT_DEFAULT_PREDICTIONS = 
+    "INSERT INTO CBUserPredictions (prediction_id, user_id, recipe_id, prediction) "+ 
+    "SELECT NULL, ?, recipe_id, 0 FROM Recipe";
+
 	UserDAOImpl( DAOFactory daoFactory) {
 		this.daoFactory = daoFactory;
 	}
@@ -176,6 +180,11 @@ public class UserDAOImpl implements UserDAO {
                 }
              else {
                 throw new DAOException( "Failed to create a user, no auto-generated ID returned." );
+            }
+            preparedStatement = initializationPreparedRequest(connexion, SQL_INSERT_DEFAULT_PREDICTIONS, true, user.getId());
+            statut = preparedStatement.executeUpdate();
+            if(statut == 0){
+                throw new DAOException("Failed to initialize default user predictions.");
             }
         } 
         catch (MySQLIntegrityConstraintViolationException e){

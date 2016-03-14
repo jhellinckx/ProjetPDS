@@ -28,11 +28,17 @@ public class ContentBasedWorker implements Runnable{
 			while(isRunning()){
 				Map.Entry<Long, List<Long>> userRatings = _manager.requestNewRatings();
 				_predictionsDatabase.removePredictions(userRatings.getValue());
+				for(Long l : userRatings.getValue()){
+					System.out.println("REMOVED RECIPE -> " + Long.toString(l));
+				}
 				List<RecipePrediction> predictions = _predictionsDatabase.getAllPredictionsForUser(userRatings.getKey());
+				System.out.println("GOT ALL PREDICTIONS");
 				for(RecipePrediction pred : predictions){
 					computePrediction(pred);
 				}
+				System.out.println("UPDATING");
 				_predictionsDatabase.updatePredictions(predictions);
+				System.out.println("UPDATED");
 			}
 		}
 		catch(InterruptedException e){}
@@ -42,8 +48,10 @@ public class ContentBasedWorker implements Runnable{
 	/* Entry = Rating, Similarity */
 	private void computePrediction(RecipePrediction pred){
 		List<Map.Entry<Float, Float>> neighbours = _predictionsDatabase.getNeighboursInUserProfileLimitK(pred.getRecipeID(), pred.getUserID(), _nbrNeighbours);
+		System.out.println("START COMPUTE");
 		float similaritiesSum = 0;
 		float similaritiesSumWeighted = 0;
+		System.out.println();
 		for(Map.Entry<Float, Float> neighbour : neighbours){
 			similaritiesSum += neighbour.getValue();
 			similaritiesSumWeighted += neighbour.getValue() * neighbour.getKey(); // similarity * rating
@@ -54,6 +62,7 @@ public class ContentBasedWorker implements Runnable{
 		else{
 			pred.setPrediction(similaritiesSumWeighted / similaritiesSum);
 		}
+		System.out.println("END COMPUTE");
 	}
 
 	public void stop(){
