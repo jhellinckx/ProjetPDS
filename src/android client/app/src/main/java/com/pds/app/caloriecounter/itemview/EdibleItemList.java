@@ -2,6 +2,7 @@ package com.pds.app.caloriecounter.itemview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -23,7 +24,7 @@ import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
  * Created by jhellinckx on 05/03/16.
  */
 public class EdibleItemList extends LinearLayout {
-    private Map<EdibleItem, View> itemViewMap;
+    private Map<EdibleItem, List<View>> itemViewMap;
     private EdibleItemActionCallback actionCallback;
     private List<EdibleItem> items;
     boolean removable = false; boolean addable = false;
@@ -42,6 +43,37 @@ public class EdibleItemList extends LinearLayout {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         this.setLayoutParams(params);
         this.setOrientation(LinearLayout.VERTICAL);
+    }
+
+    private void chainingPut(EdibleItem item, View v){
+        List<View> views;
+        if (itemViewMap.get(item) == null){
+            views = new ArrayList<>();
+        }else{
+            views = itemViewMap.get(item);
+        }
+        views.add(v);
+        itemViewMap.put(item, views);
+    }
+
+    private void chainingRemove(EdibleItem item){
+        if (itemViewMap.containsKey(item)){
+            List<View> views = itemViewMap.get(item);
+            int size = views.size();
+            views.remove(size-1);
+            if (size == 1){
+                itemViewMap.remove(item);
+            }
+        }
+    }
+
+    private View chainingGet(EdibleItem item){
+        if (itemViewMap.containsKey(item)){
+            List<View> views = itemViewMap.get(item);
+            int size = views.size();
+            return views.get(size-1);
+        }
+        return null;
     }
 
     private void initItems( int... flags){
@@ -66,25 +98,20 @@ public class EdibleItemList extends LinearLayout {
             }else {
 
                 View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
-                this.itemViewMap.put(item, sticker);
+                chainingPut(item, sticker);
                 this.addView(sticker);
             }
         }
         for(EdibleItem checkedItem: checkedItems){
             View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable, checkable);
-            this.itemViewMap.put(checkedItem, sticker);
+            chainingPut(checkedItem, sticker);
             this.addView(sticker);
         }
-        System.out.println("ITEMVIEEEEEEEEEEEEEEEEEEEEEEW"+items.size());
-        System.out.println( items.get(0) == items.get(1));
-        System.out.println(items.get(0).hashCode() == items.get(1).hashCode());
-        System.out.println("ITEMVIEWMAAAAAAAAAAAAAAAAAAAP"+itemViewMap.size());
-
     }
 
     public void onRemoveItem(EdibleItem item){
-        this.removeView(itemViewMap.get(item));
-        itemViewMap.remove(item);
+        this.removeView(chainingGet(item));
+        chainingRemove(item);
         actionCallback.onRemoveEdibleItem(item);
     }
 
@@ -110,7 +137,6 @@ public class EdibleItemList extends LinearLayout {
         item.notEaten();
 
         View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
-        this.itemViewMap.put(item, sticker);
         this.addView(sticker);
 
     }
