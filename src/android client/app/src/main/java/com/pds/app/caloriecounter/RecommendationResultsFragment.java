@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVAB
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RecommendationResultsFragment extends Fragment implements EdibleItemActionCallback {
+public class RecommendationResultsFragment extends Fragment implements  EdibleItemActionCallback {
 
     private OnItemClickListener listener;
     private int id = 0;
@@ -181,8 +182,14 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onRateEdibleItem(EdibleItem item){
-
+        RateFoodDialogFragment frag = new RateFoodDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", item.getId());
+        bundle.putString("name", item.getProductName());
+        frag.setArguments(bundle);
+        frag.show(myContext.getFragmentManager(), "titletest");
     }
+
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){

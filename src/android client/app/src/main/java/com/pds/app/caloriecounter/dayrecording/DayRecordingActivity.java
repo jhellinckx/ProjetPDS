@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.pds.app.caloriecounter.ItemInfoDialog;
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
+import com.pds.app.caloriecounter.RateFoodDialogFragment;
 import com.pds.app.caloriecounter.RecommendationActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
@@ -58,11 +60,13 @@ import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_ID;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
 import static org.calorycounter.shared.Constants.network.FOOD_LIST;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.FOOD_QUANTITY;
+import static org.calorycounter.shared.Constants.network.FOOD_RATING;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_CARBOHYDRATES;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_ENERGY;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_FAT;
@@ -77,6 +81,7 @@ import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.SEND_RATINGS_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
@@ -96,7 +101,7 @@ import static org.calorycounter.shared.Constants.network.RECIPE_LIST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
-public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
+public class DayRecordingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback {
 
     private LinearLayout stickersLayout;
     private Map<String, IntakeProgress> dailyIntakes;
@@ -421,6 +426,19 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     @Override
+    public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
+        JSONObject data = new JSONObject();
+        data.put(FOOD_ID, id);
+        data.put(FOOD_RATING, rating);
+        send(networkJSON(SEND_RATINGS_REQUEST, data));
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog){
+        // Do nothing, Simply dismiss the Dialog.
+    }
+
+    @Override
     public void onRemoveEdibleItem(EdibleItem item) {
         if(item.isEaten()) {
             addToProgresses(item);
@@ -443,7 +461,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onRateEdibleItem(EdibleItem item){
-
+        RateFoodDialogFragment frag = new RateFoodDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", item.getId());
+        bundle.putString("name", item.getProductName());
+        frag.setArguments(bundle);
+        frag.show(getFragmentManager(), "titletest");
     }
 
     @Override
