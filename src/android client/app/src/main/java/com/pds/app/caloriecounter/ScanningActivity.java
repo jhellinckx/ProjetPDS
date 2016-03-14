@@ -14,7 +14,15 @@ import com.google.zxing.integration.android.IntentResult;
 
 import org.json.simple.JSONObject;
 
-import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_RESPONSE;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_SUCCESS;
+import static org.calorycounter.shared.Constants.network.FOOD_IMAGE_URL;
+import static org.calorycounter.shared.Constants.network.FOOD_NAME;
+import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.networkJSON;
 
 public class ScanningActivity extends MenuNavigableActivity {
 

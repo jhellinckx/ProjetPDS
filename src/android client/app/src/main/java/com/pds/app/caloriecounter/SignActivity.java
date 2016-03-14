@@ -1,9 +1,7 @@
 package com.pds.app.caloriecounter;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,13 +10,22 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static org.calorycounter.shared.Constants.network.*;
-import static org.calorycounter.shared.Constants.client.*;
+import static org.calorycounter.shared.Constants.client.FUCK_DEFAULT_BEHAVIOUR;
+import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.PASSWORD;
+import static org.calorycounter.shared.Constants.network.REASON;
+import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_ALREADY_CONNECTED;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_FAILURE;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_REQUEST;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_RESPONSE;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_SUCCESS;
+import static org.calorycounter.shared.Constants.network.SIGN_UP_USERNAME_EXISTS;
+import static org.calorycounter.shared.Constants.network.USERNAME;
+import static org.calorycounter.shared.Constants.network.networkJSON;
 
 public class SignActivity extends NotifiableActivity {
     @Bind(R.id.btn_signup) Button _signupButton;

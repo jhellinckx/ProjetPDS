@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,6 +16,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.pds.app.caloriecounter.R;
+import com.pds.app.caloriecounter.utils.Converter;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
 
 import org.calorycounter.shared.models.EdibleItem;
@@ -24,33 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.ADD_ICON;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.CARD_PADDING;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.DELETE_ICON;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.ICON_SIZE;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_BORDER_COLOR;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_BORDER_WIDTH;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_HEIGHT;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WIDTH;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_COLOR;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_MAX_LINES;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_SIZE;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.NOT_ICON_MARGIN;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.RATE_ICON;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.SECONDARY_TEXT_COLOR;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.SECONDARY_TEXT_MAX_LINES;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.SECONDARY_TEXT_SIZE;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.SPACE_BETWEEN_IMAGE_AND_TEXT;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.ZOOM_ICON;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
+import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 
 /**
- * Created by mrmmtb on 10.03.16.
+ * Created by jhellinckx on 05/03/16.
  */
-public class RatingEdibleItemSticker extends CardView {
-    private class EdibleItemInfosLayout extends LinearLayout {
-        RatingEdibleItemSticker card;
-        EdibleItemInfosLayout(Context context, RatingEdibleItemSticker card){
+public class EdibleItemSticker extends CardView {
+    private class EdibleItemInfosLayout extends LinearLayout{
+        EdibleItemSticker card;
+        EdibleItemInfosLayout(Context context, EdibleItemSticker card){
             super(context);
             this.card = card;
         }
@@ -73,46 +59,51 @@ public class RatingEdibleItemSticker extends CardView {
     private CircleImageView cardImage;
     private LinearLayout textLayout;
     private LinearLayout itemInfosLayout;
-    private LinearLayout iconsLayout;
-    private RatingEdibleItemList container;
+    private LinearLayout iconsRightLayout;
+    private LinearLayout iconsLeftLayout;
+    private EdibleItemList container;
+    private TextView secondaryText;
+    private View ratingBarView;
+    private RatingBar secondaryRatingBar;
+    private boolean ratingBarAlreadyRated = false;
     boolean removable; boolean addable;
     boolean ratable; boolean checkable;
-    boolean expandable;
+    boolean expandable; boolean future_day;
 
 
-    public RatingEdibleItemSticker(Context context, EdibleItem item, RatingEdibleItemList container){
-        this(context, item, container, false, false, false, false, false);
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container){
+        this(context, item, container, false, false, false, false, false, false);
     }
 
-    public RatingEdibleItemSticker(Context context, EdibleItem item, RatingEdibleItemList container,
+    public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container,
                              boolean removable, boolean addable,
-                             boolean ratable, boolean expandable, boolean  checkable){
+                             boolean ratable, boolean expandable, boolean  checkable, boolean future_day){
         super(context);
         this.container = container;
-        setEdibleItem(item, removable, addable, ratable, expandable, checkable);
+        setEdibleItem(item, removable, addable, ratable, expandable, checkable, future_day);
     }
 
     public void setEdibleItem(EdibleItem item, boolean removable,
-                              boolean addable, boolean ratable, boolean expandable, boolean checkable){
+                              boolean addable, boolean ratable, boolean expandable, boolean checkable, boolean future_day){
         this.item = item;
         this.removable = removable; this.addable = addable;
         this.ratable = ratable; this.expandable = expandable;
-        this.checkable = checkable;
+        this.checkable = checkable; this.future_day = future_day;
         initCard();
         initImage();
         initTexts();
     }
 
     private void initCard(){
+        this.setPreventCornerOverlap(false);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         this.setLayoutParams(cardParams);
-
         cardLayout = new LinearLayout(getContext());
         cardLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         cardLayout.setLayoutParams(layoutParams);
         cardLayout.setPadding(CARD_PADDING, CARD_PADDING, CARD_PADDING, CARD_PADDING);
-        if(item.isEaten()){
+        if(item.isEaten() && !future_day){
             cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
         }
         this.addView(cardLayout);
@@ -124,7 +115,8 @@ public class RatingEdibleItemSticker extends CardView {
         itemInfosLayout.setLayoutParams(infosLayoutParams);
         cardLayout.addView(itemInfosLayout);
 
-        iconsLayout = null; // Will be initialized in initActions()
+        iconsRightLayout = null; // Will be initialized in initActions()
+        iconsLeftLayout = null;
     }
 
     private void initImage(){
@@ -160,45 +152,72 @@ public class RatingEdibleItemSticker extends CardView {
         mainText.setEllipsize(TextUtils.TruncateAt.END);
         textLayout.addView(mainText);
 
-        //RatingBar secondaryRatingBar = new RatingBar(getContext(), null, getResources().getDrawable(R.drawable.tiny_ratingbar_golden)); //RatingBar secondaryRatingBar = (RatingBar) this.findViewById(R.id.my_rating_bar);
-        RatingBar secondaryRatingBar = new RatingBar(getContext());
-        //LinearLayout.LayoutParams secParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        //secondaryRatingBar.setLayoutParams(secParams);
-        //secondaryRatingBar.setStepSize(0.5f);
-        secondaryRatingBar.setNumStars(5);
-        secondaryRatingBar.setRating(0f);
-        //secondaryRatingBar.setProgressDrawable(getResources().getDrawable(R.drawable.tiny_star_filled_gold));
-        //secondaryRatingBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.tiny_star_empty_gold));
-        textLayout.addView(secondaryRatingBar);
+        String nutrInfos = getNutrInfos();
+        if(! nutrInfos.isEmpty()) {
+            secondaryText = new TextView(getContext());
+            LinearLayout.LayoutParams secondaryTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            secondaryText.setLayoutParams(secondaryTextParams);
+            secondaryText.setTextSize(SECONDARY_TEXT_SIZE);
+            secondaryText.setTextColor(SECONDARY_TEXT_COLOR);
+            secondaryText.setText(nutrInfos);
+            secondaryText.setMaxLines(SECONDARY_TEXT_MAX_LINES);
+            secondaryText.canScrollHorizontally(LinearLayout.HORIZONTAL);
+            secondaryText.setEllipsize(TextUtils.TruncateAt.END);
+            textLayout.addView(secondaryText);
+        }
+
+        final LayoutInflater layoutInflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ratingBarView = layoutInflater.inflate(R.layout.tiny_rating_bar, null);
+        secondaryRatingBar = (RatingBar) ratingBarView.findViewById(R.id.ratingBar);
 
         itemInfosLayout.addView(textLayout);
     }
 
-    private void initIconsLayout(int w){
-        itemInfosLayout.getLayoutParams().width = w - ICON_SIZE; // Crucial - makes space on the card for the icon layout
-        iconsLayout = new LinearLayout(getContext());
-        iconsLayout.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        iconsLayout.setLayoutParams(iconsLayoutParams);
-        cardLayout.addView(iconsLayout);
+    private void initIconsLayout(int w, boolean addLeft, boolean addRight){
+        itemInfosLayout.getLayoutParams().width = w - (((addLeft?1:0)+(addRight?1:0))*ICON_SIZE); // Crucial - makes space on the card for the icon layout
+        if(addLeft){
+            iconsLeftLayout = new LinearLayout(getContext());
+            iconsLeftLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            iconsLeftLayout.setLayoutParams(iconsLayoutParams);
+            cardLayout.removeView(itemInfosLayout);
+            cardLayout.addView(iconsLeftLayout);
+            cardLayout.addView(itemInfosLayout);
+        }
+        if(addRight) {
+            iconsRightLayout = new LinearLayout(getContext());
+            iconsRightLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams iconsLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            iconsRightLayout.setLayoutParams(iconsLayoutParams);
+            cardLayout.addView(iconsRightLayout);
+        }
 
     }
 
     private void initActions(int w, int h){
-        if(iconsLayout != null) return;
+        if(iconsRightLayout != null || iconsLeftLayout != null) return;
         /* This method will only be called once we know exactly the width of the itemInfosLayout.
          * As soon as we know it, we can resize it in order to fit the iconLayout onto the card. */
         if(removable || addable || checkable || ratable || expandable) {
-            initIconsLayout(w);
-            List<View> icons = new ArrayList<>();
-            icons.add((removable) ? initClearAction() : initEmptyAction());
-            icons.add((expandable) ? initZoomAction() : initEmptyAction());
-            icons.add((addable) ? initAddAction() : initEmptyAction());
-            icons.add((ratable) ? initRateAction() : initEmptyAction());
+            boolean addRightLayout = removable || addable || ratable;
+            boolean addLeftLayout = expandable;
+            initIconsLayout(w, addLeftLayout, addRightLayout);
+            if(addRightLayout){
+                List<View> rightIcons = new ArrayList<>();
+                rightIcons.add((removable) ? initClearAction() : initEmptyAction());
+                rightIcons.add((addable) ? initAddAction() : initEmptyAction());
+                rightIcons.add((ratable) ? initRateAction() : initEmptyAction());
+                distributeSpace(rightIcons, iconsRightLayout);
+            }
+            if(addLeftLayout){
+                List<View> leftIcons = new ArrayList<>();
+                leftIcons.add((expandable) ? initZoomAction() : initEmptyAction());
+                distributeSpace(leftIcons, iconsLeftLayout);
+            }
             if (checkable) {
                 initCheckAction();
             }
-            distributeSpace(icons, iconsLayout);
         }
     }
 
@@ -222,7 +241,7 @@ public class RatingEdibleItemSticker extends CardView {
         ImageView clearIcon = new ImageView(getContext());
         clearIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
         clearIcon.setImageResource(DELETE_ICON);
-        clearIcon.setOnClickListener(new View.OnClickListener() {
+        clearIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 container.onRemoveItem(item);
@@ -235,7 +254,7 @@ public class RatingEdibleItemSticker extends CardView {
         ImageView addIcon = new ImageView(getContext());
         addIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
         addIcon.setImageResource(ADD_ICON);
-        addIcon.setOnClickListener(new View.OnClickListener() {
+        addIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 container.onAddItem(item);
@@ -248,7 +267,7 @@ public class RatingEdibleItemSticker extends CardView {
         ImageView zoomIcon = new ImageView(getContext());
         zoomIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
         zoomIcon.setImageResource(ZOOM_ICON);
-        zoomIcon.setOnClickListener(new View.OnClickListener() {
+        zoomIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 container.onExpandItem(item);
@@ -258,18 +277,21 @@ public class RatingEdibleItemSticker extends CardView {
     }
 
     private void initCheckAction(){
-        cardLayout.setClickable(true);
-        cardLayout.setOnClickListener(new View.OnClickListener() {
+        this.setClickable(true);
+        this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (item.isEaten()) {
-                    item.notEaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
-                }else {
-                    item.eaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                if (!future_day) {
+                    if (item.isEaten()) {
+                        item.notEaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                    } else {
+                        item.eaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                    }
+                    container.onCheckItem(item);
                 }
-                container.onCheckItem(item);
+
             }
         });
     }
@@ -278,12 +300,35 @@ public class RatingEdibleItemSticker extends CardView {
         ImageView rateIcon = new ImageView(getContext());
         rateIcon.setLayoutParams(new LinearLayoutCompat.LayoutParams(ICON_SIZE, ICON_SIZE));
         rateIcon.setImageResource(RATE_ICON);
-        rateIcon.setOnClickListener(new View.OnClickListener() {
+        rateIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 container.onRateItem(item);
             }
         });
         return rateIcon;
+    }
+
+    private String getNutrInfos(){
+        String infos = "";
+        if(item.getTotalEnergy() != null)
+            infos += Integer.toString(Math.round(item.getTotalEnergy()/CAL_TO_JOULE_FACTOR)) + " " + CALORIES_UNIT + ", ";
+        if(item.getTotalProteins() != null)
+            infos += Converter.floatToString(item.getTotalProteins()) + " " + DEFAULT_UNIT + " " + TITLE_PROTEINS.toLowerCase() + ", ";
+        if(item.getTotalCarbohydrates() != null)
+            infos += Converter.floatToString(item.getTotalCarbohydrates()) + " " + DEFAULT_UNIT + " " + TITLE_CARBO.toLowerCase() + ", ";
+        if(! infos.isEmpty())
+            infos = new String(infos.substring(0, infos.length() - 2));
+        return infos;
+    }
+
+    public void setRatingBar(float rating){
+        if(!ratingBarAlreadyRated){
+            textLayout.removeView(secondaryText);
+            textLayout.addView(ratingBarView);
+            ratingBarAlreadyRated = true;
+        }
+        secondaryRatingBar.setRating(rating);
+
     }
 }

@@ -8,9 +8,11 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.pds.app.caloriecounter.R;
@@ -60,29 +62,33 @@ public class EdibleItemSticker extends CardView {
     private LinearLayout iconsRightLayout;
     private LinearLayout iconsLeftLayout;
     private EdibleItemList container;
+    private TextView secondaryText;
+    private View ratingBarView;
+    private RatingBar secondaryRatingBar;
+    private boolean ratingBarAlreadyRated = false;
     boolean removable; boolean addable;
     boolean ratable; boolean checkable;
-    boolean expandable;
+    boolean expandable; boolean future_day;
 
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container){
-        this(context, item, container, false, false, false, false, false);
+        this(context, item, container, false, false, false, false, false, false);
     }
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container,
                              boolean removable, boolean addable,
-                             boolean ratable, boolean expandable, boolean  checkable){
+                             boolean ratable, boolean expandable, boolean  checkable, boolean future_day){
         super(context);
         this.container = container;
-        setEdibleItem(item, removable, addable, ratable, expandable, checkable);
+        setEdibleItem(item, removable, addable, ratable, expandable, checkable, future_day);
     }
 
     public void setEdibleItem(EdibleItem item, boolean removable,
-                              boolean addable, boolean ratable, boolean expandable, boolean checkable){
+                              boolean addable, boolean ratable, boolean expandable, boolean checkable, boolean future_day){
         this.item = item;
         this.removable = removable; this.addable = addable;
         this.ratable = ratable; this.expandable = expandable;
-        this.checkable = checkable;
+        this.checkable = checkable; this.future_day = future_day;
         initCard();
         initImage();
         initTexts();
@@ -97,7 +103,7 @@ public class EdibleItemSticker extends CardView {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         cardLayout.setLayoutParams(layoutParams);
         cardLayout.setPadding(CARD_PADDING, CARD_PADDING, CARD_PADDING, CARD_PADDING);
-        if(item.isEaten()){
+        if(item.isEaten() && !future_day){
             cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
         }
         this.addView(cardLayout);
@@ -148,7 +154,7 @@ public class EdibleItemSticker extends CardView {
 
         String nutrInfos = getNutrInfos();
         if(! nutrInfos.isEmpty()) {
-            TextView secondaryText = new TextView(getContext());
+            secondaryText = new TextView(getContext());
             LinearLayout.LayoutParams secondaryTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             secondaryText.setLayoutParams(secondaryTextParams);
             secondaryText.setTextSize(SECONDARY_TEXT_SIZE);
@@ -159,6 +165,12 @@ public class EdibleItemSticker extends CardView {
             secondaryText.setEllipsize(TextUtils.TruncateAt.END);
             textLayout.addView(secondaryText);
         }
+
+        final LayoutInflater layoutInflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ratingBarView = layoutInflater.inflate(R.layout.tiny_rating_bar, null);
+        secondaryRatingBar = (RatingBar) ratingBarView.findViewById(R.id.ratingBar);
+
         itemInfosLayout.addView(textLayout);
     }
 
@@ -269,14 +281,17 @@ public class EdibleItemSticker extends CardView {
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (item.isEaten()) {
-                    item.notEaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
-                } else {
-                    item.eaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                if (!future_day) {
+                    if (item.isEaten()) {
+                        item.notEaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                    } else {
+                        item.eaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                    }
+                    container.onCheckItem(item);
                 }
-                container.onCheckItem(item);
+
             }
         });
     }
@@ -305,5 +320,15 @@ public class EdibleItemSticker extends CardView {
         if(! infos.isEmpty())
             infos = new String(infos.substring(0, infos.length() - 2));
         return infos;
+    }
+
+    public void setRatingBar(float rating){
+        if(!ratingBarAlreadyRated){
+            textLayout.removeView(secondaryText);
+            textLayout.addView(ratingBarView);
+            ratingBarAlreadyRated = true;
+        }
+        secondaryRatingBar.setRating(rating);
+
     }
 }

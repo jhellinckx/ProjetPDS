@@ -2,29 +2,54 @@ package com.pds.app.caloriecounter;
 
 
 import android.app.DialogFragment;
-import android.content.Intent;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
-
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import static org.calorycounter.shared.Constants.network.*;
-import static org.calorycounter.shared.Constants.date.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import static org.calorycounter.shared.Constants.network.CATEGORY_NAME;
+import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.DATA_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_SIZE;
+import static org.calorycounter.shared.Constants.network.FOOD_CATEGORY;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_RESPONSE;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_SUCCESS;
+import static org.calorycounter.shared.Constants.network.FOOD_ID;
+import static org.calorycounter.shared.Constants.network.FOOD_NAME;
+import static org.calorycounter.shared.Constants.network.FOOD_RATING;
+import static org.calorycounter.shared.Constants.network.MAX_CARBOHYDRATES;
+import static org.calorycounter.shared.Constants.network.MAX_ENERGY;
+import static org.calorycounter.shared.Constants.network.MAX_FAT;
+import static org.calorycounter.shared.Constants.network.MAX_PROT;
+import static org.calorycounter.shared.Constants.network.PAST_FOODS_DATES;
+import static org.calorycounter.shared.Constants.network.PAST_FOODS_LIST;
+import static org.calorycounter.shared.Constants.network.PAST_RECIPES_DATES;
+import static org.calorycounter.shared.Constants.network.PAST_RECIPES_LIST;
+import static org.calorycounter.shared.Constants.network.RECIPE_CATEGORIES_REQUEST;
+import static org.calorycounter.shared.Constants.network.RECIPE_CATEGORIES_SIZE;
+import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
+import static org.calorycounter.shared.Constants.network.RECOMMENDED_FOOD_LIST;
+import static org.calorycounter.shared.Constants.network.RECOMMEND_REQUEST;
+import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.SEND_RATINGS_REQUEST;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
+import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
+import static org.calorycounter.shared.Constants.network.SPORT_NAME;
+import static org.calorycounter.shared.Constants.network.UPDATE_DATA_GENDER;
+import static org.calorycounter.shared.Constants.network.UPDATE_DATA_REQUEST;
+import static org.calorycounter.shared.Constants.network.networkJSON;
 
 public class RecommendationActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
@@ -224,5 +249,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
     public void onDialogNegativeClick(DialogFragment dialog){
         // Do nothing, Simply dismiss the Dialog.
     }
+
+
 
 }
