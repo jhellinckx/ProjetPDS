@@ -221,17 +221,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
         replaceFragment(new RecommendationConstraintsFragment(), "past");
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent intent){
-        IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResults != null && scanResults.getContents() != null){
-            String scanContent = scanResults.getContents();
-            Date date = calendar.getTime();
-            sendCode(scanContent, SDFORMAT.format(date));
-        } else{
-            Toast toast = Toast.makeText(this, "Scan Annulé", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
+
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){

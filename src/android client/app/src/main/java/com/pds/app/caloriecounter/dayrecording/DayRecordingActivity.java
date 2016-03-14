@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.pds.app.caloriecounter.ItemInfoDialog;
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
@@ -33,6 +35,7 @@ import com.shehabic.droppy.DroppyClickCallbackInterface;
 import com.shehabic.droppy.DroppyMenuItem;
 import com.shehabic.droppy.DroppyMenuPopup;
 import com.shehabic.droppy.animations.DroppyFadeInAnimation;
+import android.widget.Toast;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -60,6 +63,7 @@ import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_ID;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
@@ -370,7 +374,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     public void onAddScan(){
-        Log.d("CLICK : ", " SCAN");
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        scanIntegrator.initiateScan();
     }
 
     public void onAddArticle(){
@@ -500,7 +505,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         data.put(HISTORY_DATE, date.getText().toString());
         int status = (item.isEaten()) ? 1 : 0;
         data.put(FOOD_IS_EATEN, status);
-        data.put(FOOD_IS_NEW,0);
+        data.put(FOOD_IS_NEW, 0);
         if(item.isEaten()){
             substractToProgresses(item);
         }else {
@@ -512,6 +517,25 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
             data.put(RECIPE_OR_FOOD, "recipe");
         }
         send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
+    }
+
+    private void sendCode(String code, String date) {
+        JSONObject data = new JSONObject();
+        data.put(HISTORY_DATE, date);
+        data.put(FOOD_CODE, code);
+        send(networkJSON(FOOD_CODE_REQUEST, data));
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        IntentResult scanResults = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResults != null && scanResults.getContents() != null){
+            String scanContent = scanResults.getContents();
+            Date date = Calendar.getInstance().getTime();
+            sendCode(scanContent, SDFORMAT.format(date));
+        } else{
+            Toast toast = Toast.makeText(this, "Scan Annulé", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
 

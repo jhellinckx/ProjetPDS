@@ -44,7 +44,7 @@ public class HistoryRequestManager implements RequestManager{
 
 	private void manageCodeSuccess(JSONObject responseData, Food food, String date){
 		responseData.put(FOOD_CODE_RESPONSE, FOOD_CODE_SUCCESS);
-		responseData.put(FOOD_NAME,food.getProductName());
+		responseData.put(HISTORY_FOOD, food.toJSON());
 		responseData.put(HISTORY_DATE, date);
 	}
 
