@@ -99,7 +99,7 @@ public final class Constants {
 		public static final String RANDOM_UNRANKED_FOODS_FAILURE = "d_randfoods_nope";
 		public static final String RANDOM_UNRANKED_FOODS_NOT_FOUND = "d_randfoods_nope_empty";
 		public static final String RANDOM_UNRANKED_FOODS_SUCCESS = "d_randfoods_ok";
-		public static final int NUMBER_RANDOM_FOODS = 9;
+		public static final int NUMBER_RANDOM_FOODS = 5;
 
 		/*RANDOM RECIPES FROM CATEGORY REQUEST */
 		public static final String RECIPE_CATEGORY = "d_recipe_category";
