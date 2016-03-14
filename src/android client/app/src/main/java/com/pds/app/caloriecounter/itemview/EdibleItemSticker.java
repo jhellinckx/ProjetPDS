@@ -62,27 +62,27 @@ public class EdibleItemSticker extends CardView {
     private EdibleItemList container;
     boolean removable; boolean addable;
     boolean ratable; boolean checkable;
-    boolean expandable;
+    boolean expandable; boolean future_day;
 
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container){
-        this(context, item, container, false, false, false, false, false);
+        this(context, item, container, false, false, false, false, false, false);
     }
 
     public EdibleItemSticker(Context context, EdibleItem item, EdibleItemList container,
                              boolean removable, boolean addable,
-                             boolean ratable, boolean expandable, boolean  checkable){
+                             boolean ratable, boolean expandable, boolean  checkable, boolean future_day){
         super(context);
         this.container = container;
-        setEdibleItem(item, removable, addable, ratable, expandable, checkable);
+        setEdibleItem(item, removable, addable, ratable, expandable, checkable, future_day);
     }
 
     public void setEdibleItem(EdibleItem item, boolean removable,
-                              boolean addable, boolean ratable, boolean expandable, boolean checkable){
+                              boolean addable, boolean ratable, boolean expandable, boolean checkable, boolean future_day){
         this.item = item;
         this.removable = removable; this.addable = addable;
         this.ratable = ratable; this.expandable = expandable;
-        this.checkable = checkable;
+        this.checkable = checkable; this.future_day = future_day;
         initCard();
         initImage();
         initTexts();
@@ -97,7 +97,7 @@ public class EdibleItemSticker extends CardView {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         cardLayout.setLayoutParams(layoutParams);
         cardLayout.setPadding(CARD_PADDING, CARD_PADDING, CARD_PADDING, CARD_PADDING);
-        if(item.isEaten()){
+        if(item.isEaten() && !future_day){
             cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
         }
         this.addView(cardLayout);
@@ -269,14 +269,17 @@ public class EdibleItemSticker extends CardView {
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (item.isEaten()) {
-                    item.notEaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
-                } else {
-                    item.eaten();
-                    cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                if(!future_day) {
+                    if (item.isEaten()) {
+                        item.notEaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                    } else {
+                        item.eaten();
+                        cardLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                    }
+                    container.onCheckItem(item);
                 }
-                container.onCheckItem(item);
+
             }
         });
     }

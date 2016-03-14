@@ -120,6 +120,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     private String gender;
     private static float maxCal;
     private String current_day;
+    Date current_date;
+    boolean future_day = false;
 
 
     @Override
@@ -168,6 +170,13 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         }
         else{
             current_day = b.getString("day");
+        }
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        current_date = new Date();
+        try {
+            current_date = format.parse(current_day);
+        }catch(ParseException ex){
+            ex.printStackTrace();
         }
         date = new EditText(context);
         date.setText(current_day);
@@ -252,17 +261,15 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     private void initFoodsRecording(){
-
-        DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date current_date = new Date();
-        try {
-            current_date = format.parse(current_day);
-        }catch(ParseException ex){
-            ex.printStackTrace();
+        DailyRecording foodsContainer;
+        if(current_date.after(Calendar.getInstance().getTime())){
+            future_day = true;
+            foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY));
+        }else{
+            foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
         }
 
-        if(current_date.after(Calendar.getInstance().getTime()) || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){
+        if( future_day || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){ //future_day or current_day : display Circular Button
             LinearLayout addMenuLayout = new LinearLayout(this);
             addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -315,7 +322,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
 
     public void setintakesProgress(){
         for(EdibleItem item : dailyFoods){
-            if (item.isEaten()) {
+            if (item.isEaten()||future_day) {
                 substractToProgresses(item);
             }
         }
@@ -445,7 +452,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
 
     @Override
     public void onRemoveEdibleItem(EdibleItem item) {
-        if(item.isEaten()) {
+        if(item.isEaten() || future_day) {
             addToProgresses(item);
         }
         JSONObject data = new JSONObject();
@@ -500,23 +507,25 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
 
     @Override
     public void onCheckEdibleItem(EdibleItem item){
-        JSONObject data = new JSONObject();
-        data.put(FOOD_NAME, item.toJSON(false));
-        data.put(HISTORY_DATE, date.getText().toString());
-        int status = (item.isEaten()) ? 1 : 0;
-        data.put(FOOD_IS_EATEN, status);
-        data.put(FOOD_IS_NEW, 0);
-        if(item.isEaten()){
-            substractToProgresses(item);
-        }else {
-            addToProgresses(item);
+        if(!future_day){
+            JSONObject data = new JSONObject();
+            data.put(FOOD_NAME, item.toJSON(false));
+            data.put(HISTORY_DATE, date.getText().toString());
+            int status = (item.isEaten()) ? 1 : 0;
+            data.put(FOOD_IS_EATEN, status);
+            data.put(FOOD_IS_NEW, 0);
+            if(item.isEaten()){
+                substractToProgresses(item);
+            }else {
+                addToProgresses(item);
+            }
+            if(item instanceof Food){
+                data.put(RECIPE_OR_FOOD, "food");
+            }else{
+                data.put(RECIPE_OR_FOOD, "recipe");
+            }
+            send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
         }
-        if(item instanceof Food){
-            data.put(RECIPE_OR_FOOD, "food");
-        }else{
-            data.put(RECIPE_OR_FOOD, "recipe");
-        }
-        send(networkJSON(CHANGE_EATEN_STATUS_REQUEST, data));
     }
 
     private void sendCode(String code, String date) {

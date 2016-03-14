@@ -124,6 +124,7 @@ public final class GraphicsConstants {
         public static final int FLAG_RATABLE = 3;
         public static final int FLAG_EXPANDABLE = 4;
         public static final int FLAG_CHECKABLE = 5;
+        public static final int FLAG_FUTURE_DAY = 6;
     }
 
 

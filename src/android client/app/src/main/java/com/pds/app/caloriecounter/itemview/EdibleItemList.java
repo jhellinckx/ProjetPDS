@@ -29,7 +29,7 @@ public class EdibleItemList extends LinearLayout {
     private List<EdibleItem> items;
     boolean removable = false; boolean addable = false;
     boolean ratable = false; boolean expandable = false;
-    boolean checkable = false;
+    boolean checkable = false; boolean future_day = false;
 
     public EdibleItemList(Context context, List<EdibleItem> givenItems, EdibleItemActionCallback actionCallback, int... flags){
         super(context);
@@ -84,6 +84,7 @@ public class EdibleItemList extends LinearLayout {
             else if(flag == FLAG_RATABLE) ratable = true;
             else if(flag == FLAG_EXPANDABLE) expandable = true;
             else if(flag == FLAG_CHECKABLE) checkable = true;
+            else if(flag == FLAG_FUTURE_DAY) future_day = true;
         }
         this.itemViewMap = new LinkedHashMap<>(items.size(), MAP_LOAD_FACTOR);
         List<EdibleItem> checkedItems = new ArrayList<EdibleItem>();
@@ -97,13 +98,13 @@ public class EdibleItemList extends LinearLayout {
                 checkedItems.add(item);
             }else {
 
-                View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
+                View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable, future_day);
                 chainingPut(item, sticker);
                 this.addView(sticker);
             }
         }
         for(EdibleItem checkedItem: checkedItems){
-            View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable, checkable);
+            View sticker = new EdibleItemSticker(getContext(), checkedItem, this, removable, addable, ratable, expandable, checkable, future_day);
             chainingPut(checkedItem, sticker);
             this.addView(sticker);
         }
@@ -136,7 +137,7 @@ public class EdibleItemList extends LinearLayout {
         item.setId(1000L);
         item.notEaten();
 
-        View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
+        View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable, future_day);
         this.addView(sticker);
 
     }
@@ -146,9 +147,11 @@ public class EdibleItemList extends LinearLayout {
     }
 
     public void onCheckItem(EdibleItem item){
-        this.removeAllViews();
-        initItems();
-        actionCallback.onCheckEdibleItem(item);
+        if(!future_day){
+            this.removeAllViews();
+            initItems();
+            actionCallback.onCheckEdibleItem(item);
+        }
     }
 
 }
