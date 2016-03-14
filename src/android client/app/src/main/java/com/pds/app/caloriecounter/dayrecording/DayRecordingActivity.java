@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter.dayrecording;
 
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.pds.app.caloriecounter.ItemInfoDialog;
 import com.pds.app.caloriecounter.MenuNavigableActivity;
 import com.pds.app.caloriecounter.R;
+import com.pds.app.caloriecounter.RateFoodDialogFragment;
 import com.pds.app.caloriecounter.RecommendationActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
@@ -39,9 +41,14 @@ import org.calorycounter.shared.models.Sport;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +60,13 @@ import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.FOOD_ID;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
 import static org.calorycounter.shared.Constants.network.FOOD_LIST;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.FOOD_QUANTITY;
+import static org.calorycounter.shared.Constants.network.FOOD_RATING;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_CARBOHYDRATES;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_ENERGY;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_FAT;
@@ -72,6 +81,7 @@ import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
+import static org.calorycounter.shared.Constants.network.SEND_RATINGS_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
@@ -91,7 +101,7 @@ import static org.calorycounter.shared.Constants.network.RECIPE_LIST;
 import static org.calorycounter.shared.Constants.network.networkJSON;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
-public class DayRecordingActivity extends MenuNavigableActivity implements EdibleItemActionCallback {
+public class DayRecordingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback {
 
     private LinearLayout stickersLayout;
     private Map<String, IntakeProgress> dailyIntakes;
@@ -240,44 +250,53 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     private void initFoodsRecording(){
 
         DailyRecording foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Date current_date = new Date();
+        try {
+            current_date = format.parse(current_day);
+        }catch(ParseException ex){
+            ex.printStackTrace();
+        }
 
-        LinearLayout addMenuLayout = new LinearLayout(this);
-        addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
+        if(current_date.after(Calendar.getInstance().getTime()) || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){
+            LinearLayout addMenuLayout = new LinearLayout(this);
+            addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        CircularButton openDropdown = new CircularButton(this);
-        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
-        buttonParams.gravity = Gravity.RIGHT;
-        openDropdown.setLayoutParams(buttonParams);
-        openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
-        openDropdown.setButtonColor(getResources().getColor(R.color.primary));
-        openDropdown.setShadowColor(Color.BLACK);
+            CircularButton openDropdown = new CircularButton(this);
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
+            buttonParams.gravity = Gravity.RIGHT;
+            openDropdown.setLayoutParams(buttonParams);
+            openDropdown.setImageResource(R.drawable.ic_add_white_18dp);
+            openDropdown.setButtonColor(getResources().getColor(R.color.primary));
+            openDropdown.setShadowColor(Color.BLACK);
 
-        addMenuLayout.addView(new EvenSpaceView(this));
-        addMenuLayout.addView(openDropdown);
-        foodsContainer.setFooter(addMenuLayout);
+            addMenuLayout.addView(new EvenSpaceView(this));
+            addMenuLayout.addView(openDropdown);
+            foodsContainer.setFooter(addMenuLayout);
 
+
+            DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(this, openDropdown);
+            droppyBuilder.fromMenu(R.menu.foodslist_dropdown_add)
+                    .setOnClick(new DroppyClickCallbackInterface() {
+                        @Override
+                        public void call(View v, int id) {
+                            String menuId = getResources().getResourceName(id).split("/")[1];
+                            Log.d("MENU : ", menuId);
+                            if (menuId.equals("addfood_scan"))
+                                onAddScan();
+                            else if (menuId.equals("addfood_article"))
+                                onAddArticle();
+                            else if (menuId.equals("addfood_receipt"))
+                                onAddReceipt();
+
+                        }
+                    })
+                    .setPopupAnimation(new DroppyFadeInAnimation())
+                    .setXOffset(5)
+                    .setYOffset(5)
+                    .build();
+        }
         stickersLayout.addView(foodsContainer);
-
-        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(this, openDropdown);
-        droppyBuilder.fromMenu(R.menu.foodslist_dropdown_add)
-                .setOnClick(new DroppyClickCallbackInterface() {
-                    @Override
-                    public void call(View v, int id) {
-                        String menuId = getResources().getResourceName(id).split("/")[1];
-                        Log.d("MENU : ",menuId);
-                        if(menuId.equals("addfood_scan"))
-                            onAddScan();
-                        else if(menuId.equals("addfood_article"))
-                            onAddArticle();
-                        else if(menuId.equals("addfood_receipt"))
-                            onAddReceipt();
-
-                    }
-                })
-                .setPopupAnimation(new DroppyFadeInAnimation())
-                .setXOffset(5)
-                .setYOffset(5)
-                .build();
     }
 
     private void initSportsRecording(){
@@ -407,6 +426,19 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
     }
 
     @Override
+    public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
+        JSONObject data = new JSONObject();
+        data.put(FOOD_ID, id);
+        data.put(FOOD_RATING, rating);
+        send(networkJSON(SEND_RATINGS_REQUEST, data));
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog){
+        // Do nothing, Simply dismiss the Dialog.
+    }
+
+    @Override
     public void onRemoveEdibleItem(EdibleItem item) {
         if(item.isEaten()) {
             addToProgresses(item);
@@ -429,7 +461,12 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
 
     @Override
     public void onRateEdibleItem(EdibleItem item){
-
+        RateFoodDialogFragment frag = new RateFoodDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", item.getId());
+        bundle.putString("name", item.getProductName());
+        frag.setArguments(bundle);
+        frag.show(getFragmentManager(), "titletest");
     }
 
     @Override
@@ -448,6 +485,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
             b.putString(RECIPE_OR_FOOD, "food");
         }else{
+            b.putString(FOOD_QUANTITY, item.getQuantity());
             b.putString(RECIPE_OR_FOOD, "recipe");
         }
         ItemInfoDialog dialog = new ItemInfoDialog();
@@ -539,6 +577,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             });
 
         }
+
     }
 
 

@@ -1,6 +1,7 @@
 package com.pds.app.caloriecounter;
 
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -25,7 +26,7 @@ import org.json.simple.JSONObject;
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
 
-public class RecommendationActivity extends MenuNavigableActivity implements RecommendationConstraintsFragment.OnItemClickListener,
+public class RecommendationActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, RecommendationConstraintsFragment.OnItemClickListener,
         RecommendationResultsFragment.OnItemClickListener{
 
     private static ArrayList<String> _sportsname = new ArrayList<String>();
@@ -230,6 +231,19 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rec
             Toast toast = Toast.makeText(this, "Scan Annulé", Toast.LENGTH_SHORT);
             toast.show();
         }
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
+        JSONObject data = new JSONObject();
+        data.put(FOOD_ID, id);
+        data.put(FOOD_RATING, rating);
+        send(networkJSON(SEND_RATINGS_REQUEST, data));
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog){
+        // Do nothing, Simply dismiss the Dialog.
     }
 
 }

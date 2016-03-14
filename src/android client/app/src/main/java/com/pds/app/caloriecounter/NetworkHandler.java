@@ -172,7 +172,7 @@ public class NetworkHandler {
             }else if (request.equals(CHANGE_EATEN_STATUS_REQUEST)){
 
             }else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
-
+                //_doDispatch(msg, DayRecordingActivity.class);
             }else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
 
             }else if (request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)) {

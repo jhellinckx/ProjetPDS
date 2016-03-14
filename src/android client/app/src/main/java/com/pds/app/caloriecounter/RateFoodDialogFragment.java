@@ -47,7 +47,6 @@ public class RateFoodDialogFragment extends DialogFragment {
         final LayoutInflater layoutInflater = (LayoutInflater) getActivity()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Bundle b = getArguments();
-        String url = b.getString("url");
         String name = b.getString("name");
 
         View view = layoutInflater.inflate(R.layout.rating_dialog,null);
@@ -55,10 +54,6 @@ public class RateFoodDialogFragment extends DialogFragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
         TextView text = ((TextView) view.findViewById(R.id.rateTitle));
         text.setText((String) text.getText() + ": " + name);
-        System.out.println(imageView == null);
-        Picasso.with(getActivity())
-                .load(url)
-                .into(imageView);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override

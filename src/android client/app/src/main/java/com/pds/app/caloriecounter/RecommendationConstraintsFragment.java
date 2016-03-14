@@ -174,7 +174,7 @@ public class RecommendationConstraintsFragment extends Fragment {
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         buttonParams.gravity = Gravity.RIGHT;
         validate.setLayoutParams(buttonParams);
-        validate.setImageResource(R.drawable.ic_check);
+        validate.setImageResource(R.drawable.ic_done_white_24dp);
         validate.setButtonColor(getResources().getColor(R.color.primary));
         validate.setShadowColor(Color.BLACK);
 

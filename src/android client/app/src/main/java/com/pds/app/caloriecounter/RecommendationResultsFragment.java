@@ -1,10 +1,12 @@
 package com.pds.app.caloriecounter;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +38,7 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVAB
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
 import static org.calorycounter.shared.Constants.network.*;
 
-public class RecommendationResultsFragment extends Fragment implements EdibleItemActionCallback {
+public class RecommendationResultsFragment extends Fragment implements  EdibleItemActionCallback {
 
     private OnItemClickListener listener;
     private int id = 0;
@@ -47,6 +49,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
     private DailyRecording foodsContainer;
     private String current_date;
     private Boolean isReceipt;
+    private FragmentActivity myContext;
 
     private void initRecommendationList(View v, Activity a){
         recommendations =((RecommendationActivity) getActivity()).recommendationsResults();
@@ -133,6 +136,7 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onAttach(Context context) {
+        myContext=(FragmentActivity) context;
         super.onAttach(context);
         if (context instanceof OnItemClickListener) {
             listener = (OnItemClickListener) context;
@@ -178,11 +182,38 @@ public class RecommendationResultsFragment extends Fragment implements EdibleIte
 
     @Override
     public void onRateEdibleItem(EdibleItem item){
-
+        RateFoodDialogFragment frag = new RateFoodDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", item.getId());
+        bundle.putString("name", item.getProductName());
+        frag.setArguments(bundle);
+        frag.show(myContext.getFragmentManager(), "titletest");
     }
+
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
+
+        Bundle b = new Bundle();
+        b.putString(FOOD_NAME, item.getProductName());
+
+        b.putFloat(FOOD_TOTAL_ENERGY, item.getTotalEnergy());
+        b.putFloat(FOOD_TOTAL_FAT, item.getTotalFat());
+        b.putFloat(FOOD_TOTAL_PROTEINS, item.getTotalProteins());
+        b.putFloat(FOOD_TOTAL_CARBOHYDRATES, item.getTotalCarbohydrates());
+        if(item instanceof Food){
+            b.putString(FOOD_QUANTITY, item.getQuantity());
+            b.putFloat(FOOD_TOTAL_SUGARS, item.getTotalSugars());
+            b.putFloat(FOOD_TOTAL_SODIUM, item.getTotalSalt());
+            b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
+            b.putString(RECIPE_OR_FOOD, "food");
+        }else{
+            b.putString(RECIPE_OR_FOOD, "recipe");
+        }
+        ItemInfoDialog dialog = new ItemInfoDialog();
+        dialog.setArguments(b);
+        dialog.show(myContext.getFragmentManager(), "infos");
+
 
     }
 

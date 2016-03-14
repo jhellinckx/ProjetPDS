@@ -48,16 +48,16 @@
 
     <string name="ok">Rate</string>
     <string name="cancel">Cancel</string>
-    <string name="product_name">Product name</string>
-    <string name="cal">Energy (kcal)</string>
+    <string name="product_name">Nom du Produit</string>
+    <string name="cal">Calories (kcal)</string>
     <string name="cal2">Calories pour aujourd\'hui (kcal)</string>
-    <string name="quantity">Quantity</string>
-    <string name="fat">Fat (g)</string>
-    <string name="insatfat">Insaturated Fat (g)</string>
-    <string name="prot">Protein (g)</string>
-    <string name="carbo">Carbohydrates (g)</string>
-    <string name="sodium">Sodium (g)</string>
-    <string name="sugar">Sugar (g)</string>
+    <string name="quantity">Portion</string>
+    <string name="fat">Lipides (g)</string>
+    <string name="insatfat">Graisses Insaturées (g)</string>
+    <string name="prot">Protéines (g)</string>
+    <string name="carbo">Glucides (g)</string>
+    <string name="sodium">Sel (g)</string>
+    <string name="sugar">Sucre (g)</string>
     <string name="title_activity_day_recording">Activity</string>
 </resources>
 

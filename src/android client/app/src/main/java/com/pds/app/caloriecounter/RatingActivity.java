@@ -227,12 +227,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
-        //View v = (View) gridView.getItemAtPosition(position);
-        //RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
-        //rbar.setRating(rating);
-        //ratings.set(position, rating);
-        System.out.println("===============rated !");
-
         JSONObject data = new JSONObject();
         data.put(FOOD_ID, id);
         data.put(FOOD_RATING, rating);
@@ -331,7 +325,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         RateFoodDialogFragment frag = new RateFoodDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putLong("id", item.getId());
-        bundle.putString("url", item.getImageUrl());
         bundle.putString("name", item.getProductName());
         frag.setArguments(bundle);
         frag.show(getFragmentManager(), "titletest");
@@ -339,6 +332,25 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     @Override
     public void onExpandEdibleItem(EdibleItem item){
+        Bundle b = new Bundle();
+        b.putString(FOOD_NAME, item.getProductName());
+
+        b.putFloat(FOOD_TOTAL_ENERGY, item.getTotalEnergy());
+        b.putFloat(FOOD_TOTAL_FAT, item.getTotalFat());
+        b.putFloat(FOOD_TOTAL_PROTEINS, item.getTotalProteins());
+        b.putFloat(FOOD_TOTAL_CARBOHYDRATES, item.getTotalCarbohydrates());
+        if(item instanceof Food){
+            b.putString(FOOD_QUANTITY, item.getQuantity());
+            b.putFloat(FOOD_TOTAL_SUGARS, item.getTotalSugars());
+            b.putFloat(FOOD_TOTAL_SODIUM, item.getTotalSalt());
+            b.putFloat(FOOD_TOTAL_SATURATED_FAT, item.getTotalSaturatedFat());
+            b.putString(RECIPE_OR_FOOD, "food");
+        }else{
+            b.putString(RECIPE_OR_FOOD, "recipe");
+        }
+        ItemInfoDialog dialog = new ItemInfoDialog();
+        dialog.setArguments(b);
+        dialog.show(getFragmentManager(), "infos");
 
     }
 
