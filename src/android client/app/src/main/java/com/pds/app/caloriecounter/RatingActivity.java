@@ -149,7 +149,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     }
 
     private void addFoodListLayout(){
-        ratingContainer = new DailyRecording(this, "FOODS", new RatingEdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
+        edibleItemList = new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE);
+        ratingContainer = new DailyRecording(this, "FOODS", edibleItemList);
 
         LinearLayout validateLayout = new LinearLayout(this);
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -287,13 +288,19 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     }
 
     @Override
-    public void onRateEdibleItem(EdibleItem item){
-        RateFoodDialogFragment frag = new RateFoodDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putLong("id", item.getId());
-        bundle.putString("name", item.getProductName());
-        frag.setArguments(bundle);
-        frag.show(getFragmentManager(), "titletest");
+    public void onRateEdibleItem(final EdibleItem item){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RateFoodDialogFragment frag = new RateFoodDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putLong("id", item.getId());
+                bundle.putString("name", item.getProductName());
+                frag.setArguments(bundle);
+                frag.show(getFragmentManager(), "titletest");
+            }
+        });
+
     }
 
     @Override

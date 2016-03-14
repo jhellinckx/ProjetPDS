@@ -34,9 +34,9 @@
     <string name="nextbutton">Next</string>
 
     <string name="urlinfo">url for extra info:</string>
-    <string name="productinfos">Product Information:</string>
+    <string name="productinfos">Informations Produit:</string>
 
-    <string name="rateTitle">Rate this Item</string>
+    <string name="rateTitle">Nom du produit :</string>
     <!-- Id's -->
     <item name="btn_signup" type="id"></item>
     <item name="btn_login" type="id"></item>
@@ -46,8 +46,8 @@
     <item name="link_signup" type="id"></item>
     <item name="link_login" type="id"></item>
 
-    <string name="ok">Rate</string>
-    <string name="cancel">Cancel</string>
+    <string name="ok">Noter</string>
+    <string name="cancel">Annuler</string>
     <string name="product_name">Nom du Produit</string>
     <string name="cal">Calories (kcal)</string>
     <string name="cal2">Calories pour aujourd\'hui (kcal)</string>

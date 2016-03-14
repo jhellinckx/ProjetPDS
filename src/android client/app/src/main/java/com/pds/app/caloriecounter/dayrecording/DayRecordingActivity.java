@@ -486,13 +486,18 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     @Override
-    public void onRateEdibleItem(EdibleItem item){
-        RateFoodDialogFragment frag = new RateFoodDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putLong("id", item.getId());
-        bundle.putString("name", item.getProductName());
-        frag.setArguments(bundle);
-        frag.show(getFragmentManager(), "titletest");
+    public void onRateEdibleItem(final EdibleItem item){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RateFoodDialogFragment frag = new RateFoodDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putLong("id", item.getId());
+                bundle.putString("name", item.getProductName());
+                frag.setArguments(bundle);
+                frag.show(getFragmentManager(), "titletest");
+            }
+        });
     }
 
     @Override
