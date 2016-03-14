@@ -32,7 +32,6 @@ import dao.RecipeDAO;
 import dao.CBUserPredictionsDAO;
 
 public class RecommendationRequestManager implements RequestManager{
-	private static final int K_NUMBER_OF_NEIGHBOURS = 3; //Value retrieved from article, seems to be the best
 	private static final int NBR_WORKERS = 2;
 
 	private User user;
@@ -186,7 +185,7 @@ public class RecommendationRequestManager implements RequestManager{
 			_runWorkers = true;
 		}
 		for(int i = 0; i < NBR_WORKERS; ++i){
-			ContentBasedWorker worker = new ContentBasedWorker(this, _predictionsDatabase, K_NUMBER_OF_NEIGHBOURS);
+			ContentBasedWorker worker = new ContentBasedWorker(this, _predictionsDatabase);
 			_workers.add(worker);
 			Thread thread = new Thread(worker);
 			_workerThreads.add(thread);
