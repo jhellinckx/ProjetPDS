@@ -75,11 +75,6 @@ public class EdibleItemList extends LinearLayout {
             this.itemViewMap.put(checkedItem, sticker);
             this.addView(sticker);
         }
-        System.out.println("ITEMVIEEEEEEEEEEEEEEEEEEEEEEW"+items.size());
-        System.out.println( items.get(0) == items.get(1));
-        System.out.println(items.get(0).hashCode() == items.get(1).hashCode());
-        System.out.println("ITEMVIEWMAAAAAAAAAAAAAAAAAAAP"+itemViewMap.size());
-
     }
 
     public void onRemoveItem(EdibleItem item){

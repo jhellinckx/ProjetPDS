@@ -227,12 +227,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
-        //View v = (View) gridView.getItemAtPosition(position);
-        //RatingBar rbar = (RatingBar) v.findViewById(R.id.grid_ratingBar);
-        //rbar.setRating(rating);
-        //ratings.set(position, rating);
-        System.out.println("===============rated !");
-
         JSONObject data = new JSONObject();
         data.put(FOOD_ID, id);
         data.put(FOOD_RATING, rating);
