@@ -34,7 +34,7 @@ public final class GraphicsConstants {
     }
 
     public static final class Progress {
-        public static final int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.snowy_mint);
+        public static final     int STROKE_FINISHED_COLOR = context.getResources().getColor(R.color.snowy_mint);
         public static final int STROKE_UNFINISHED_COLOR = Color.WHITE;
         public static final float SRTOKE_FINISHED_WIDTH = Converter.dp2px(8);
         public static final float STROKE_UNFINISHED_WIDTH = Converter.dp2px(1);

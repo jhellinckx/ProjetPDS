@@ -102,7 +102,7 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 		List<Map.Entry<Float, Float>> neighbours = new ArrayList<Map.Entry<Float, Float>>();
 		try {
         	connexion = _daoFactory.getConnection();
-            preparedStatement = initializationPreparedRequest(connexion, SQL_SELECT_K_NEAREST_NEIGHBOURS_IN_USER_PROFILE, false, recipe_id, recipe_id, user_id, k);
+            preparedStatement = initializationPreparedRequest(connexion, SQL_SELECT_K_NEAREST_NEIGHBOURS_IN_USER_PROFILE, false, recipe_id, user_id, k);
            	resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
             	neighbours.add(mapNeighbour(resultSet));

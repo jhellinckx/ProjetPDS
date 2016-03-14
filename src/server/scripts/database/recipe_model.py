@@ -37,3 +37,10 @@ CALORIE_PER_PORTION_KEY = "portion_calorie"
 FAT_PER_PORTION_KEY = "portion_fat"
 CARBO_PER_PORTION_KEY = "portion_carbo"
 PROTEIN_PER_PORTION_KEY = "portion_protein"
+
+
+
+SELECT recipe_id FROM CBUserPredictions INNER JOIN (SELECT rank, numrecipe FROM User_Preferences INNER JOIN RecipeSimilarity ON first_recipe_id=recipe_id AND second_recipe_id=numrecipe ORDER BY similarity LIMIT 3) Z ON Z.numUser=CBUserPredictions.user_id WHERE CBUserPredictions.user_id=1
+
+
+

@@ -160,15 +160,14 @@ public class RatingEdibleItemSticker extends CardView {
         mainText.setEllipsize(TextUtils.TruncateAt.END);
         textLayout.addView(mainText);
 
-        //RatingBar secondaryRatingBar = new RatingBar(getContext(), null, android.R.attr.ratingBarStyleSmall);
-        //RatingBar secondaryRatingBar = (RatingBar) this.findViewById(R.id.my_rating_bar);
+        //RatingBar secondaryRatingBar = new RatingBar(getContext(), null, getResources().getDrawable(R.drawable.tiny_ratingbar_golden)); //RatingBar secondaryRatingBar = (RatingBar) this.findViewById(R.id.my_rating_bar);
         RatingBar secondaryRatingBar = new RatingBar(getContext());
-        LinearLayout.LayoutParams secParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        secondaryRatingBar.setLayoutParams(secParams);
+        //LinearLayout.LayoutParams secParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        //secondaryRatingBar.setLayoutParams(secParams);
         //secondaryRatingBar.setStepSize(0.5f);
         secondaryRatingBar.setNumStars(5);
         secondaryRatingBar.setRating(0f);
-        secondaryRatingBar.setProgressDrawable(getResources().getDrawable(R.drawable.tiny_star_filled_gold));
+        //secondaryRatingBar.setProgressDrawable(getResources().getDrawable(R.drawable.tiny_star_filled_gold));
         //secondaryRatingBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.tiny_star_empty_gold));
         textLayout.addView(secondaryRatingBar);
 

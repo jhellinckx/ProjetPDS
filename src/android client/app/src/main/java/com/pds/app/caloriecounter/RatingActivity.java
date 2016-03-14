@@ -143,7 +143,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     private void addFoodListLayout(){
 
-        ratingContainer = new DailyRecording(this, "FOODS", new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
+        ratingContainer = new DailyRecording(this, "FOODS", new RatingEdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE));
 
         LinearLayout validateLayout = new LinearLayout(this);
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);

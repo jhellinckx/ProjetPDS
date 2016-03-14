@@ -126,11 +126,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
             if(response.equals(FOOD_CODE_SUCCESS)){
                 String product_name = (String) data.get(FOOD_NAME);
                 _productNames.add(product_name);
-                RecommendationPastFragment frag = new RecommendationPastFragment();
                 Bundle b = new Bundle();
                 b.putStringArrayList("productNames",_productNames);
-                frag.setArguments(b);
-                replaceFragment(frag,"past");
             }
         }
         else if(request.equals(UPDATE_DATA_REQUEST) || request.equals(DATA_REQUEST)){
@@ -152,14 +149,6 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
         recom_data.put(MAX_CARBOHYDRATES, carbo);
         recom_data.put(RECIPE_OR_FOOD, recipeOrFood);
         recom_data.put(FOOD_CATEGORY, category);
-    }
-
-    public void sendCode(String code, String date) {
-        JSONObject data = new JSONObject();
-        _productCodes.add(code);
-        _productDates.add(date); //je l'ai mis ici cmme ca pr test sur emulateur on peut simplement ajouter la date en argument a la methode sendCode()
-        data.put(FOOD_CODE, code);
-        send(networkJSON(FOOD_CODE_REQUEST, data));
     }
 
     public void initPastFoodsInRecomData(){
