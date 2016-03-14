@@ -252,7 +252,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
         }catch(ParseException ex){
             ex.printStackTrace();
         }
-        
+
         if(current_date.after(Calendar.getInstance().getTime()) || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){
             LinearLayout addMenuLayout = new LinearLayout(this);
             addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -553,6 +553,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements Edibl
             });
 
         }
+
     }
 
 

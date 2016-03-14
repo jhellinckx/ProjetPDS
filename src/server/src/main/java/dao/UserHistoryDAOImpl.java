@@ -22,7 +22,7 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 	private static final String SQL_FIND_HISTORY_DATES = "SELECT date FROM Users_history WHERE idUser = ? AND is_food_or_sport_or_recipe = 'Food'";
 	private static final String SQL_FIND_HISTORY_DATE_FOR_FOOD = "SELECT date FROM Users_history WHERE idUser = ? AND idFood = ? and is_food_or_sport_or_recipe = 'Food'";
 	private static final String SQL_FIND_HISTORY_FOODS_FOR_DATE = "SELECT idFood, checked FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Food'";
-	private static final String SQL_DELETE = "DELETE FROM Users_history WHERE idUser = ? AND idFood = ? AND date = ?";
+	private static final String SQL_DELETE = "DELETE FROM Users_history WHERE idUser = ? AND idFood = ? AND date = ? LIMIT 1";
 	private static final String SQL_INSERT_SPORT = "INSERT INTO Users_history (idUser,sport_name,date,duration, energy_consumed, checked,is_food_or_sport_or_recipe) VALUES (?, ?, ?, ?, ?, 1, 'Sport')";
 	private static final String SQL_FIND_HISTORY_SPORTS_FOR_DATE = "SELECT sport_name, duration, energy_consumed FROM Users_history WHERE idUser = ? AND date = ? AND is_food_or_sport_or_recipe = 'Sport'";
 	private static final String SQL_DELETE_SPORT = "DELETE FROM Users_history WHERE idUser = ? AND sport_name = ? AND duration = ? AND date = ?";
