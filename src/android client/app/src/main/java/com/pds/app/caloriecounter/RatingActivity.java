@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.pds.app.caloriecounter.dayrecording.DailyRecording;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
-import com.pds.app.caloriecounter.itemview.RatingEdibleItemList;
+import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import com.pds.app.caloriecounter.rawlibs.CircularButton;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
 
@@ -39,7 +39,6 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT
 import static org.calorycounter.shared.Constants.network.CATEGORY_NAME;
 import static org.calorycounter.shared.Constants.network.DATA;
 import static org.calorycounter.shared.Constants.network.FOOD_ID;
-import static org.calorycounter.shared.Constants.network.FOOD_IMAGE_URL;
 import static org.calorycounter.shared.Constants.network.FOOD_NAME;
 import static org.calorycounter.shared.Constants.network.FOOD_QUANTITY;
 import static org.calorycounter.shared.Constants.network.FOOD_RATING;
@@ -75,7 +74,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private int id;
     private DailyRecording ratingContainer;
     private Boolean init=true;
-    private RatingEdibleItemList ratingEdibleItemList;
+    private EdibleItemList edibleItemList;
 
 
 
@@ -150,8 +149,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     }
 
     private void addFoodListLayout(){
-        ratingEdibleItemList = new RatingEdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE);
-        ratingContainer = new DailyRecording(this, "FOODS", ratingEdibleItemList);
+        edibleItemList = new EdibleItemList(this, foodsToBeRated, this,FLAG_RATABLE, FLAG_EXPANDABLE);
+        ratingContainer = new DailyRecording(this, "FOODS", edibleItemList);
 
         LinearLayout validateLayout = new LinearLayout(this);
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -194,7 +193,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
         for(int i =0; i<foodsToBeRated.size();++i){
             if(foodsToBeRated.get(i).getId() == id){
-                ratingEdibleItemList.setRatingBar(foodsToBeRated.get(i),rating);
+                edibleItemList.setRatingBar(foodsToBeRated.get(i),rating);
             }
         }
 

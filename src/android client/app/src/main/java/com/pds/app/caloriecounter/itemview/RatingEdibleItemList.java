@@ -92,20 +92,6 @@ public class RatingEdibleItemList extends LinearLayout {
         actionCallback.onExpandEdibleItem(item);
     }
 
-    public void makeAddTest(){
-        EdibleItem item = new Food();
-        item.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
-        item.setProductName("Test add");
-        item.setTotalCarbohydrates(119.4f);
-        item.setTotalEnergy(1000f);
-        item.setTotalProteins(31f);
-        item.setId(1000L);
-
-        View sticker = new RatingEdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable);
-        this.itemViewMap.put(item, sticker);
-        this.addView(sticker);
-    }
-
     public void onRateItem(EdibleItem item){
         actionCallback.onRateEdibleItem(item);
     }

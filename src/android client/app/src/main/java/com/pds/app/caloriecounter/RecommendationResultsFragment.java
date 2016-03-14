@@ -1,13 +1,11 @@
 package com.pds.app.caloriecounter;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.text.BoringLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import com.pds.app.caloriecounter.dayrecording.DayRecordingActivity;
 import com.pds.app.caloriecounter.itemview.EdibleItemActionCallback;
 import com.pds.app.caloriecounter.itemview.EdibleItemList;
 
-import org.calorycounter.shared.Constants;
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
@@ -29,14 +26,26 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_FOODS;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_ADDABLE;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_CHECKABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVABLE;
 import static org.calorycounter.shared.Constants.date.SDFORMAT;
-import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_IMAGE_URL;
+import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
+import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
+import static org.calorycounter.shared.Constants.network.FOOD_NAME;
+import static org.calorycounter.shared.Constants.network.FOOD_QUANTITY;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_CARBOHYDRATES;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_ENERGY;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_FAT;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_PROTEINS;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SATURATED_FAT;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SODIUM;
+import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SUGARS;
+import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
+import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
+import static org.calorycounter.shared.Constants.network.networkJSON;
 
 public class RecommendationResultsFragment extends Fragment implements  EdibleItemActionCallback {
 

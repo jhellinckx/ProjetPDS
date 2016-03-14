@@ -110,6 +110,11 @@ public class EdibleItemList extends LinearLayout {
         }
     }
 
+    public void setRatingBar(EdibleItem item, float rating){
+        EdibleItemSticker sticker = (EdibleItemSticker) chainingGet(item);
+        sticker.setRatingBar(rating);
+    }
+
     public void onRemoveItem(EdibleItem item){
         this.removeView(chainingGet(item));
         chainingRemove(item);
@@ -126,21 +131,6 @@ public class EdibleItemList extends LinearLayout {
         actionCallback.onExpandEdibleItem(item);
     }
 
-    public void makeAddTest(){
-
-        EdibleItem item = new Food();
-        item.setImageUrl("https://colruyt.collectandgo.be/cogo/step/JPG/JPG/500x500/std.lang.all/41/55/asset-834155.jpg");
-        item.setProductName("Test add");
-        item.setTotalCarbohydrates(119.4f);
-        item.setTotalEnergy(1000f);
-        item.setTotalProteins(31f);
-        item.setId(1000L);
-        item.notEaten();
-
-        View sticker = new EdibleItemSticker(getContext(), item, this, removable, addable, ratable, expandable, checkable, future_day);
-        this.addView(sticker);
-
-    }
 
     public void onRateItem(EdibleItem item){
         actionCallback.onRateEdibleItem(item);

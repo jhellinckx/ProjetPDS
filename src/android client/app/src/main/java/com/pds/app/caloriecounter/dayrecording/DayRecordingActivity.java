@@ -1,21 +1,16 @@
 package com.pds.app.caloriecounter.dayrecording;
 
-import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -29,13 +24,10 @@ import com.pds.app.caloriecounter.itemview.EdibleItemList;
 import com.pds.app.caloriecounter.itemview.SportActionCallback;
 import com.pds.app.caloriecounter.itemview.SportList;
 import com.pds.app.caloriecounter.rawlibs.CircularButton;
-import com.pds.app.caloriecounter.utils.Converter;
 import com.pds.app.caloriecounter.utils.EvenSpaceView;
 import com.shehabic.droppy.DroppyClickCallbackInterface;
-import com.shehabic.droppy.DroppyMenuItem;
 import com.shehabic.droppy.DroppyMenuPopup;
 import com.shehabic.droppy.animations.DroppyFadeInAnimation;
-import android.widget.Toast;
 
 import org.calorycounter.shared.models.EdibleItem;
 import org.calorycounter.shared.models.Food;
@@ -48,21 +40,37 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import static com.pds.app.caloriecounter.GraphicsConstants.Global.*;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.*;
-import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.*;
+
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.CALORIES_UNIT;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.DEFAULT_UNIT;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_CALORIES;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_CARBO;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_FOODS;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_PROTEINS;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_RDI;
+import static com.pds.app.caloriecounter.GraphicsConstants.Global.TITLE_SPORTS;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_CHECKABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_EXPANDABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_FUTURE_DAY;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_RATABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemList.FLAG_REMOVABLE;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_HEIGHT;
+import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WIDTH;
 import static com.pds.app.caloriecounter.GraphicsConstants.Recording.TITLE_COLOR;
+import static org.calorycounter.shared.Constants.date.SDFORMAT;
 import static org.calorycounter.shared.Constants.network.CAL_TO_JOULE_FACTOR;
+import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
 import static org.calorycounter.shared.Constants.network.CHILD_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.CHOSEN_SPORT_REQUEST;
 import static org.calorycounter.shared.Constants.network.DATA;
+import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
+import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_ID;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
@@ -83,6 +91,7 @@ import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUES
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_CARBOHYDRATES;
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 import static org.calorycounter.shared.Constants.network.MEN_DAILY_ENERGY;
+import static org.calorycounter.shared.Constants.network.RECIPE_LIST;
 import static org.calorycounter.shared.Constants.network.RECIPE_OR_FOOD;
 import static org.calorycounter.shared.Constants.network.REQUEST_TYPE;
 import static org.calorycounter.shared.Constants.network.SEND_RATINGS_REQUEST;
@@ -91,19 +100,14 @@ import static org.calorycounter.shared.Constants.network.SPORTS_LIST_RESPONSE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SIZE;
 import static org.calorycounter.shared.Constants.network.SPORTS_LIST_SUCCESS;
 import static org.calorycounter.shared.Constants.network.SPORT_DURATION;
-import static org.calorycounter.shared.Constants.network.SPORT_NAME;
-import static org.calorycounter.shared.Constants.network.CHANGE_EATEN_STATUS_REQUEST;
-import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.SPORT_LIST;
-import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
+import static org.calorycounter.shared.Constants.network.SPORT_NAME;
 import static org.calorycounter.shared.Constants.network.TEEN_DAILY_ENERGY;
 import static org.calorycounter.shared.Constants.network.WOMEN_DAILY_ENERGY;
-import static org.calorycounter.shared.Constants.network.FOOD_CODE;
-import static org.calorycounter.shared.Constants.network.RECIPE_LIST;
+import static org.calorycounter.shared.Constants.network.networkJSON;
+
 //import static org.calorycounter.shared.Constants.network.RECOMMENDED_FOOD_REQUEST;
 //import static org.calorycounter.shared.Constants.network.FOOD;
-import static org.calorycounter.shared.Constants.network.networkJSON;
-import static org.calorycounter.shared.Constants.date.SDFORMAT;
 
 public class DayRecordingActivity extends MenuNavigableActivity implements RateFoodDialogFragment.RateFoodDialogListener, EdibleItemActionCallback {
 
@@ -120,7 +124,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     private String gender;
     private static float maxCal;
     private String current_day;
-    Date current_date;
+    private Date current_date;
+    private EdibleItemList edibleItemList;
     boolean future_day = false;
 
 
@@ -264,9 +269,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         DailyRecording foodsContainer;
         if(current_date.after(Calendar.getInstance().getTime())){
             future_day = true;
-            foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY));
+            edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY);
+            foodsContainer = new DailyRecording(this, TITLE_FOODS, edibleItemList);
         }else{
-            foodsContainer = new DailyRecording(this, TITLE_FOODS, new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE));
+            edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE);
+            foodsContainer = new DailyRecording(this, TITLE_FOODS, edibleItemList);
         }
 
         if( future_day || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){ //future_day or current_day : display Circular Button
@@ -442,6 +449,13 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         JSONObject data = new JSONObject();
         data.put(FOOD_ID, id);
         data.put(FOOD_RATING, rating);
+
+        for(int i =0; i<dailyFoods.size();++i){
+            if(dailyFoods.get(i).getId() == id){
+                edibleItemList.setRatingBar(dailyFoods.get(i),rating);
+            }
+        }
+
         send(networkJSON(SEND_RATINGS_REQUEST, data));
     }
 

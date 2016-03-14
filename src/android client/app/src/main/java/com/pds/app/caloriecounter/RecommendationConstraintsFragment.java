@@ -31,7 +31,9 @@ import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.IMAGE_WID
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_COLOR;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_MAX_LINES;
 import static com.pds.app.caloriecounter.GraphicsConstants.ItemSticker.MAIN_TEXT_SIZE;
-import static org.calorycounter.shared.Constants.network.*;
+import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_CARBOHYDRATES;
+import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_FAT;
+import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
 
 
 public class RecommendationConstraintsFragment extends Fragment {
