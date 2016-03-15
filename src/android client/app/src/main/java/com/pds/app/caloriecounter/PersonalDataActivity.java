@@ -463,11 +463,7 @@ public class PersonalDataActivity extends MenuNavigableActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    String gender = (String) data.get(UPDATE_DATA_GENDER);
-                    genderToSpinerId(gender);
-                    ageBracketSpinner.setId(id);
-                    heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT)));
-                    weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT)));
+                    initValues(data);
 
                 }
             });
@@ -481,6 +477,14 @@ public class PersonalDataActivity extends MenuNavigableActivity {
         });
 
 
+    }
+
+    private void initValues(JSONObject data){
+        String gender = (String) data.get(UPDATE_DATA_GENDER);
+        genderToSpinerId(gender);
+        ageBracketSpinner.setId(id);
+        heightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_HEIGHT)));
+        weightEditText.setText(String.valueOf((double) data.get(UPDATE_DATA_WEIGHT)));
     }
 
     public void genderToSpinerId(String gender){

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content" android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/primary">
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/rateTitle"
@@ -12,19 +12,16 @@
         android:text="@string/rateTitle"
         android:textAppearance="@android:style/TextAppearance.Large.Inverse"
         android:gravity="left|center_vertical"
-        android:textStyle="bold"
-        android:shadowColor="@android:color/black"
-        android:shadowRadius="2"
-        android:background="@color/primary_dark"
+        android:textColor = "@color/grayy"
+        android:background= "@color/white"
         android:drawableLeft="@android:drawable/btn_star_big_on"
         android:drawablePadding="5dp"/>
 
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/grayy" >
+    </LinearLayout>
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -33,7 +30,7 @@
         android:stepSize="0.5"
         android:numStars="5"
         android:rating="0"
-        android:background="@color/primary"
+        android:background="@color/white"
         android:progressDrawable="@drawable/ratingbar_golden"
         android:layout_gravity="center"
         android:layout_margin="1sp" />

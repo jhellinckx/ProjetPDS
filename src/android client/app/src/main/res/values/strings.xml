@@ -36,7 +36,7 @@
     <string name="urlinfo">url for extra info:</string>
     <string name="productinfos">Informations Produit:</string>
 
-    <string name="rateTitle">Nom du produit :</string>
+    <string name="rateTitle">Nom du produit</string>
     <!-- Id's -->
     <item name="btn_signup" type="id"></item>
     <item name="btn_login" type="id"></item>

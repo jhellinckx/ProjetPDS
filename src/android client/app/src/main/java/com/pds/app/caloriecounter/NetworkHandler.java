@@ -137,14 +137,8 @@ public class NetworkHandler {
             } else if (request.equals(SIGN_UP_REQUEST)) {
                 _doDispatch(msg, SignActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST)) {
-
                 _doDispatch(msg, RecommendationActivity.class);
-            } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
-                _doDispatch(msg, RatingActivity.class);
-            } else if (request.equals(RECOMMEND_REQUEST)) {
-                _doDispatch(msg, RecommendationActivity.class);
-            } else if (request.equals(UPDATE_DATA_REQUEST)) {
-                _doDispatch(msg, RecommendationActivity.class);
+            }else if (request.equals(UPDATE_DATA_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(RANDOM_UNRANKED_FOODS_REQUEST)) {
                 _doDispatch(msg, RatingActivity.class);
@@ -153,8 +147,6 @@ public class NetworkHandler {
             }  else if (request.equals(CHOSEN_SPORT_REQUEST)) {
                 _doDispatch(msg, DayRecordingActivity.class);
             }else if (request.equals(RECOMMEND_REQUEST)) {
-                _doDispatch(msg, RecommendationActivity.class);
-            } else if (request.equals(UPDATE_DATA_REQUEST)) {
                 _doDispatch(msg, RecommendationActivity.class);
             }else if (request.equals(DATA_REQUEST)){
                 _doDispatch(msg, PersonalDataActivity.class);
@@ -172,7 +164,7 @@ public class NetworkHandler {
             }else if (request.equals(CHANGE_EATEN_STATUS_REQUEST)){
 
             }else if (request.equals(DELETE_FOOD_HISTORY_REQUEST)){
-                //_doDispatch(msg, DayRecordingActivity.class);
+
             }else if (request.equals(DELETE_SPORT_HISTORY_REQUEST)){
 
             }else if (request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)) {
