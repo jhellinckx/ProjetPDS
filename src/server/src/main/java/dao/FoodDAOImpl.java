@@ -17,14 +17,13 @@ import util.ImageConverter;
 public class FoodDAOImpl implements FoodDAO {
 	private DAOFactory daoFactory;
 	private static final String SQL_SELECT_BY_NAME = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE product_name = ?";
-	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE code = ?";
+	private static final String SQL_SELECT_BY_CODE = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE code = ? OR code_lstrip = ?";
 	private static final String SQL_SELECT_BY_ID = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE id_food = ?";
     private static final String SQL_SELECT_BY_URL = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food WHERE image_url = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food";
     private static final String SQL_SELECT_LESS_THAN_LEVELS = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? ORDER BY energy_100g DESC";
     private static final String SQL_SELECT_LESS_THAN_LEVELS_AND_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where energy_100g BETWEEN 0 AND ? AND fat_100g <= ? AND proteins_100g <= ? AND saturated_fat_100g <= ? AND carbohydrates_100g <= ? AND sugars_100g <= ? AND salt_100g <= ? AND categories LIKE ? ORDER BY energy_100g DESC";
     private static final String SQL_SELECT_ALL_BY_CATEGORY = "SELECT id_food, url, quantity, code, product_name, image_url, image_pic, energy_100g, fat_100g, proteins_100g, saturated_fat_100g, carbohydrates_100g, sugars_100g, salt_100g FROM Food where categories like ?";
-
 
 	FoodDAOImpl( DAOFactory daoFactory ) {
 		this.daoFactory = daoFactory;
@@ -44,7 +43,27 @@ public class FoodDAOImpl implements FoodDAO {
 	
 	@Override
 	public Food findByCode(String code) throws DAOException {
-		return find( SQL_SELECT_BY_CODE, code );
+		Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Food food = null;
+
+        try {
+            // Recuperation d'une connexion depuis la Factory 
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_BY_CODE, false, code,code);
+            resultSet = preparedStatement.executeQuery();
+            // Parcours de la ligne de donnees de l'eventuel ResulSet retourne 
+            if ( resultSet.next() ) {
+                food = map( resultSet );
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return food;
 	}
 	
 	@Override
