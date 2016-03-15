@@ -26,8 +26,9 @@ public class ContentBasedWorker implements Runnable{
 			while(isRunning()){
 				Map.Entry<Long, List<Long>> userRatings = _manager.requestNewRatings();
 				_predictionsDatabase.removePredictions(userRatings.getValue());
+				System.out.println("FETCHING PREDICTIONS FOR USER WITH ID " + Long.toString(userRatings.getKey()) + "...");
 				List<NearestNeighboursPrediction> predictions = _predictionsDatabase.getAllNearestNeighboursPredictionsForUser(userRatings.getKey());
-				System.out.println("GOT ALL PREDICTIONS ! STARTING COMPUTATIONS...");
+				System.out.println("FETCHED ALL PREDICTIONS ! STARTING " + Integer.toString(predictions.size()) + " COMPUTATIONS...");
 				for(NearestNeighboursPrediction pred : predictions){
 					pred.compute();
 				}

@@ -40,10 +40,10 @@ nb_images = 6573
 max_sql_single_insert = 500
 
 
-LAMBDA_INGR = 5
-LAMBDA_TAG = 5
-LAMBDA_ORIGIN = 10
-LAMBDA_SUB_CAT = 7
+LAMBDA_INGR = 4
+LAMBDA_TAG = 8
+LAMBDA_ORIGIN = 12
+LAMBDA_SUB_CAT = 6
 
 # Recipes variable
 min_ratings = 10

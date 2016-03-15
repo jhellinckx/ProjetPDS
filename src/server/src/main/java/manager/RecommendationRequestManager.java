@@ -113,7 +113,7 @@ public class RecommendationRequestManager implements RequestManager{
 
 	private JSONObject recommendRecipes(List<EdibleItem> pastFoods, Float maxEnergy, Float maxFat, Float maxProt, Float maxCarbo, String category){
 		_knowledgeBased.updateUser(user);
-		ArrayList<Recipe> recommendedRecipes = _knowledgeBased.recommendRecipe(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, category);
+		ArrayList<Recipe> recommendedRecipes = _knowledgeBased.recommendRecipe(pastFoods,maxEnergy,maxFat,maxProt,maxCarbo, RECOMMENDATIONS_REQUIRED, category);
 		if(recommendedRecipes.size()>10){
 			recommendedRecipes = new ArrayList<Recipe>(recommendedRecipes.subList(0,10));
 		}

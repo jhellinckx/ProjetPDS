@@ -21,10 +21,10 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 	" ON DUPLICATE KEY UPDATE prediction=VALUES(prediction)";
 	public static final String SQL_SELECT_ALL_PREDICTION_RATING_PAIRS_WITH_SIMILARITY =
 	"SELECT prediction_id, similarity, rank, recipe_id, numRecipe from CBUserPredictions "+
-	"JOIN User_Preferences ON numUser=user_id " +
-	"JOIN RecipeSimilarity ON first_recipe_id=recipe_id "+
-	"AND second_recipe_id=numRecipe "+
-	"WHERE user_id=? ORDER BY recipe_id, similarity DESC";
+	"JOIN User_Preferences ON numUser=CBUserPredictions.user_id " +
+	"JOIN RecipeSimilarity ON first_recipe_id=CBUserPredictions.recipe_id "+
+	"AND second_recipe_id=User_preferences.numRecipe "+
+	"WHERE CBUserPredictions.user_id=? ORDER BY recipe_id, similarity DESC";
 
 	private DAOFactory _daoFactory;
 
@@ -104,17 +104,18 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 		ResultSet resultSet = null;
 		List<NearestNeighboursPrediction> predictions = 
 		new ArrayList<NearestNeighboursPrediction>(getNumberOfNeededPredictionsForUser(user_id));
+		System.out.println("NEEDED PREDICTIONS = " + Integer.toString(getNumberOfNeededPredictionsForUser(user_id)));
 		try {
         	connexion = _daoFactory.getConnection();
             preparedStatement = initializationPreparedRequest(connexion, SQL_SELECT_ALL_PREDICTION_RATING_PAIRS_WITH_SIMILARITY, false, user_id);
            	resultSet = preparedStatement.executeQuery();
             Integer previous = -1;
             Integer current;
-            NearestNeighboursPrediction currentPrediction = new NearestNeighboursPrediction(0, 0, 0, 0);
+            NearestNeighboursPrediction currentPrediction = new NearestNeighboursPrediction(0, 0, 0);
             while(resultSet.next()){
             	current = resultSet.getInt("recipe_id");
-            	if(current != previous){
-            		currentPrediction = mapNearestNeighboursPrediction(resultSet); 
+            	if(!current.equals(previous)){
+            		currentPrediction = new NearestNeighboursPrediction(new Long(resultSet.getInt("prediction_id")), new Long(current), user_id); 
             		predictions.add(currentPrediction);
             		previous = current;
             	}
@@ -128,9 +129,5 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
             silentClosures( preparedStatement, connexion );
         }
 		return predictions;
-	}
-
-	private NearestNeighboursPrediction mapNearestNeighboursPrediction(ResultSet result)throws SQLException{
-		return new NearestNeighboursPrediction(new Long(result.getInt("prediction_id")), new Long(result.getInt("recipe_id")), new Long(result.getInt("user_id")), result.getFloat("prediction"));
 	}
 }

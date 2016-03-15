@@ -86,9 +86,9 @@ public class KnowledgeBasedFilter {
 		return results;
 	}
 
-	private ArrayList<Recipe> recommendMethodRecipe(List<EdibleItem> previousAliments, String category) {
+	private ArrayList<Recipe> recommendMethodRecipe(List<EdibleItem> previousAliments, String category, int recoms) {
 		previousEatenAliments(previousAliments);
-		ArrayList<Recipe> results = new ArrayList<Recipe>(recipeDAO.findRecipeWithLessThanLevels(energyNeeded, fatNeeded, proteinsNeeded, carbohydratesNeeded, category));
+		ArrayList<Recipe> results = new ArrayList<Recipe>(recipeDAO.findRecipeWithLessThanLevelsOrderByPredictionsWithLimit(energyNeeded, fatNeeded, proteinsNeeded, carbohydratesNeeded, recoms, currentUser.getId(), category));
 		return results;
 	}
 
@@ -105,11 +105,11 @@ public class KnowledgeBasedFilter {
 		return recommendMethodFood(previousAliments,category);
 	}
 
-	public ArrayList<Recipe> recommendRecipe(List<EdibleItem> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn, String category) {
+	public ArrayList<Recipe> recommendRecipe(List<EdibleItem> previousAliments, float energySupBorn, float fatSupBorn, float proteinsSupBorn, float carbohydratesSupBorn, int nbrRecoms, String category) {
 		energyNeeded = energySupBorn;
 		fatNeeded = fatSupBorn;
 		proteinsNeeded = proteinsSupBorn;
 		carbohydratesNeeded = carbohydratesSupBorn;
-		return recommendMethodRecipe(previousAliments,category);
+		return recommendMethodRecipe(previousAliments,category,nbrRecoms);
 	}
 }
