@@ -203,7 +203,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     private void postResponseInitialisations(){
-        initFoodsRecording();
+        initFoodsRecording(2);
         initSportsRecording();
 
         setintakesProgress();
@@ -269,7 +269,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
 
     }
 
-    private void initFoodsRecording(){
+    private void initFoodsRecording(int index){
         if(current_date.after(Calendar.getInstance().getTime())){
             future_day = true;
             edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY);
@@ -278,7 +278,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
             edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE);
             foodsContainer = new DailyRecording(this, TITLE_FOODS, edibleItemList);
         }
+        addAddButton();
+        stickersLayout.addView(foodsContainer, index);
+    }
 
+    private void addAddButton(){
         if( future_day || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){ //future_day or current_day : display Circular Button
             LinearLayout addMenuLayout = new LinearLayout(this);
             addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -317,7 +321,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
                     .setYOffset(5)
                     .build();
         }
-        stickersLayout.addView(foodsContainer);
     }
 
     private void initSportsRecording(){
@@ -565,6 +568,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
             @Override
             public void run() {
                 stickersLayout.removeView(foodsContainer);
+                /*
                 if (current_date.after(Calendar.getInstance().getTime())) {
                     future_day = true;
                     edibleItemList = new EdibleItemList(activity, dailyFoods, activity, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY);
@@ -574,6 +578,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
                     foodsContainer = new DailyRecording(context, TITLE_FOODS, edibleItemList);
                 }
                 stickersLayout.addView(foodsContainer, index);
+                */
+                initFoodsRecording(index);
             }
         });
 
@@ -584,7 +590,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     public void handleMessage(JSONObject msg){
         Log.d("DAYRECORDING HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
-        JSONObject data = (JSONObject)msg.get(DATA);
+        final JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(SPORTS_LIST_REQUEST)) {
             String response = (String) data.get(SPORTS_LIST_RESPONSE);
             if (response.equals(SPORTS_LIST_SUCCESS)) {
