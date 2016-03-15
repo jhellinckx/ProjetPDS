@@ -54,6 +54,8 @@ public class EdibleItemSticker extends CardView {
             }
         }
     }
+    private static final int IMAGE_REDUCING_FACTOR = 4;
+
     private EdibleItem item;
     private LinearLayout cardLayout;
     private CircleImageView cardImage;
@@ -123,8 +125,10 @@ public class EdibleItemSticker extends CardView {
         cardImage = new CircleImageView(getContext());
         EdibleItemImage pic = item.getImagePic();
         byte[] img_bytes = pic.getImageBytesArray();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = IMAGE_REDUCING_FACTOR;
         Bitmap bmp;
-        bmp = BitmapFactory.decodeByteArray(img_bytes, 0, img_bytes.length);
+        bmp = BitmapFactory.decodeByteArray(img_bytes, 0, img_bytes.length, options);
         cardImage.setImageBitmap(bmp);
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         imageParams.setMargins(0, 0, SPACE_BETWEEN_IMAGE_AND_TEXT, 0);
