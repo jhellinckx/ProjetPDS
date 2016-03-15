@@ -154,7 +154,7 @@ public class NetworkHandler {
             } else if (request.equals(HISTORY_REQUEST)) {
                 _doDispatch(msg, HistoryActivity.class);
             } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)) {
-                _doDispatch(msg, HistoryActivity.class);
+                _doDispatch(msg, DayRecordingActivity.class);
             } else if (request.equals(FOOD_CATEGORIES_REQUEST)){
                 _doDispatch(msg, RecommendationActivity.class);
             } else if (request.equals(RECIPE_CATEGORIES_REQUEST)){
