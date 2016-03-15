@@ -306,7 +306,7 @@ public class RecommendationConstraintsFragment extends Fragment {
     }
 
     public interface OnItemClickListener {
-        public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category);
+        public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category, DailyRecording container);
     }
 
     @Override
@@ -345,12 +345,12 @@ public class RecommendationConstraintsFragment extends Fragment {
             if(isReceipt){
                 recipeOrFood= "recipe";
                 listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
-                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString());
+                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString(), infosContainer);
             }
             else{
                 recipeOrFood = "food";
                 listener.onResultsClick(editTextList.get(0).getText().toString(), editTextList.get(1).getText().toString(),
-                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString());
+                        editTextList.get(2).getText().toString(), editTextList.get(3).getText().toString(),recipeOrFood,_autoComplete.getText().toString(), infosContainer);
             }
         }
     }

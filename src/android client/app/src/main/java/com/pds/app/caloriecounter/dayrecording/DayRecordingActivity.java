@@ -391,9 +391,8 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     public void onAddScan(){
-        /*IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-        scanIntegrator.initiateScan();*/
-        sendCode("08711118010172", date.getText().toString());
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        scanIntegrator.initiateScan();
     }
 
     public void onAddArticle(){
