@@ -91,6 +91,7 @@ articles_names_correction = \
 				DetailedArticle.TOTAL_QUANTITY_KEY 					: "quantity",\
 				DetailedArticle.INGREDIENTS_TEXT_KEY 				: "ingredients_text",\
 				DetailedArticle.BAR_CODE_KEY 						: "code",\
+				DetailedArticle.BAR_CODE_STRIPPED_KEY				: "code_lstrip",\
 				DetailedArticle.ALLERGENS_CONTAINS_KEY 				: "allergens",\
 				DetailedArticle.ALLERGENS_TRACE_OF_KEY 				: "traces",\
 			}
@@ -150,6 +151,7 @@ articles_details_sql_types = \
 				DetailedArticle.TOTAL_QUANTITY_KEY 					: "VARCHAR(255)",\
 				DetailedArticle.INGREDIENTS_TEXT_KEY 				: "TEXT",\
 				DetailedArticle.BAR_CODE_KEY 						: "VARCHAR(255)",\
+				DetailedArticle.BAR_CODE_STRIPPED_KEY 				: "VARCHAR(255)",\
 				DetailedArticle.ALLERGENS_CONTAINS_KEY 				: "TEXT",\
 				DetailedArticle.ALLERGENS_TRACE_OF_KEY 				: "TEXT",\
 			}
@@ -198,6 +200,8 @@ def create_food_table():
 		[
 			"ALTER TABLE Food "
 			"ADD INDEX ind_code(code);",\
+			"ALTER TABLE Food "
+			"ADD INDEX ind_code_lstrip(code_lstrip);",\
 			"ALTER TABLE Food "
 			"ADD INDEX ind_url(url);",\
 			"ALTER TABLE Food "
@@ -257,6 +261,11 @@ def insert_items_in_food():
 						article[key] = float(maybe_float.replace(',','.'))
 					except ValueError:
 						article[key] = None
+			if DetailedArticle.BAR_CODE_KEY in article:
+				if article[DetailedArticle.BAR_CODE_KEY] == None :
+					article[DetailedArticle.BAR_CODE_STRIPPED_KEY] = None
+				else:
+					article[DetailedArticle.BAR_CODE_STRIPPED_KEY] = article[DetailedArticle.BAR_CODE_KEY][1:]	
 			articles.append(article)
 			if insert :
 				cursor.executemany(article_insert_command, articles)

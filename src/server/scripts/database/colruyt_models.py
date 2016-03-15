@@ -85,6 +85,7 @@ class DetailedArticle(BaseArticle):
 	TOTAL_QUANTITY_KEY = "total_quantity"
 	INGREDIENTS_TEXT_KEY = "ingredients_text"
 	BAR_CODE_KEY = "bar_code"
+	BAR_CODE_STRIPPED_KEY = "lstrip_code"
 
 	ALLERGENS_CONTAINS_KEY = "allergens_contains"
 	ALLERGENS_TRACE_OF_KEY = "allergens_trace"
