@@ -77,6 +77,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private Boolean init=true;
     private EdibleItemList edibleItemList;
     private LinearLayout loadingLayout;
+    private boolean loadingLayoutEnabled = true;
 
 
 
@@ -138,7 +139,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categorieText.setLayoutParams(categorieTextParams);
         categorieText.setTextSize(MAIN_TEXT_SIZE);
         categorieText.setTextColor(MAIN_TEXT_COLOR);
-        categorieText.setText("Catégorie de Recettes : ");
+        categorieText.setText("Catégorie : ");
+        categorieText.setPadding(20,0,0,0);
         categorieText.setMaxLines(MAIN_TEXT_MAX_LINES);
         categorieText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         categorieText.setEllipsize(TextUtils.TruncateAt.END);
@@ -153,7 +155,10 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 stickersLayout.removeView(ratingContainer);
-                addLoadingLayout();
+                if(!loadingLayoutEnabled){
+                    loadingLayoutEnabled = true;
+                    addLoadingLayout();
+                }
                 sendFoodsToBeRatedRequest();
             }
 
@@ -191,7 +196,9 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             public void onClick(View v) {
                 validateButton.setClickable(false);
                 stickersLayout.removeView(ratingContainer);
-                addLoadingLayout();
+                if(!loadingLayoutEnabled){
+                    addLoadingLayout();
+                }
                 sendFoodsToBeRatedRequest();
 
             }
@@ -233,29 +240,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
-                foodsToBeRated = new ArrayList<>();
-                initializer(foodsToBeRated);
-
-                JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
-                for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
-                    EdibleItem item = new Recipe();
-                    item.initFromJSON((JSONObject) jsonRecipes.get(i));
-                    foodsToBeRated.set(i, item);
-                    System.out.println(item.getProductName());
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        stickersLayout.removeView(loadingLayout);
-                        if(init){
-                            addFoodListLayout();
-                            init=false;
-                        }else{
-                            updateAddFoodListLayout();
-                        }
-                    }
-                });
-
+                onRecipesReceived(data);
             }
         }
         if(request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)){
@@ -271,6 +256,32 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             });
 
         }
+    }
+
+    private void onRecipesReceived(JSONObject data){
+        loadingLayoutEnabled = false;
+        foodsToBeRated = new ArrayList<>();
+        initializer(foodsToBeRated);
+
+        JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
+        for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
+            EdibleItem item = new Recipe();
+            item.initFromJSON((JSONObject) jsonRecipes.get(i));
+            foodsToBeRated.set(i, item);
+            System.out.println(item.getProductName());
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stickersLayout.removeView(loadingLayout);
+                if(init){
+                    addFoodListLayout();
+                    init=false;
+                }else{
+                    updateAddFoodListLayout();
+                }
+            }
+        });
     }
 
 

@@ -53,7 +53,7 @@ public class RateFoodDialogFragment extends DialogFragment {
         builder.setView(view);
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
         TextView text = ((TextView) view.findViewById(R.id.rateTitle));
-        text.setText((String) text.getText() + ": " + name);
+        text.setText((String) text.getText() + " : " + name);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override

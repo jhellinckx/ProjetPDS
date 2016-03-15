@@ -434,15 +434,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         startNewRecomActivityWithInfos(true);
     }
 
-    public void addPotentialRecommendation() {
-
-        Bundle b = getIntent().getExtras();
-        if (!getIntent().hasExtra("selectedItem")) {
-
-        } else {
-            String recomCode = b.getString("selectedItem");
-        }
-    }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
