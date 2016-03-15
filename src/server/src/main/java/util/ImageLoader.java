@@ -10,9 +10,13 @@ public class ImageLoader {
 
 	public static void loadImages(List<? extends EdibleItem> items){
 		for (EdibleItem item : items){
-			String filename = item.getImagePath();
-			EdibleItemImage img = new EdibleItemImage(ImageConverter.getBufferedImageFromFile(filename));
-			item.setImagePic(img);
+			loadImage(item);
 		}
+	}
+
+	public static void loadImage(EdibleItem item){
+		String filename = item.getImagePath();
+		EdibleItemImage img = new EdibleItemImage(ImageConverter.getBufferedImageFromFile(filename));
+		item.setImagePic(img);
 	}
 }
