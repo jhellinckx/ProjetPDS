@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -75,6 +76,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private DailyRecording ratingContainer;
     private Boolean init=true;
     private EdibleItemList edibleItemList;
+    private LinearLayout loadingLayout;
 
 
 
@@ -99,6 +101,22 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         addHeader();
         sendRecipeCategoriesRequest();
 
+    }
+
+    private void addLoadingLayout() {
+        loadingLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams loadingParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        loadingLayout.setLayoutParams(loadingParams_);
+        loadingLayout.setOrientation(LinearLayout.HORIZONTAL);
+        loadingLayout.setGravity(Gravity.CENTER);
+
+        ProgressBar progressBar = new ProgressBar(this);
+        LinearLayout.LayoutParams loadingParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        progressBar.setLayoutParams(loadingParams);
+        progressBar.setIndeterminate(true);
+        loadingLayout.addView(progressBar);
+
+        stickersLayout.addView(loadingLayout);
     }
 
     private void sendRecipeCategoriesRequest() {
@@ -134,14 +152,13 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                //updateSeekBarAndText();
+                stickersLayout.removeView(ratingContainer);
+                addLoadingLayout();
                 sendFoodsToBeRatedRequest();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
+            public void onNothingSelected(AdapterView<?> parentView) {}
         });
 
         categorieTextLayout.addView(categoriesSpinner);
@@ -173,6 +190,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             @Override
             public void onClick(View v) {
                 validateButton.setClickable(false);
+                stickersLayout.removeView(ratingContainer);
+                addLoadingLayout();
                 sendFoodsToBeRatedRequest();
 
             }
@@ -227,6 +246,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        stickersLayout.removeView(loadingLayout);
                         if(init){
                             addFoodListLayout();
                             init=false;
@@ -266,8 +286,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private void initSpinner(){
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         categoriesSpinner.setAdapter(ageAdapter);
-        //categoriesSpinner.setSelection(id);
-
     }
 
     private ArrayList<String> createCategoriesList(){

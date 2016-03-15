@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -50,8 +51,14 @@ public class RecommendationConstraintsFragment extends Fragment {
     private SeekBar tmpSeekBar = null;
     private EditText tmpEditText = null;
 
-    private ArrayList<SeekBar> seekBarList = new ArrayList<SeekBar>();
-    private ArrayList<EditText> editTextList = new ArrayList<EditText>();
+    private ArrayList<SeekBar> seekBarList = new ArrayList<>();
+    private ArrayList<EditText> editTextList = new ArrayList<>();
+    private ArrayList<LinearLayout> sliderLayouts = new ArrayList<>();
+    private ArrayList<LinearLayout> sliderTextLayouts = new ArrayList<>();
+
+    private LinearLayout loadingLayout;
+    private LinearLayout calorieTextLayout;
+    private LinearLayout validateLayout;
 
     private Boolean isReceipt;
 
@@ -88,6 +95,23 @@ public class RecommendationConstraintsFragment extends Fragment {
 
     }
 
+    private void addLoadingLayout() {
+        loadingLayout = new LinearLayout(getContext());
+        LinearLayout.LayoutParams loadingParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        loadingLayout.setLayoutParams(loadingParams_);
+        loadingLayout.setOrientation(LinearLayout.HORIZONTAL);
+        loadingLayout.setGravity(Gravity.CENTER);
+
+        ProgressBar progressBar = new ProgressBar(getContext());
+        LinearLayout.LayoutParams loadingParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        progressBar.setLayoutParams(loadingParams);
+        progressBar.setIndeterminate(true);
+        loadingLayout.addView(progressBar);
+
+        constraintsLayout.addView(loadingLayout);
+
+    }
+
     public void addSliderLayout(String title){
         LinearLayout sliderTextLayout = new LinearLayout(getContext());
         LinearLayout.LayoutParams sliderContParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -121,7 +145,7 @@ public class RecommendationConstraintsFragment extends Fragment {
         tmpEditText.setFocusable(false);
         sliderTextLayout.addView(tmpEditText);
 
-
+        sliderTextLayouts.add(sliderTextLayout);
         constraintsLayout.addView(sliderTextLayout);
 
         //calorie seekBar+editText
@@ -141,11 +165,12 @@ public class RecommendationConstraintsFragment extends Fragment {
         sliderLayout.addView(tmpSeekBar);
 
         //ajout calorie
+        sliderLayouts.add(sliderLayout);
         constraintsLayout.addView(sliderLayout);
     }
 
     public void addCategories(){
-        LinearLayout calorieTextLayout = new LinearLayout(getContext());
+        calorieTextLayout = new LinearLayout(getContext());
         LinearLayout.LayoutParams calorieSliderContParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         calorieTextLayout.setLayoutParams(calorieSliderContParams_);
         calorieTextLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -170,11 +195,11 @@ public class RecommendationConstraintsFragment extends Fragment {
 
 
     public void addFooterButton(){
-        LinearLayout validateLayout = new LinearLayout(getContext());
+        validateLayout = new LinearLayout(getContext());
         validateLayout.setOrientation(LinearLayout.HORIZONTAL);
-        final CircularButton validate = new CircularButton(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(IMAGE_WIDTH, IMAGE_HEIGHT);
         buttonParams.gravity = Gravity.RIGHT;
+        final CircularButton validate = new CircularButton(getContext());
         validate.setLayoutParams(buttonParams);
         validate.setImageResource(R.drawable.ic_done_white_24dp);
         validate.setButtonColor(getResources().getColor(R.color.primary));
@@ -189,12 +214,25 @@ public class RecommendationConstraintsFragment extends Fragment {
         validate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validate.setClickable(false);
+                removeViews();
+                infosContainer.setTitle("Calcul des recommandations en cours");
+                addLoadingLayout();
                 getResults();
 
             }
 
         });
+    }
+
+    private void removeViews(){
+        constraintsLayout.removeView(calorieTextLayout);
+        for(LinearLayout ll : sliderTextLayouts){
+            constraintsLayout.removeView(ll);
+        }
+        for(LinearLayout ll : sliderLayouts){
+            constraintsLayout.removeView(ll);
+        }
+        validateLayout.setVisibility(View.GONE);
     }
 
     private void addListenerToSeekBar(SeekBar bar, final EditText text){

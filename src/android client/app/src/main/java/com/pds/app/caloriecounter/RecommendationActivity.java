@@ -20,7 +20,6 @@ import static org.calorycounter.shared.Constants.network.DATA_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_SIZE;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORY;
-import static org.calorycounter.shared.Constants.network.FOOD_CODE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_RESPONSE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_SUCCESS;
@@ -65,6 +64,7 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
     private Boolean isReceipt;
     private float maxCal;
 
+
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
     private String current_date;
@@ -97,6 +97,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
         initCategories();
         launchConstraintFragment();
     }
+
+
 
     public void launchConstraintFragment(){
         FragmentTransaction transaction = manager.beginTransaction();
@@ -140,12 +142,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
             for(int i=0; i<data.size(); i++) {
                 _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            launchConstraintFragment();
+            //launchConstraintFragment();
         } else if(request.equals(RECIPE_CATEGORIES_REQUEST)) {
             for (int i = 0; i < data.size(); i++) {
                 _recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            launchConstraintFragment();
+            //launchConstraintFragment();
         }else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
