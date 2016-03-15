@@ -36,10 +36,6 @@
             android:name=".HistoryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ScanningActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".SignActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
