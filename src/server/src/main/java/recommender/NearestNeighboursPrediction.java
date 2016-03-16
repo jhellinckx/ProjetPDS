@@ -11,6 +11,7 @@ public class NearestNeighboursPrediction{
 	private float _prediction;
 	private List<Map.Entry<Float, Float>> _neighbours;
 
+	private static final float MIN_RATING = 3;
 	private static final int K_MAX_NEIGHBOURS = 3;
 
 	public NearestNeighboursPrediction(long predid, long recid, long usrid){
@@ -25,15 +26,17 @@ public class NearestNeighboursPrediction{
 		float similaritiesSum = 0;
 		float similaritiesSumWeighted = 0;
 		for(Map.Entry<Float, Float> neighbour : _neighbours){
-			similaritiesSum += neighbour.getValue();
-			similaritiesSumWeighted += neighbour.getValue() * neighbour.getKey(); // similarity * rating
+			if(neighbour.getKey() >= MIN_RATING){
+				//similaritiesSum += neighbour.getValue();
+				similaritiesSumWeighted += neighbour.getValue() * neighbour.getKey(); // similarity * rating
+			}
 		}
-		if(similaritiesSum == 0 || similaritiesSumWeighted == 0){
-			setPrediction(0);
-		}
-		else{
-			setPrediction(similaritiesSumWeighted / similaritiesSum);
-		}
+		// if(similaritiesSum == 0 || similaritiesSumWeighted == 0){
+		// 	setPrediction(0);
+		// }
+		//else{
+		setPrediction(similaritiesSumWeighted);
+		//}
 	}
 
 	public void addNeighbour(Float rating, Float similarity){

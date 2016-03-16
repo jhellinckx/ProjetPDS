@@ -44,7 +44,7 @@ public class RecipeDAOImpl implements RecipeDAO {
     "JOIN Recipe ON Recipe.recipe_id=CBUserPredictions.recipe_id "+ 
     "JOIN RecipeCategories ON RecipeCategories.recipe_id=CBUserPredictions.recipe_id "+
     "JOIN JDFCategory ON JDFCategory.category_id=RecipeCategories.category_id "+
-    "AND JDFCategory.is_main=1 AND JDFCategory.category_name='?' "+
+    "AND JDFCategory.is_main=1 AND JDFCategory.category_name=? "+
     "WHERE CBUserPredictions.user_id=? AND portion_calorie BETWEEN 0 AND ? "+
     "AND portion_fat BETWEEN 0 AND ? AND portion_protein BETWEEN 0 AND ? "+
     "AND portion_carbo BETWEEN 0 AND ? "+

@@ -111,7 +111,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		FoodDAO foodDAO = null;
-
+		if(user==null)
+			return new ArrayList<>();
 		try{
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_FOODS_FOR_DATE, false, user.getId(), date);
@@ -373,7 +374,8 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		RecipeDAO recipeDAO = null;
-
+		if(user==null)
+			return new ArrayList<>();
 		try{
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_RECIPES_FOR_DATE, false, user.getId(), date);
