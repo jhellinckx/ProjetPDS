@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import com.pds.app.caloriecounter.dayrecording.DailyRecording;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,7 +22,6 @@ import static org.calorycounter.shared.Constants.network.DATA_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORIES_SIZE;
 import static org.calorycounter.shared.Constants.network.FOOD_CATEGORY;
-import static org.calorycounter.shared.Constants.network.FOOD_CODE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_RESPONSE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_SUCCESS;
@@ -65,9 +66,11 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
     private Boolean isReceipt;
     private float maxCal;
 
+
     private static ArrayList<JSONObject> _recommendationsResults = new ArrayList<>();
     private static Calendar calendar = Calendar.getInstance();
     private String current_date;
+    private DailyRecording constraints_container;       // Used to display no recommendation found message.
 
 
 
@@ -97,6 +100,8 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
         initCategories();
         launchConstraintFragment();
     }
+
+
 
     public void launchConstraintFragment(){
         FragmentTransaction transaction = manager.beginTransaction();
@@ -140,12 +145,12 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
             for(int i=0; i<data.size(); i++) {
                 _foodCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            launchConstraintFragment();
+            //launchConstraintFragment();
         } else if(request.equals(RECIPE_CATEGORIES_REQUEST)) {
             for (int i = 0; i < data.size(); i++) {
                 _recipeCategories.add(((String) data.get(CATEGORY_NAME + String.valueOf(i))));
             }
-            launchConstraintFragment();
+            //launchConstraintFragment();
         }else if(request.equals(FOOD_CODE_REQUEST)){
             String response =  (String)data.get(FOOD_CODE_RESPONSE);
             if(response.equals(FOOD_CODE_SUCCESS)){
@@ -204,26 +209,41 @@ public class RecommendationActivity extends MenuNavigableActivity implements Rat
         }
     }
 
-    public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category){
+    public void onResultsClick(String energy, String fat, String prot, String carbo, String recipeOrFood, String category, DailyRecording infosContainer){
+        constraints_container = infosContainer;
         addConstraintsToJSON(energy, fat, prot, carbo, recipeOrFood, category);
         send(networkJSON(RECOMMEND_REQUEST, recom_data));
+    }
+
+    private String getTitle(Boolean isReceipt){
+        String title = " ne correspond aux contraintes imposées (Un ou plusieurs Apports" +
+                "journaliers probablement atteints).";
+        if (isReceipt){
+            return "Aucune recette" + title;
+        }else{
+            return "Aucun aliment" + title;
+        }
     }
 
     public void onRecommendResults(JSONObject data){
         JSONArray jsonFoods = (JSONArray) data.get(RECOMMENDED_FOOD_LIST);
         _recommendationsResults = new ArrayList<>();
-        for (int i = 0; i < jsonFoods.size(); ++i) {
-            _recommendationsResults.add((JSONObject) jsonFoods.get(i));
+        String title = getTitle(isReceipt);
+        if (jsonFoods.size() == 0){
+            constraints_container.setTitle("Aucune");
+        } else {
+            for (int i = 0; i < jsonFoods.size(); ++i) {
+                _recommendationsResults.add((JSONObject) jsonFoods.get(i));
+            }
+            Log.d("RECOM LIST", _recommendationsResults.toString());
+            RecommendationResultsFragment resFrag = new RecommendationResultsFragment();
+
+            Bundle b = new Bundle();
+            b.putString("date", current_date);
+            b.putBoolean("isReceipt", isReceipt);
+            resFrag.setArguments(b);
+            replaceFragment(resFrag, "results");
         }
-        Log.d("RECOM LIST", _recommendationsResults.toString());
-        RecommendationResultsFragment resFrag = new RecommendationResultsFragment();
-
-        Bundle b = new Bundle();
-        b.putString("date", current_date);
-        b.putBoolean("isReceipt", isReceipt);
-        resFrag.setArguments(b);
-        replaceFragment(resFrag, "results");
-
     }
 
     public ArrayList<JSONObject> recommendationsResults(){

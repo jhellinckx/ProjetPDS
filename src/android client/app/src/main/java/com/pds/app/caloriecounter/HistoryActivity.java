@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static org.calorycounter.shared.Constants.network.*;
 import static org.calorycounter.shared.Constants.date.*;
@@ -292,11 +293,18 @@ public class HistoryActivity extends MenuNavigableActivity {
     }
 
     private List<String> pastDatesToStringList(){
+        List<Date> days = sortDates(past_intakes.keySet());
         List<String> dates = new ArrayList<>();
-        for (Date past_date : past_intakes.keySet()){
+        for (Date past_date : days){
             dates.add(SDFORMAT.format(past_date));
         }
         return dates;
+    }
+
+    private List<Date> sortDates(Set<Date> dates){
+        List<Date> days = new ArrayList<>(dates);
+        Collections.sort(days);
+        return days;
     }
 
     private final class ItemValueFormatter implements ValueFormatter{

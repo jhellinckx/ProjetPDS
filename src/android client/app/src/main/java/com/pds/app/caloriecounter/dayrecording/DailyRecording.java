@@ -74,4 +74,5 @@ public class DailyRecording extends CardView {
         layout.removeView(this.footer);
         this.initFooter(footer);
     }
+
 }

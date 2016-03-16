@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -72,6 +73,7 @@ import static org.calorycounter.shared.Constants.network.DELETE_FOOD_HISTORY_REQ
 import static org.calorycounter.shared.Constants.network.DELETE_SPORT_HISTORY_REQUEST;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE;
 import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST;
+import static org.calorycounter.shared.Constants.network.FOOD_CODE_REQUEST_HISTORY;
 import static org.calorycounter.shared.Constants.network.FOOD_ID;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_EATEN;
 import static org.calorycounter.shared.Constants.network.FOOD_IS_NEW;
@@ -87,6 +89,7 @@ import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SATURATED_FA
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SODIUM;
 import static org.calorycounter.shared.Constants.network.FOOD_TOTAL_SUGARS;
 import static org.calorycounter.shared.Constants.network.HISTORY_DATE;
+import static org.calorycounter.shared.Constants.network.HISTORY_FOOD;
 import static org.calorycounter.shared.Constants.network.HISTORY_FOR_DATE_REQUEST;
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_CARBOHYDRATES;
 import static org.calorycounter.shared.Constants.network.HUMAN_DAILY_PROTEINS;
@@ -116,6 +119,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     private List<EdibleItem> dailyFoods;
     private List<Sport> dailySports;
     private DailyRecording sportsContainer;
+    private DailyRecording foodsContainer;
     private static List<String> _sportNames = new ArrayList<String>();
     private SportActionCallback sac;
     private Context context;
@@ -199,7 +203,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
     }
 
     private void postResponseInitialisations(){
-        initFoodsRecording();
+        initFoodsRecording(2);
         initSportsRecording();
 
         setintakesProgress();
@@ -265,8 +269,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
 
     }
 
-    private void initFoodsRecording(){
-        DailyRecording foodsContainer;
+    private void initFoodsRecording(int index){
         if(current_date.after(Calendar.getInstance().getTime())){
             future_day = true;
             edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY);
@@ -275,7 +278,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
             edibleItemList = new EdibleItemList(this, dailyFoods, this, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE);
             foodsContainer = new DailyRecording(this, TITLE_FOODS, edibleItemList);
         }
+        addAddButton();
+        stickersLayout.addView(foodsContainer, index);
+    }
 
+    private void addAddButton(){
         if( future_day || current_day.equals(SDFORMAT.format(Calendar.getInstance().getTime()))){ //future_day or current_day : display Circular Button
             LinearLayout addMenuLayout = new LinearLayout(this);
             addMenuLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -314,7 +321,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
                     .setYOffset(5)
                     .build();
         }
-        stickersLayout.addView(foodsContainer);
     }
 
     private void initSportsRecording(){
@@ -434,15 +440,6 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         startNewRecomActivityWithInfos(true);
     }
 
-    public void addPotentialRecommendation() {
-
-        Bundle b = getIntent().getExtras();
-        if (!getIntent().hasExtra("selectedItem")) {
-
-        } else {
-            String recomCode = b.getString("selectedItem");
-        }
-    }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog,long id, float rating){
@@ -551,7 +548,7 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         JSONObject data = new JSONObject();
         data.put(HISTORY_DATE, date);
         data.put(FOOD_CODE, code);
-        send(networkJSON(FOOD_CODE_REQUEST, data));
+        send(networkJSON(FOOD_CODE_REQUEST_HISTORY, data));
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
@@ -566,12 +563,34 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
         }
     }
 
+    private void handleCodeRequest(final DayRecordingActivity activity, final int index){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stickersLayout.removeView(foodsContainer);
+                /*
+                if (current_date.after(Calendar.getInstance().getTime())) {
+                    future_day = true;
+                    edibleItemList = new EdibleItemList(activity, dailyFoods, activity, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE, FLAG_FUTURE_DAY);
+                    foodsContainer = new DailyRecording(context, TITLE_FOODS, edibleItemList);
+                } else {
+                    edibleItemList = new EdibleItemList(activity, dailyFoods, activity, FLAG_REMOVABLE, FLAG_CHECKABLE, FLAG_RATABLE, FLAG_EXPANDABLE);
+                    foodsContainer = new DailyRecording(context, TITLE_FOODS, edibleItemList);
+                }
+                stickersLayout.addView(foodsContainer, index);
+                */
+                initFoodsRecording(index);
+            }
+        });
+
+    }
+
 
     @Override
     public void handleMessage(JSONObject msg){
         Log.d("DAYRECORDING HANDLE MSG", msg.toString());
         String request = (String) msg.get(REQUEST_TYPE);
-        JSONObject data = (JSONObject)msg.get(DATA);
+        final JSONObject data = (JSONObject)msg.get(DATA);
         if(request.equals(SPORTS_LIST_REQUEST)) {
             String response = (String) data.get(SPORTS_LIST_RESPONSE);
             if (response.equals(SPORTS_LIST_SUCCESS)) {
@@ -627,11 +646,11 @@ public class DayRecordingActivity extends MenuNavigableActivity implements RateF
                     postResponseInitialisations();
                 }
             });
-
+        } else if (request.equals(FOOD_CODE_REQUEST_HISTORY)){
+            final Food food = new Food();
+            food.initFromJSON((JSONObject) data.get(HISTORY_FOOD));
+            dailyFoods.add(food);
+            handleCodeRequest(this, stickersLayout.indexOfChild(foodsContainer));
         }
-
     }
-
-
-
 }

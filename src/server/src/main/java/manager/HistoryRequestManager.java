@@ -54,6 +54,7 @@ public class HistoryRequestManager implements RequestManager{
 		String date = (String) data.get(HISTORY_DATE);
 		JSONObject responseData = new JSONObject();
 		Food food = _foodDatabase.findByCode(code);
+		ImageLoader.loadImage(food);
 		if(food == null){
 			manageCodeFailure(responseData);
 		}

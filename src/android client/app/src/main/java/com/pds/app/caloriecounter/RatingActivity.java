@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -75,6 +76,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private DailyRecording ratingContainer;
     private Boolean init=true;
     private EdibleItemList edibleItemList;
+    private LinearLayout loadingLayout;
+    private boolean loadingLayoutEnabled = true;
 
 
 
@@ -101,6 +104,22 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
 
     }
 
+    private void addLoadingLayout() {
+        loadingLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams loadingParams_ = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        loadingLayout.setLayoutParams(loadingParams_);
+        loadingLayout.setOrientation(LinearLayout.HORIZONTAL);
+        loadingLayout.setGravity(Gravity.CENTER);
+
+        ProgressBar progressBar = new ProgressBar(this);
+        LinearLayout.LayoutParams loadingParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        progressBar.setLayoutParams(loadingParams);
+        progressBar.setIndeterminate(true);
+        loadingLayout.addView(progressBar);
+
+        stickersLayout.addView(loadingLayout);
+    }
+
     private void sendRecipeCategoriesRequest() {
         JSONObject data = new JSONObject();
         send(networkJSON(RECIPE_CATEGORIES_REQUEST_FROM_RATING, data));
@@ -120,7 +139,8 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categorieText.setLayoutParams(categorieTextParams);
         categorieText.setTextSize(MAIN_TEXT_SIZE);
         categorieText.setTextColor(MAIN_TEXT_COLOR);
-        categorieText.setText("Catégorie de Recettes : ");
+        categorieText.setText("Catégorie : ");
+        categorieText.setPadding(20,0,0,0);
         categorieText.setMaxLines(MAIN_TEXT_MAX_LINES);
         categorieText.canScrollHorizontally(LinearLayout.HORIZONTAL);
         categorieText.setEllipsize(TextUtils.TruncateAt.END);
@@ -134,14 +154,16 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                //updateSeekBarAndText();
+                stickersLayout.removeView(ratingContainer);
+                if(!loadingLayoutEnabled){
+                    loadingLayoutEnabled = true;
+                    addLoadingLayout();
+                }
                 sendFoodsToBeRatedRequest();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
+            public void onNothingSelected(AdapterView<?> parentView) {}
         });
 
         categorieTextLayout.addView(categoriesSpinner);
@@ -173,6 +195,10 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
             @Override
             public void onClick(View v) {
                 validateButton.setClickable(false);
+                stickersLayout.removeView(ratingContainer);
+                if(!loadingLayoutEnabled){
+                    addLoadingLayout();
+                }
                 sendFoodsToBeRatedRequest();
 
             }
@@ -214,28 +240,7 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         if(request.equals(RANDOM_RECIPES_FOR_CATEGORY_REQUEST)){
             String response =  (String)data.get(RANDOM_UNRANKED_FOODS_RESPONSE);
             if(response.equals(RANDOM_UNRANKED_FOODS_SUCCESS)){
-                foodsToBeRated = new ArrayList<>();
-                initializer(foodsToBeRated);
-
-                JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
-                for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
-                    EdibleItem item = new Recipe();
-                    item.initFromJSON((JSONObject) jsonRecipes.get(i));
-                    foodsToBeRated.set(i, item);
-                    System.out.println(item.getProductName());
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(init){
-                            addFoodListLayout();
-                            init=false;
-                        }else{
-                            updateAddFoodListLayout();
-                        }
-                    }
-                });
-
+                onRecipesReceived(data);
             }
         }
         if(request.equals(RECIPE_CATEGORIES_REQUEST_FROM_RATING)){
@@ -253,6 +258,32 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
         }
     }
 
+    private void onRecipesReceived(JSONObject data){
+        loadingLayoutEnabled = false;
+        foodsToBeRated = new ArrayList<>();
+        initializer(foodsToBeRated);
+
+        JSONArray jsonRecipes = (JSONArray) data.get(FOOD_NAME);
+        for(int i = 0; i < NUMBER_RANDOM_FOODS ; ++i){
+            EdibleItem item = new Recipe();
+            item.initFromJSON((JSONObject) jsonRecipes.get(i));
+            foodsToBeRated.set(i, item);
+            System.out.println(item.getProductName());
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stickersLayout.removeView(loadingLayout);
+                if(init){
+                    addFoodListLayout();
+                    init=false;
+                }else{
+                    updateAddFoodListLayout();
+                }
+            }
+        });
+    }
+
 
 
     private ArrayList<String> getUrlsFromServer(){
@@ -266,8 +297,6 @@ public class RatingActivity extends MenuNavigableActivity implements RateFoodDia
     private void initSpinner(){
         ArrayAdapter<String> ageAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, createCategoriesList());
         categoriesSpinner.setAdapter(ageAdapter);
-        //categoriesSpinner.setSelection(id);
-
     }
 
     private ArrayList<String> createCategoriesList(){
