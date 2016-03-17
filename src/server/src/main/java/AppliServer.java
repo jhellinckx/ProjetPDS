@@ -15,6 +15,7 @@ import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.EdibleItem;
 import items.CategoryRating;
+import ui.Displayer;
 
 import manager.*;
 
@@ -64,6 +65,10 @@ public class AppliServer extends AbstractNIOServer{
 
 	private HashMap<String, RequestManager> _managers;
 
+	/* Ui */
+
+	private Displayer displayer;
+
 	public AppliServer(){
 		super();
 		_daoFactory = DAOFactory.getInstance();
@@ -80,6 +85,7 @@ public class AppliServer extends AbstractNIOServer{
 		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase, _recipeDatabase);
 		_managers = new HashMap<>();
+		displayer = Displayer.getInstance();
 		initManagers();
 	}
 
@@ -91,7 +97,7 @@ public class AppliServer extends AbstractNIOServer{
 		SportRequestManager srm = new SportRequestManager(this,_sportsDatabase, _userHistoryDatabase);
 		RecommendationRequestManager rerm = new RecommendationRequestManager(this, _foodDatabase, _sportsDatabase, 
 			_recommenderSystem, _knowledgeBased, _userDatabase, _userHistoryDatabase, _recipeDatabase, _predictionsDatabase);
-		RatingRequestManager rrm = new RatingRequestManager(this, _foodDatabase, _userprefDatabase, rerm);
+		RatingRequestManager rrm = new RatingRequestManager(this, _foodDatabase, _userprefDatabase, rerm, displayer);
 		CategoriesRequestManager crm = new CategoriesRequestManager(_categoriesDatabase);
 		RecipeRequestManager recrm = new RecipeRequestManager(_recipeDatabase, this, _userprefDatabase);
 

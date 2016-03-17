@@ -21,7 +21,7 @@ public class CBUserPredictionsDAOImpl implements CBUserPredictionsDAO{
 	" ON DUPLICATE KEY UPDATE prediction=VALUES(prediction)";
 	public static final String SQL_SELECT_ALL_PREDICTION_RATING_PAIRS_WITH_SIMILARITY =
 	"SELECT prediction_id, similarity, rank, recipe_id, numRecipe from CBUserPredictions "+
-	"JOIN User_Preferences ON numUser=CBUserPredictions.user_id " +
+	"JOIN User_preferences ON numUser=CBUserPredictions.user_id " +
 	"JOIN RecipeSimilarity ON first_recipe_id=CBUserPredictions.recipe_id "+
 	"AND second_recipe_id=User_preferences.numRecipe "+
 	"WHERE CBUserPredictions.user_id=? ORDER BY recipe_id, similarity DESC";
