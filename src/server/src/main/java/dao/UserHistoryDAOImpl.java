@@ -261,6 +261,10 @@ public class UserHistoryDAOImpl implements UserHistoryDAO {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		try{
+			if(user == null){
+				System.out.println("USER IS NULL FOR SPORT HISTORY");
+				return new ArrayList<>();
+			}
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest(connection, SQL_FIND_HISTORY_SPORTS_FOR_DATE, false, user.getId(), date);
 			resultSet = preparedStatement.executeQuery();

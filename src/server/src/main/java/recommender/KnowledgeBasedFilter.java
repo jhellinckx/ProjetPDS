@@ -88,6 +88,9 @@ public class KnowledgeBasedFilter {
 
 	private ArrayList<Recipe> recommendMethodRecipe(List<EdibleItem> previousAliments, String category, int recoms) {
 		previousEatenAliments(previousAliments);
+		if(currentUser == null){
+			return new ArrayList<>();
+		}
 		ArrayList<Recipe> results = new ArrayList<Recipe>(recipeDAO.findRecipeWithLessThanLevelsOrderByPredictionsWithLimit(energyNeeded, fatNeeded, proteinsNeeded, carbohydratesNeeded, recoms, currentUser.getId(), category));
 		return results;
 	}
