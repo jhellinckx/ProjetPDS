@@ -44,7 +44,7 @@ import java.lang.Math;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.ProfileGenerator;
+import util.ProfilesFactory;
 
 public class AppliServer extends AbstractNIOServer{
 
@@ -171,22 +171,18 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public static void main(String[] args){
-		/*try{
-			AppliServer appserver = new AppliServer();
+		try{
+			/*AppliServer appserver = new AppliServer();
 			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
-			appserver.run();
+			appserver.run();*/
+			ProfilesFactory.setProfileNumber(50);
+			ProfilesFactory.initDAOS();
+			ProfilesFactory.createProfiles();
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "
 				+e.getMessage(), new String("root")));
 			e.printStackTrace();
-		}*/
-		Map<Integer, List<Float>> profile;
-		List<Integer> ids = Arrays.asList(1,2,3,4,5);
-		ProfileGenerator.setCategoryIds(ids);
-		ProfileGenerator.generateProfile();
-		profile = ProfileGenerator.getProfile();
-		System.out.println(profile);
-		System.out.println(ProfileGenerator.generateNoise());
+		}
 	}
 }

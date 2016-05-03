@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.util.Collections;
-import org.calorycounter.shared.models.User;
-import items.RandomUserGenerator;
-
 
 public class ProfileGenerator {
 
-	private static int lower_bound = 40;
-	private static int upper_bound = 70; 
+	private static final int lower_bound = 40;
+	private static final int upper_bound = 70; 
 
 	private static RCRGenerator generator = new RCRGenerator();
 	private static HashMap<Integer, List<Float>> categoryid_ratings_map;
