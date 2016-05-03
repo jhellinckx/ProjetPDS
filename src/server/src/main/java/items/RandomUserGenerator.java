@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 
 
-public class Random_user_generator
+public class RandomUserGenerator
 {
 	//settings for random usernames
 	private static int MINCHAR = 3;
@@ -32,7 +32,7 @@ public class Random_user_generator
 	private static ArrayList<User> random_users_list = new ArrayList<User>();
 	private static FoodDAO foodDao = null;
 
-	public Random_user_generator(FoodDAO foodDao_, Boolean quick)
+	public RandomUserGenerator(FoodDAO foodDao_, Boolean quick)
 	{
 		foodDao = foodDao_;
 		if(quick){
@@ -43,7 +43,7 @@ public class Random_user_generator
 		}
 	}
 
-	public Random_user_generator(int quantity_, FoodDAO foodDao_, Boolean quick)
+	public RandomUserGenerator(int quantity_, FoodDAO foodDao_, Boolean quick)
 	{
 		QUANTITY = quantity_;
 		foodDao = foodDao_;

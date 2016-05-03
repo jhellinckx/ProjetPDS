@@ -16,7 +16,7 @@ import java.util.Map;
 import org.calorycounter.shared.models.User;
 import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
-import items.Random_user_generator;
+import items.RandomUserGenerator;
 
 public class UserDAOImpl implements UserDAO {
 	private DAOFactory daoFactory;
@@ -256,7 +256,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void createRandomUsers(int quantity) throws DAOException{
         FoodDAO foodDao = this.daoFactory.getFoodDAO();
-        Random_user_generator r = new Random_user_generator(quantity, foodDao, false);
+        RandomUserGenerator r = new RandomUserGenerator(quantity, foodDao, false);
         ArrayList<User> randUserList = r.get_random_users_list();
         
         for (int i = 0 ; i<randUserList.size() ; ++i){
@@ -268,7 +268,7 @@ public class UserDAOImpl implements UserDAO {
     public void quick_createRandomUsers(int quantity) throws DAOException{
         //Avoid creation of Food Objects for inserting into User_preferences
         FoodDAO foodDao = this.daoFactory.getFoodDAO();
-        Random_user_generator r = new Random_user_generator(quantity, foodDao, true);
+        RandomUserGenerator r = new RandomUserGenerator(quantity, foodDao, true);
         ArrayList<User> randUserList = r.get_random_users_list();
         
         

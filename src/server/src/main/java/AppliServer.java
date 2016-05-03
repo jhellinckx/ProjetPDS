@@ -42,6 +42,9 @@ import java.util.Arrays;
 import java.lang.Math;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import util.ProfileGenerator;
 
 public class AppliServer extends AbstractNIOServer{
 
@@ -168,7 +171,7 @@ public class AppliServer extends AbstractNIOServer{
 	}
 
 	public static void main(String[] args){
-		try{
+		/*try{
 			AppliServer appserver = new AppliServer();
 			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
 			appserver.run();
@@ -177,7 +180,13 @@ public class AppliServer extends AbstractNIOServer{
 			System.out.println(Constants.errorMessage("Uncaught exception : "
 				+e.getMessage(), new String("root")));
 			e.printStackTrace();
-		}
+		}*/
+		Map<Integer, List<Float>> profile;
+		List<Integer> ids = Arrays.asList(1,2,3,4,5);
+		ProfileGenerator.setCategoryIds(ids);
+		ProfileGenerator.generateProfile();
+		profile = ProfileGenerator.getProfile();
+		System.out.println(profile);
+		System.out.println(ProfileGenerator.generateNoise());
 	}
-
 }
