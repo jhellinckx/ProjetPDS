@@ -32,6 +32,6 @@ public class ProfileGenerator {
 	}
 
 	public static List<Float> generateNoise(){
-		return generator.generateNoiseValues(lower_bound*2, upper_bound*2);
+		return generator.generateNoiseValues(lower_bound*3, upper_bound*3);
 	}
 }

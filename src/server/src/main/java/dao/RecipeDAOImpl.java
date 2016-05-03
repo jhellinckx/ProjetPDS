@@ -17,7 +17,8 @@ public class RecipeDAOImpl implements RecipeDAO {
 	private DAOFactory daoFactory;
 	private static final String SQL_SELECT_BY_NAME = "SELECT recipe_id, recipe_name, portions, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_name = ?";
 	private static final String SQL_SELECT_BY_ID = "SELECT recipe_id, recipe_name, portions, recipe_image_url, recipe_url, image_pic, ingredients_list, portion_calorie, portion_fat, portion_carbo, portion_protein FROM Recipe WHERE recipe_id = ?";
-	private static final String SQL_SELECT_SUB_CAT_BY_ID = "SELECT C.category_id FROM RecipeCategories C, JDFCategory J WHERE C.recipe_id = ? AND C.category_id = J.category_id AND J.is_main = 0";
+	private static final String SQL_SELECT_ALL_IDS = "SELECT recipe_id FROM Recipe";
+    private static final String SQL_SELECT_SUB_CAT_BY_ID = "SELECT C.category_id FROM RecipeCategories C, JDFCategory J WHERE C.recipe_id = ? AND C.category_id = J.category_id AND J.is_main = 0";
 	private static final String SQL_SELECT_ORIGIN_BY_ID = "SELECT origin_id FROM RecipeOrigins WHERE recipe_id = ?";
 	private static final String SQL_SELECT_INGREDIENTS_IDS = "SELECT ingredient_id FROM RecipeIngredients WHERE recipe_id = ?";
 	private static final String SQL_SELECT_TAG_IDS = "SELECT tag_id FROM RecipeTags WHERE recipe_id = ?";
@@ -80,6 +81,30 @@ public class RecipeDAOImpl implements RecipeDAO {
 
         return recipe;
 	}
+
+    @Override
+    public List<Long> findAllRecipeIds() throws DAOException {
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Long> recipe_ids = new ArrayList<>();
+
+        try {
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest(connexion, SQL_SELECT_ALL_IDS, false);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                recipe_ids.add(new Long(resultSet.getInt("recipe_id")));
+            }
+        } catch (SQLException e) {
+            throw new DAOException (e);
+        } finally {
+            silentClosures (resultSet, preparedStatement, connexion);
+        }
+
+        return recipe_ids;
+    }
 
 	@Override
 	public Recipe findById(int id) {

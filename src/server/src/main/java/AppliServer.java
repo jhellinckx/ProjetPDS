@@ -175,7 +175,7 @@ public class AppliServer extends AbstractNIOServer{
 			/*AppliServer appserver = new AppliServer();
 			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
 			appserver.run();*/
-			ProfilesFactory.setProfileNumber(50);
+			ProfilesFactory.setProfileNumber(100);
 			ProfilesFactory.initDAOS();
 			ProfilesFactory.createProfiles();
 		} 
