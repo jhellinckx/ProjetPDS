@@ -147,7 +147,7 @@ public class UserDAOImpl implements UserDAO {
             throw new DAOException( e );
         } finally {
             silentClosures( resultSet, preparedStatement, connexion );
-        }
+        }÷
 
         return users;
     }
