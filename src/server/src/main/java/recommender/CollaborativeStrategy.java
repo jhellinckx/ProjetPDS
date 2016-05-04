@@ -1,21 +1,9 @@
 package recommender;
 
 
+import java.util.*;
 
-/*****
-
-Class not finished nor functionnal. Defines only structure of Item-Item and User-User.
-Further changes will be made.
-
-****/
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Comparator;
-
-import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.User;
 import dao.UserPrefDAO;
 
@@ -23,32 +11,33 @@ import dao.UserPrefDAO;
 public abstract class CollaborativeStrategy implements RecommendationStrategy{
 
 	protected int recommendationsRequired;
-	protected ArrayList<Food> recommendations;
-	protected ArrayList<FoodRatingPair> ratingPredictions;       // nested pair <Food, Rating>, used for sorting recommendations.
-	protected ArrayList<Food> foodData = null;
-	protected ArrayList<User> userData = null;
+	protected ArrayList<Recipe> recommendations;
+	protected Map<Long, RecipeRatingPair> ratingPredictions;       // nested pair <Food, Rating>, used for sorting recommendations.
+	protected List<Recipe> recipeData = null;
+	protected List<User> userData = null;
 	protected User currentUser = null;
 	protected RatingMatrix ratingMatrix;
 	protected SimilarityMatrix similarityMatrix = null;
 
 	public CollaborativeStrategy(UserPrefDAO pref){
-		ratingPredictions = new ArrayList<FoodRatingPair>();
-		ratingMatrix = new RatingMatrix(pref);
+		ratingPredictions = new HashMap<>();
+		ratingMatrix = null;
 		recommendationsRequired = 0;
-		recommendations = new ArrayList<Food>();
+		recommendations = new ArrayList<>();
+		ratingMatrix = new RatingMatrix(pref);
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int nbRecom){  
-		foodData = foods;
+	public void updateData(List<Recipe> recipes, List<User> users, User curUser, int nbRecom){
+		recipeData = recipes;
 		userData = users;
 		currentUser = curUser;
 		recommendationsRequired = nbRecom;
 	}
 
 	protected void resetData(){
-		recommendations = new ArrayList<Food>();
-		ratingPredictions = new ArrayList<FoodRatingPair>();
+		recommendations = new ArrayList<>();
+		ratingPredictions = new HashMap<>();
 	}
 
 	protected final class RatingMatrix{		// nested class used to get all notes for a food/a user.
@@ -59,33 +48,14 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 			preferences = pref;
 		}
 
-		public List getRankForFood(Food food){
+		public List getRankForFood(Recipe food){
 			return preferences.findRankForFood(food);
 		}
 
 		public HashMap getFoodandRankForUser(User user){
-			return preferences.findFoodsAndRankForUser(user);
+			return preferences.findRecipesAndRankForUser(user);
 		}
 
-	}
-
-	protected final class FoodRatingPair{		// nested Pair used by the Item-Item and User-User algorithms.
-
-		private Food food;
-		private float rating;
-
-		public FoodRatingPair(Food f, float r){
-			food = f;
-			rating = r;
-		}
-
-		public Food getFood(){
-			return food;
-		}
-
-		public float getRating(){
-			return rating;
-		}
 	}
 
 	@Override
@@ -98,24 +68,29 @@ public abstract class CollaborativeStrategy implements RecommendationStrategy{
 		return recommendationsRequired;
 	}
 
-	protected void addRatingPrediction(Food f, float r){
-		ratingPredictions.add(new FoodRatingPair(f, r));
+	@Override
+	public Map<Long, RecipeRatingPair> getRatingsPrediction(){
+		return ratingPredictions;
+	}
+
+	protected void addRatingPrediction(Recipe f, float r){
+		ratingPredictions.put(f.getId(), new RecipeRatingPair(f, r));
 	}
 
 	protected void extractRecommendations(){		// Extract the n recommendations in the sorted list ratingPredictions. (n = recommendationsRequired).
 		int size = ratingPredictions.size();
 
-		for (int i = 0; i < size && i < recommendationsRequired; i++){
-			recommendations.add(ratingPredictions.get(i).getFood());
+		for (Long pos : ratingPredictions.keySet()){
+			recommendations.add(ratingPredictions.get(pos).getFood());
 		}
 
 	}
 
 	public void sortRatingPredictions(){
-		Collections.sort(ratingPredictions, new Comparator<FoodRatingPair> (){
+		Collections.sort(new ArrayList<>(ratingPredictions.values()), new Comparator<RecipeRatingPair> (){
 			@Override
-			public int compare(FoodRatingPair p1, FoodRatingPair p2){
-				return (p1.getRating() < p2.getRating() ? 1 : (p1.getRating() == p2.getRating() ? 0 : -1));   // Test the order relationship between two FoodRatingPair
+			public int compare(RecipeRatingPair p1, RecipeRatingPair p2){
+				return (p1.getRating() < p2.getRating() ? 1 : (p1.getRating() == p2.getRating() ? 0 : -1));   // Test the order relationship between two RecipeRatingPair
 			}
 
 		});

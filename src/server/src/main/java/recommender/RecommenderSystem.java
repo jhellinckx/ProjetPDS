@@ -1,8 +1,9 @@
 package recommender;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.User;
-import org.calorycounter.shared.models.Food;
 
 public class RecommenderSystem {
 
@@ -41,7 +42,7 @@ public class RecommenderSystem {
 		hybridstrategy = hstrat;
 	}
 	
-	public ArrayList<Food> recommendItems(){
+	public List<Recipe> recommendItems(){
 		
 		if (hybridstrategy == null){			// Hybridation useless for 1 recommendation system.
 			return recomstrategy.recommend();
@@ -53,7 +54,7 @@ public class RecommenderSystem {
 		
 	}
 
-	public void updateData(ArrayList<Food> foods, ArrayList<User> users, User currentUser, int nbRecom){
+	public void updateData(List<Recipe> foods, List<User> users, User currentUser, int nbRecom){
 
 		if (hybridstrategy == null){
 			recomstrategy.updateData(foods, users, currentUser, nbRecom);
@@ -61,6 +62,10 @@ public class RecommenderSystem {
 		else{
 			hybridstrategy.updateData(foods, users, currentUser, nbRecom);
 		}
+	}
+
+	public Map<Long, RecipeRatingPair> getRatingsPrediction(){
+		return recomstrategy.getRatingsPrediction();
 	}
 
 

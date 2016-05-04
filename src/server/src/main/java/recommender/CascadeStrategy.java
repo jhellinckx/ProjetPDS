@@ -1,7 +1,9 @@
 package recommender;
 
 import java.util.ArrayList;
-import org.calorycounter.shared.models.Food;
+import java.util.List;
+
+import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.User;
 
 public class CascadeStrategy implements HybridationStrategy {
@@ -9,8 +11,8 @@ public class CascadeStrategy implements HybridationStrategy {
 	private ArrayList<RecommendationStrategy> strategies;
     private int recomRequired;
     private int scalingFactor;          // Scaling Factor used to define the hierarchy of the recommendation strategies.
-    private ArrayList<Food> foodData = null;
-    private ArrayList<User> userData = null;
+    private List<Recipe> foodData = null;
+    private List<User> userData = null;
     private User currentUser = null;
 
 
@@ -21,7 +23,7 @@ public class CascadeStrategy implements HybridationStrategy {
     }
 
     @Override
-	public ArrayList<Food> recommend(){
+	public List<Recipe> recommend(){
 
         scalingFactor = strategies.size();
         for (RecommendationStrategy strat: strategies){
@@ -40,7 +42,7 @@ public class CascadeStrategy implements HybridationStrategy {
     }
 
     @Override
-    public void updateData(ArrayList<Food> foods, ArrayList<User> users, User curUser, int recom){
+    public void updateData(List<Recipe> foods, List<User> users, User curUser, int recom){
         foodData = foods;
         userData = users;
         currentUser = curUser;

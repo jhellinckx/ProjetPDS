@@ -102,6 +102,10 @@ public class User implements JSONSerializable {
         return rankedEdibleItems.containsKey(food);
     }
 
+    public void removeEdibleItem(EdibleItem food){
+        rankedEdibleItems.remove(food);
+    }
+
     public void setWeight(float weight) {
         this.weight = weight;
     }

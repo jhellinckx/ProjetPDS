@@ -20,7 +20,7 @@ public interface UserPrefDAO {
 	
 	List<User> findUsersAppreciating( Recipe recipe ) throws DAOException;
 
-	List<Float> findRankForFood(Food food) throws DAOException;
+	List<Float> findRankForFood(Recipe food) throws DAOException;
 
 	List<Float> findRankForRecipe(Recipe recipe) throws DAOException;
 

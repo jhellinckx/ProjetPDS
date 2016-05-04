@@ -121,7 +121,7 @@ public class RecipeDAOImpl implements RecipeDAO {
             // Parcours de la ligne de donnees de l'eventuel ResulSet retourne 
             if ( resultSet.next() ) {
                 recipe = map( resultSet );
-                addAllOtherInfos(recipe);
+                //addAllOtherInfos(recipe);
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -315,7 +315,7 @@ public class RecipeDAOImpl implements RecipeDAO {
 	private static Recipe map(ResultSet resultSet) throws SQLException {
 		Recipe recipe = new Recipe();
 		recipe.setId( new Long(resultSet.getInt( "recipe_id" )) );
-        recipe.setUrl( resultSet.getString( "recipe_url" ) );
+        /*recipe.setUrl( resultSet.getString( "recipe_url" ) );
         recipe.setProductName( resultSet.getString( "recipe_name" ) );
         recipe.setImageUrl( resultSet.getString( "recipe_image_url" ) );
         recipe.setTotalEnergy(resultSet.getFloat( "portion_calorie" ) );
@@ -324,8 +324,7 @@ public class RecipeDAOImpl implements RecipeDAO {
         recipe.setTotalCarbohydrates(resultSet.getFloat( "portion_carbo" )  );
         recipe.notEaten();
         recipe.setImagePath(resultSet.getString("image_pic"));
-        recipe.setQuantity(Integer.toString(resultSet.getInt("portions")));
+        recipe.setQuantity(Integer.toString(resultSet.getInt("portions")));*/
         return recipe;
 	}
-
 }

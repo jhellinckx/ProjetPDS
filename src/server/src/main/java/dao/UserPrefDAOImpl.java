@@ -247,7 +247,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	}
 
 	@Override
-	public List<Float> findRankForFood(Food food) throws DAOException {
+	public List<Float> findRankForFood(Recipe food) throws DAOException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;

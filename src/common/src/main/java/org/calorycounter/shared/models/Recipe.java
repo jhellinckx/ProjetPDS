@@ -75,5 +75,20 @@ public class Recipe extends EdibleItem {
         super.initFromJSON(obj);
         this.ingredients = (String) obj.get(INGREDIENTS_LIST);
     }
+
+    @Override
+    public boolean equals(Object other){
+        if(this == other) return true;
+        if(!(other instanceof Recipe)) return false;
+
+        final Recipe otherRecipe = (Recipe) other;
+        if(this.getId().equals(otherRecipe.getId())) return true;
+        else return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return this.getId().hashCode();
+    }
 	
 }

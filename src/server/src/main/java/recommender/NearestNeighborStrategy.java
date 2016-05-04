@@ -2,7 +2,7 @@ package recommender;
 
 import java.util.*;
 
-import org.calorycounter.shared.models.Food;
+import org.calorycounter.shared.models.Recipe;
 import items.CategoryRating;
 import org.calorycounter.shared.models.User;
 import dao.CategoryRatingDAO;
@@ -20,18 +20,18 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 		public Float mean() { return _mean; }
 		public int categories() { return _n_categories; }
 	}
-	private ArrayList<Food> _foodToFilter;
+	private List<Recipe> _foodToFilter;
 	private User _user;
 	private int _recommendations;
 	private CategoryRatingDAO _daoCategoryRating;
-	private ArrayList<User> _otherUsers;
+	private List<User> _otherUsers;
 
 	public NearestNeighborStrategy(CategoryRatingDAO daoCategoryRating){
 		_daoCategoryRating = daoCategoryRating;
 	}
 
 	@Override
-	public void updateData(ArrayList<Food> toFilter, ArrayList<User> users, User user, int recoms){  
+	public void updateData(List<Recipe> toFilter, List<User> users, User user, int recoms){
 		_foodToFilter = toFilter;
 		_user = user;
 		_recommendations = 30;
@@ -39,43 +39,43 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	}
 
 	@Override
-	public ArrayList<Food> recommend(){
+	public ArrayList<Recipe> recommend(){
 		if(_foodToFilter.isEmpty())
-			_foodToFilter = new ArrayList<Food>();	
-		Map<Food, Float> ratingPredictions = new HashMap<>();
+			_foodToFilter = new ArrayList<>();
+		Map<Recipe, Float> ratingPredictions = new HashMap<>();
 		Map<Long, Integer> categoriesNumberForID = new HashMap<>();
-		for(Food food : _foodToFilter){
+		for(Recipe food : _foodToFilter){
 			Prediction pred = prediction(food);
 			ratingPredictions.put(food, pred.mean());
 			categoriesNumberForID.put(food.getId(), pred.categories());
 		}
-		Map<Food, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
-		List<Food> recommendations = new ArrayList<Food>(sortedRatingPredictions.keySet());
+		Map<Recipe, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
+		List<Recipe> recommendations = new ArrayList<Recipe>(sortedRatingPredictions.keySet());
 
-		ArrayList<Food> resizedRecoms = new ArrayList<Food>();
+		ArrayList<Recipe> resizedRecoms = new ArrayList<Recipe>();
  		if(recommendations.size()>_recommendations) {
- 			resizedRecoms = new ArrayList<Food>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
+ 			resizedRecoms = new ArrayList<Recipe>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
  		}
-		Map<Food, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
-		for(Food recom : resizedRecoms)
+		Map<Recipe, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
+		for(Recipe recom : resizedRecoms)
 			resizedRecomsWithCategoriesNumber.put(recom, categoriesNumberForID.get(recom.getId()));
 
-		Map<Food, Integer> sortedResizedRecoms = sortByValue(resizedRecomsWithCategoriesNumber);
-		ArrayList<Food> sortedResizedRecomsList = new ArrayList<Food>(sortedResizedRecoms.keySet());
+		Map<Recipe, Integer> sortedResizedRecoms = sortByValue(resizedRecomsWithCategoriesNumber);
+		ArrayList<Recipe> sortedResizedRecomsList = new ArrayList<Recipe>(sortedResizedRecoms.keySet());
 		System.out.println(sortedResizedRecomsList.toString());
 		System.out.println("TAKE ONLY RECOM : "+Integer.toString(_recommendations));
 
-		ArrayList<Food> sortedInOrder = new ArrayList<Food>(sortedResizedRecomsList);
+		ArrayList<Recipe> sortedInOrder = new ArrayList<>(sortedResizedRecomsList);
 		int i = sortedResizedRecomsList.size()-1;
-		for(Food food : sortedResizedRecomsList){
+		for(Recipe food : sortedResizedRecomsList){
 			sortedInOrder.set(i, food);
 			i--;
 		}
 		return sortedInOrder;
 	}
 
-	private Prediction prediction(Food food){
-		ArrayList<String> categories = _daoCategoryRating.findCategoriesForFood(food);
+	private Prediction prediction(Recipe food){
+		ArrayList<String> categories = new ArrayList<>(); //= _daoCategoryRating.findCategoriesForRecipe(food);
 		ArrayList<CategoryRating> ratedCategories = new ArrayList<>();
 		boolean atLeastOneRated = false;
 		for(String category : categories){

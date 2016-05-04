@@ -23,6 +23,7 @@ public class UserDAOImpl implements UserDAO {
 	private static final String SQL_SELECT_BY_USERNAME = "SELECT id_user, username, gender, weight, password, height FROM User WHERE username = ?";
 	private static final String SQL_SELECT_BY_ID = "SELECT id_user, username, gender, weight, password, height FROM User WHERE id_user = ?";
 	private static final String SQL_SELECT_ALL = "SELECT id_user, username, gender, weight, password, height FROM User";
+    private static final String SQL_SELECT_ALL_WITH = "SELECT DISTINCT User.id_user, User.username, User.gender, User.weight, User.password, User.height FROM User, User_preferences WHERE User.id_user=User_preferences.numUser";
 	private static final String SQL_INSERT = "INSERT INTO User (username, gender, weight, password, height) VALUES (?, ?, ?, ?, ?)";
 	private static final String SQL_DELETE = "DELETE FROM User WHERE username = ?";
     private static final String SQL_UPDATE_WEIGHT = "UPDATE User SET weight = ? WHERE id_user = ?";
@@ -138,6 +139,31 @@ public class UserDAOImpl implements UserDAO {
             /* Recuperation d'une connexion depuis la Factory */
             connexion = daoFactory.getConnection();
             preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_ALL, false);
+            resultSet = preparedStatement.executeQuery();
+            /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
+            while ( resultSet.next() ) {
+                users.add(map(resultSet));
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            silentClosures( resultSet, preparedStatement, connexion );
+        }
+
+        return users;
+    }
+
+    @Override
+    public List<User> findAllUsersWithRanks() throws DAOException {
+        List<User> users = new ArrayList<User>();
+        Connection connexion = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            /* Recuperation d'une connexion depuis la Factory */
+            connexion = daoFactory.getConnection();
+            preparedStatement = initializationPreparedRequest( connexion, SQL_SELECT_ALL_WITH, false);
             resultSet = preparedStatement.executeQuery();
             /* Parcours de la ligne de donnees de l'eventuel ResulSet retourne */
             while ( resultSet.next() ) {

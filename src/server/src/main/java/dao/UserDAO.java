@@ -14,6 +14,8 @@ public interface UserDAO {
     List<String> findAll() throws DAOException; /* retourne une simple list de tous les user pour pouvoir print, utilise pr les test */
 
     List<User> findAllUsers() throws DAOException;
+
+    List<User> findAllUsersWithRanks() throws DAOException;
     
     void delete( User user ) throws DAOException;
 

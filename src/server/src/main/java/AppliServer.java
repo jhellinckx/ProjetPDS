@@ -15,6 +15,7 @@ import org.calorycounter.shared.models.Food;
 import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.EdibleItem;
 import items.CategoryRating;
+import recommender.evaluator.RecommenderSystemEvaluator;
 import ui.Displayer;
 
 import manager.*;
@@ -175,10 +176,13 @@ public class AppliServer extends AbstractNIOServer{
 			/*AppliServer appserver = new AppliServer();
 			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
 			appserver.run();*/
-			ProfilesFactory factory = new ProfilesFactory();
+			/*ProfilesFactory factory = new ProfilesFactory();
 			factory.setProfileNumber(100);
 			factory.createProfiles();
-			System.exit(0);
+			System.exit(0);*/
+
+			RecommenderSystemEvaluator evaluator = new RecommenderSystemEvaluator();
+			System.out.println(evaluator.evaluateUserUser());
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "
