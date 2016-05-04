@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import dao.DAOFactory;
@@ -20,21 +21,41 @@ import dao.AllCategoriesDAO;
 
 public class ProfilesFactory {
 
-	private static final int lower_bound = 3;
-	private static final int upper_bound = 5;
+	private final int lower_bound = 3;
+	private final int upper_bound = 5;
 
-	private static RandomUserGenerator user_generator;
-	private static int profile_number;
-	private static List<User> users;
-	private static List<String> categories;
+	private static final int THRESHOLD = 4;
+	private static final long WAITING_TIME = 2000L;
 
-	private static DAOFactory _daoFactory;
-	private static UserDAO _userDatabase;
-	private static RecipeDAO _recipeDatabase;
-	private static UserPrefDAO _userprefDatabase;
-	private static AllCategoriesDAO _categoriesDatabase;
+	private RandomUserGenerator user_generator;
+	private int profile_number;
+	private List<User> users;
+	private List<String> categories;
+	private List<Long> _recipes_ids;
+	private Map<String, List<Long>> category_recipes_map;
 
-	private static void createUsers(){
+	private DAOFactory _daoFactory;
+	private UserDAO _userDatabase;
+	private RecipeDAO _recipeDatabase;
+	private UserPrefDAO _userprefDatabase;
+	private AllCategoriesDAO _categoriesDatabase;
+
+	private final Object run_threads;
+	private final Object profile_generator_lock;
+	private Integer threads_nbr;
+	private final Boolean blocked;
+
+
+	public ProfilesFactory(){
+		initDAOS();
+		run_threads = new Object();
+		profile_generator_lock = new Object();
+		threads_nbr = 0;
+		category_recipes_map = new HashMap<>();
+		blocked = false;
+	}
+
+	private void createUsers(){
 		user_generator = new RandomUserGenerator(profile_number, null, true);
 		users = user_generator.get_random_users_list();
 		for (User user: users){
@@ -42,20 +63,28 @@ public class ProfilesFactory {
 		}
 	}
 
-	private static boolean contains(List<Long> alist, Long val){
+	private boolean contains(List<Long> alist, Long val){
 		boolean contains = false;
 		int size = alist.size();
-		for (int i = 0; !contains && i < size; i++){
+		for (int i = 0; i < size; i++){
 			contains = (alist.get(i).longValue() == val.longValue());
 		}
 		return contains;
 	}
 
-	private static void fetchCategories(){
+	private void fetchCategories(){
 		categories = _categoriesDatabase.getAllRecipeCategories();
 	}
 
-	private static List<Integer> getCategoriesPos(){
+	private void fetchRecipes(){
+		_recipes_ids = _recipeDatabase.findAllRecipeIds();
+
+		for (String category : categories){
+			category_recipes_map.put(category, _recipeDatabase.getRecipeIdsByCategory(category));
+		}
+	}
+
+	private List<Integer> getCategoriesPos(){
 		Random rand = new Random();
 		List<Integer> categories_pos = new ArrayList<>();
 		int number = rand.nextInt(upper_bound+1) + lower_bound;
@@ -74,18 +103,22 @@ public class ProfilesFactory {
 		return categories_pos;
 	}
 
-	private static List<Long> generateRecipeIds(String category, List<Float> ratings){
+	private List<Long> generateRecipeIds(String category, List<Float> ratings){
 		int size = ratings.size();
-		List<Long> existing_ids = _recipeDatabase.getRecipeIdsByCategory(category);
+		List<Long> existing_ids = category_recipes_map.get(category);
+		HashSet<String> already_added_ids = new HashSet<>();
 		List<Long> chosen_ids = new ArrayList<>();
 		Random rand = new Random();
 		long id;
+		String id_str;
 
 		int i = 0;
 		while (i < size){
 			id = existing_ids.get(rand.nextInt(existing_ids.size()));
 			id = (id == 0 ? 1 : id);
-			if (!contains(chosen_ids, id)){
+			id_str = Long.toString(id);
+			if (!already_added_ids.contains(id_str)){
+				already_added_ids.add(id_str);
 				chosen_ids.add(id);
 				i++;
 			}
@@ -93,7 +126,7 @@ public class ProfilesFactory {
 		return chosen_ids;
 	}
 
-	private static void addRatingsToDB(User user, List<Long> ids, List<Float> ratings){
+	private void addRatingsToDB(User user, List<Long> ids, List<Float> ratings){
 		int size = ids.size();
 
 		/*for (int i = 0; i < size; i++){
@@ -102,7 +135,7 @@ public class ProfilesFactory {
 		_userprefDatabase.createAll(user.getId(), ids, ratings);
 	}
 
-	private static List<Long> addProfileToDB(User user, Map<Integer, List<Float>> profile){
+	private List<Long> addProfileToDB(User user, Map<Integer, List<Float>> profile){
 		String category;
 		List<Float> ratings;
 		List<Long> recipe_ids = new ArrayList<>();
@@ -116,10 +149,9 @@ public class ProfilesFactory {
 		return recipe_ids;
 	}
 
-	private static void addNoiseForUser(User user, List<Long> existing_ids){
+	private void addNoiseForUser(User user, List<Long> existing_ids){
 		List<Float> noise = ProfileGenerator.generateNoise();
 		User u = _userDatabase.findByUsername(user.getUsername());
-		List<Long> recipes_ids = _recipeDatabase.findAllRecipeIds();
 		List<Long> chosen_ids = new ArrayList<>();
 		Long id;
 		int size = noise.size();
@@ -127,7 +159,7 @@ public class ProfilesFactory {
 
 		int i = 0;
 		while(i < size){
-			id = recipes_ids.get(rand.nextInt(recipes_ids.size()));
+			id = _recipes_ids.get(rand.nextInt(_recipes_ids.size()));
 			if (!contains(existing_ids, id)){
 				chosen_ids.add(id);
 				++i;
@@ -136,18 +168,22 @@ public class ProfilesFactory {
 		addRatingsToDB(user, chosen_ids, noise);
 	}
 
-	private static List<Long> createUserProfile(User user){
+	private List<Long> createUserProfile(User user){
 		List<Integer> categories_pos = getCategoriesPos();
 		Map<Integer, List<Float>> user_profile;
 		User u = _userDatabase.findByUsername(user.getUsername());
+
+		synchronized(profile_generator_lock){
 		
-		ProfileGenerator.setCategoryIds(categories_pos);
-		ProfileGenerator.generateProfile();
-		user_profile = ProfileGenerator.getProfile();
+			ProfileGenerator.setCategoryIds(categories_pos);
+			ProfileGenerator.generateProfile();
+			user_profile = ProfileGenerator.getProfile();
+		}
+		
 		return addProfileToDB(user, user_profile);
 	}
 
-	public static void initDAOS(){
+	private void initDAOS(){
 		_daoFactory = DAOFactory.getInstance();
 		_userDatabase = _daoFactory.getUserDAO();
 		_userprefDatabase = _daoFactory.getUserPrefDAO();
@@ -155,21 +191,58 @@ public class ProfilesFactory {
 		_recipeDatabase = _daoFactory.getRecipeDAO();
 	}
 
-	public static void setProfileNumber(int nbr){
-		profile_number = nbr;
-	}
-
-	public static void createProfiles(){
-		List<Long> ids;
-
-		createUsers();
-		fetchCategories();
-		for (int i = 0; i < profile_number; i++){
-			System.out.println(Integer.toString( (int) (((float) (i/profile_number))*100)) + " %");
-			Collections.shuffle(categories);
-			ids = createUserProfile(users.get(i));
-			addNoiseForUser(users.get(i), ids);
+	private void launchThread(User u) throws InterruptedException{
+		synchronized (run_threads){
+			if (threads_nbr == THRESHOLD){
+				run_threads.wait(WAITING_TIME);
+			} else{
+				++threads_nbr;
+				(new ProfileThread(u)).start();
+			}
 		}
 	}
 
+	public void setProfileNumber(int nbr){
+		profile_number = nbr;
+	}
+
+	public void createProfiles() throws InterruptedException{
+		System.out.println("Creating Users ...");
+		createUsers();
+		System.out.println("Fetching Categories ...");
+		fetchCategories();
+		System.out.println("Fetching Recipes ...");
+		fetchRecipes();
+
+		for (int i = 0; i < profile_number; i++){
+			System.out.println(Integer.toString( (int) (((((float)i)/profile_number))*100)) + " %");
+			Collections.shuffle(categories);
+			launchThread(users.get(i));
+		}
+	}
+
+	private class ProfileThread extends Thread{
+
+		private User user;
+
+		public ProfileThread(User u){
+			user = u;
+		}
+
+		private void wakeUpParent(){
+			synchronized(run_threads){
+				--threads_nbr;
+				run_threads.notify();
+			}
+		}
+
+		@Override
+		public void run(){
+			List<Long> ids;
+
+			ids = createUserProfile(user);
+			addNoiseForUser(user, ids);
+			wakeUpParent();
+		}
+	}
 }

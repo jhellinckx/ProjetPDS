@@ -175,9 +175,10 @@ public class AppliServer extends AbstractNIOServer{
 			/*AppliServer appserver = new AppliServer();
 			Runtime.getRuntime().addShutdownHook(new Thread(new ServerShutdownHook(appserver)));
 			appserver.run();*/
-			ProfilesFactory.setProfileNumber(100);
-			ProfilesFactory.initDAOS();
-			ProfilesFactory.createProfiles();
+			ProfilesFactory factory = new ProfilesFactory();
+			factory.setProfileNumber(100);
+			factory.createProfiles();
+			System.exit(0);
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "
