@@ -27,8 +27,6 @@ public class ProfilesFactory {
 	private static int profile_number;
 	private static List<User> users;
 	private static List<String> categories;
-	private static List<Long> _recipes_ids;
-	private static Map<String, List<Long>> category_recipes_map = new HashMap<>();
 
 	private static DAOFactory _daoFactory;
 	private static UserDAO _userDatabase;
@@ -57,13 +55,6 @@ public class ProfilesFactory {
 		categories = _categoriesDatabase.getAllRecipeCategories();
 	}
 
-	private static void fetchRecipes(){
-		for (int i = 0; i < categories.size()/2; i++){
-			category_recipes_map.put(categories.get(i), _recipeDatabase.getRecipeIdsByCategory(categories.get(i)));
-		}
-		_recipes_ids = _recipeDatabase.findAllRecipeIds();
-	}
-
 	private static List<Integer> getCategoriesPos(){
 		Random rand = new Random();
 		List<Integer> categories_pos = new ArrayList<>();
@@ -85,8 +76,7 @@ public class ProfilesFactory {
 
 	private static List<Long> generateRecipeIds(String category, List<Float> ratings){
 		int size = ratings.size();
-		List<Long> existing_ids = category_recipes_map.get(category);
-		existing_ids = (existing_ids == null ? _recipeDatabase.getRecipeIdsByCategory(category) : existing_ids);
+		List<Long> existing_ids = _recipeDatabase.getRecipeIdsByCategory(category);
 		List<Long> chosen_ids = new ArrayList<>();
 		Random rand = new Random();
 		long id;
@@ -106,9 +96,10 @@ public class ProfilesFactory {
 	private static void addRatingsToDB(User user, List<Long> ids, List<Float> ratings){
 		int size = ids.size();
 
-		for (int i = 0; i < size; i++){
+		/*for (int i = 0; i < size; i++){
 			_userprefDatabase.create(user.getId(), ids.get(i), ratings.get(i));
-		}
+		}*/
+		_userprefDatabase.createAll(user.getId(), ids, ratings);
 	}
 
 	private static List<Long> addProfileToDB(User user, Map<Integer, List<Float>> profile){
@@ -128,6 +119,7 @@ public class ProfilesFactory {
 	private static void addNoiseForUser(User user, List<Long> existing_ids){
 		List<Float> noise = ProfileGenerator.generateNoise();
 		User u = _userDatabase.findByUsername(user.getUsername());
+		List<Long> recipes_ids = _recipeDatabase.findAllRecipeIds();
 		List<Long> chosen_ids = new ArrayList<>();
 		Long id;
 		int size = noise.size();
@@ -135,10 +127,10 @@ public class ProfilesFactory {
 
 		int i = 0;
 		while(i < size){
-			id = _recipes_ids.get(rand.nextInt(_recipes_ids.size()));
+			id = recipes_ids.get(rand.nextInt(recipes_ids.size()));
 			if (!contains(existing_ids, id)){
 				chosen_ids.add(id);
-				++id;
+				++i;
 			}
 		}
 		addRatingsToDB(user, chosen_ids, noise);
@@ -172,7 +164,6 @@ public class ProfilesFactory {
 
 		createUsers();
 		fetchCategories();
-		fetchRecipes();
 		for (int i = 0; i < profile_number; i++){
 			System.out.println(Integer.toString( (int) (((float) (i/profile_number))*100)) + " %");
 			Collections.shuffle(categories);

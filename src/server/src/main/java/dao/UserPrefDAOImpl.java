@@ -20,7 +20,7 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 	private static final String SQL_FIND_USERS_APPRECIATING_FOOD = "SELECT numUser FROM User_preferences WHERE numRecipe = ?";
 	private static final String SQL_DELETE = "DELETE FROM User_preferences WHERE numUser = ? AND numRecipe = ? AND rank = ?";
 	private static final String SQL_UPDATE = "UPDATE User_preferences SET numRecipe = ? WHERE numUser = ?";
-
+	private static final String SQL_INSERT_ALL = "INSERT INTO User_preferences (numUser,numRecipe,rank) VALUES ";
 	private static final String	SQL_FIND_USER_RANK = "SELECT numRecipe, rank FROM User_preferences WHERE numUser = ?";
 	private static final String SQL_FIND_FOOD_RANK = "SELECT rank FROM User_preferences WHERE numRecipe = ?";
 	
@@ -37,6 +37,34 @@ public class UserPrefDAOImpl implements UserPrefDAO {
 		try {
 			connection = daoFactory.getConnection();
 			preparedStatement = initializationPreparedRequest( connection, SQL_INSERT, false, id_user, id_recipe, rank );
+			int statut = preparedStatement.executeUpdate();
+			if (statut == 0) {
+				throw new DAOException ("Failed to create a user preference, no new line added to the DB");
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} finally {
+			silentClosures(preparedStatement, connection );
+		}
+	}
+
+	@Override
+	public void createAll(Long id_user, List<Long> id_recipe, List<Float> rank) throws IllegalArgumentException, DAOException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String query = SQL_INSERT_ALL;
+		int size = id_recipe.size();
+
+		for (int i = 0; i < size; i++){
+			query += "(" + Long.toString(id_user) + "," + Long.toString(id_recipe.get(i)) + "," + Float.toString(rank.get(i)) + ")";
+			if (i < size-1){
+				query += ",";
+			}
+		}
+
+		try{
+			connection = daoFactory.getConnection();
+			preparedStatement = initializationPreparedRequest(connection, query, false);
 			int statut = preparedStatement.executeUpdate();
 			if (statut == 0) {
 				throw new DAOException ("Failed to create a user preference, no new line added to the DB");
