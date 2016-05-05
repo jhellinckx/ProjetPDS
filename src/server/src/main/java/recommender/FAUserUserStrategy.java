@@ -58,6 +58,7 @@ public class FAUserUserStrategy extends UserUserStrategy {
         setOtherUserMap(v.getRankedEdibleItems(), v);
 
         Set<Recipe> commonRankedFoods = new HashSet<>(user_pseudo_map.keySet());
+        commonRankedFoods.retainAll(other_users_map.get(v.getId()).keySet());
         return (pearsonNumerator(user_pseudo_map, other_users_map.get(v.getId()), commonRankedFoods)/pearsonDenominator(user_pseudo_map, other_users_map.get(v.getId()), commonRankedFoods));
     }
 
@@ -126,16 +127,21 @@ public class FAUserUserStrategy extends UserUserStrategy {
     }
 
     protected float ratingNumerator(int index, User user, Recipe food){
-        float numerator;
-        numerator = (float) ((similarityVec.get(index))*(harmonic_vec.get(index)));
-        numerator = (numerator)*(((float)(other_users_map.get(user.getId()).get(food))) - computeMeanRank(user));
-        numerator = (numerator)/(computeStandardDeviation(user));
+        float numerator = 0.0f;
+        if (!user.getId().equals(currentUser.getId())) {
+            numerator = (float) ((similarityVec.get(index)) * (harmonic_vec.get(index)));
+            numerator = (numerator) * (((float) (other_users_map.get(user.getId()).get(food))) - computeMeanRank(user));
+            numerator = (numerator) / (computeStandardDeviation(user));
+        }
         return numerator;
     }
 
     protected float ratingFactor(Recipe food, float mean, float std, float num, float den){
         float factor = mean;
-        float numerator = (float) (self_weight*(((float) user_pseudo_map.get(food))-mean));
+        float numerator = 0.0f;
+        if (user_pseudo_map.containsKey(food)) {
+            numerator = (float) (self_weight * (((float) user_pseudo_map.get(food)) - mean));
+        }
         numerator += num;
         factor += std*(numerator/(((float)self_weight)+den));
         return factor;
@@ -150,10 +156,12 @@ public class FAUserUserStrategy extends UserUserStrategy {
         float numerator = 0.0f;
         float denominator = 0.0f;
 
-        for (int i = 0; i < dataSize-1; i++){
+        for (int i = 0; i < dataSize; i++){
             User otherUser = userData.get(i);
-            numerator += ratingNumerator(i, otherUser, food);
-            denominator += (float) ((harmonic_vec.get(i))*(similarityVec.get(i)));
+            if (other_users_map.containsKey(otherUser.getId()) && other_users_map.get(otherUser.getId()).containsKey(food)) {
+                numerator += ratingNumerator(i, otherUser, food);
+                denominator += (float) ((harmonic_vec.get(i)) * (similarityVec.get(i)));
+            }
         }
         predictedRank = ratingFactor(food, meanRankCurrUser, stdDevCurrUser, numerator, denominator);
         return predictedRank;
@@ -162,7 +170,7 @@ public class FAUserUserStrategy extends UserUserStrategy {
     @Override
     protected void calculateSimilarityMatrix(){
         for (User user: userData){
-            if (user.getId() != currentUser.getId()){
+            if (!user.getId().equals(currentUser.getId())){
                 double similarity = computeConstrainedPearsonCorrelation(currentUser, user);
                 similarityVec.add(similarity);
                 harmonic_vec.add(computeHarmonicMean(currentUser, user));
@@ -177,7 +185,6 @@ public class FAUserUserStrategy extends UserUserStrategy {
     @Override
     protected void computeRatingPredictions(){
         super.computeRatingPredictions();
-
     }
 
     @Override

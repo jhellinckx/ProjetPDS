@@ -25,7 +25,7 @@ public class NearestNeighborStrategy extends ContentBasedStrategy {
 	private void getNeighborHoods(){
 		neighborhoods = new HashMap<>();
 		for (Recipe recipe: _recipes){
-			neighborhoods.put(recipe, similarityDAO.getNearestNeighbor(recipe.getId(), 50));
+			neighborhoods.put(recipe, similarityDAO.getNearestNeighbor(recipe.getId(), 65));
 		}
 	}
 

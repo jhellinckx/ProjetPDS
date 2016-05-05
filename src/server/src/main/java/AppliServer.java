@@ -182,7 +182,7 @@ public class AppliServer extends AbstractNIOServer{
 			System.exit(0);*/
 
 			RecommenderSystemEvaluator evaluator = new RecommenderSystemEvaluator();
-			System.out.println(evaluator.evaluateFeatureAugmentation());
+			System.out.println(evaluator.evaluateContentBased());
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "
