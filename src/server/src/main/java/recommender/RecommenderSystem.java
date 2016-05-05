@@ -65,7 +65,11 @@ public class RecommenderSystem {
 	}
 
 	public Map<Long, RecipeRatingPair> getRatingsPrediction(){
-		return recomstrategy.getRatingsPrediction();
+		if (hybridstrategy == null) {
+			return recomstrategy.getRatingsPrediction();
+		} else{
+			return hybridstrategy.getRatingsPrediction();
+		}
 	}
 
 

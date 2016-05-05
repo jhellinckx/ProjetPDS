@@ -86,7 +86,7 @@ public class AppliServer extends AbstractNIOServer{
 		_recipeDatabase = _daoFactory.getRecipeDAO();
 		_predictionsDatabase = _daoFactory.getCBPredictionsDAO();
 
-		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_categoryRatingDatabase));
+		_recommenderSystem = new RecommenderSystem(new NearestNeighborStrategy(_daoFactory.getRecipeSimilarityDAO()));
 		_knowledgeBased = new KnowledgeBasedFilter(_foodDatabase, _recipeDatabase);
 		_managers = new HashMap<>();
 		displayer = Displayer.getInstance();
@@ -182,7 +182,7 @@ public class AppliServer extends AbstractNIOServer{
 			System.exit(0);*/
 
 			RecommenderSystemEvaluator evaluator = new RecommenderSystemEvaluator();
-			System.out.println(evaluator.evaluateUserUser());
+			System.out.println(evaluator.evaluateFeatureAugmentation());
 		} 
 		catch(Exception e){
 			System.out.println(Constants.errorMessage("Uncaught exception : "

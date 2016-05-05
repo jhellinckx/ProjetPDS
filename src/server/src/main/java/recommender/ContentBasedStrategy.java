@@ -11,8 +11,10 @@ import org.calorycounter.shared.models.User;
 public abstract class ContentBasedStrategy implements RecommendationStrategy{
 
 	protected int recommendationsRequired;
+	protected HashMap<Long, RecipeRatingPair> ratingsPrediction;
 
 	public void updateData(List<Recipe> foods, List<User> users, User curUser, int nbRecom){
+		ratingsPrediction = new HashMap<>();
 		
 	}
 
@@ -28,7 +30,11 @@ public abstract class ContentBasedStrategy implements RecommendationStrategy{
 
 	@Override
 	public Map<Long, RecipeRatingPair> getRatingsPrediction(){
-		return new HashMap<>();
+		return ratingsPrediction;
+	}
+
+	protected void addRatingPrediction(Recipe f, float r){
+		ratingsPrediction.put(f.getId(), new RecipeRatingPair(f, r));
 	}
 
 }

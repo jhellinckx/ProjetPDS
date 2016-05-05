@@ -10,11 +10,11 @@ import dao.UserPrefDAO;
 
 public class UserUserStrategy extends CollaborativeStrategy {
 
-	private static final float neutralRank = 2.5f; //MAGIC NUMBER
-	private static final int NEIGHBORHOOD_SIZE = 20;	//MAGIC NUMBER - 20 has been proven to be a good starting point User-User.  ITEMLIKE
+	protected static final float neutralRank = 2.5f; //MAGIC NUMBER
+	protected static final int NEIGHBORHOOD_SIZE = 30;	//MAGIC NUMBER - 20 has been proven to be a good starting point User-User.  ITEMLIKE
 
-	private int dataSize; //ITEMLIKE
-	private ArrayList<Double> similarityVec = new ArrayList<>();
+	protected int dataSize; //ITEMLIKE
+	protected ArrayList<Double> similarityVec = new ArrayList<>();
 
 
 	public UserUserStrategy(UserPrefDAO pref){
@@ -42,7 +42,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		return(pearsonNumerator(uFoodRank,vFoodRank, commonRankedFoods)/pearsonDenominator(uFoodRank,vFoodRank, commonRankedFoods));
 	}
 
-	private double pearsonNumerator(HashMap u, HashMap v, Set commonFoods){
+	protected double pearsonNumerator(HashMap u, HashMap v, Set commonFoods){
 		double res = 0;
 		Iterator<Recipe> it = commonFoods.iterator();
 		while(it.hasNext()){ //Iterate through common ranked foods by users u and v
@@ -52,7 +52,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		return res;
 	}
 
-	private double pearsonDenominator(HashMap u,HashMap v, Set commonFoods){	
+	protected double pearsonDenominator(HashMap u,HashMap v, Set commonFoods){
 		double u_comp = pearsonDenominator_inner(u,commonFoods);
 		double v_comp = pearsonDenominator_inner(v,commonFoods);
 		double denom = Math.sqrt(u_comp)*Math.sqrt(v_comp);
@@ -60,7 +60,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		return denom;
 	}
 
-	private double pearsonDenominator_inner(HashMap u, Set commonFoods){
+	protected double pearsonDenominator_inner(HashMap u, Set commonFoods){
 		double res = 0;
 		Iterator<Recipe> it = commonFoods.iterator();
 		while(it.hasNext()){ //Iterate through common ranked foods by users u and v
@@ -72,14 +72,14 @@ public class UserUserStrategy extends CollaborativeStrategy {
 
 
 
-	private float computeRating(Recipe food){
+	protected float computeRating(Recipe food){
 		float meanRankCurrUser = currentUser.getMeanRank();
 		float stdDevCurrUser = currentUser.getStdDeviation();
 		float predictedRank;
 
 		float numerator = 0.0f;
 		float denominator = 1.0f;
-		for(int i = 0; i<dataSize-1 ; i++){
+		for(int i = 0; i<dataSize ; i++){
 			User otherUser = userData.get(i);
 			if(otherUser.hasNotedEdibleItem(food)){
 				numerator += (float) ((similarityVec.get(i))*(otherUser.getRankForEdibleItem(food)- otherUser.getMeanRank()))/otherUser.getStdDeviation();
@@ -89,20 +89,21 @@ public class UserUserStrategy extends CollaborativeStrategy {
 		}
 		predictedRank = currentUser.getMeanRank() + currentUser.getStdDeviation()*(numerator/denominator);
 		return predictedRank;
-
 	}
 	
-	private void calculateSimilarityMatrix(){
+	protected void calculateSimilarityMatrix(){
 		for (int i = 0; i < dataSize; i++){
 			if (userData.get(i).getId() != currentUser.getId()){
 				double similarity = computeConstrainedPearsonCorrelation(currentUser, userData.get(i));  //computeCosineSimilarity(food, foodData.get(i));
 				similarityVec.add(similarity);
+			} else {
+				similarityVec.add(0.0);
 			}
 		}
 	}
 	
 	
-	private void computeRatingPredictions(){
+	protected void computeRatingPredictions(){
 		for (int i = 0; i < recipeData.size(); i++){
 			if (!currentUser.hasNotedEdibleItem(recipeData.get(i))){
 				addRatingPrediction(recipeData.get(i), computeRating(recipeData.get(i)));
@@ -114,6 +115,7 @@ public class UserUserStrategy extends CollaborativeStrategy {
 	@Override
 	public ArrayList<Recipe> recommend(){
 		similarityMatrix = new SimilarityMatrix(dataSize, UserUserStrategy.NEIGHBORHOOD_SIZE);
+		similarityVec = new ArrayList<>();
 		if (recipeData != null && userData != null && currentUser != null){
 
 			calculateSimilarityMatrix();

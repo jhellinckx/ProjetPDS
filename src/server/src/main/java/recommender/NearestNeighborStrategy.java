@@ -2,6 +2,7 @@ package recommender;
 
 import java.util.*;
 
+import dao.RecipeSimilarityDAO;
 import org.calorycounter.shared.models.Recipe;
 import items.CategoryRating;
 import org.calorycounter.shared.models.User;
@@ -10,114 +11,62 @@ import static org.calorycounter.shared.Constants.network.*;
 
 
 public class NearestNeighborStrategy extends ContentBasedStrategy {
-	private class Prediction{
-		private Float _mean;
-		private int _n_categories;
-		public Prediction(Float m, int n){
-			_mean = m;
-			_n_categories = n;
-		}
-		public Float mean() { return _mean; }
-		public int categories() { return _n_categories; }
-	}
-	private List<Recipe> _foodToFilter;
+
+	private List<Recipe> _recipes;
 	private User _user;
 	private int _recommendations;
-	private CategoryRatingDAO _daoCategoryRating;
-	private List<User> _otherUsers;
+	private Map<Recipe, Map<Recipe, Float>> neighborhoods;
+	private RecipeSimilarityDAO similarityDAO;
 
-	public NearestNeighborStrategy(CategoryRatingDAO daoCategoryRating){
-		_daoCategoryRating = daoCategoryRating;
+	public NearestNeighborStrategy(RecipeSimilarityDAO dao){
+		this.similarityDAO = dao;
+	}
+
+	private void getNeighborHoods(){
+		neighborhoods = new HashMap<>();
+		for (Recipe recipe: _recipes){
+			neighborhoods.put(recipe, similarityDAO.getNearestNeighbor(recipe.getId(), 50));
+		}
 	}
 
 	@Override
 	public void updateData(List<Recipe> toFilter, List<User> users, User user, int recoms){
-		_foodToFilter = toFilter;
+		super.updateData(toFilter, users, user, recoms);
+		_recipes = toFilter;
 		_user = user;
-		_recommendations = 30;
-		_otherUsers = users;
+		_recommendations = 10;
+		if (neighborhoods == null) {
+			getNeighborHoods();
+		}
+	}
+
+	protected float computeRating(Recipe recipe){
+		Map<Recipe, Float> neighborhood = neighborhoods.get(recipe);
+		float numerator = 0.0f;
+		float denominator = 0.0f;
+
+		for (Recipe item : neighborhood.keySet()){
+			if (_user.hasNotedEdibleItem(item)){
+				numerator += ((neighborhood.get(item))*(_user.getRankForEdibleItem(item)));
+				denominator += ((neighborhood.get(item)));
+			}
+		}
+		denominator = (denominator == 0 ? 1 : denominator);
+		return (numerator/denominator);
+	}
+
+	protected void computePredictions(){
+		for (Recipe recipe : _recipes){
+			if(!_user.hasNotedEdibleItem(recipe)){
+				addRatingPrediction(recipe, computeRating(recipe));
+			}
+		}
 	}
 
 	@Override
 	public ArrayList<Recipe> recommend(){
-		if(_foodToFilter.isEmpty())
-			_foodToFilter = new ArrayList<>();
-		Map<Recipe, Float> ratingPredictions = new HashMap<>();
-		Map<Long, Integer> categoriesNumberForID = new HashMap<>();
-		for(Recipe food : _foodToFilter){
-			Prediction pred = prediction(food);
-			ratingPredictions.put(food, pred.mean());
-			categoriesNumberForID.put(food.getId(), pred.categories());
-		}
-		Map<Recipe, Float> sortedRatingPredictions = sortByValue(ratingPredictions);
-		List<Recipe> recommendations = new ArrayList<Recipe>(sortedRatingPredictions.keySet());
-
-		ArrayList<Recipe> resizedRecoms = new ArrayList<Recipe>();
- 		if(recommendations.size()>_recommendations) {
- 			resizedRecoms = new ArrayList<Recipe>(recommendations.subList(recommendations.size()-_recommendations-1, recommendations.size()));
- 		}
-		Map<Recipe, Integer> resizedRecomsWithCategoriesNumber = new HashMap<>();
-		for(Recipe recom : resizedRecoms)
-			resizedRecomsWithCategoriesNumber.put(recom, categoriesNumberForID.get(recom.getId()));
-
-		Map<Recipe, Integer> sortedResizedRecoms = sortByValue(resizedRecomsWithCategoriesNumber);
-		ArrayList<Recipe> sortedResizedRecomsList = new ArrayList<Recipe>(sortedResizedRecoms.keySet());
-		System.out.println(sortedResizedRecomsList.toString());
-		System.out.println("TAKE ONLY RECOM : "+Integer.toString(_recommendations));
-
-		ArrayList<Recipe> sortedInOrder = new ArrayList<>(sortedResizedRecomsList);
-		int i = sortedResizedRecomsList.size()-1;
-		for(Recipe food : sortedResizedRecomsList){
-			sortedInOrder.set(i, food);
-			i--;
-		}
-		return sortedInOrder;
-	}
-
-	private Prediction prediction(Recipe food){
-		ArrayList<String> categories = new ArrayList<>(); //= _daoCategoryRating.findCategoriesForRecipe(food);
-		ArrayList<CategoryRating> ratedCategories = new ArrayList<>();
-		boolean atLeastOneRated = false;
-		for(String category : categories){
-			CategoryRating result = _daoCategoryRating.findRatedCategory(_user, category);
-			if(result != null) {
-				ratedCategories.add(result);
-				atLeastOneRated = true;
-			}
-			else ratedCategories.add(new CategoryRating(category, 2.5f, 1, _user.getId()));
-		}
-		Float mean = meanRating(ratedCategories, atLeastOneRated);
-		return new Prediction(mean, ratedCategories.size());
-		}
-
-	private Float meanRating(ArrayList<CategoryRating> categoryRatings, boolean oneRated){
-		if(! oneRated)
-			return 2.5f;
-		Float sum = 0.0f;
-		for(CategoryRating categoryRating : categoryRatings){
-			sum += categoryRating.rating();
-		} 
-		if(categoryRatings.isEmpty()) {
-			return DEFAULT_RATING;
-		}
-		else{
-			return sum/categoryRatings.size();
-		}
-	}
-
-	public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		List<Map.Entry<K, V>> entryList = new LinkedList<>(map.entrySet());
-		Collections.sort(entryList, new Comparator<Map.Entry<K, V>>(){
-        	@Override
-        	public int compare(Map.Entry<K, V> first, Map.Entry<K, V> second){
-            	return (first.getValue()).compareTo(second.getValue());
-        	}
-    	});
-		Map<K, V> sortedMap = new LinkedHashMap<>();
-		for (Map.Entry<K, V> entry : entryList){
-        	sortedMap.put(entry.getKey(), entry.getValue());
-        }
-		return sortedMap;
+		computePredictions();
+		return null;
 	}
 
 }

@@ -6,9 +6,7 @@ import dao.UserDAO;
 import dao.UserPrefDAO;
 import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.User;
-import recommender.RecipeRatingPair;
-import recommender.RecommenderSystem;
-import recommender.UserUserStrategy;
+import recommender.*;
 
 import java.util.*;
 
@@ -90,7 +88,7 @@ public class RecommenderSystemEvaluator {
 
     private void startRecommendation(User user){
         filterUser(user);
-        system.updateData(all_recipes, all_users, user, 10);
+        system.updateData(all_recipes, all_users, user, 100);
         system.recommendItems();
     }
 
@@ -137,6 +135,17 @@ public class RecommenderSystemEvaluator {
 
     public double evaluateUserUser(){
         system = new RecommenderSystem(new UserUserStrategy(_userPrefdb));
+        return evaluateSystem();
+    }
+
+    public double evaluateContentBased(){
+        system = new RecommenderSystem(new NearestNeighborStrategy(_daoFactory.getRecipeSimilarityDAO()));
+        return evaluateSystem();
+    }
+
+    public double evaluateFeatureAugmentation(){
+        system = new RecommenderSystem(new NearestNeighborStrategy(_daoFactory.getRecipeSimilarityDAO()), new FeatureAugmentationStrategy());
+        system.addRecommendationStrategyToHybridStrategy(new FAUserUserStrategy(_userPrefdb));
         return evaluateSystem();
     }
 

@@ -2,6 +2,7 @@ package recommender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.calorycounter.shared.models.Recipe;
 import org.calorycounter.shared.models.User;
@@ -53,6 +54,11 @@ public class CascadeStrategy implements HybridationStrategy {
     @Override
     public void addRecommendationStrategy(RecommendationStrategy strat){
         strategies.add(strat);
+    }
+
+    @Override
+    public Map<Long, RecipeRatingPair> getRatingsPrediction(){
+        return null;
     }
 
 
